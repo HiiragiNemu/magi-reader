@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@layer base {
+  :root {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+  }
+}
+
+/* 噪点纹理类 */
+.bg-noise {
+  position: relative;
+}
+.bg-noise::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.6;
+}
+
+/* 豆沙绿 (Green) */
+.theme-green {
+  background-color: #C7EDCC; /* 经典的豆沙绿 */
+  color: #003300;
+}
+
+/* 羊皮纸 (Paper/Warm) */
+.theme-paper {
+  background-color: #f3eacb; /* 更深的米黄色 */
+  color: #3e2b1e;
+}
+
+/* 暗黑 (Dark) */
+.dark {
+  background-color: #0a0a0a;
+  color: #ededed;
+}
+
+/* --- 极致缩减阅读器间距 --- */
+.whitespace-pre-wrap {
+  margin-top: -0.1em;
+  margin-bottom: -0.1em;
+  display: block;
+}
+
+/* 移除 border-b 的默认大内边距 */
+div[id^="line-"] {
+  padding-top: 0.15rem !important;
+  padding-bottom: 0.15rem !important;
+}
+
+/* --- 搜索高亮增强 (红色框选) --- */
+.bg-red-100.text-red-700.outline {
+  background-color: #fee2e2 !important; /* 浅红背景 */
+  color: #b91c1c !important;           /* 深红文字 */
+  outline: 2px solid #ef4444 !important; /* 明显的红色外边框 */
+  border-radius: 2px;
+  font-weight: bold;
+  box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+  animation: pulse-red 1s infinite alternate;
+}
+
+@keyframes pulse-red {
+  from { outline-color: #ef4444; }
+  to { outline-color: transparent; }
+}
+
+/* 修正 Section 分割线间距 */
+.my-10 {
+  margin-top: 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+}
