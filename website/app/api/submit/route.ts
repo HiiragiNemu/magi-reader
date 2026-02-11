@@ -1,27 +1,29 @@
-export const runtime = 'edge';
 import { NextResponse } from 'next/server';
 
-// 🔴 关键修复：指定 Edge 运行时
+// 🔴 关键：只需声明一次 Edge 运行时
 export const runtime = 'edge';
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
+    const data: any = await request.json();
     
-    // 获取 D1 数据库实例 (在 Edge Runtime 中通过 process.env 获取绑定)
-    // 注意：本地开发时 process.env.DB 是 undefined，这代码只能在线上跑通
-    const db = process.env.DB as any; 
+    // 获取 D1 数据库实例
+    // 注意：线上环境下，Cloudflare 绑定的 DB 会挂载在 process.env 下
+    const db = (process.env as any).DB;
 
     if (!db) {
-        throw new Error("Database binding not found");
+      // 如果没有找到数据库绑定，返回错误
+      return NextResponse.json({ error: "Database binding 'DB' not found" }, { status: 500 });
     }
 
+    // 执行数据库插入
     await db.prepare(
       "INSERT INTO submissions (story_id, content, author, status) VALUES (?, ?, ?, 'pending')"
     ).bind(data.story_id, data.content, data.author).run();
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
+    console.error(err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
