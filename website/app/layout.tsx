@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import type { Metadata } from "next";
 import "./globals.css";
 // 🔴 关键修改：必须使用 @/app/providers，绝对不能用 ./providers
