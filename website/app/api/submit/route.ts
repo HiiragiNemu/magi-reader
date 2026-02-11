@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { NextResponse } from 'next/server';
 
 // 🔴 关键修复：指定 Edge 运行时
