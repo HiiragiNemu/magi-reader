@@ -1,15 +1,26 @@
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
-  // 1. 接收前端发来的数据
-  const data = await request.json();
-  
-  // 2. 在终端打印出来，证明前端数据发过来了
-  console.log("✅ [本地测试] 收到汉化提交:");
-  console.log("ID:", data.story_id);
-  console.log("内容长度:", data.content.length);
-  // console.log("内容:", data.content); // 内容太长，平时注释掉
+// 🔴 关键修复：指定 Edge 运行时
+export const runtime = 'edge';
 
-  // 3. 假装数据库写入成功，返回成功信号
-  return NextResponse.json({ success: true });
+export async function POST(request: Request) {
+  try {
+    const data = await request.json();
+    
+    // 获取 D1 数据库实例 (在 Edge Runtime 中通过 process.env 获取绑定)
+    // 注意：本地开发时 process.env.DB 是 undefined，这代码只能在线上跑通
+    const db = process.env.DB as any; 
+
+    if (!db) {
+        throw new Error("Database binding not found");
+    }
+
+    await db.prepare(
+      "INSERT INTO submissions (story_id, content, author, status) VALUES (?, ?, ?, 'pending')"
+    ).bind(data.story_id, data.content, data.author).run();
+
+    return NextResponse.json({ success: true });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
 }
