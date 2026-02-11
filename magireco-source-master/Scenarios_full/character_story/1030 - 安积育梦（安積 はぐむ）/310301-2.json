@@ -1,0 +1,561 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21022.jpg",
+                "bgm": "bgm03_story02",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 800201,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 800101
+                    }
+                ],
+                "textRight": "我が演劇部の次回公演は…[chara:800101:lipSynch_0][wait:1.5][chara:800101:lipSynch_1]@シンデレラに決定！[chara:800101:effect_emotion_joy_0][se:7222_happy]",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.25,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 800201
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 800101
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 200,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "はぐむ",
+                "textCenter": "（シンデレラ…@子どもの頃から好きだったなぁ）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "nameNarration": "はぐむ",
+                "narration": "意地悪な継母と義姉たちに@イジメられるシンデレラ",
+                "narrationBg": "bg_adv_21022.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "narration": "でも、魔法使いに@ドレスとガラスの靴をもらって@舞踏会で王子様に見初められる…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "textCenter": "（女の子の憧れ、だよねぇ…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（私にも“ガラスの靴”が@あったら、誰かに…）"
+            },
+            {
+                "autoTurnLast": 0.25,
+                "chara": [
+                    {
+                        "id": 103001,
+                        "pos": 0
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 800101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "",
+                "textRight": "安積、またぼうっとして！",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "はぐむ",
+                "textLeft": "[chara:103001:effect_emotion_surprise_0][se:7226_shock]――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 103001,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "す、すみません…！部長！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800101
+                    }
+                ],
+                "textRight": "先にシンデレラの衣装をお願い@ガラスの靴も忘れないでね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 103001,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "はい！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 800101
+                    },
+                    {
+                        "id": 103001,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "あっ、でも待って@色のバランス見たいな…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800101
+                    }
+                ],
+                "textRight": "やっぱり全員の衣装デザインを@優先でお願い"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800101
+                    }
+                ],
+                "textRight": "その後で、シンデレラの衣装@一式を縫ってね"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800101
+                    }
+                ],
+                "textRight": "それと小道具から@布系小道具の依頼リスト来るから"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800101
+                    }
+                ],
+                "textRight": "それも考えて、作成時間取ってね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800302,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "衣装の予算、もう出してあるから@はみ出さないようによろしく"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 800302
+                    }
+                ],
+                "textLeft": "小道具からの依頼は小道具側で@予算出すから考えなくていいよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 103001,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "はぐむ",
+                "textLeft": "あわわ…[chara:103001:lipSynch_0][wait:1][chara:103001:lipSynch_1]えっとシンデレラからで@次は…[chara:103001:lipSynch_0][wait:0.7][chara:103001:lipSynch_1]小道具の予算…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800302,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "textRight": "ふふっ、全然違うよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "textRight": "…はぁ、アンタ@あれこれ考えるの苦手だもんね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "はぐむ",
+                "textLeft": "…すみません"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800101
+                    }
+                ],
+                "textRight": "書き出しておくから@家でゆっくり読んでからやって"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 103001,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "…すみません…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 800101
+                    }
+                ],
+                "textRight": "じゃあ、お願いね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 800302,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "予算も忘れないでねー"
+            },
+            {
+                "autoTurnLast": 1,
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 800302
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 800101
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "bgm": "bgm03_story07",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 1,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "はぐむ",
+                "textCenter": "（また笑われて@呆れられちゃった…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（どんなに頑張っても@感謝されることもないし…）"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "…………",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "motion": 300
+                    }
+                ],
+                "textCenter": "シンデレラみたい…"
+            },
+            {
+                "bg": "black",
+                "nameNarration": "はぐむ",
+                "narration": "…うそ…@本当はわかってる",
+                "narrationBg": "black",
+                "narrationEffect": "in"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21022.jpg"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "motion": 100
+                    }
+                ],
+                "narrationEffect": "out",
+                "textCenter": "私の要領が悪いだけ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "（意地悪な継母や@義姉はいないし…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（何より…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 1
+                    }
+                ],
+                "textCenter": "（ガラスの靴をくれる@魔法使いも…[wait:1.2]いない）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "motion": 200
+                    }
+                ],
+                "textCenter": "…いいことないな…",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（魔法少女になってからも…@何も変わらなかった…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "（でも、仕方ないよね…）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（…みんなと違って@ちゃんとした願いじゃないもん）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "id": 103001
+                    }
+                ],
+                "textCenter": "…はぁ、とりあえず帰ろう…",
+                "turnEffect": "stop"
+            },
+            {
+                "nameNarration": "",
+                "narration": "[se:7106_telmail]ピロリン♪",
+                "narrationBg": "bg_adv_21022.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "motion": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "textCenter": "メッセージ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 103001
+                    }
+                ],
+                "textCenter": "あっ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "textCenter": "…………"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

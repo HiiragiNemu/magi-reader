@@ -1,0 +1,411 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "bg": "bg_adv_21132.jpg",
+                "bgm": "bgm01_anime07",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100501,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameNarration": "いろは",
+                "narration": "フェリシアちゃんの夢に出てきたカメさんは@助けてくれてありがとうって@フェリシアちゃんにお礼をしたんだそうです",
+                "narrationBg": "bg_adv_21132.jpg",
+                "narrationEffect": "in",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "そして、渡したいものがあると言われた@フェリシアちゃんは@カメさんを探しに、河川敷に行ったんです"
+            },
+            {
+                "bgEffect": "shakeSmall",
+                "chara": [
+                    {
+                        "id": 100501,
+                        "motion": 200
+                    }
+                ],
+                "nameCenter": "フェリシア",
+                "narrationEffect": "out",
+                "textBg": "shout",
+                "textCenter": "カメー！どこだー!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100501,
+                        "motion": 100
+                    }
+                ],
+                "textCenter": "つか、さっき@どこで見つけたんだっけ？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100501
+                    }
+                ],
+                "textCenter": "むー…@[chara:100501:lipSynch_0][wait:0.8][chara:100501:cheek_0][chara:100501:face_mtn_ex_020.exp.json][chara:100501:lipSynch_1]絶対に見つけてやるからな…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100501,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "…あれ…？あの階段のとこ…@何かヒラヒラしてるぞ…？"
+            },
+            {
+                "bgm": "stop",
+                "nameNarration": "いろは",
+                "narration": "フェリシアちゃんが見つけたもの",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "narration": "それは…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_21203.jpg",
+                "bgm": "bgm03_story02",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100501,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100501,
+                        "motion": 200
+                    }
+                ],
+                "narrationEffect": "out",
+                "textCenter": "それでさ！@河川敷でこれを拾ったんだ！",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100501,
+                        "motion": 100
+                    }
+                ],
+                "textCenter": "[chara:100501:effect_emotion_joy_0][se:7222_happy]すげえだろ!?"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "id": 100501,
+                        "pos": 2
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100301,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "鶴乃",
+                "textLeft": "「モーモーパーク」の@ペアチケット…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100501,
+                        "motion": 200
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "ああ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100501,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "こーしてチケットがあるんだ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100501
+                    }
+                ],
+                "textRight": "やちよもオレを連れて行かない@わけにはいかないよなっ？"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 301,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "これ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 100201,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "ほんと…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100501,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "なんだよ、文句あんのかよっ？"
+            },
+            {
+                "bgm": "bgm03_story09",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "私もね、鶴乃ちゃんのお父さんに@ペアチケットをもらったの"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101
+                    }
+                ],
+                "textLeft": "万々歳のお手伝いのお礼にって"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 100201,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "私も、今日寄ったお肉屋さんで@ペアチケットをもらったわ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100501,
+                        "motion": 400
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "[chara:100501:effect_emotion_surprise_0][se:7226_shock]なん…だと!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100301,
+                        "motion": 0,
+                        "mouthOpen": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "鶴乃",
+                "textLeft": "ほえー"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100301,
+                        "motion": 101,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textLeft": "すごいね、@こんなことあるんだね！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100501,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "でも…@じゃあなんで黙ってたんだよ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 301,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "ペアチケット2枚だけじゃ@みんなで行けないもの…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_014.exp.json",
+                        "id": 100201
+                    }
+                ],
+                "textLeft": "どうしようかと思っていたけど@その問題も、もう解決ね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100501,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "オレもチケットを１枚持ってて…@ペアチケットは全部で３枚…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100501
+                    }
+                ],
+                "textRight": "２たす２たす２は６だから…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100501,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "[chara:100501:effect_emotion_surprise_0][se:7226_shock]おぉっ!?@みんなでパークに行けるじゃん！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "ええ、みんなで予定を合わせて@行きましょうか"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100501,
+                        "motion": 200,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textRight": "[chara:100501:effect_emotion_joy_0][se:7222_happy]やったーあ!!"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "motion": 100
+                    },
+                    {
+                        "id": 100501,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textLeft": "さ、忘れてない？@今夜はすき焼き鍋でお祝いよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100101,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "フェリシアちゃんがテストで@良い点を取ったお祝い、だね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100501,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "おう！いっぱい食うぞ～!!"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

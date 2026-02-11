@@ -1,0 +1,634 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "bg": "bg_adv_11021.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameNarration": "杏子",
+                "narration": "神浜市@魔女が集まる奇妙な町",
+                "narrationBg": "bg_adv_11011.jpg",
+                "narrationEffect": "in",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "魔女を狙って、魔法少女も集まり@いつも戦いが繰り広げられる"
+            },
+            {
+                "narration": "異常に異常を塗り重ねた@魔女と魔法少女の町…"
+            },
+            {
+                "bgm": "bgm03_story02",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200600,
+                        "motion": 100
+                    }
+                ],
+                "nameCenter": "杏子",
+                "narrationEffect": "out",
+                "textCenter": "なんてマミのやつは言ってたけど@へっ！あたしには関係ないね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 200600
+                    }
+                ],
+                "textCenter": "いい狩り場が見つかったんだ@グリーフシードを稼がなきゃ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200600,
+                        "motion": 0
+                    }
+                ],
+                "nameNarration": "杏子",
+                "narration": "マミの話じゃあ@少し歩いただけで魔女に出くわす",
+                "narrationBg": "bg_adv_11021.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "narration": "そんな狂った場所らしいが…"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200600
+                    }
+                ],
+                "narrationEffect": "out",
+                "textCenter": "[chara:200600:effect_ef_adv_01][se:7201_detect_magic]――っ!?"
+            },
+            {
+                "bgm": "bgm03_story10",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200600,
+                        "motion": 100
+                    }
+                ],
+                "textCenter": "ソウルジェムが反応してやがる@早速、お出ましかよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 200600,
+                        "motion": 200
+                    }
+                ],
+                "textCenter": "…あっちか！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6104_rebecca_emblem.png",
+                        "posX": 0,
+                        "posY": 110,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "rollInFast",
+                "turnEffect": "ef_adv_06"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200600,
+                        "motion": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "杏子",
+                "textLeft": "マミの言ったとおりだな@ここはサクッとやっちまうか！",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_47104.jpg",
+                "bgChangeEffect": "enterWitchSpace",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6104_rebecca_emblem.png",
+                        "visible": "hide"
+                    }
+                ],
+                "se": "7208_wander_into",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200600,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "ありゃ…？これはハズレだな…@使い魔の結界じゃねえか"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200600,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "ったく…@無駄足を踏んじまった…"
+            },
+            {
+                "bgm": "bgm01_anime16",
+                "chara": [
+                    {
+                        "id": 7104,
+                        "name": "sprite_0",
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302500,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "五十鈴 れん",
+                "textRight": "[flashEffect:flashWhite1][surround:3025A02]ゃっ…！",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 7104,
+                        "name": "sprite_0"
+                    }
+                ],
+                "flashEffect": "flashWhite2",
+                "nameLeft": "",
+                "textBg": "shout",
+                "textLeft": "蝨＊溷慍‡繧［］貞ｮ医ｌ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302500,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "ひゃっ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302500,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "つ、強い…@でも…ま、負けない…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "杏子",
+                "textCenter": "なんだ、あいつ？",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200600
+                    }
+                ],
+                "textCenter": "使い魔相手に何やってんだ…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302500,
+                        "motion": 1,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "五十鈴 れん",
+                "nameRight": "",
+                "textCenter": "このまま追い込めば…@倒せるはず…！",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200600,
+                        "motion": 200,
+                        "pos": 2
+                    },
+                    {
+                        "id": 302500,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "杏子",
+                "textRight": "ちょっとちょっと！@何やってんのさアンタ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302500,
+                        "motion": 0
+                    }
+                ],
+                "nameLeft": "五十鈴 れん",
+                "textLeft": "ぇっ…！@あのっ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302500
+                    }
+                ],
+                "textLeft": "と、通していただけますか…？@使い魔が…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200600,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "いや、見て分かんないの？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200600
+                    }
+                ],
+                "textRight": "あれ、魔女じゃなくて@使い魔だよ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200600,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "アンタ、タマゴ産む前のニワトリ@絞めてどーすんのさ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302500
+                    }
+                ],
+                "textLeft": "え…？"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_11021.jpg",
+                "bgChangeEffect": "exitWitchSpace",
+                "bgm": "stop",
+                "se": "7209_gate_close"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302500,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "あっ…結界が…！@[chara:302500:lipSynch_0][wait:1.2][chara:302500:cheek_0][chara:302500:face_mtn_ex_030.exp.json][chara:302500:lipSynch_1]…逃げられた…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200600,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "いくら魔女が多い町だからって@無駄に狩るなんてトーシロかよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 302500,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "む、無駄…ですか…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302500
+                    }
+                ],
+                "textLeft": "使い魔は…悪意の魔女に@なるかもしれないので…"
+            },
+            {
+                "bgm": "bgm01_anime05",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200600,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…は？@悪意の魔女？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200600
+                    }
+                ],
+                "textRight": "なんだそれ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302500,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "あ、悪意の魔女は…@その…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302500
+                    }
+                ],
+                "textLeft": "人の悪意を広めて…@悪意を助長させる魔女で…はい…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302500,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "つまり…悪意が蔓延する…@根源の魔女で…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302500
+                    }
+                ],
+                "textLeft": "悪意の魔女が…いるから…@人は悪意から…逃れられなくて…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302500,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "憎しみや…暴力…@…いじめも…蔓延して…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302500
+                    }
+                ],
+                "textLeft": "なので…悪意の魔女は…@必ず倒さなければならなくて…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200600,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "何となく言いたいことはわかった@けどさあ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200600
+                    }
+                ],
+                "textRight": "アンタ、もしかしてやれ正義だの@やれ人助けだの"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200600,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "おちゃらけた冗談かますために@魔法少女になったわけ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 200600,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "遊び半分で首突っ込まれるのが@１番ムカつくんだよね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302500,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "…冗談でも…@…遊びでもありません"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 302500
+                    }
+                ],
+                "textLeft": "…本気で…私は、本気で…！@悪意の魔女を、倒すつもりで…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302500,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "悪意の魔女の、芽である使い魔も@必ず…倒さなくては…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302500,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "悪意のせいで起きる悲劇を…@二度と起こしてはならないから…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200600,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "だからさあ…何なの？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200600
+                    }
+                ],
+                "textRight": "アンタ、何の理由で@そこまで魔女を憎むわけ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200600,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "魔女に家族でも殺されたか？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302500,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "…いえ…@…家族は…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302500
+                    }
+                ],
+                "textLeft": "…魔女に殺されたのは…@私自身です"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200600,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "――っ!?"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 2
+}

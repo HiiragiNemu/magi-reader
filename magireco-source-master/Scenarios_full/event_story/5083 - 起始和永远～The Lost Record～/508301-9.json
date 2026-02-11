@@ -1,0 +1,362 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51049_storyselect_homura/51049_frame.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear",
+                        "zOrder": "charaFront"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "narration": "Record IV",
+                "narrationCoverOpacity": 90,
+                "narrationEffect": "in",
+                "narrationFontSize": 45,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "決意"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21014.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200301,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "ほむら",
+                "textCenter": "――っ!?",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200301,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm02_anime10",
+                "chara": [
+                    {
+                        "id": 200301,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（誰も、未来を信じない…）",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "item": [
+                    {
+                        "action": {
+                            "sequence": [
+                                {
+                                    "fadeTo": {
+                                        "duration": 0.5,
+                                        "opacity": 0
+                                    }
+                                },
+                                {
+                                    "fadeTo": {
+                                        "duration": 0.5,
+                                        "opacity": 255
+                                    }
+                                },
+                                {
+                                    "fadeTo": {
+                                        "duration": 0.5,
+                                        "opacity": 0
+                                    }
+                                }
+                            ]
+                        },
+                        "iPhoneXScale": 1,
+                        "opacity": 255,
+                        "path": "resource/scenario/img/purple.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "setVisible": 1
+                    }
+                ],
+                "se": "7211_souljem_02",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（誰も、未来を@受け止められない）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（だったら、私は…）"
+            },
+            {
+                "autoTurnLast": 1.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_05",
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "motion": 1,
+                        "pos": 1
+                    }
+                ],
+                "se": "7205_magic_girl",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_20023.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "id": 810000,
+                        "pos": 2,
+                        "posX": 40,
+                        "posY": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 810000
+                    }
+                ],
+                "nameRight": "キュゥべえ",
+                "textRight": "…………",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "id": 200200,
+                        "motion": 200
+                    }
+                ],
+                "flashEffect": "flashWhite2",
+                "surround": "3023A01",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.01,
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 810000
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "ドサッ",
+                "se": "3102_enemy_dead"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_20162.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200152,
+                        "motion": 0,
+                        "pos": 1,
+                        "soulGem": 0
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "コツ、コツ…",
+                "narrationEffect": "in",
+                "surround": "7003_wind",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200152,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "まどか",
+                "narrationEffect": "out",
+                "textCenter": "[chara:200152:effect_emotion_surprise_0][se:7226_shock]――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 200152,
+                        "motion": 201
+                    }
+                ],
+                "textCenter": "だ、誰？"
+            },
+            {
+                "nameLeft": "ほむらの声",
+                "textLeft": "まどか…"
+            },
+            {
+                "textLeft": "あなたに奇跡を約束して@取り入ろうとする者が現れても"
+            },
+            {
+                "textLeft": "決して言いなりになっては駄目"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 200152,
+                        "motion": 1
+                    }
+                ],
+                "textCenter": "…え？@あの…"
+            },
+            {
+                "nameNarration": "",
+                "narration": "コツ、コツ…",
+                "narrationEffect": "in"
+            },
+            {
+                "autoTurnLast": 2,
+                "bg": "bg_adv_20041.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200200,
+                        "motion": 1,
+                        "pos": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "surround": "stop",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "ほむら",
+                "textCenter": "…………@…………",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（…もう誰にも頼らない）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（誰に分かってもらう@必要もない）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（すべての魔女は@私ひとりで片付ける…）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "（そして今度こそ）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "textCenter": "（ワルプルギスの夜を@この手で…）"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

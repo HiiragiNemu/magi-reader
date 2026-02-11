@@ -1,0 +1,871 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "deleteArmatureList": [
+                    0
+                ],
+                "item": [
+                    {
+                        "iPhoneXScale": 1,
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bg": "white",
+                "nameNarration": "日记的一页",
+                "narration": "[textBlack:20××年12月××日　18:00]@[textBlack:在某个地方]@[textBlack:有一对双胞胎分居两处生活着]",
+                "narrationBg": "",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 180,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "[textBlack:双胞胎中的妹妹，在圣诞节前的某一天]@[textBlack:看到了一双绒毛的手套]"
+            },
+            {
+                "narration": "[textBlack:在数日前，曾在其他店铺里看到时]@[textBlack:因为价格过高没能买下来…]"
+            },
+            {
+                "narration": "[textBlack:但以这家店里的定价]@[textBlack:只需用上所有零花钱就可购买到手]"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_13014.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110701,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "visible": "hide"
+                    },
+                    {
+                        "path": "resource/scenario/img/51120_touka_nemu_christmas/51120_magicalbook1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm03_story06",
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "…这本书我还从没看过啊@音梦你知道吗？",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51120_touka_nemu_christmas/51120_magicalbook1.png",
+                        "visible": "hide"
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "这不是灯花你的书吗？@但也不是我的"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "而且和「圣诞颂歌」@根本没有一点关系"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "好可疑…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "这本书到底是从哪里混进来的啊？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "虽然没有半分头绪@但内容倒稍微有点印象"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "这里面所写的双胞胎@应该指的就是天音姐妹"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110701,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "是吗…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110702,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "这本日记风格的童话…@总之就先叫它日记吧"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 200
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "若现在的时间@正和日记中相符的话"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "月咲应该很快就会出现在这里"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 110701
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 110702
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_13014.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101901,
+                        "lipSynch": 0,
+                        "motion": 1,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "月咲",
+                "textCenter": "…………"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 101901
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110701,
+                        "motion": 400,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "跟音梦你说的一样！@你是什么时候转职成预言家了？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "只是想起了@之前美冬告诉过我的"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "去年的圣诞节…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "她们姐妹之间@互赠礼物的闲谈"
+            },
+            {
+                "autoTurnLast": 2,
+                "bg": "bg_adv_19081.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 101401,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100601,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "blackFrame"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100601,
+                        "motion": 400
+                    }
+                ],
+                "nameRight": "美冬",
+                "textRight": "音梦，快听我说啊！",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100601
+                    }
+                ],
+                "nameRight": "美冬",
+                "textRight": "刚才发生了@一件特别美好的事情哦"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101401,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "音梦",
+                "textLeft": "…是什么样的？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100601,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "美冬",
+                "textRight": "就像是欧·亨利的短篇小说@一样的温暖故事"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101401,
+                        "motion": 0
+                    }
+                ],
+                "nameLeft": "音梦",
+                "textLeft": "…那我就有些兴趣了"
+            },
+            {
+                "autoTurnLast": 2,
+                "bg": "bg_adv_13014.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110701,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110702,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "…我也有点想听听了啊",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "居然能让美冬她@这么兴奋的过来诉说"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 400
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "呼@我就知道你会有些兴趣"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "但这段『温暖人心』的故事@还是留到稍后再说吧"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "毕竟和现在的我们还无关呢"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 110701,
+                        "motion": 201
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "既然你想一直吊着我的话@那干脆一直别说就好啦！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 200
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "现在的重点不在这个@而是月咲接下来要采取的行动"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "…依照美冬所言@月咲她今天"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "应该会在这个商业街@购买到绒毛手套送给月夜"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110701,
+                        "motion": 1
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "日记上面写的也有手套"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "如果再按照@音梦你刚才说的发展"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 110701,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "那我们凭借不可思议的力量@跳跃了时空一说就板上钉钉了！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "你其实是这个意思对吧ー？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110702,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "你能理解是最好不过的了"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 110701
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 110702
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_13014.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101901,
+                        "motion": 100,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "月咲",
+                "textCenter": "…嗯@这样就购物完毕啦！"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 101901
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110701,
+                        "motion": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "好了，看来月咲她终于要@经过关键的店家前了呢"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "接下来会怎么发展呢？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "当她注意到减价的告示后@应该就会立马决定买下手套…"
+            },
+            {
+                "nameNarration": "",
+                "narration": "嗖…",
+                "narrationBg": "",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110701,
+                        "motion": 100
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameLeft": "灯花",
+                "narrationEffect": "out",
+                "textLeft": "…嗯？@有什么东西飞过来了？"
+            },
+            {
+                "nameNarration": "",
+                "narration": "import brand@正在4折优惠中！",
+                "narrationBg": "",
+                "narrationEffect": "in"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110702,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "nameRight": "音梦",
+                "narrationEffect": "out",
+                "textRight": "[chara:110702:effect_emotion_surprise_0][se:7226_shock]——嗯!?"
+            },
+            {
+                "bgm": "bgm03_story20",
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "这个是…@那家店里的告示？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110701,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "音梦！@月咲她在店前…"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 110701
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 110702
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_13014.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101901,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "月咲",
+                "textCenter": "…………"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 101901
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110702,
+                        "motion": 300,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110701,
+                        "motion": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "…毫不犹豫地走过去了呢"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "这到底是怎么一回事呢？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "我们所知的过去和实际的过去@产生了矛盾吗…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 110701,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "呼呼呼@那说不定是个大事件哦ー？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "如果产生了时间悖论"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "导致我们的存在@消失掉了又如何呢？"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 110701
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 110702
+                    }
+                ],
+                "flashEffect": "explosion",
+                "textClear": 1
+            },
+            {
+                "nameRight": "音梦的声音",
+                "textRight": "――哇!?@灯花她消失了？"
+            },
+            {
+                "nameLeft": "灯花的声音",
+                "textLeft": "音梦你也是哦ー！"
+            },
+            {
+                "nameRight": "音梦的声音",
+                "textRight": "这是…"
+            },
+            {
+                "nameCenter": "灯花和音梦的声音",
+                "textBg": "shout",
+                "textCenter": "时间悖论!?"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_13014.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 801200,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "…………？"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

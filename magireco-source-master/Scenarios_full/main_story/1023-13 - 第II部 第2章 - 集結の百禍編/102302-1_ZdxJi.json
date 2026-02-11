@@ -1,0 +1,144 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.2,
+                "bg": "black",
+                "item": [
+                    {
+                        "iPhoneXScale": 1,
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm20_song10",
+                "nameNarration": "かごめ",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 150,
+                "progressNarration": "[textBlack:ポンポン押してくスタンプラリー。]@[textBlack:笑顔の裏で、火花をパチパチ咲かせながら、]@[textBlack:魔法少女は秘密の争いを続けてるの。]",
+                "turnChangeOut": "fadeOut",
+                "voiceFullAuto": "fullvoice/section_102302/vo_full_102302-1-1"
+            },
+            {
+                "progressNarration": "[textBlack:花が消えた先に浮かぶのは、]@[textBlack:いつもと同じ自動浄化システム。]",
+                "voiceFullAuto": "fullvoice/section_102302/vo_full_102302-1-2"
+            },
+            {
+                "progressNarration": "[textBlack:マグマのようにドロドロに溶けそうな]@[textBlack:とても熱い時間の中で、]@[textBlack:咲いては消えてを何度も繰り返してる…。]",
+                "voiceFullAuto": "fullvoice/section_102302/vo_full_102302-1-2a"
+            },
+            {
+                "progressNarration": "[textBlack:一番燃えているのは紅晴さん。]@[textBlack:いろはさんたちが石の場所を見つけて、]@[textBlack:冷たい顔で沸々と血をたぎらせている…。]",
+                "voiceFullAuto": "fullvoice/section_102302/vo_full_102302-1-3"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_21073.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 102001,
+                        "motion": 0,
+                        "pos": 1,
+                        "soulGem": 0
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102001,
+                        "lipSynch": 0,
+                        "voiceFullAuto": "fullvoice/section_102302/vo_full_102302-1-4"
+                    }
+                ],
+                "nameCenter": "アルちゃん",
+                "textCenter": "＜いろはさんたちばかり@見てはいられないよ＞",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102001,
+                        "lipSynch": 1,
+                        "voiceFullAuto": "fullvoice/section_102302/vo_full_102302-1-5"
+                    }
+                ],
+                "nameCenter": "かごめ",
+                "textCenter": "うん、わかってるよ@アルちゃん"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 102001,
+                        "motion": 300,
+                        "voiceFullAuto": "fullvoice/section_102302/vo_full_102302-1-6"
+                    }
+                ],
+                "nameCenter": "かごめ",
+                "textCenter": "私は魔法少女について@纏めないといけないから"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 102001,
+                        "voiceFullAuto": "fullvoice/section_102302/vo_full_102302-1-7"
+                    }
+                ],
+                "nameCenter": "かごめ",
+                "textCenter": "誰かひとりだけを@見てられない…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102001,
+                        "lipSynch": 0,
+                        "voiceFullAuto": "fullvoice/section_102302/vo_full_102302-1-8"
+                    }
+                ],
+                "nameCenter": "アルちゃん",
+                "textCenter": "＜だから次は…＞"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 102001,
+                        "lipSynch": 1,
+                        "motion": 0,
+                        "voiceFullAuto": "fullvoice/section_102302/vo_full_102302-1-9"
+                    }
+                ],
+                "nameCenter": "かごめ",
+                "textCenter": "紅晴さんたちを@追いかけてみないといけないね…"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

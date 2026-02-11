@@ -1,0 +1,759 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_17102.jpg",
+                "bgm": "bgm03_story17",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101601,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "ef_adv_10"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101601,
+                        "motion": 400
+                    }
+                ],
+                "nameCenter": "十七夜",
+                "textCenter": "そこにいるのか…!?",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "promist"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101601
+                    }
+                ],
+                "textCenter": "誰が…誰がそこに…!?"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_05",
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "se": "7205_magic_girl",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101600,
+                        "motion": 200
+                    }
+                ],
+                "textCenter": "[flashEffect:flashWhite2]貴様…！"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 101600
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 101601,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800300,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "記憶の十七夜",
+                "textLeft": "名前は…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "nameNarration": "十七夜",
+                "narration": "「名前は…！」",
+                "narrationBg": "black",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut",
+                "turnChangeOutTime": 0.01
+            },
+            {
+                "autoTurnLast": 0.7,
+                "bg": "bg_adv_17091.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101600,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301500,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "whiteIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 101600,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "十七夜",
+                "surround": "7001_birdsong",
+                "textLeft": "[flashEffect:flashWhite2][chara:101600:effect_shake]…ぐっ！",
+                "turnChangeOut": "whiteOut",
+                "turnChangeOutTime": 0.2
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301500,
+                        "motion": 400,
+                        "mouthOpen": 1
+                    }
+                ],
+                "nameRight": "相野 みと",
+                "textRight": "[flashEffect:flashWhite2][chara:301500:effect_shake]ふわぁ！"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 301500
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101600
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "bgm": "bgm05_event07",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301301,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301401,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "伊吹 れいら",
+                "surround": "stop",
+                "textLeft": "え？",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301401
+                    }
+                ],
+                "nameRight": "桑水 せいか",
+                "textRight": "…これって…"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 301401
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 301301
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301500,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101600,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ]
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_05",
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301501,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "相野 みと",
+                "textRight": "[se:7205_magic_girl]…ま、魔法が解けちゃった…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301501,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "えー！どうしてどうして…!?"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_05",
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101601,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "se": "7205_magic_girl",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101601
+                    }
+                ],
+                "nameLeft": "十七夜",
+                "textLeft": "…自分にかけられた魔法と@反作用を起こしたのかもしれん…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 101601,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "すまん…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301301,
+                        "motion": 300,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "伊吹 れいら",
+                "textRight": "そんな…十七夜さんが@悪いわけじゃ…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 101601,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "いや、おそらく自分だ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101601
+                    }
+                ],
+                "textLeft": "…実は自分も魔法を使った…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301401,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "桑水 せいか",
+                "textRight": "か、十七夜さんも!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101601
+                    }
+                ],
+                "textLeft": "うむ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101601,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "その瞬間に@相野君の魔法が解けた…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301301,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "伊吹 れいら",
+                "textRight": "十七夜さんの魔法って…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 101601,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 101601,
+                        "lipSynch": 1,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "…自分の魔法は「読心」@人の心を読む"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301301,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "心を…読む!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301501,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "相野 みと",
+                "textRight": "ふぇ～！@…私とちょっと近い…!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301401,
+                        "lipSynch": 0,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "桑水 せいか",
+                "textRight": "（じゃ、じゃあ今までも…!?）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301401,
+                        "lipSynch": 0,
+                        "pos": 2
+                    }
+                ],
+                "textRight": "（やだ…！すごい恥ずかしい！）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101601,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "ただし、変身が必要な上@近くに寄らねばならない",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101601
+                    }
+                ],
+                "textLeft": "その辺は面倒でな"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101601,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "皆の心も勝手に読んだりは@していないから安心してくれ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301401,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301401,
+                        "lipSynch": 0,
+                        "motion": 300,
+                        "pos": 2
+                    }
+                ],
+                "textRight": "（…ほっ…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101601,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "ただ、言うのが遅かったな@咄嗟に思いついたことで…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101601
+                    }
+                ],
+                "textLeft": "悪かった…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301301,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "伊吹 れいら",
+                "textRight": "い、いえ！いいんです！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301501,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "相野 みと",
+                "textRight": "大丈夫だよ！なぎたん！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301501
+                    }
+                ],
+                "textRight": "なぎたんの心に触れて…@私、分かってるから！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101601,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "ありがとう…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301301,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "伊吹 れいら",
+                "textRight": "…ん？ということは…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301301,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "十七夜さん！@誰かの心を読んだんですか!?"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101601,
+                        "motion": 200
+                    }
+                ],
+                "surround": "7001_birdsong",
+                "textLeft": "ああ…"
+            },
+            {
+                "bgm": "bgm05_event08",
+                "chara": [
+                    {
+                        "id": 101601
+                    }
+                ],
+                "surround": "stop",
+                "textLeft": "記憶の中の…自分の心をな"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301301,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "記憶の中の十七夜さんの心を…"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 301301
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101601
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301401,
+                        "motion": 1,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301501,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "桑水 せいか",
+                "textLeft": "十七夜さんが読んだ…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301501,
+                        "motion": 300
+                    }
+                ],
+                "nameRight": "相野 みと",
+                "textRight": "…複雑～！"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 301501
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 301401
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301301,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101601,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "伊吹 れいら",
+                "textRight": "…何か分かりましたか…？"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 101601,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "十七夜",
+                "textLeft": "うむ…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 101601
+                    }
+                ],
+                "textLeft": "文字にして６つだけ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301401,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "桑水 せいか",
+                "textRight": "そ、それは…？"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 101601,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "nameNarration": "十七夜",
+                "narration": "「“[textRed:サラサハンナ]”と…」",
+                "narrationBg": "black",
+                "narrationEffect": "in"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

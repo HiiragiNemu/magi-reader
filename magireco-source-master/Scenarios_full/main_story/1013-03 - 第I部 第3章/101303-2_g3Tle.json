@@ -1,0 +1,310 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100102,
+                        "motion": 0,
+                        "mouthOpen": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bg": "bg_adv_12021.jpg",
+                "bgm": "bgm03_story02",
+                "chara": [
+                    {
+                        "id": 100102,
+                        "lipSynch": 0,
+                        "voiceFull": "fullvoice/section_101303/vo_full_101303-2-1"
+                    }
+                ],
+                "nameCenter": "いろは",
+                "textCenter": "（ここがスタート地点…？）",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 100102,
+                        "lipSynch": 1,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101303/vo_full_101303-2-2",
+                        "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-1"
+                    }
+                ],
+                "textCenter": "あっ…説明が書いてある…@あと…スタンプ台…？"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-2"
+            },
+            {
+                "bg": "white",
+                "nameNarration": "",
+                "narration": "黄泉まで繋がる強い絆@水名区きってのパワースポットを探そう",
+                "narrationBg": "narration",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut",
+                "voiceFull": "fullvoice/section_101303/vo_full_101303-2-3"
+            },
+            {
+                "narration": "悲恋の男女の足跡を辿ってスタンプを集めると@たどり着くのはなんと@ふたりを結んだ“縁結びスポット”",
+                "voiceFull": "fullvoice/section_101303/vo_full_101303-2-4",
+                "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-3"
+            },
+            {
+                "narration": "永遠を誓い合いたい方々や@仲間との絆を確かめたい方々は@一度、探してみてはいかがでしょうか",
+                "voiceFull": "fullvoice/section_101303/vo_full_101303-2-5",
+                "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-4"
+            },
+            {
+                "narration": "主催：水名区町おこし委員会",
+                "voiceFull": "fullvoice/section_101303/vo_full_101303-2-6",
+                "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-5"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100102,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "mouthOpen": 0,
+                        "pos": 0
+                    },
+                    {
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 810100,
+                        "motion": 0,
+                        "pos": 2,
+                        "posX": 40,
+                        "posY": 0
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "thinking",
+                "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-1"
+            },
+            {
+                "bg": "bg_adv_12021.jpg",
+                "chara": [
+                    {
+                        "id": 100102,
+                        "lipSynch": 0,
+                        "voiceFull": "fullvoice/section_101303/vo_full_101303-2-7"
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "（鶴乃ちゃん…）",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 100102,
+                        "lipSynch": 0,
+                        "motion": 301,
+                        "mouthOpen": 0,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_101303/vo_full_101303-2-8",
+                        "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-7"
+                    }
+                ],
+                "textLeft": "[chara:100102:effect_emotion_sad_0][se:7224_fall_into]（ただの町おこしだよ…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100102,
+                        "lipSynch": 1,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101303/vo_full_101303-2-9",
+                        "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-8"
+                    }
+                ],
+                "textLeft": "どうしようかな…",
+                "turnEffect": "stop"
+            },
+            {
+                "select": [
+                    {
+                        "group": "group_2",
+                        "textSelect": "モギュゥゥゥ！@（やらなくてもいいよ）"
+                    },
+                    {
+                        "group": "group_3",
+                        "textSelect": "モッキュー！@（せっかくだからやってみよう）"
+                    }
+                ],
+                "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-9"
+            }
+        ],
+        "group_2": [
+            {
+                "chara": [
+                    {
+                        "id": 810100,
+                        "motion": 100
+                    },
+                    {
+                        "id": 100102,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "userName",
+                "textRight": "モギュゥゥゥ！",
+                "voice": "vo_kyube_0001_02"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "voice": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 100102,
+                        "motion": 200,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101303/vo_full_101303-2-11"
+                    }
+                ],
+                "textLeft": "でも、何が噂に繋がるか@分からないし…"
+            },
+            {
+                "changeGroup": "group_4",
+                "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-11"
+            }
+        ],
+        "group_3": [
+            {
+                "chara": [
+                    {
+                        "id": 810100,
+                        "motion": 100
+                    },
+                    {
+                        "id": 100102,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "userName",
+                "textRight": "モッキュー！",
+                "voice": "vo_kyube_0001_04"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "voice": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100102,
+                        "motion": 200,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101303/vo_full_101303-2-13"
+                    }
+                ],
+                "textLeft": "うん、ここで止めちゃダメ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100102,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101303/vo_full_101303-2-14",
+                        "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-13"
+                    }
+                ],
+                "textLeft": "何が噂に繋がるかなんて@わからないもん"
+            },
+            {
+                "changeGroup": "group_4",
+                "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-14"
+            }
+        ],
+        "group_4": [
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100102,
+                        "motion": 400,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101303/vo_full_101303-2-15"
+                    }
+                ],
+                "textLeft": "やってみよう…スタンプラリー…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 100102,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101303/vo_full_101303-2-16",
+                        "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-15"
+                    }
+                ],
+                "textLeft": "（引き裂かれたふたりの男女…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 100102,
+                        "lipSynch": 0,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101303/vo_full_101303-2-17",
+                        "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-16"
+                    }
+                ],
+                "textLeft": "（会いたい人に会えた昔話…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100102,
+                        "lipSynch": 0,
+                        "motion": 200,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101303/vo_full_101303-2-18",
+                        "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-17"
+                    }
+                ],
+                "textLeft": "（もしかしたら、口寄せ神社に@繋がるかもしれないもんね…）"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101303/vo_full_101303-2-18"
+            }
+        ]
+    },
+    "version": 3
+}

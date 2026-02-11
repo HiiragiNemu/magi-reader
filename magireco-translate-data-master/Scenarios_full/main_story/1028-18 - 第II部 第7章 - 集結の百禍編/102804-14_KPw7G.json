@@ -1,0 +1,912 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.2,
+                "bg": "bg_adv_21251.jpg",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm21_system03",
+                "nameNarration": "结菜",
+                "narration": "啊啊…@不只是身体的自由被夺取@连眼睛都要看不见了…",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "blackPromist",
+                "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-1"
+            },
+            {
+                "narration": "正是因为是来路不明的存在@我才丝毫没有对[textYellow:心魔]放松警惕@但我正身处的状况才是现实吧…",
+                "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-2"
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter7/102804_kimochi_garnet.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narration": "完全被摆了一道…@别说夺回大家流下的鲜血了@连最后的一滴都要被榨取殆尽…",
+                "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-3"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "narrationEffect": "out"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.4,
+                                "posY": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/adv_roll_fade.png",
+                        "posX": 0,
+                        "posY": 3000,
+                        "scale": 6,
+                        "setVisible": 1,
+                        "zOrder": "messageFront"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter7/102804_kimochi_garnet.png",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.4,
+                                "posY": -3000
+                            }
+                        },
+                        "path": "resource/scenario/img/adv_roll_fade.png"
+                    }
+                ]
+            },
+            {
+                "nameNarration": "结菜",
+                "narration": "明明大家都将生死置之度外@朔夜也直到最后都在赌上性命战斗@我是多么地不像样啊…",
+                "narrationEffect": "in",
+                "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-4"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_51011.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp3.json",
+                        "id": 102100,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp3.json",
+                        "id": 302100,
+                        "motion": 0,
+                        "pos": 2,
+                        "tear": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302100,
+                        "motion": 300,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-5"
+                    }
+                ],
+                "nameRight": "铃鹿 朔夜",
+                "textRight": "不管是多么可恨的人…",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "blackFrame"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302100,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-6"
+                    }
+                ],
+                "nameRight": "铃鹿 朔夜",
+                "textRight": "如果甚至不惜@对知道了为人的对象动手…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 302100,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-7"
+                    }
+                ],
+                "nameRight": "铃鹿 朔夜",
+                "textRight": "结菜就会变得…@不管是谁都能够杀掉了…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_032.exp3.json",
+                        "id": 102100,
+                        "lipSynch": 0,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-8"
+                    }
+                ],
+                "nameLeft": "结菜",
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 302100,
+                        "motion": 0,
+                        "tear": 0,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-9"
+                    }
+                ],
+                "nameRight": "铃鹿 朔夜",
+                "textRight": "就像…过去的结菜一样…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_020.exp3.json",
+                        "id": 302100,
+                        "pos": 2,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-10"
+                    }
+                ],
+                "nameRight": "铃鹿 朔夜",
+                "textRight": "我不希望现在的结菜…@跨过这条红线…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302100,
+                        "motion": 100,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-11"
+                    }
+                ],
+                "nameRight": "铃鹿 朔夜",
+                "textRight": "拜托了，结菜…@不要连内心都变成恶鬼啊…！"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "black",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_031.exp3.json",
+                        "id": 102100,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102100,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-12"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "是吗…在我的心中@制造了破绽的，是朔夜…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102100,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-13"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "如果她至死@都在阻止我的行动"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_032.exp3.json",
+                        "id": 102100,
+                        "motion": 200,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-14"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "我也该回报那份遗志@从头再来吧…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.4,
+                                "posY": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/adv_roll_fade.png",
+                        "posX": 0,
+                        "posY": -3000,
+                        "scale": 6,
+                        "setVisible": 1,
+                        "zOrder": "messageFront"
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp3.json",
+                        "id": 102100,
+                        "motion": 0
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21251.jpg",
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.4,
+                                "posY": 3000
+                            }
+                        },
+                        "path": "resource/scenario/img/adv_roll_fade.png"
+                    }
+                ],
+                "turnEffect": "blackPromist"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "id": 102100,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-15"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "那么，我就还…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp3.json",
+                        "id": 102100,
+                        "lipSynch": 1,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-16"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "――!?"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 102100
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_21251.jpg",
+                "bgChangeEffect": "cameraPan",
+                "bgm": "bgm03_story17"
+            },
+            {
+                "autoTurnLast": 2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter3/102403_kimochi_opal.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter3/102403_kimochi_opal.png",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_21251.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "autoTurnLast": 2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter3/102402_kimochi_pearl.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter3/102402_kimochi_pearl.png",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_21251.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "autoTurnLast": 2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter1/102203_kimochi_aquamarine.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter1/102203_kimochi_aquamarine.png",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_21251.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "autoTurnLast": 2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter7/102804_kimochi_garnet.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter7/102804_kimochi_garnet.png",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_060.exp3.json",
+                        "id": 102100,
+                        "motion": 300,
+                        "pos": 1,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-17"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "咕…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102100,
+                        "voiceFull": "fullvoice/section_102804/vo_full_102804-14-18"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "明明抵抗侵蚀就已经用尽全力了@这样就完全没法甩开它们…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_032.exp3.json",
+                        "id": 102100,
+                        "lipSynch": 0,
+                        "voiceFullStop": "fullvoice/section_102804/vo_full_102804-14-18"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "…………[wait:1.0][chara:102100:voiceFull_fullvoice/section_102804/vo_full_102804-14-19][chara:102100:eyeClose_1][chara:102100:lipSynch_1]是吗"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102100,
+                        "motion": 0,
+                        "tear": 1,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-20",
+                        "voiceFullStop": "fullvoice/section_102804/vo_full_102804-14-19"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "要支配你们，从最开始@就是不可能的条件吗…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102100,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-21"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "支配感什么的都是假象@我一直都在你们的手掌心里…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102100,
+                        "motion": 200,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-22"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "我守护不了任何人…@也拯救不了任何人…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102100,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-23"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "不管是夺回失去的东西@还是报仇雪恨，我什么都做不成…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_031.exp3.json",
+                        "id": 102100,
+                        "tear": 1,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-24"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "…前辈"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 102100,
+                        "motion": 300,
+                        "tear": 1,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-25"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "是因为我放弃了前辈的教诲@才变得无法守护任何东西了吗…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102100,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-26"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "都是因为这样，@一切都脱离了正轨…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_20522.jpg",
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_031.exp3.json",
+                        "id": 102102,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "sepiaFrame"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102102,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-27"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "请等等我@我马上去找悲叹之种…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "nameNarration": "",
+                "narration": "「不要走，结菜…@亲眼见证我的结局吧…」",
+                "narrationEffect": "in",
+                "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-28"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "narrationEffect": "out"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102102,
+                        "motion": 400,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-29"
+                    }
+                ],
+                "textCenter": "恕我不能从命…！"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 102102,
+                        "motion": 200,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-30"
+                    }
+                ],
+                "textCenter": "我要从你身上学习的东西@仍然像山一样多…"
+            },
+            {
+                "nameNarration": "",
+                "narration": "「没关系的…我们这半年足够浓厚了…@到了能活在你心中的程度…」",
+                "narrationEffect": "in",
+                "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-31"
+            },
+            {
+                "narration": "「回想起来吧…@我会在必要的时候回应你的…@确确实实在你心中回应…的…」",
+                "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-32"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_21251.jpg",
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_021.exp3.json",
+                        "id": 102100,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 102100,
+                        "lipSynch": 1,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-33"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "唔！",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "blackPromist"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102100,
+                        "lipSynch": 1,
+                        "motion": 200,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-34"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "我不会把身体交给你们的!!"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102100,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-35"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "快从视野开始@把五感一个一个还给我！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 102100,
+                        "motion": 400,
+                        "mouthOpen": 0,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-36"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textBg": "shout",
+                "textCenter": "[flashEffect:flashWhite2]啊啊啊啊啊啊啊啊啊啊!!"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_20463.jpg",
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "effect": "kimochiaura",
+                        "face": "mtn_ex_030.exp3.json",
+                        "id": 102104,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "autoTurnLast": 4,
+                "chara": [
+                    {
+                        "id": 102104,
+                        "lipSynch": 0,
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_102804/vo_full_102804-14-37"
+                    }
+                ],
+                "enableSkipAutoTurn": 1,
+                "nameCenter": "结菜",
+                "textCenter": "（哈…哈…啊…）",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_052.exp3.json",
+                        "id": 102104,
+                        "motion": 0
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 102104,
+                        "voiceFullStop": "fullvoice/section_102804/vo_full_102804-14-37"
+                    }
+                ],
+                "enableSkipAutoTurn": 0,
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_20463.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "autoTurnLast": 2.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp3.json",
+                        "id": 102400,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp3.json",
+                        "id": 304400,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 102400
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 304400
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 2.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp3.json",
+                        "id": 102300,
+                        "motion": 300,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp3.json",
+                        "id": 102200,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 102200
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 102300
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 2.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp3.json",
+                        "id": 770000,
+                        "motion": 300,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp3.json",
+                        "id": 770001,
+                        "motion": 0,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp3.json",
+                        "id": 770100,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.3,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 770000
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 770001
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 770100
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "effect": "kimochiaura",
+                        "face": "mtn_ex_052.exp3.json",
+                        "id": 102104,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-38"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "（这些…全都是…我…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_031.exp3.json",
+                        "id": 102104,
+                        "lipSynch": 0,
+                        "motion": 300,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-39"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "（唔，前辈…请您告诉我…@我要怎么办…）"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 102104,
+                        "lipSynch": 0,
+                        "voiceFullAuto": "fullvoice/section_102804/vo_full_102804-14-40"
+                    }
+                ],
+                "nameCenter": "结菜",
+                "textCenter": "（前辈…！）"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 102104
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

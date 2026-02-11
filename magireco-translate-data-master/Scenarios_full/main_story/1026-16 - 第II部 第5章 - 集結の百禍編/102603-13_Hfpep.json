@@ -1,0 +1,298 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_17221.jpg",
+                "bgm": "bgm23_promised06",
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_060.exp3.json",
+                        "id": 100300,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp3.json",
+                        "id": 102400,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "id": 100300,
+                        "voiceFull": "fullvoice/section_102603/vo_full_102603-13-1"
+                    }
+                ],
+                "nameRight": "鹤乃",
+                "textRight": "给、我、让开…!!",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.8,
+                "chara": [
+                    {
+                        "effect": "7001_attack02",
+                        "id": 102400
+                    },
+                    {
+                        "id": 100300,
+                        "motion": 200
+                    }
+                ],
+                "se": "8000_flame_01_s"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_060.exp3.json",
+                        "id": 102400,
+                        "motion": 300,
+                        "pos": 0,
+                        "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-2",
+                        "voiceFullStop": "fullvoice/section_102603/vo_full_102603-13-1"
+                    },
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_020.exp3.json",
+                        "id": 100300
+                    }
+                ],
+                "nameLeft": "树里",
+                "textLeft": "[chara:102400:effect_7003_damage02][se:8001_flame_01_v][bgEffect:shakeSmall]切…你的魔力…@不是几乎已经要见底了…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp3.json",
+                        "id": 102400,
+                        "motion": 100,
+                        "pos": 0,
+                        "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-3"
+                    }
+                ],
+                "nameLeft": "树里",
+                "textLeft": "吗！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_060.exp3.json",
+                        "id": 100300
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "[flashEffect:flashRed2][se:3001_chara_damage][bgEffect:shakeLarge][chara:100300:effect_shake]轰隆…",
+                "narrationBg": "",
+                "narrationEffect": "in"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "narrationEffect": "out"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_030.exp3.json",
+                        "id": 100300,
+                        "motion": 300,
+                        "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-5"
+                    }
+                ],
+                "nameRight": "鹤乃",
+                "textRight": "咕…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100300
+                    }
+                ],
+                "se": "3002_chara_dead",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter5/102603_double_fire.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "树里",
+                "narration": "―树里―@呼…呼…被武器直接打中…@也对你造成了不小伤害吧…",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 10,
+                "narrationLineSpace": 20,
+                "turnChangeOut": "fadeOut",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-6"
+            },
+            {
+                "nameNarration": "鹤乃",
+                "narration": "―鹤乃―@你看上去才是，吃不消…了吧…",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-7"
+            },
+            {
+                "nameNarration": "树里",
+                "narration": "―树里―@嘿嘿，明明只要再来上一发@你就差不多该归西了…",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-8"
+            },
+            {
+                "nameNarration": "鹤乃",
+                "narration": "―鹤乃―@如果你还想打…@呼，我也还能继续…",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-9"
+            },
+            {
+                "narration": "―鹤乃―@毕竟，我还保留着@足以和魔女一战的力气…",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-10"
+            },
+            {
+                "nameNarration": "树里",
+                "narration": "―树里―@那是彼此彼此吧…@因为，树里大人也还保存着实力呢…",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-11"
+            },
+            {
+                "nameNarration": "鹤乃",
+                "narration": "―鹤乃―@那就一直保存下去吧…@因为，我要走了…",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-12"
+            },
+            {
+                "autoTurnLast": 2,
+                "flashEffect": "flashWhiteSlow2",
+                "narrationEffect": "out",
+                "textClear": 1
+            },
+            {
+                "nameNarration": "鹤乃",
+                "narration": "―鹤乃―@——!?",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 35,
+                "narrationLineSpace": 20,
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-13"
+            },
+            {
+                "nameNarration": "树里",
+                "narration": "―树里―@现在正是用掉剩下的魔力的时候…@我要从这里…让整个地下崩塌掉！",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-14"
+            },
+            {
+                "nameNarration": "鹤乃",
+                "narration": "―鹤乃―@等等，骗人的吧…@你是打算主动断掉自己的近路吗…!?",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-15"
+            },
+            {
+                "nameNarration": "树里",
+                "narration": "―树里―@如果这样就能让你们这群神滨的家伙@全部消失的话，那是当然了…！",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-16"
+            },
+            {
+                "nameNarration": "鹤乃",
+                "narration": "―鹤乃―@…………@…………",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-17"
+            },
+            {
+                "narration": "―鹤乃―@…………",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-18"
+            },
+            {
+                "narration": "―鹤乃―@…是这样吗，通往近路的路线@不只有一条啊",
+                "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-19"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter5/102603_double_fire.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "[se:7108_arrivals]沙…沙…沙…",
+                "narrationBg": "black",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_17221.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp3.json",
+                        "id": 100900,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_031.exp3.json",
+                        "id": 101100,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101100,
+                        "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-23"
+                    }
+                ],
+                "nameRight": "枫",
+                "textRight": "小、小玲…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100900,
+                        "motion": 400,
+                        "voiceFullAuto": "fullvoice/section_102603/vo_full_102603-13-24"
+                    }
+                ],
+                "nameLeft": "玲奈",
+                "textLeft": "人数、居然又增加了…？"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

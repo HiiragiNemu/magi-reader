@@ -1,0 +1,604 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "bg": "black",
+                "bgm": "bgm03_story12",
+                "nameNarration": "灯花",
+                "narration": "そのとき@Ｃさんは立ち上がると@ひとりで魔女に突撃していきました",
+                "narrationAnchor": "bottom",
+                "narrationBg": "narration",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 10,
+                "narrationLineSpace": 20,
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut",
+                "voiceFull": "fullvoice/section_101604/vo_full_101604-5-1"
+            },
+            {
+                "narration": "おかげで魔女は致命傷を負い@最後はＡさんによって@仕留めることができました",
+                "voiceFull": "fullvoice/section_101604/vo_full_101604-5-2",
+                "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-1"
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/chapter6/101603_lecture03.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narration": "でも、Ｃさんは死んでしまいました@体は無傷でどこにもケガはないのに",
+                "voiceFull": "fullvoice/section_101604/vo_full_101604-5-3",
+                "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-2"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "bg_adv_11093.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 304900,
+                        "motion": 400,
+                        "pos": 1
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/chapter6/101603_lecture03.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-3"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304900,
+                        "lipSynch": 0,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-4"
+                    }
+                ],
+                "nameCenter": "かなえ",
+                "textCenter": "…………",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100200,
+                        "motion": 0,
+                        "pos": 1,
+                        "tear": 1,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-5",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-1"
+                    }
+                ],
+                "nameCenter": "やちよ",
+                "textCenter": "かなえ！かなえ！@どうして、傷なんてないのに…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100200,
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-6",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-5"
+                    }
+                ],
+                "textCenter": "お願い、目を開けて！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100200,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-7",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-6"
+                    }
+                ],
+                "textCenter": "あなた、せっかく自分で夢を@見つけたんでしょ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100200,
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-8",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-7"
+                    }
+                ],
+                "textCenter": "見つけただけで十分だなんて@勝手に投げ捨てないでよ"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "id": 100200,
+                        "pos": 0,
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-8"
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100600,
+                        "motion": 0,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-9"
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "nameRight": "みふゆ",
+                "textRight": "やっちゃん…これ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-10",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-9"
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "みふゆさんこれって…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100600,
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-11",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-10"
+                    }
+                ],
+                "textRight": "かなえさんの@ソウルジェムです…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 100600,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-12",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-11"
+                    }
+                ],
+                "textRight": "きっと、さっき突撃したときに@魔女に砕かれたんです…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100100,
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-13",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-12"
+                    }
+                ],
+                "textLeft": "貸してください！"
+            },
+            {
+                "autoTurnLast": 2,
+                "flashEffect": "flashWhiteSlow2",
+                "se": "7210_souljem_01",
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-13"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "lipSynch": 0,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-14"
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-15",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-14"
+                    }
+                ],
+                "textLeft": "だめ、グリーフシード…@使ってるのに戻らない…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100200,
+                        "motion": 0,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-16",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-15"
+                    }
+                ],
+                "nameRight": "やちよ",
+                "textRight": "みふゆ、環さん…@これはどういうことなの…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "id": 100200,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-17",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-16"
+                    }
+                ],
+                "textRight": "体に傷がないのに…@目を覚まさない…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "id": 100200,
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-18",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-17"
+                    }
+                ],
+                "textRight": "砕けたソウルジェム…@これってつまり…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-19",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-18"
+                    }
+                ],
+                "textLeft": "そんなことって…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/chapter6/101603_lecture04.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-19"
+            },
+            {
+                "bg": "black",
+                "nameNarration": "灯花",
+                "narration": "体にケガがないＣさんの側には@彼女の砕けたソウルジェムが落ちていました",
+                "narrationAnchor": "bottom",
+                "narrationBg": "narration",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 35,
+                "narrationLineSpace": 20,
+                "turnChangeOut": "fadeOut",
+                "voiceFull": "fullvoice/section_101604/vo_full_101604-5-20"
+            },
+            {
+                "narration": "そのときＡさんとＢさんは気付いたのです@ソウルジェムは名前の通り@自分たちの命そのものなのだと",
+                "voiceFull": "fullvoice/section_101604/vo_full_101604-5-21",
+                "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-20"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21263.jpg",
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "motion": 300,
+                        "pos": 0,
+                        "tear": 1
+                    },
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100601,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/chapter6/101603_lecture04.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-21"
+            },
+            {
+                "bg": "bg_adv_21203.jpg",
+                "chara": [
+                    {
+                        "id": 100101,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-22"
+                    }
+                ],
+                "nameLeft": "いろは",
+                "nameRight": "みふゆ",
+                "textLeft": "ぐすっ…うぅ…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100601,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-23",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-22"
+                    }
+                ],
+                "textRight": "いろはさん…@ワタシたちは魔法少女です…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 100601,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-24",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-23"
+                    }
+                ],
+                "textRight": "遅かれ早かれ@死ぬ運命にあります…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100101,
+                        "motion": 400,
+                        "tear": 1,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-25",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-24"
+                    }
+                ],
+                "textLeft": "そんな納得の仕方って…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100601,
+                        "motion": 400,
+                        "tear": 1,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-26",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-25"
+                    }
+                ],
+                "textBg": "shout",
+                "textRight": "ワタシだって@遣り切れないですよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-27",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-26"
+                    }
+                ],
+                "textLeft": "――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-28",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-27"
+                    }
+                ],
+                "textLeft": "ごめんなさい…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-29",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-28"
+                    }
+                ],
+                "nameRight": "やちよ",
+                "textRight": "だから、せめて…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-30",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-29"
+                    }
+                ],
+                "textRight": "割り切れず、遣り切れない分は@私たちの中で生かさないと…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-31",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-30"
+                    }
+                ],
+                "textRight": "かなえが教えてくれたことを…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-32",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-31"
+                    }
+                ],
+                "textLeft": "ソウルジェムのこと…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100601,
+                        "motion": 1,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-33",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-32"
+                    }
+                ],
+                "nameRight": "みふゆ",
+                "textRight": "そうですね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "motion": 301,
+                        "tear": 1,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-34",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-33"
+                    }
+                ],
+                "textLeft": "…ぐすっ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-35",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-34"
+                    }
+                ],
+                "nameRight": "やちよ",
+                "textRight": "余ってしまったわね@マグカップ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 301,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-36",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-35"
+                    }
+                ],
+                "textRight": "安心してかなえ…@私はあなたを殺さない…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "voiceFull": "fullvoice/section_101604/vo_full_101604-5-37",
+                        "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-36"
+                    }
+                ],
+                "textRight": "ずっと私が生きてる限り…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/chapter6/101604_mug01.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101604/vo_full_101604-5-37"
+            },
+            {
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/chapter6/101604_mug02.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/chapter6/101604_mug01.jpg",
+                        "visible": "hide"
+                    },
+                    {
+                        "path": "resource/scenario/img/chapter6/101604_mug02.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

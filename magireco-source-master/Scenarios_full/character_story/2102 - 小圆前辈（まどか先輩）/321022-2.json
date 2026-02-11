@@ -1,0 +1,723 @@
+{
+    "skipTransitionList": [],
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "bgm": "bgm03_story16",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_0a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 5,
+                        "setVisible": 1
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "円環無限軌道@まどキャノン",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationFontSize": 0,
+                "narrationLineSpace": 2000,
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "sequence": [
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.5,
+                                        "scale": 0.1
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.5,
+                                        "scale": 1.5
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": -300,
+                                        "posY": -300
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": 300,
+                                        "posY": 300
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": -300,
+                                        "posY": -300
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": 300,
+                                        "posY": 300
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": -300,
+                                        "posY": -300
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": 300,
+                                        "posY": 300
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": -300,
+                                        "posY": -300
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": 300,
+                                        "posY": 300
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.01,
+                                        "posX": 0,
+                                        "posY": 0
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_0a.jpg"
+                    }
+                ],
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "se": "5019_shooting_12_h"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_1a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_0a.jpg",
+                        "setVisible": 0
+                    }
+                ]
+            },
+            {
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": -500,
+                                        "posY": 50
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.2,
+                                        "scale": 2.2
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_1a.jpg"
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "最大の火力を持つキャノン砲に加え@ミサイル、レーダーを装備し@長時間の作戦行動では膝にも爆弾を抱える@重装備形態",
+                "narrationLineSpace": 2000
+            },
+            {
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": -720,
+                                        "posY": 380
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.2,
+                                        "scale": 2.6
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_1a.jpg"
+                    }
+                ],
+                "nameNarration": "まどか先輩",
+                "narration": "拠点間を素早く移動する@まどキャノン　ランニングフォーム",
+                "narrationLineSpace": 2000
+            },
+            {
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.2,
+                                        "scale": 2.2
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": 150,
+                                        "posY": 320
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_1a.jpg"
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "気分がいい時は鼻歌を歌う@@本体重量はひかえめ",
+                "narrationLineSpace": 2000
+            },
+            {
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": 800,
+                                        "posY": 280
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.2,
+                                        "scale": 2.3
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_1a.jpg"
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "キュゥべえ「契約」@まどか先輩「軽薄」",
+                "narrationLineSpace": 2000
+            },
+            {
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": 800,
+                                        "posY": 100
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.2,
+                                        "scale": 2.8
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_1a.jpg"
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "煙幕@@戦闘中は耳栓をしている",
+                "narrationLineSpace": 2000
+            },
+            {
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": 1000,
+                                        "posY": -450
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.2,
+                                        "scale": 2.8
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_1a.jpg"
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "鹿目 知久@専業主夫",
+                "narrationLineSpace": 2000
+            },
+            {
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": 400,
+                                        "posY": -500
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.2,
+                                        "scale": 2.5
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_1a.jpg"
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "砲撃時には@自前の双眼鏡で照準合わせる",
+                "narrationLineSpace": 2000
+            },
+            {
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0,
+                                        "posX": 0,
+                                        "posY": 0
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0,
+                                        "scale": 1
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_1a.jpg"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_2b.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 4,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_1a.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "item": [
+                    {
+                        "action": {
+                            "sequence": [
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.5,
+                                        "scale": 1
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_2b.jpg"
+                    }
+                ],
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_2a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_2b.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "まどか先輩",
+                "narration": "まどキャノンは@キャンサーよりも@多くの相手を一度に攻撃できる@強力なわたしだよ",
+                "narrationLineSpace": 2000
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 900
+                            }
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_2a.jpg"
+                    },
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_3b.jpg",
+                        "posX": 0,
+                        "posY": -900,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ]
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_3c1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_2a.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "まどか先輩",
+                "narration": "それも直接に刃を@振るうことなく@発射ボタンを押すだけで",
+                "narrationLineSpace": 2000
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_3a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_3b.jpg",
+                        "setVisible": 0
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_3c1.png",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "まどか先輩",
+                "narration": "こうして人は相手を@傷つけることに@鈍感になっていくんだね",
+                "narrationLineSpace": 2000
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 900
+                            }
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_3a.jpg"
+                    },
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_4b.jpg",
+                        "posX": 0,
+                        "posY": -900,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "sequence": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": 100,
+                                        "posY": 100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": -100,
+                                        "posY": -100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": 100,
+                                        "posY": 100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": -100,
+                                        "posY": -100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": 100,
+                                        "posY": 100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": -100,
+                                        "posY": -100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.01,
+                                        "posX": 0,
+                                        "posY": 0
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_4b.jpg"
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_3a.jpg",
+                        "setVisible": 0
+                    }
+                ]
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_4c1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_2a.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "ほむら",
+                "narration": "鹿目さんは@変わらないままでいて",
+                "narrationLineSpace": 2000
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_4c2.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_4b.jpg"
+                    }
+                ],
+                "nameNarration": "ほむら",
+                "narration": "戦うことが@罪なら私が背負います",
+                "narrationLineSpace": 2000
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_4a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_4b.jpg",
+                        "setVisible": 0
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_4c1.png",
+                        "setVisible": 0
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_4c2.png",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "まどか先輩",
+                "narration": "ほむらちゃん…",
+                "narrationLineSpace": 2000
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 900
+                            }
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_4a.jpg"
+                    },
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_5b.jpg",
+                        "posX": 0,
+                        "posY": -900,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_5b.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_4a.jpg",
+                        "setVisible": 0
+                    }
+                ]
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_5c1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ],
+                "nameNarration": "まどか先輩",
+                "narration": "一緒に行こう",
+                "narrationLineSpace": 2000
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_5a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_5c1.png",
+                        "setVisible": 0
+                    },
+                    {
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_5b.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "ほむランチャー",
+                "narrationLineSpace": 2000
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.3,
+                                "posX": -900,
+                                "posY": 900
+                            }
+                        },
+                        "path": "resource/scenario/img/32102_madokasenpai_story/32102_m2_5a.jpg"
+                    }
+                ],
+                "se": "4061_landing_jump5"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

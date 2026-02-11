@@ -1,0 +1,499 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21141.jpg",
+                "bgm": "bgm03_story02",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 120100,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 120100
+                    }
+                ],
+                "nameCenter": "いろはちゃん",
+                "textCenter": "あっどうも、@いつもお世話になっています",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 120100,
+                        "motion": 200
+                    }
+                ],
+                "textCenter": "マギレポのいろはこと私です"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 120100,
+                        "motion": 1
+                    }
+                ],
+                "textCenter": "魔法少女ストーリーって"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 120100
+                    }
+                ],
+                "textCenter": "自分が魔法少女になった@きっかけを"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 120100
+                    }
+                ],
+                "textCenter": "話す方が多いみたいですね"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 120100,
+                        "motion": 100
+                    }
+                ],
+                "textCenter": "私が魔法少女になったのは…"
+            },
+            {
+                "textCenter": "マギレコ宣伝漫画の@マギア☆レポートが始まった時"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 120100,
+                        "motion": 401
+                    }
+                ],
+                "textCenter": "…でいいのかな？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 120100,
+                        "motion": 201
+                    }
+                ],
+                "textCenter": "あれは、2017年の3月でした…"
+            },
+            {
+                "autoTurnLast": 2,
+                "bg": "black",
+                "bgm": "stop",
+                "item": [
+                    {
+                        "action": {
+                            "fadeTo": {
+                                "duration": 0,
+                                "opacity": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_1b.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgm": "bgm01_anime07",
+                "item": [
+                    {
+                        "action": {
+                            "fadeTo": {
+                                "duration": 0.5,
+                                "opacity": 255
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_1b.jpg",
+                        "setVisible": 1
+                    }
+                ],
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_1a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_1b.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "いろはちゃん",
+                "narration": "マギアレコードのリリース予定時期だった春になり@私は主人公として恥ずかしくなく振る舞えるよう@まどか先輩のもとで勉強を始めたんです",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationFontSize": 0,
+                "narrationLineSpace": 2000
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 900
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_1a.jpg"
+                    },
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_2b.jpg",
+                        "posX": 0,
+                        "posY": -900,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_2c1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_1a.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "いろはちゃん",
+                "narration": "その後マギレコのリリースは延期され…"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "item": [
+                    {
+                        "action": {
+                            "sequence": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.1,
+                                        "posX": 10,
+                                        "posY": -10
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.1,
+                                        "posX": -10,
+                                        "posY": 10
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": 0,
+                                        "posY": 0
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_2b.jpg"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "sequence": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": 50,
+                                        "posY": -50
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": -50,
+                                        "posY": 50
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": 0,
+                                        "posY": 0
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_2b.jpg"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "sequence": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": 5,
+                                        "posY": -5
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": -5,
+                                        "posY": 5
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": 0,
+                                        "posY": 0
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_2b.jpg"
+                    }
+                ]
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_2a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_2c1.png",
+                        "setVisible": 0
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_2b.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "いろはちゃん",
+                "narration": "梅雨明けまでが春でーす"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 900
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_2a.jpg"
+                    },
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_3b.jpg",
+                        "posX": 0,
+                        "posY": -900,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ]
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_3a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_3b.jpg",
+                        "setVisible": 0
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_2a.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "いろはちゃん",
+                "narration": "ミニトマト栽培に明け暮れた夏も終わりに近づき"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bgm": "stop",
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "fadeTo": {
+                                        "duration": 3,
+                                        "opacity": 0
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_3a.jpg"
+                    },
+                    {
+                        "action": {
+                            "fadeTo": {
+                                "duration": 0,
+                                "opacity": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_4b.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 0.5,
+                        "setVisible": 0
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "fadeTo": {
+                                        "duration": 0.5,
+                                        "opacity": 255
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.5,
+                                        "scale": 1.5
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_4b.jpg",
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_3a.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "surround": "7003_wind"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "sequence": [
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.1,
+                                        "scale": 0.5
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.2,
+                                        "scale": 1.2
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.2,
+                                        "scale": 1
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_4b.jpg"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_4c1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ],
+                "nameNarration": "いろはちゃん",
+                "narration": "もはや野生に還りかけたころに@マギレコは始まりました"
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m1_4a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ],
+                "nameNarration": "いろはちゃん",
+                "narration": "ナンダソレ？@クエルノカ？"
+            },
+            {
+                "autoTurnLast": 2,
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

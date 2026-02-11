@@ -1,0 +1,864 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "bgm": "bgm03_story06",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 300501,
+                        "motion": 100,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "＜華道の名門である@「華心流」宗家の一人娘・常盤ななか＞",
+                "narrationBg": "",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 300801,
+                        "motion": 100,
+                        "pos": 1
+                    }
+                ],
+                "narration": "＜“参京院のトラブルシューター”と呼ばれる@空手少女・志伸あきら＞"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301201,
+                        "motion": 100,
+                        "pos": 1
+                    }
+                ],
+                "narration": "＜「蒼海幇」という組織で@屋台骨を支える純美雨＞"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301101,
+                        "motion": 200,
+                        "pos": 1
+                    }
+                ],
+                "narration": "＜そして、古書店「夏目書房」の@娘である夏目かこ＞"
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 301101
+                    }
+                ],
+                "narration": "＜彼女たちは、共通の敵となる@“特定の魔女”を倒すために連帯している＞"
+            },
+            {
+                "narration": "＜その敵を彼女たちは「飛蝗」と呼んでいる＞"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51060_azarea2/51060_team_azarea_team_nanaka.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "＜同盟を組んで以来、他の神浜の魔法少女とは@時に手を組み、時に牽制し合いながら@様々な魔女と戦ってきた＞",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "＜しかし…@いまだに「飛蝗」とは遭遇していない…＞"
+            },
+            {
+                "narration": "＜だが、静海このはたちが巻き込まれた@魔法少女の襲撃事件に際して@ななかは“何か”を感じていた@それは彼女の能力が囁いた“何か”だった＞"
+            },
+            {
+                "narration": "＜…「自分の敵を感じる力」…＞"
+            },
+            {
+                "narration": "＜それがななかの能力だった…＞"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bgm": "stop",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51060_azarea2/51060_team_azarea_team_nanaka.jpg",
+                        "visible": "hide"
+                    },
+                    {
+                        "path": "resource/scenario/img/51060_azarea2/chapter_team_nanaka.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51032_storyselect_mizugi/51032_day1.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bg": "bg_adv_21163.jpg",
+                "bgm": "bgm05_event07",
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300501,
+                        "motion": 1,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301101,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameNarration": "常盤 ななか",
+                "narration": "このはさんたちの一件…@私はある方から話を聞きました",
+                "narrationBg": "bg_adv_21163.jpg",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "そして、私はすぐに@あきらさんたちに連絡を入れて@集まってもらいました"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300501
+                    }
+                ],
+                "nameLeft": "常盤 ななか",
+                "nameRight": "夏目 かこ",
+                "narrationEffect": "out",
+                "textLeft": "聞いた話によると…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 300501
+                    }
+                ],
+                "textLeft": "再び魔法少女が連続して@襲撃を受けているそうです"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301101,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300501,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "そして…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 301201,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "純 美雨",
+                "textRight": "静海このはたちが@その犯人だと疑われている…ネ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301201,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "私も噂で聞いたヨ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300501,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "そうですか…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300801,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "志伸 あきら",
+                "textRight": "…その件か…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301101,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "夏目 かこ",
+                "textRight": "…あ、あの！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300501,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "どうしました？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300801,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "志伸 あきら",
+                "textLeft": "（ああ…かこちゃんが@言いたいことは多分…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_022.exp.json",
+                        "id": 301101
+                    }
+                ],
+                "textRight": "わ、私はこのはさんたちが@犯人だとは思いません！",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 300801,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（やっぱり…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300501,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "常盤 ななか",
+                "textLeft": "…その根拠は？",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301101,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "…そ、それは…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300801,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "志伸 あきら",
+                "textLeft": "あやめちゃんを@信じてるから…だよね？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301101,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…はい…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300801,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300801
+                    }
+                ],
+                "textLeft": "…今回はエミリーちゃんが@襲われている…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 300801,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "だからボクは真相を@絶対に突き止めたいんだ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300801
+                    }
+                ],
+                "textLeft": "…でも…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300801,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "ボクもあやめちゃんたちが@犯人だとどうにも…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301201,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "純 美雨",
+                "textRight": "あきら…@私情を挟むのは禁物ネ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300801
+                    }
+                ],
+                "textLeft": "…私情かもしれない…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300801,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…でも…直感でもあるんだ…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 301201,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 301201,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "私はまず静海このはたちから@話を聞くべきだと思うヨ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301201
+                    }
+                ],
+                "textRight": "まだ謎が多いネ@何にせよ断定はできない段階ヨ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301201,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "そもそも…これは私たちが@関与すべき問題なのカ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_022.exp.json",
+                        "id": 301101,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "夏目 かこ",
+                "textLeft": "か、関与すべきですよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300801,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "志伸 あきら",
+                "textLeft": "放っておけないって！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301201
+                    }
+                ],
+                "textRight": "だから私情が先行してるネ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 301201,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…ななか、どうネ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300501,
+                        "lipSynch": 0,
+                        "motion": 300,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "常盤 ななか",
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 300501
+                    }
+                ],
+                "textLeft": "…結論を先に言いますが…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 300501,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "我々はこの件を追うべきだと@私は考えています"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301101,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "夏目 かこ",
+                "textRight": "ですよね！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 300801,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "志伸 あきら",
+                "textRight": "うんうん！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 301201,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "純 美雨",
+                "textRight": "…理由は何カ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300501,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "確かにこのはさんたちのことも@気になりますが…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300501
+                    }
+                ],
+                "textLeft": "根本的な動機は別にあります"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301101,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "夏目 かこ",
+                "textRight": "…別に？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300801,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "志伸 あきら",
+                "textRight": "どういうこと…？"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "id": 300501,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "私は感じるんです…@この事件の背景に…"
+            },
+            {
+                "nameNarration": "常盤 ななか",
+                "narration": "「“飛蝗”の気配を…」",
+                "narrationBg": "",
+                "narrationEffect": "in"
+            },
+            {
+                "bgm": "bgm03_story10",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301201,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "純 美雨",
+                "narrationEffect": "out",
+                "textRight": "…なっ…!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300801,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "志伸 あきら",
+                "textLeft": "え…!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "夏目 かこ",
+                "textRight": "ほ、本当ですか!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301201,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "純 美雨",
+                "textRight": "間違いないのカ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300501,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "常盤 ななか",
+                "textLeft": "はい…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300501
+                    }
+                ],
+                "textLeft": "実は以前の昏倒事件の折から@何となく感じてはいました…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300501,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "ただ、その時は@確信が持てなくて…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300501
+                    }
+                ],
+                "textLeft": "ですが、今回は違いました…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300501
+                    }
+                ],
+                "textLeft": "私の持つ力が@教えてくれるんです…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300501,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "…ハッキリと…！"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 301201,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "…遂に掴んだカ…！@蒼海幇を苛んだ敵…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300801,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "志伸 あきら",
+                "textLeft": "じゃあ、やっぱり！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301101,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "夏目 かこ",
+                "textRight": "あやめちゃんたちは@犯人じゃないですね！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_022.exp.json",
+                        "id": 301101
+                    }
+                ],
+                "textRight": "「飛蝗」だったら@魔女の仕業だし…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300501,
+                        "motion": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "常盤 ななか",
+                "textLeft": "…ちょっと待ってくださいね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301101,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "え…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300501
+                    }
+                ],
+                "textLeft": "話をもう少し@続けさせてください…"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

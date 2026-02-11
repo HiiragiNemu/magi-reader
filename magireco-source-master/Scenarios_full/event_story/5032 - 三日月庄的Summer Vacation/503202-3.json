@@ -1,0 +1,737 @@
+{
+    "skipTransitionList": [
+        {
+            "from": "group_1",
+            "to": "group_4"
+        },
+        {
+            "canSkip": false,
+            "from": "group_4"
+        }
+    ],
+    "story": {
+        "group_1": [
+            {
+                "bg": "bg_adv_20301.jpg",
+                "nameNarration": "いろは",
+                "narration": "ついつい好奇心には勝てず@「サプライズツアー計画」と書かれた@メモをちょこっとだけ見ようということに…",
+                "narrationBg": "black",
+                "narrationEffect": "in",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100101,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100401,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "narration": "ところが…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "narrationEffect": "out",
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "lipSynch": 1,
+                        "motion": 401
+                    }
+                ],
+                "textLeft": "[chara:100101:effect_emotion_surprise_0][se:7226_shock]…こ、これは…！"
+            },
+            {
+                "bgm": "bgm03_story01",
+                "chara": [
+                    {
+                        "id": 100101,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "…何が書いてあるのか@ほとんど分からない！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401,
+                        "motion": 300
+                    }
+                ],
+                "nameRight": "さな",
+                "textRight": "暗号文…みたいですね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 100201,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "だから鶴乃も油断して@放置しがちだったのね…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201
+                    }
+                ],
+                "textLeft": "他人では読めないと@タカをくくって…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100501,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "…「サプライズツアー計画」と@日付はバッチリ読めるな…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100401,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "さな",
+                "textRight": "確かに…@私が見たものと同じですね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "textLeft": "あとは…[chara:100201:lipSynch_0][wait:0.8][chara:100201:cheek_-1][chara:100201:face_mtn_ex_051.exp.json][chara:100201:lipSynch_1]ん？@ここ読めるわ…えっと…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201
+                    }
+                ],
+                "textLeft": "「いろはちゃんが@興味を持つ」…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 401,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "私ですか!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100401,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "さな",
+                "textRight": "…ここも！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "「宝探しに行こうとする」…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401
+                    }
+                ],
+                "textRight": "「いろはちゃん」"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "また私!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100501,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "ここにもあるな…@ん～と…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100501
+                    }
+                ],
+                "textRight": "「呪われるいろはちゃん」"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "motion": 400,
+                        "mouthOpen": 1,
+                        "pos": 0
+                    }
+                ],
+                "textLeft": "えーっ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100401,
+                        "motion": 1,
+                        "pos": 2
+                    },
+                    {
+                        "id": 100101,
+                        "mouthOpen": 0
+                    }
+                ],
+                "nameRight": "さな",
+                "textRight": "…つまりこれって…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401
+                    }
+                ],
+                "textRight": "いろはさんがこの通りに動いて@はじめて成立するサプライズ…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101,
+                        "motion": 301
+                    }
+                ],
+                "textLeft": "私、何が起きるか@知らされてないのに…!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 301,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "環さんが計画通りに動くよう@鶴乃が仕向けてくる…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201
+                    }
+                ],
+                "textLeft": "…おそらくそんな所かしら"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100401,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "何というか…鶴乃さんらしい@大胆な計画ですね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "希望的観測に満ち溢れた計画@とも言えるわ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100201,
+                        "motion": 201
+                    }
+                ],
+                "textLeft": "ともかく、これで@ほぼ間違いないわね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100201
+                    }
+                ],
+                "textLeft": "鶴乃は今日@何かをしようと考えている…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100401,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "ど、どうしますか？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "…………@[chara:100101:lipSynch_0][wait:1.0][chara:100101:lipSynch_1]あの…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100101,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（…よし！）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101,
+                        "lipSynch": 1,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "あの…この計画@全力で乗りませんか？",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100501,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "むむ！それってつまり…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100501,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…どういうこと？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100401,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "さな",
+                "textRight": "このメモに書かれている@サプライズを成立させる…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100101,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "うん！そういうこと！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101
+                    }
+                ],
+                "textLeft": "きっと鶴乃ちゃんは@私たちを楽しませたくてこれを…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 301,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "…鶴乃の性格からすれば@そういうことでしょうね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 100101,
+                        "motion": 301,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "私としては責任重大ですけど…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_042.exp.json",
+                        "id": 100101
+                    }
+                ],
+                "textRight": "鶴乃ちゃんがせっかく考えて@くれたわけですし…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 100201,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_014.exp.json",
+                        "id": 100201,
+                        "lipSynch": 1
+                    }
+                ],
+                "textLeft": "ふふ、そうね…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "あの子の心遣いを@尊重しましょうか…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100401,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "さな",
+                "textRight": "賛成です…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100501,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "そうだな@なんか面白そうだし！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "…じゃあ、どうしましょうか？@このメモ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100201,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "…そうね…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "いろは",
+                "narration": "私たちはこのメモを…",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narrationEffect": "out",
+                "select": [
+                    {
+                        "alternativeId": 14,
+                        "group": "group_2",
+                        "textSelect": "元の場所に戻す"
+                    },
+                    {
+                        "alternativeId": 15,
+                        "group": "group_3",
+                        "textSelect": "もう少し調べる"
+                    }
+                ]
+            }
+        ],
+        "group_2": [
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_20301.jpg",
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "motion": 201
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "とりあえず、元の場所に@戻しておきましょう",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100101
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "そうですね…！"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ],
+        "group_3": [
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_20301.jpg",
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "motion": 201
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "もう少しだけ調べて何か@ヒントを掴んでおきましょう",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201
+                    }
+                ],
+                "textLeft": "合わせるにしても@心の準備があるから…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100101,
+                        "motion": 301
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "そうですね…"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ],
+        "group_4": [
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_20301.jpg",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm03_story01",
+                "nameNarration": "いろは",
+                "narration": "私たちはこのメモを…",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narrationEffect": "out",
+                "select": [
+                    {
+                        "alternativeId": 14,
+                        "group": "group_2",
+                        "textSelect": "元の場所に戻す"
+                    },
+                    {
+                        "alternativeId": 15,
+                        "group": "group_3",
+                        "textSelect": "もう少し調べる"
+                    }
+                ]
+            }
+        ]
+    },
+    "version": 3
+}

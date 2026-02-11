@@ -1,0 +1,702 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/3003_petal_messageback.ExportJson",
+                        "zOrder": "messageBack"
+                    },
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 2,
+                        "filePath": "resource/image_native/effect/story/general/6001_petal_bgfront.ExportJson",
+                        "zOrder": "bgFront"
+                    }
+                ],
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_19092.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101801,
+                        "motion": 1,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101901,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 3,
+                "surround": "7003_wind",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 101801
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101901
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 3,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101701,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 100601,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 101701
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 100601
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 3,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100701,
+                        "motion": 1,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 101403,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100701
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101403
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 304302,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ]
+            },
+            {
+                "bgm": "bgm03_story12",
+                "nameNarration": "万年桜のウワサ",
+                "narration": "｜では第二審に入ります｜",
+                "narrationEffect": "in",
+                "surround": "stop"
+            },
+            {
+                "narration": "｜第二審では各魔法少女に配布された@意見書の内容を元に改めて判決を出し直します｜"
+            },
+            {
+                "narration": "｜内容を確認する時間を要するため審理は３回@本日は“里見灯花”と“柊ねむ”が対象です｜"
+            },
+            {
+                "narration": "｜では対象者に有利になる証拠や証言があれば@提出してください｜"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 304302
+                    }
+                ],
+                "narrationEffect": "out"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101501,
+                        "motion": 300,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "うい",
+                "textRight": "お姉ちゃん…@意見書はまだ届かないの…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "まだ…来ないみたいだね…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100101
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101501
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100501,
+                        "motion": 200,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100301,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "魔女に捕まって、@これねーんじゃねーか…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301
+                    }
+                ],
+                "nameLeft": "鶴乃",
+                "textLeft": "“東、西、中央・南”って@分担して回収してるはずだから"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "全員が遅れるなんて@考え辛いけど…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101601,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "十七夜",
+                "textRight": "自然では有り得ないと考えると、@人為的な影響かもしれんな…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 304302,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "万年桜のウワサ",
+                "textLeft": "｜では、提出物はないものとして@前回の審理を振り返ります｜"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "やちよ",
+                "textRight": "まずいわね…"
+            },
+            {
+                "autoTurnLast": 1,
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 304302,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100701,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm03_story08",
+                "chara": [
+                    {
+                        "id": 304302
+                    }
+                ],
+                "textLeft": "｜では、里見灯花｜",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100701
+                    }
+                ],
+                "nameRight": "灯花",
+                "textRight": "はい…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "｜あなたが問われているのは@主に次の罪についてです｜"
+            },
+            {
+                "nameNarration": "万年桜のウワサ",
+                "narration": "｜・本件における計画を１から考えた@　・神浜に魔女を呼び一般市民を巻き込んだ@　・電波などの技術を使用し生活を脅かした@　・構成員を騙し錯乱状態に陥れた@　・被害を想定した上で実行していた｜",
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 130
+            },
+            {
+                "narration": "｜細部を語ると尽きないので割愛しますが@この段階で相違がある部分はありますか？｜",
+                "narrationHAlignment": "center",
+                "narrationPosX": 0
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100701,
+                        "motion": 100
+                    }
+                ],
+                "narrationEffect": "out",
+                "textRight": "そのとーりだよ"
+            },
+            {
+                "nameNarration": "万年桜のウワサ",
+                "narration": "｜では必要であれば他の件も含めて話します｜",
+                "narrationEffect": "in"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101501,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101,
+                        "lipSynch": 0,
+                        "motion": 301
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "…………",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 304302,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 101403,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302
+                    }
+                ],
+                "nameLeft": "万年桜のウワサ",
+                "textLeft": "｜次に、柊ねむ｜",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101403
+                    }
+                ],
+                "nameRight": "ねむ",
+                "textRight": "はい…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302
+                    }
+                ],
+                "textLeft": "｜あなたが問われているのは@主に次の罪についてです｜"
+            },
+            {
+                "nameNarration": "万年桜のウワサ",
+                "narration": "｜・ウワサを制作し一般市民を巻き込んだ@　・魔女や少女を呼び寄せるサポートをした@　・意図的に大量被害を出す未遂事件がある@　・構成員をウワサで道具のように扱った@　・被害を想定した上で実行していた｜",
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 130
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302,
+                        "motion": 100
+                    }
+                ],
+                "narration": "｜細部を語ると尽きないので割愛しますが@この段階で相違がある部分はありますか？｜",
+                "narrationHAlignment": "center",
+                "narrationPosX": 0
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101403,
+                        "motion": 100
+                    }
+                ],
+                "narrationEffect": "out",
+                "textRight": "間違いないよ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302,
+                        "motion": 0
+                    }
+                ],
+                "nameNarration": "万年桜のウワサ",
+                "narration": "｜では必要であれば他の件も含めて話します｜",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100601,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "みふゆ",
+                "narrationEffect": "out",
+                "textRight": "すみません、いいでしょうか"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 304302,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "｜対象者は@発言の権限を持ちません｜"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302
+                    }
+                ],
+                "textLeft": "｜発言は許可された時だけ@行うようにしてください｜"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 100601,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "っ…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "もう、待てないわね…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101,
+                        "motion": 400
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "私が止めます！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 304302,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101,
+                        "motion": 401
+                    }
+                ],
+                "textRight": "あの、いいですか！",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 304302,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "万年桜のウワサ",
+                "textLeft": "｜何？｜"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "意見書がまだ届かないの…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101
+                    }
+                ],
+                "textRight": "回収してくるから、@明日に変更できないかな…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 304302,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "｜始まってしまったので、@もう止めることはできない｜"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 401
+                    }
+                ],
+                "textRight": "そんなっ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 304302,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "｜だけど待つことはできる｜"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "どれぐらい待てるの…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302
+                    }
+                ],
+                "textLeft": "｜１時間が誤差範囲｜"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101,
+                        "motion": 301
+                    }
+                ],
+                "textRight": "１時間…"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "deleteArmatureList": [
+                    1,
+                    2
+                ],
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

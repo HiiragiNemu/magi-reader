@@ -1,0 +1,853 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/3003_petal_messageback.ExportJson",
+                        "zOrder": "messageBack"
+                    },
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 2,
+                        "filePath": "resource/image_native/effect/story/general/6001_petal_bgfront.ExportJson",
+                        "zOrder": "bgFront"
+                    }
+                ],
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_19092.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 304300,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm02_boss01",
+                "chara": [
+                    {
+                        "id": 304300,
+                        "motion": 400,
+                        "mouthOpen": 1
+                    }
+                ],
+                "nameCenter": "万年桜のウワサ",
+                "textBg": "shout",
+                "textCenter": "[flashEffect:flashWhite2][surround:3043A01]｜やっあアアッ！｜",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 304300
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 100100,
+                        "motion": 401,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "いろは",
+                "textCenter": "[flashEffect:flashRed1][surround:3043A03][chara:100100:effect_shake][bgEffect:shakeLarge]ふっ、うぅ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_052.exp.json",
+                        "id": 101800,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "月夜",
+                "textRight": "環さん！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100100,
+                        "motion": 400
+                    }
+                ],
+                "textCenter": "だ、いじょうぶ！@まだ、全然耐えられるから！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100600,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 101700,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "nameNarration": "",
+                "narration": "[se:7106_telmail]ピロン",
+                "narrationEffect": "in",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "narration": "[se:7106_telmail]ピロン"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101700,
+                        "motion": 200
+                    }
+                ],
+                "nameRight": "みたま",
+                "narrationEffect": "out",
+                "textRight": "いろはちゃん！@みんなからメッセージが来たわ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100600,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "みふゆ",
+                "textLeft": "やっちゃんたちも@目下回収中のようです！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 304300,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 400
+                    }
+                ],
+                "nameRight": "いろは",
+                "textBg": "shout",
+                "textRight": "万年桜さん！",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100
+                    }
+                ],
+                "textBg": "shout",
+                "textRight": "意見書が届くという証拠を@提出させてください！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 100100,
+                        "motion": 301,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textRight": "はぁ…ッ…はぁ…"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "id": 304300,
+                        "lipSynch": 0
+                    },
+                    {
+                        "id": 100100,
+                        "mouthOpen": 0
+                    }
+                ],
+                "nameLeft": "万年桜のウワサ",
+                "surround": "7003_wind",
+                "textLeft": "｜…………｜"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_05",
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 304302,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "se": "7205_magic_girl",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302,
+                        "lipSynch": 1,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "｜虚偽の申告が発覚すれば@あなたも裁くことになります｜"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302
+                    }
+                ],
+                "textLeft": "｜情報は正確ですか？｜"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100100,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "うん、すぐに見せるよ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "｜では、確認します｜"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "審理延長は有り得る…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "｜画像を確認の上、@先ほどの柊ねむの証言通り｜"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302
+                    }
+                ],
+                "textLeft": "｜日付の意図的な改竄が@認められた場合に限り｜"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302
+                    }
+                ],
+                "textLeft": "｜本日中に限って@意見書の到着を待ちます｜"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "これです…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302,
+                        "lipSynch": 0,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "｜…………｜"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 100100,
+                        "lipSynch": 0,
+                        "motion": 301
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302
+                    }
+                ],
+                "textLeft": "｜データの改竄の痕跡がないか、@確認します｜"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 304302,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "｜…………｜"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 304302,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "｜…………[wait:1.0][chara:304302:eyeClose_0][chara:304302:lipSynch_1]はい｜"
+            },
+            {
+                "bgm": "bgm03_story06",
+                "chara": [
+                    {
+                        "id": 304302,
+                        "motion": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100100,
+                        "motion": 0
+                    }
+                ],
+                "surround": "stop",
+                "textLeft": "｜証拠として認めます@本日中に提出してください｜"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "よ、よかったぁ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 304302
+                    }
+                ],
+                "textLeft": "｜ほんとに…｜"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "｜ありがとう、いろは｜"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304302
+                    }
+                ],
+                "textLeft": "｜機転を利かせてくれたおかげで@自分を抑えられた｜"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 100100,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "アイちゃんの暴走を見てたから@どういう状態かは分かったよ"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "id": 100100,
+                        "pos": 0
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101700,
+                        "motion": 100,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100600,
+                        "motion": 1,
+                        "pos": 1
+                    }
+                ],
+                "nameRight": "みたま",
+                "textRight": "ほんと、よくやったわね@いろはちゃん"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100100,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "みたまさんもみふゆさんも、@ありがとうございます"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100600
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101700
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101500,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "うい",
+                "textRight": "お姉ちゃん…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100100,
+                        "motion": 301
+                    }
+                ],
+                "textLeft": "良かったね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100100
+                    }
+                ],
+                "textLeft": "これで、やちよさんたちが@戻ってくるのを待っていられるよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101500,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "うん"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 101500
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 100100
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101900,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 101800,
+                        "motion": 1,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100600,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "月咲",
+                "textRight": "でも、後は内容次第だね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101800
+                    }
+                ],
+                "nameCenter": "月夜",
+                "textCenter": "きっと大丈夫でございます@月咲ちゃん"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100600,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "みふゆ",
+                "textLeft": "はい、写真を見る限りでは、@大丈夫だと思いますよ"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100600
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101800
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101900
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100701,
+                        "motion": 1,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101403,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "灯花ちゃん、ねむちゃん"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100701,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "灯花",
+                "textCenter": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101403,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "ねむ",
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "これ、読んでみて…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100
+                    }
+                ],
+                "textLeft": "写真だけど、みんなの言葉が@しっかりと書かれてるよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100701,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101403,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "autoTurnLast": 1,
+                "bgm": "stop",
+                "deleteArmatureList": [
+                    1,
+                    2
+                ],
+                "item": [
+                    {
+                        "iPhoneXScale": 1,
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm05_event10",
+                "nameNarration": "",
+                "narration": "「これまでにしたことを考えたら@　何も罰を受けないのはモヤモヤする@　でも、だからって殺すのは違うと思う@　それはそれで単純に気分が悪い…」",
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 130,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "「神浜市の魔法少女が団結しようとしているのに@　殺伐とした空気を作っちゃうのは残念@　今が大切な時期なので見せしめのようなことは@　しない方が良いと思います」"
+            },
+            {
+                "narration": "「自分の住んでた町を想うと恨みの方が多いけど@　殺したからってスカッとはしない…@　もっと償う方法は色々とあると思う…」"
+            },
+            {
+                "narration": "「そもそも我々は彼女たちに生かされたという@　事実も認めなくてはいけない@　また、これからもその恩恵に預かる身なので@　目を背けることは許されない」"
+            },
+            {
+                "narration": "「家はメチャクチャだし@　勢いで死んでって言ってしまいそう@　けど大丈夫、顔さえ見なければ平気」"
+            },
+            {
+                "narration": "「前の集会で話を色々聞かせてもらったけど@　魔法少女も魔女もキュゥべえも@　全部知ってるのってこの子たちだけ？@　それなら居なくなるってマズイんじゃない？」"
+            },
+            {
+                "narration": "「どういう環境で育ったのか知らないが@　仕置きが絶対に必要なのは間違いない@　だけど、それからは年長者が支えるべきだ@　更生を試さずに極刑はあまりにも乱暴すぎるし@　それがまかり通るならアタシは失望する」"
+            },
+            {
+                "narration": "「私、年がちかいので、一度話してみたいです」"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/3003_petal_messageback.ExportJson",
+                        "zOrder": "messageBack"
+                    },
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 2,
+                        "filePath": "resource/image_native/effect/story/general/6001_petal_bgfront.ExportJson",
+                        "zOrder": "bgFront"
+                    }
+                ],
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 100701,
+                        "motion": 0,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101403,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 100701,
+                        "lipSynch": 0,
+                        "motion": 300,
+                        "tear": 1
+                    }
+                ],
+                "textCenter": "っ…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 101403,
+                        "lipSynch": 0,
+                        "motion": 300,
+                        "tear": 1
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101500,
+                        "motion": 100,
+                        "pos": 0,
+                        "tear": 1
+                    }
+                ],
+                "nameLeft": "うい",
+                "textLeft": "良かったぁ…"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "deleteArmatureList": [
+                    1,
+                    2
+                ],
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

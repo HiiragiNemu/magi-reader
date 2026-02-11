@@ -1,0 +1,109 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.2,
+                "bg": "bg_adv_16122.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101600,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101800,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm22_battle09",
+                "chara": [
+                    {
+                        "id": 101600,
+                        "motion": 400,
+                        "voiceFullAuto": "fullvoice/section_102401/vo_full_102401-4-1"
+                    }
+                ],
+                "nameLeft": "十七夜",
+                "textLeft": "要读心的话，@能问出忧君的所在地最好",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101600,
+                        "voiceFullAuto": "fullvoice/section_102401/vo_full_102401-4-2"
+                    }
+                ],
+                "nameLeft": "十七夜",
+                "textLeft": "可以限制住她的行动吗？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101800,
+                        "motion": 200,
+                        "voiceFullAuto": "fullvoice/section_102401/vo_full_102401-4-3"
+                    }
+                ],
+                "nameRight": "月夜",
+                "textRight": "没有问题"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101900,
+                        "motion": 200,
+                        "pos": 2,
+                        "voiceFullAuto": "fullvoice/section_102401/vo_full_102401-4-4"
+                    }
+                ],
+                "nameRight": "月咲",
+                "textRight": "嗯，我也准备好了"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 101900
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101600
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 102200,
+                        "motion": 0,
+                        "pos": 0,
+                        "voiceFullAuto": "fullvoice/section_102401/vo_full_102401-4-5"
+                    }
+                ],
+                "nameLeft": "光",
+                "textLeft": "东边的首领也加入了环忧的搜索…@看上去没法太从容了…"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

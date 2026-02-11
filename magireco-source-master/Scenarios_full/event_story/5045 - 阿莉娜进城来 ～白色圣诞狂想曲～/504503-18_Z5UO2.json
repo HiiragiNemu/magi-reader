@@ -1,0 +1,553 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/3000_snow_messageback.ExportJson",
+                        "zOrder": "messageFront"
+                    },
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 2,
+                        "filePath": "resource/image_native/effect/story/general/6000_snow_bgfront.ExportJson",
+                        "zOrder": "messageBack"
+                    }
+                ],
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "bgm": "bgm05_event11",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/50450_chapter3.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "deleteArmatureList": [
+                    2
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/50450_chapter1.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bgm": "stop",
+                "deleteArmatureList": [
+                    1
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/50450_day4.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narration": "Day 4"
+            },
+            {
+                "nameNarration": "",
+                "narration": "18 : 30",
+                "narrationAnchor": "bottom",
+                "narrationBg": "",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationFontSize": 40,
+                "narrationLineMargin": 190,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/50450_day4.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "ミナギーシー",
+                "narrationBg": "black",
+                "narrationEffect": "in",
+                "narrationFontSize": 40,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21334.jpg",
+                "bgm": "bgm05_event11",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 101850,
+                        "motion": 1,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 802000,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 802000
+                    }
+                ],
+                "nameLeft": "月夜",
+                "nameRight": "",
+                "textRight": "それにしても…@遅いわね",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101850,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "そうでございますね…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 802000
+                    }
+                ],
+                "textRight": "せっかくの@サンタお姉さん衣装なのにね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101850
+                    }
+                ],
+                "textLeft": "…はい"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 802000,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101850,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 802000
+                    }
+                ],
+                "textRight": "ねえ、さっき言ってたこと"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101850,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "えっ…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 802000
+                    }
+                ],
+                "textRight": "ほら、サンタお姉さんに@小さな頃から憧れてたって話"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 802000
+                    }
+                ],
+                "textRight": "何かきっかけがあったのかしら？"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "id": 101850
+                    }
+                ],
+                "textLeft": "あ…はいっ！"
+            },
+            {
+                "bgm": "bgm03_story03",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101850,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "あれは何年も前…@まだ私が幼かった頃"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101850
+                    }
+                ],
+                "textLeft": "今と同じ、クリスマスも間近な@季節でございました…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 801600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bg": "bg_adv_15024.jpg",
+                "nameNarration": "月夜",
+                "narration": "『私は、母様とお買い物の途中…@とある町で@迷子になってしまったのでございます』",
+                "narrationBg": "",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "sepiaFrame"
+            },
+            {
+                "narration": "『その上、転んでしまって…@持ち歩いていた大事な篠笛に@傷がついてしまいました』"
+            },
+            {
+                "narration": "『そのとき、泣いていた私の前に@サンタお姉さんが現れたのでございます！』"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/memoria_1289.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "月夜",
+                "narration": "―月夜―@お姉さんは、迷子預かり所まで@私を連れて行ってくれて",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 28,
+                "narrationLineMargin": 15,
+                "narrationLineSpace": 10,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "―月夜―@『ちょっと貸してね』と言って@篠笛を預かっていったでございます"
+            },
+            {
+                "narration": "―月夜―@ほどなくして、篠笛は@ぴかぴかになって戻って参りました"
+            },
+            {
+                "narration": "―月夜―@『どうやって直したの？』と問う私に@お姉さんはこう言ったのでございます"
+            },
+            {
+                "narration": "―月夜―@『ふふっ…サンタお姉さんはね』"
+            },
+            {
+                "narration": "―月夜―@『みんなをハッピーにする@魔法が使えるのよ』…と！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21334.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101850,
+                        "motion": 1,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 802000,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/memoria_1289.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101850
+                    }
+                ],
+                "textLeft": "…その後、迷子預かり所で@母様と再会することができました",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101850
+                    }
+                ],
+                "textLeft": "以来、サンタお姉さんは@私の憧れなのでございます…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 802000
+                    }
+                ],
+                "textRight": "そっかぁ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 802000
+                    }
+                ],
+                "textRight": "…だから月夜ちゃんは@“サンタお姉さん”の仮装なのね"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101850,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "そうなのでございます"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/memoria_1289.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "月夜",
+                "narration": "―月夜―@いま着ているのも@そのときの記憶をたぐって",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 28,
+                "narrationLineMargin": 15,
+                "narrationLineSpace": 10,
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "sepiaFrame"
+            },
+            {
+                "narration": "―月夜―@できるだけ同じものを、と…@特注した衣装なのでございます"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101850,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 802000,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/memoria_1289.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 802000,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "…………@…………",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101850
+                    }
+                ],
+                "textLeft": "あ…なんだか"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101850,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "魔法で笛を直してくれた、だとか"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101850
+                    }
+                ],
+                "textLeft": "信じられないような話を@してしまいました…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 802000
+                    }
+                ],
+                "textRight": "ううん…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 802000
+                    }
+                ],
+                "textRight": "クリスマスの魔法って@本当にあるんだなって"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 101850,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "信じていただけるで@ございますか…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 802000
+                    }
+                ],
+                "textRight": "もちろん！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 802000
+                    }
+                ],
+                "textRight": "あ…そうだ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 802000
+                    }
+                ],
+                "textRight": "待ち合わせてる子に@もう一度、電話してみたら？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101850,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "…はい！"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

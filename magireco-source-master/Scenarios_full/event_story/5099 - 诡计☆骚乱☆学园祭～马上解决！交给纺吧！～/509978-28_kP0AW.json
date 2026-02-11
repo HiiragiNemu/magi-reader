@@ -1,0 +1,712 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "bgm": "bgm03_story03",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51099_storyselect_mizuna/memoria_1496.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "水名女学園に@転校してすぐにあった学園祭@それは私にとって@一生忘れられないできごとになった…",
+                "narrationBg": "",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_narration.jpg",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51099_storyselect_mizuna/memoria_1496.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "転校したてで@馴染めない学校生活…@知らない町でうまくいかない魔女狩り…@そういう負担が積み重なって@私のソウルジェムは黒く濁ってしまった…",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "あとでつむぎちゃんに聞いた話だと@神浜の町でなかったら@私はもういなくなっていたらしい"
+            },
+            {
+                "narration": "でも、神浜の町でよかったとも言えない@ドッペルを出してしまったせいで@たくさんの人に迷惑をかけてしまったから…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_12071.jpg",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "ドッペルが生み出したタネは@私が普段使える魔法とは@比べ物にならないくらい強力で@たくさんのトラブルを生み出した",
+                "narrationBg": "bg_adv_12071.jpg",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "なんとかしたかったけど@私の魔力に触れると発芽してしまって@トラブルを増やすだけ…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_12083.jpg",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 302401,
+                        "motion": 200,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300901,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "助けを求める人もいなくて@でも、少しでもタネを回収しようと@忍び込んだ夜の学校で@つむぎちゃんたちに出会ったの…",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 302401
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "narrationEffect": "out",
+                "textLeft": "みんなで協力して…",
+                "turnEffect": "blackFrame"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 770600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "nameCenter": "",
+                "textBg": "shout",
+                "textCenter": "[chara:770600:effect_emotion_surprise_0][se:7226_shock]――っ!?",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "slideOutLeftFast",
+                        "id": 770600
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302401,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300901,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302401,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textBg": "shout",
+                "textLeft": "いま、誰かいなかった!?",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 2,
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 770600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "motion": 300
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "…はぁ…はぁ…@思わず…逃げちゃった…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（みんなで協力して@トラブルを追ってるんだ…）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（私にはできないけど…@彼女たちならもしかしたら…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 770600,
+                        "motion": 200
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "…キッカケを…私が…@やるしか…ない…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "flashEffect": "flashWhite1",
+                "textClear": 1
+            },
+            {
+                "nameNarration": "",
+                "narration": "私に…犯人へ辿り着いて捕まえて@トラブルも解決して@学園祭を無事に開催させてくれるかもしれない@そんな期待をした私は@３つの“キッカケのタネ”を魔法で作った",
+                "narrationBg": "black",
+                "narrationEffect": "in"
+            },
+            {
+                "narration": "“犯人に繋がるキッカケ”@“タネを処理できるキッカケ”@“犯人を止められるキッカケ”"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 770600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narration": "本当はもっとたくさんキッカケを作って@絶対にキッカケをつかんで@もらえるようにしたかったけど@私の魔力では@３つ作るだけでもギリギリだったから…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "motion": 200
+                    }
+                ],
+                "nameCenter": "",
+                "narrationEffect": "out",
+                "textCenter": "あとは先回りして…@タネを置けば…！"
+            },
+            {
+                "nameNarration": "",
+                "narration": "これが中々大変だったし@ちょっと変な形で“キッカケ”に@なっちゃったんだけど…",
+                "narrationBg": "black",
+                "narrationEffect": "in"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_21676.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 770600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "…はぁ、はぁ…@先回りできた…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 770600,
+                        "motion": 1
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "“タネを処理できるキッカケ”@お願いね…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_21551.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 770600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "motion": 200
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "はぁ…はぁ…@なんとか間に合った…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 770600
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "“犯人を止められるキッカケ”…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 770600,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（旧校舎は資材が多いから@夜でもトラブルが起こったら…）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（大変なことになっちゃう…）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（私だと、タネを@どうにもできないから…）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（ごめんね…お願い、ね…）"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_21343.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 770600,
+                        "motion": 1,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "…ふぅ…@まだ、来てない…？",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 770600,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（あとは、自力で犯人に@たどり着いた彼女たちが）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（私を捕まえて@タネを処理してくれれば…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 770600,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（学園祭は無事開催される…@これで責任は果たせる、よね？）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 770600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "キッカケのタネを…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "flashEffect": "flashWhite1",
+                "textClear": 1
+            },
+            {
+                "nameRight": "つむぎの声",
+                "textRight": "開けるよー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 770600,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "[chara:770600:effect_emotion_surprise_0][se:7226_shock]――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 770600,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（とりあえず隠れなきゃ…！）"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "black",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 770600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（資材の間…暗いし、@大丈夫…きっと大丈夫…）",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302401,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "若菜 つむぎ",
+                "textRight": "うーん…@誰もいない…？"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 302401
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（…はぁ…@行ったみたい…）"
+            },
+            {
+                "nameNarration": "",
+                "narration": "体育館からつむぎちゃんたちが@出て行ってから@こっそり外に出ようと思っていた私の耳に@犯人の動機を考える声が聞こえてきた…",
+                "narrationBg": "black",
+                "narrationEffect": "in"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21343.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 302401,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302401,
+                        "motion": 200
+                    }
+                ],
+                "nameCenter": "若菜 つむぎ",
+                "textCenter": "そうだね、@ちゃんと話してみたい…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 770600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "つむぎちゃんのその言葉が聞こえて来た時@私と向き合おうとしてくれてるんだって…@嬉しかった",
+                "narrationBg": "black",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "そうして、気が緩んだ私は…"
+            },
+            {
+                "narration": "…ガタンッ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "nameCenter": "",
+                "narrationEffect": "out",
+                "textCenter": "[chara:770600:effect_emotion_surprise_0][se:7226_shock]（資材倒しちゃった…！）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 770600,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "（と、とりあえず外へ…！）"
+            },
+            {
+                "nameNarration": "",
+                "narration": "困った私は@ステージ裏の搬入口から脱走…",
+                "narrationBg": "black",
+                "narrationEffect": "in"
+            },
+            {
+                "narration": "でも、逃げてる途中で思ったの…@追いかけてきてくれれば@追い詰められるのにちょうどいいかも@って…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "こうして…@私が蒔いた“キッカケのタネ”は@つむぎちゃんたちを解決へ導くキッカケに@ちゃんとなってくれた…",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "その後の展開は…@私を追い詰めて犯人として捕まえた@魔法少女たちがトラブルも解決！@犯人を警察と学校に突き出して@無事に学園祭は開催される"
+            },
+            {
+                "narration": "っていう、私の思惑とは@全然違う結果になったけど…"
+            },
+            {
+                "narration": "でも、それは@こんなことを引き起こしてしまった私が@享受していいのかなってくらい@優しいものだった…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51099_storyselect_mizuna/memoria_1496.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "nameNarration": "",
+                "narration": "ありがとう…@この写真ずっと大切にします…",
+                "narrationAnchor": "bottom",
+                "narrationBg": "",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 35,
+                "narrationLineSpace": 20,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "（いつか…@恩返しができたら、いいな…）"
+            },
+            {
+                "autoTurnLast": 2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51099_storyselect_mizuna/memoria_1496.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

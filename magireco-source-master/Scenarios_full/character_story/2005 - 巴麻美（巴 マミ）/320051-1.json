@@ -1,0 +1,540 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.1,
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_12011.jpg"
+            },
+            {
+                "bgm": "bgm03_story06",
+                "nameNarration": "マミ",
+                "narration": "神浜市…何かが起きている町",
+                "narrationBg": "narration",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "とりあえず足を運んでみたけれど@一体どこから調べようかしら"
+            },
+            {
+                "narration": "魔女を捜す？@魔法少女を捜す？"
+            },
+            {
+                "narration": "そもそもこの町は@何が狂ってきているの…？"
+            },
+            {
+                "bg": "bg_adv_12041.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 200500,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "マミ",
+                "narrationEffect": "out",
+                "textRight": "まずは町を知ること、ね"
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 200500
+                    }
+                ],
+                "narration": "神浜市がどう変わってしまったか@この町を深く知れば@見えてくるかもしれない",
+                "narrationBg": "narration",
+                "narrationEffect": "in"
+            },
+            {
+                "narration": "さて、まずはこの町の…"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 200500,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "flashEffect": "flashWhiteSlow2",
+                "narrationEffect": "out",
+                "se": "7211_souljem_02"
+            },
+            {
+                "bgm": "bgm03_story10",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200500,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "――っ!!"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 200500,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "ソウルジェムが反応してる！@近くに魔女がいるの…!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 200500,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "来て早々魔女と出くわすなんて@やっぱりこの町、異常ね…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 200500
+                    }
+                ],
+                "textRight": "かなり強い魔力の波動だわ@近いかも"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200500
+                    }
+                ],
+                "textRight": "――っ!!"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_01",
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 200500,
+                        "motion": 100
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6001_candy_emblem.png",
+                        "posY": 120,
+                        "visible": "appear"
+                    }
+                ],
+                "se": "7201_detect_magic",
+                "textRight": "見つけた@…魔女の結界！",
+                "turnEffect": "ef_adv_06"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6001_candy_emblem.png",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            {
+                "bg": "bg_adv_47001.jpg",
+                "bgChangeEffect": "enterWitchSpace",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 200500,
+                        "motion": 1
+                    }
+                ],
+                "se": "7208_wander_into",
+                "textRight": "魔女はどこ…？",
+                "turnEffect": "stop"
+            },
+            {
+                "textBg": "shout",
+                "textLeft": "きゃぁあっ!!"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200500,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "悲鳴!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 200500,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "すでに誰か戦っているの!?"
+            },
+            {
+                "bgEffect": "shakeSmall",
+                "bgm": "bgm01_anime12",
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300100,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "flashEffect": "flashWhite2",
+                "nameRight": "？？？",
+                "textRight": "うりゃあっ！[se:4050_landing_jump]",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "bgEffect": "shakeSmall",
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "id": 300100,
+                        "motion": 200
+                    }
+                ],
+                "flashEffect": "flashWhite2",
+                "textRight": "とあっ！[se:4050_landing_jump]"
+            },
+            {
+                "bgEffect": "shakeSmall",
+                "chara": [
+                    {
+                        "id": 7001,
+                        "name": "sprite_0",
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "＃＃＄＋＠￥・！！シャラー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300100,
+                        "motion": 400,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textRight": "なっ!?@ちょっ…！"
+            },
+            {
+                "bgEffect": "shakeSmall",
+                "flashEffect": "flashWhite2",
+                "textLeft": "％＆｜￥・＃＄＋＠＃シャラー"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300100,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "――っ!!"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300100,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "（ダメだ、これ…@やられる…！）",
+                "turnEffect": "thinking"
+            },
+            {
+                "textCenter": "危ない！",
+                "turnEffect": "stop"
+            },
+            {
+                "autoTurnLast": 0.3,
+                "bgEffect": "shakeSmall",
+                "chara": [
+                    {
+                        "effect": "shake",
+                        "id": 7001,
+                        "name": "sprite_0"
+                    }
+                ],
+                "flashEffect": "flashRed1",
+                "se": "6002_hit_shooting_02_s",
+                "textLeft": "＃＄＋＠｜＃！？シャラ！？"
+            },
+            {
+                "autoTurnLast": 0.3,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 7001,
+                        "name": "sprite_0"
+                    }
+                ]
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300100
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 200500,
+                        "motion": 1,
+                        "pos": 0
+                    }
+                ],
+                "textRight": "あ、なた…@魔法少女…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200500,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "マミ",
+                "textLeft": "間一髪ね@間に合ってよかったわ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 200500,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "大丈夫？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300100,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "あっ…は、はいっ…！えとっ…！@ありがとうございます！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300100,
+                        "motion": 0,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textRight": "あのっ、私っ…！"
+            },
+            {
+                "bgm": "bgm01_anime09",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 200500,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "挨拶は後！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 200500
+                    }
+                ],
+                "textLeft": "今はあの使い魔たちを@ふたりで倒すわよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300100
+                    }
+                ],
+                "textRight": "えっ？…ぁあっと…！@[chara:300100:motion_100]は、はいっ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 7001,
+                        "name": "sprite_0",
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "＃＃＄＋＠＆｜￥・シャラー"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 200500,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "マミ",
+                "textRight": "数が多い上に…"
+            },
+            {
+                "bgEffect": "shakeSmall",
+                "textLeft": "・＃＃＄＋＠｜￥！！シャラー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 200500,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "使い魔にしては強い！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300100,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "？？？",
+                "textLeft": "あのっ！@…[chara:300100:cheek_0:face_mtn_ex_030.exp.json]あ、えーと…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300100,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "“助けにきてくれた人”！@無理しないで！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200500,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "ありがとう@でも心配ご無用よ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 200500
+                    }
+                ],
+                "textRight": "少し離れてなさい"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300100
+                    }
+                ],
+                "textLeft": "えっ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 200500,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "マミ",
+                "textCenter": "いくわよ",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 200500,
+                        "motion": 400,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textCenter": "ティロ・フィナーレ！"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bgm": "stop",
+                "se": "5003_shooting_02_vh",
+                "turnChangeIn": "whiteIn"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "white"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "turnChangeOut": "whiteOut"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 2
+}

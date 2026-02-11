@@ -1,0 +1,710 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_19172.jpg",
+                "chara": [
+                    {
+                        "id": 650000,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "bgm03_story22",
+                "chara": [
+                    {
+                        "id": 650000,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-1"
+                    }
+                ],
+                "nameCenter": "",
+                "textBg": "shout",
+                "textCenter": "[flashEffect:flashRed2][se:6003_hit_shooting_02_vh][bgEffect:shakeLarge][chara:650000:effect_shake]｜フッ、フフフフフ!!?!?!｜",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 650000
+                    }
+                ],
+                "se": "3102_enemy_dead",
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-1"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "bg_adv_19171.jpg",
+                "bgChangeEffect": "exitWitchSpace",
+                "se": "7209_gate_close"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_19176.jpg",
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "autoTurnLast": 1.5,
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 1.5,
+                "bg": "bg_adv_19177.jpg",
+                "bgChangeEffect": "fade"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100200,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200500,
+                        "motion": 100,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-2"
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "nameRight": "マミ",
+                "textRight": "これで先に進めるわ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200500,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-3",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-2"
+                    }
+                ],
+                "textRight": "梓さんたちがフェントホープの@ウワサを処理してくれたら"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200500,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-4",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-3"
+                    }
+                ],
+                "textRight": "皆で集まれるはずです"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100200,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-5",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-4"
+                    }
+                ],
+                "textLeft": "わかったわ、ありがとう"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200500,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-6",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-5"
+                    }
+                ],
+                "textRight": "はい、無事を祈ります"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 100,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-7",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-6"
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "巴さんは行かないんですか？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200500,
+                        "motion": 1,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-8",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-7"
+                    }
+                ],
+                "textRight": "えぇ、フェントホープのウワサを@倒す方に力を貸すわ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200500,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-9",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-8"
+                    }
+                ],
+                "textRight": "かなり手強いはずだから"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-10",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-9"
+                    }
+                ],
+                "textLeft": "分かりました"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-11",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-10"
+                    }
+                ],
+                "textLeft": "それじゃあ、@よろしくお願いします"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200500,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-12",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-11"
+                    }
+                ],
+                "textRight": "えぇ、また後で"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100100
+                    }
+                ],
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-12"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200500,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-13"
+                    }
+                ],
+                "nameCenter": "マミ",
+                "textCenter": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 200500,
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-14",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-13"
+                    }
+                ],
+                "textCenter": "うっ…ぅ…"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 200500
+                    }
+                ],
+                "se": "3002_chara_dead",
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-14"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bgm": "stop",
+                "nameNarration": "マミ",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "narration": "さすがに自分の魔力を@切り裂けばこうなるわよね…",
+                "voiceFull": "fullvoice/section_101947/vo_full_101947-3-15"
+            },
+            {
+                "narration": "滑稽だわ…",
+                "voiceFull": "fullvoice/section_101947/vo_full_101947-3-16",
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-15"
+            },
+            {
+                "narration": "でも良かった、間に合って…@過去の自分を断ち切れて…",
+                "voiceFull": "fullvoice/section_101947/vo_full_101947-3-17",
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-16"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200600,
+                        "motion": 1,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-18",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-17"
+                    }
+                ],
+                "nameLeft": "マミ",
+                "nameRight": "杏子",
+                "narrationEffect": "out",
+                "textRight": "なーに、満足そうに笑ってんだ",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200500,
+                        "motion": 400,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-19",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-18"
+                    }
+                ],
+                "textLeft": "[chara:200500:effect_emotion_surprise_0][se:7226_shock]――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 200500,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-20",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-19"
+                    }
+                ],
+                "textLeft": "佐倉さん…"
+            },
+            {
+                "bgm": "bgm01_anime02",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 200600,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-21",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-20"
+                    }
+                ],
+                "textRight": "ほら、受け取りな"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200500,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-22",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-21"
+                    }
+                ],
+                "textLeft": "これ、グリーフシード…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200600,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-23",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-22"
+                    }
+                ],
+                "textRight": "使わないよりマシだろ"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "ef_adv_09",
+                        "id": 200500
+                    }
+                ],
+                "se": "7210_souljem_01",
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-23"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200600,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-24"
+                    }
+                ],
+                "textRight": "ったく、自己犠牲は結構だけど@もう少し周りのことも考えろよな"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200500,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-25",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-24"
+                    }
+                ],
+                "textLeft": "心配して来てくれたの？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200600,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-26",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-25"
+                    }
+                ],
+                "textRight": "心配してるのは@あたしじゃない"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200600,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-27",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-26"
+                    }
+                ],
+                "textRight": "アンタの後輩だ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200500,
+                        "motion": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200600,
+                        "motion": 1,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-28",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-27"
+                    }
+                ],
+                "textRight": "さ、いくよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200600,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-29",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-28"
+                    }
+                ],
+                "textRight": "外に出ないとあたしらも@纏めて吹っ飛ばされるからな"
+            },
+            {
+                "autoTurnLast": 2,
+                "bg": "bg_adv_19181.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 100600,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101000,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-29"
+            },
+            {
+                "bgm": "bgm03_story10",
+                "chara": [
+                    {
+                        "id": 100600,
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-30"
+                    }
+                ],
+                "nameLeft": "みふゆ",
+                "nameRight": "ももこ",
+                "textLeft": "今、聖堂の方から反応が…！",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101000,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-31",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-30"
+                    }
+                ],
+                "textRight": "やちよさんたち、@間に合ったみたいだな！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100600,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-32",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-31"
+                    }
+                ],
+                "textLeft": "はい、分かりやすい反応があって@助かりました！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101000,
+                        "motion": 1,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-33",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-32"
+                    }
+                ],
+                "textRight": "それじゃあやるか@みふゆさん！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100600,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-34",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-33"
+                    }
+                ],
+                "textLeft": "はい、みなさん@全力でお願いします！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100600,
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-35",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-34"
+                    },
+                    {
+                        "id": 101000,
+                        "motion": 200
+                    }
+                ],
+                "textBg": "shout",
+                "textLeft": "[flashEffect:flashWhite2][bgEffect:shakeLarge][se:6101_hit_slash_01_vh][surround:1006A02]はああああああっ!!"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "white",
+                "turnChangeIn": "whiteIn",
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-35"
+            },
+            {
+                "autoTurnLast": 1.5,
+                "bgEffect": "shakeLarge",
+                "flashEffect": "flashWhite2",
+                "se": "6100_hit_slash_01_s",
+                "surround": "1006A06",
+                "turnChangeOut": "whiteOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/chapter9/101908_uwasa_large.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "whiteIn"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "turnChangeOut": "whiteOut"
+            },
+            {
+                "nameNarration": "",
+                "narration": "｜!!｡○*(￣(工)￣)*○｡!!｜",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 80,
+                "narrationLineSpace": 20,
+                "se": "7213_witch_noise_01"
+            },
+            {
+                "nameNarration": "ももこ",
+                "narration": "―ももこ―@なっ、これがウワサ…？@これは想像を遙かに超えてるぞ…",
+                "voiceFull": "fullvoice/section_101947/vo_full_101947-3-37"
+            },
+            {
+                "nameNarration": "みふゆ",
+                "narration": "―みふゆ―@見積もり通りですが@実際に見ると凶悪ですね…",
+                "voiceFull": "fullvoice/section_101947/vo_full_101947-3-38",
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-37"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/3004_rainstorm.ExportJson",
+                        "zOrder": "messageBack"
+                    }
+                ],
+                "autoTurnLast": 2,
+                "bg": "bg_adv_21176.jpg",
+                "bgm": "stop",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-38"
+            },
+            {
+                "autoTurnLast": 1,
+                "surround": "7012_tempest"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "nameNarration": "",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut",
+                "turnChangeOutTime": 1
+            },
+            {
+                "narration": "『神浜市に各種警報が発表されています@強い雨と風、落雷にも注意してください@また各種交通機関も運休を発表しています』",
+                "voiceFull": "fullvoice/section_101947/vo_full_101947-3-39"
+            },
+            {
+                "autoTurnLast": 2,
+                "bg": "bg_adv_13023.jpg",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnChangeInTime": 1,
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-39"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut",
+                "turnChangeOutTime": 1
+            },
+            {
+                "narration": "『こちらは神浜市、広報車です@神浜市全域に避難指示が発表されました@付近にお住まいの方々は@速やかに最寄りの避難所に移動してください』",
+                "voiceFull": "fullvoice/section_101947/vo_full_101947-3-40"
+            },
+            {
+                "narration": "『こちらは神浜市、広報車です』",
+                "voiceFull": "fullvoice/section_101947/vo_full_101947-3-41",
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-40"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "bg_adv_21212.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800900,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "deleteArmatureList": [
+                    1
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnChangeInTime": 1,
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-41"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800900,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-42"
+                    }
+                ],
+                "nameCenter": "鶴乃の父",
+                "textCenter": "鶴乃はやちよちゃんの家に@泊まるって言ってたけど心配だな",
+                "turnChangeOut": "fadeOut",
+                "turnChangeOutTime": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800900,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-43",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-42"
+                    }
+                ],
+                "textCenter": "だけど、圏外か…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800900,
+                        "voiceFull": "fullvoice/section_101947/vo_full_101947-3-44",
+                        "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-43"
+                    }
+                ],
+                "textCenter": "早いうちに避難所に@行ってくれてたら良いんだが…"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101947/vo_full_101947-3-44"
+            }
+        ]
+    },
+    "version": 3
+}

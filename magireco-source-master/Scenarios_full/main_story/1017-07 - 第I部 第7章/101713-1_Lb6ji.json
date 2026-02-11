@@ -1,0 +1,468 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100200,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bg": "bg_adv_17121.jpg",
+                "bgm": "bgm03_story10",
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-1"
+                    }
+                ],
+                "nameLeft": "いろは",
+                "nameRight": "やちよ",
+                "textLeft": "ここに、鶴乃ちゃんが…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100200,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-2",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-1"
+                    }
+                ],
+                "textRight": "辿り着けば遊園地の[textBlue:うわさ]に@入れるのかと思ったけど"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100200,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-3",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-2"
+                    }
+                ],
+                "textRight": "入口は他にあるようね…@[textBlue:うわさ]の入口…どこに…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "id": 810100,
+                        "motion": 0,
+                        "pos": 2,
+                        "posX": 40,
+                        "posY": 0
+                    }
+                ],
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-3"
+            },
+            {
+                "select": [
+                    {
+                        "group": "group_2",
+                        "textSelect": "モギュゥゥゥ…@（観覧車が怪しいよ）"
+                    },
+                    {
+                        "group": "group_3",
+                        "textSelect": "モキュモキュ@（手分けして探そうよ）"
+                    }
+                ]
+            }
+        ],
+        "group_2": [
+            {
+                "chara": [
+                    {
+                        "id": 810100,
+                        "motion": 100,
+                        "voice": "vo_kyube_0001_02"
+                    }
+                ],
+                "nameRight": "userName",
+                "textRight": "モギュゥゥゥ…"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "voice": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-5"
+                    }
+                ],
+                "textLeft": "遠くに見える観覧車…"
+            },
+            {
+                "changeGroup": "group_4",
+                "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-5"
+            }
+        ],
+        "group_3": [
+            {
+                "chara": [
+                    {
+                        "id": 810100,
+                        "motion": 100,
+                        "voice": "vo_kyube_0001_16"
+                    }
+                ],
+                "nameRight": "userName",
+                "textRight": "モキュモキュ"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "voice": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 301,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-7"
+                    }
+                ],
+                "textLeft": "羽根たちもいっぱいいるから、@今から別れるのは怖いかも…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100100,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-8",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-7"
+                    }
+                ],
+                "textLeft": "それより一緒に向かうなら…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-9",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-8"
+                    }
+                ],
+                "textLeft": "うん"
+            },
+            {
+                "changeGroup": "group_4",
+                "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-9"
+            }
+        ],
+        "group_4": [
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-10"
+                    }
+                ],
+                "textLeft": "遊園地の[textBlue:うわさ]なら、@観覧車に名残があるし"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-11",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-10"
+                    }
+                ],
+                "textLeft": "あそこがちょっと@怪しいと思いませんか？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101000,
+                        "motion": 200,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-12",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-11"
+                    }
+                ],
+                "nameRight": "ももこ",
+                "textRight": "だな、移動してみるか"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100100
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101000
+                    }
+                ],
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-12"
+            },
+            {
+                "bgm": "bgm02_boss02",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 715100,
+                        "motion": 200,
+                        "pos": 1,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-13"
+                    }
+                ],
+                "nameCenter": "白羽根",
+                "textCenter": "悪いがここは@我々で守らせてもらう"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 715100
+                    }
+                ],
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-13"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-14"
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101000,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "textLeft": "白羽根…"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100100
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101000
+                    }
+                ],
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-14"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 715000,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 715002,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ]
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 715001,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-15"
+                    }
+                ],
+                "nameCenter": "黒羽根",
+                "textCenter": "…………"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 715000
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 715001
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 715002
+                    }
+                ],
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-15"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101000,
+                        "motion": 300,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-16"
+                    }
+                ],
+                "textRight": "おいおい、黒羽根のヤツも…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101000,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-17",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-16"
+                    }
+                ],
+                "textRight": "予想してたとはいえ、@結構な数でお出迎えだな…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "lipSynch": 0,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-18",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-17"
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "id": 100100,
+                        "motion": 1,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-19",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-18"
+                    }
+                ],
+                "textLeft": "この人たち分かってるの…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-20",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-19"
+                    }
+                ],
+                "textLeft": "今回の[textBlue:うわさ]で人を集めて@何をしようとしてるかって…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101600,
+                        "motion": 1,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-21",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-20"
+                    }
+                ],
+                "nameRight": "十七夜",
+                "textRight": "救われることだけを望んで@考えることを放棄した輩だ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101600,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-22",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-21"
+                    }
+                ],
+                "textRight": "知り得るはずがない"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 715100,
+                        "motion": 0,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-23",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-22"
+                    }
+                ],
+                "nameLeft": "白羽根",
+                "textLeft": "何を話している@引き返すなら今のうちだ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 101600,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101713/vo_full_101713-1-24",
+                        "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-23"
+                    }
+                ],
+                "textRight": "と言われて@引き返すと思うのか…？"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101713/vo_full_101713-1-24"
+            }
+        ]
+    },
+    "version": 3
+}

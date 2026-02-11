@@ -1,0 +1,366 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "White",
+                "bgm": "bgm03_story07",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_5b.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ],
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationFontSize": 0,
+                "narrationLineSpace": 2000,
+                "turnChangeIn": "whiteIn"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "turnChangeOut": "whiteOut"
+            },
+            {
+                "bg": "black",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_5a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_5b.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "いろはちゃん",
+                "narration": "うう…@私はいったい何を…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 900
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_5a.jpg"
+                    },
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posX": -100,
+                                "posY": -80
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_6b.jpg",
+                        "posX": 0,
+                        "posY": -900,
+                        "scale": 1.3,
+                        "setVisible": 1
+                    }
+                ]
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_6c1.png",
+                        "posX": -100,
+                        "posY": -80,
+                        "scale": 1.3,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_5a.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "いろはちゃん",
+                "narration": "あっ@これはマギウスが羽根たちを操っていた@受信ペンダント！"
+            },
+            {
+                "bgm": "stop",
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.2,
+                                        "scale": 1
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": 0,
+                                        "posY": 0
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_6a.jpg",
+                        "posX": -100,
+                        "posY": -80,
+                        "scale": 1.3,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_6c1.png",
+                        "setVisible": 0
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_6b.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "まどか先輩",
+                "narration": "ゆかいだね"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.2,
+                                        "scale": 2.8
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.2,
+                                        "posX": 150,
+                                        "posY": 0
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_6a.jpg"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "scaleTo": {
+                                "duration": 0.5,
+                                "scale": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_6a.jpg"
+                    },
+                    {
+                        "action": {
+                            "scaleTo": {
+                                "duration": 0.05,
+                                "scale": 1
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_7b.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 0,
+                        "setVisible": 1
+                    }
+                ]
+            },
+            {
+                "autoTurnFirst": 0.01,
+                "bgm": "bgm03_story16",
+                "item": [
+                    {
+                        "action": {
+                            "sequence": [
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.05,
+                                        "scale": 0.8
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.05,
+                                        "scale": 1.2
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.05,
+                                        "scale": 1
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_7b.jpg"
+                    }
+                ]
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_7c1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_6a.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "いろはちゃん",
+                "narration": "これから始まるマギレコ２部も@遠くて近い隣の神浜から"
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_7a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_7c1.png",
+                        "setVisible": 0
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_7b.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "いろはちゃん",
+                "narration": "こっちの神浜を応援していきますよ！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 900
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_7a.jpg"
+                    },
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_8b.jpg",
+                        "posX": 0,
+                        "posY": -900,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ]
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_8c1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_7a.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "いろはちゃん",
+                "narration": "…２部の主人公私ですよね？"
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_8c2.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ],
+                "nameNarration": "まどか先輩",
+                "narration": "特訓をはじめるよ@ういちゃん！"
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_8a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_8c1.png",
+                        "setVisible": 0
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_8c2.png",
+                        "setVisible": 0
+                    },
+                    {
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_8b.jpg",
+                        "setVisible": 0
+                    }
+                ],
+                "nameNarration": "うい",
+                "narration": "はい@まどか先輩！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "spawn": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.5,
+                                        "posX": 750,
+                                        "posY": 400
+                                    }
+                                },
+                                {
+                                    "scaleTo": {
+                                        "duration": 0.5,
+                                        "scale": 2.8
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/31201_irohachan_story/31201_m3_8a.jpg"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 2,
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

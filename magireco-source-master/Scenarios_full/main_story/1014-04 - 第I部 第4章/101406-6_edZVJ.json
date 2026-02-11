@@ -1,0 +1,368 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200600,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bg": "bg_adv_13072.jpg",
+                "bgm": "bgm02_boss01",
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-1"
+                    }
+                ],
+                "nameLeft": "杏子",
+                "nameRight": "いろは",
+                "textRight": "あのウワサ何もしてくる@気配がありませんね…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200600,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-2",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-1"
+                    }
+                ],
+                "textLeft": "こっちがくたばらなくても@壊せなきゃ向こうの勝ちだからな"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200600,
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-3",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-2"
+                    }
+                ],
+                "textLeft": "どうしたもんかな@あたしももう、打つ手がねぇ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-4",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-3"
+                    }
+                ],
+                "textRight": "どうすればたどり着けるかな…？"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "id": 810100,
+                        "motion": 0,
+                        "pos": 0,
+                        "posX": -50,
+                        "posY": 0
+                    }
+                ],
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-4"
+            },
+            {
+                "select": [
+                    {
+                        "group": "group_2",
+                        "textSelect": "モッキュー！@（岩が落ちるより早く行くんだ）"
+                    },
+                    {
+                        "group": "group_3",
+                        "textSelect": "モッキュモッキュ@（矢を連続で放ち続けようよ）"
+                    }
+                ]
+            }
+        ],
+        "group_2": [
+            {
+                "chara": [
+                    {
+                        "id": 810100,
+                        "motion": 100,
+                        "voice": "vo_kyube_0001_04"
+                    }
+                ],
+                "nameLeft": "userName",
+                "textLeft": "モッキュー！"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "voice": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 301,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-6"
+                    }
+                ],
+                "textRight": "走ってもこけちゃいそう…"
+            },
+            {
+                "changeGroup": "group_4",
+                "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-6"
+            }
+        ],
+        "group_3": [
+            {
+                "chara": [
+                    {
+                        "id": 810100,
+                        "motion": 100,
+                        "voice": "vo_kyube_0001_10"
+                    }
+                ],
+                "nameLeft": "userName",
+                "textLeft": "モッキュモッキュ"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "voice": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 301,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-8"
+                    }
+                ],
+                "textRight": "でも、何度も撃ってるのに@全然びくともしないし…"
+            },
+            {
+                "changeGroup": "group_4",
+                "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-8"
+            }
+        ],
+        "group_4": [
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-9"
+                    }
+                ],
+                "textRight": "パッと向こうに@たどり着けたらいいんだけど…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200600,
+                        "motion": 1,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-10",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-9"
+                    }
+                ],
+                "nameLeft": "杏子",
+                "textLeft": "んな、都合が良い方法なんて@ないだろ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100500,
+                        "motion": 100,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-11",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-10"
+                    }
+                ],
+                "nameLeft": "フェリシア",
+                "textLeft": "それだ！@オレ、思いついたぞ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100100,
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-12",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-11"
+                    }
+                ],
+                "textRight": "なに、どうするつもり!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100500,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-13",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-12"
+                    }
+                ],
+                "textLeft": "へへっ、岩が落ちてきても@それより早く行きゃいいんだよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-14",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-13"
+                    }
+                ],
+                "textRight": "それは私も思ったけど、@そんなことできるの？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100500,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-15",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-14"
+                    }
+                ],
+                "textLeft": "オレ、パワーだけは@自信があるからな！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100500,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-16",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-15"
+                    }
+                ],
+                "textLeft": "岩を使ってドーンと飛んできゃ@ズガーンってやれるだろ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200600,
+                        "motion": 1,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-17",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-16"
+                    }
+                ],
+                "nameRight": "杏子",
+                "textRight": "あ？どういう意味だそりゃ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-18",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-17"
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "落ちてきた岩を蹴って@向こうに飛んでくってこと？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100500,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-19",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-18"
+                    }
+                ],
+                "textLeft": "そういうこと！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100100,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-20",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-19"
+                    }
+                ],
+                "textRight": "…できるのかな…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200600,
+                        "motion": 100,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-21",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-20"
+                    }
+                ],
+                "nameRight": "杏子",
+                "textRight": "いーんじゃね？@やらないよりやってみろだ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100500,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101406/vo_full_101406-6-22",
+                        "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-21"
+                    }
+                ],
+                "textLeft": "そーだそーだ！@やらないより、やってみるぞ！"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101406/vo_full_101406-6-22"
+            }
+        ]
+    },
+    "version": 3
+}

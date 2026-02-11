@@ -1,0 +1,782 @@
+{
+    "skipTransitionList": [
+        {
+            "from": "group_1",
+            "to": "group_4"
+        },
+        {
+            "canSkip": false,
+            "from": "group_4"
+        }
+    ],
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_20331.jpg",
+                "bgm": "bgm05_event03",
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 300501,
+                        "motion": 1,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300902,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "胡桃 まなか",
+                "textLeft": "さあ、夏目選手が@アンカーとして登場だ！",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 300902
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 300501
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100550,
+                        "motion": 100,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 302801,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "フェリシア",
+                "nameRight": "三栗 あやめ",
+                "textRight": "かこだー！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550
+                    }
+                ],
+                "textLeft": "でも、大丈夫かぁ～？"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 302801
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 100550
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_022.exp.json",
+                        "id": 301101,
+                        "motion": 200,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "夏目 かこ",
+                "textCenter": "では…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301101,
+                        "motion": 400
+                    }
+                ],
+                "textCenter": "いただきます！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_022.exp.json",
+                        "id": 301101,
+                        "motion": 200
+                    }
+                ],
+                "textCenter": "あむ…あむ…あむ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301101,
+                        "motion": 400
+                    }
+                ],
+                "textCenter": "次を！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 301101
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300902,
+                        "motion": 400,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100550,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "胡桃 まなか",
+                "nameRight": "フェリシア",
+                "textRight": "[chara:100550:effect_emotion_surprise_0][se:7226_shock]は、はえーっ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902
+                    }
+                ],
+                "textLeft": "うおーっと！夏目選手が@ものすごいスピード！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_012.exp.json",
+                        "id": 300902,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "飛ばす飛ばす！@七海選手に追いすがる！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 300902
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 100550
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100251,
+                        "motion": 400,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 2,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 302601,
+                        "motion": 100,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_022.exp.json",
+                        "id": 301101,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "[chara:302601:effect_emotion_joy_0][se:7222_happy]…くっ…！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100251
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 302601
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 301101
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100550,
+                        "motion": 100,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302801,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "フェリシア",
+                "nameRight": "三栗 あやめ",
+                "textLeft": "おいおい、マジかー…@意外だな～…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302801,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "はっ！@そうか！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "どうした!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302801,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "あちしさ、聞いたことあんの@かこの趣味…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100550
+                    }
+                ],
+                "textLeft": "…読書だろ？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302801,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "違うの！別の趣味"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100550,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "別の…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302801
+                    }
+                ],
+                "textRight": "それは…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302801,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "ラーメンの食べ歩き！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "[chara:100550:effect_emotion_surprise_0][se:7226_shock]ラーメン…!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 302801,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "そう！それ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302801
+                    }
+                ],
+                "textRight": "かこ、ああ見えてラーメンが@すごい好きでさ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302701,
+                        "motion": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "遊佐 葉月",
+                "textLeft": "はー、なるほど…@だから麺類は得意ってことか…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302801,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "うん、そうじゃないかな…!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100351,
+                        "motion": 400,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "鶴乃",
+                "textLeft": "ラーメン食べ歩きが趣味ぃ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100351,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（…うちのラーメンも食べて@コメントもらえないかな？）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 300501,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "常盤 ななか",
+                "textRight": "その通りですわ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302701,
+                        "motion": 400,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "遊佐 葉月",
+                "textLeft": "やっぱりそうなんだ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 300501
+                    }
+                ],
+                "textRight": "彼女がアンカーの席についたのは@伊達じゃないんです…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300501
+                    }
+                ],
+                "textRight": "ご飯とかパンは少食でも@麺類はかなり食べるのです！"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 300501,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "ラーメンが１番ですが…@とにかく麺類が好き！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300501
+                    }
+                ],
+                "textRight": "人呼んで…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300501,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "麺類大好き少女！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301201,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "純 美雨",
+                "textLeft": "…そのまんまネ"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 301201
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 300501
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_022.exp.json",
+                        "id": 301101,
+                        "motion": 100,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "夏目 かこ",
+                "textCenter": "あむ…あむ…あむ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301101,
+                        "motion": 400
+                    }
+                ],
+                "textCenter": "次、お願いします！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 301101
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_012.exp.json",
+                        "id": 300902,
+                        "motion": 200,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301201,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "胡桃 まなか",
+                "textBg": "shout",
+                "textLeft": "これは凄まじい@戦いになってきたー！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 300902
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 301201
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100251,
+                        "lipSynch": 0,
+                        "motion": 200,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "やちよ",
+                "textCenter": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100251,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（…このままじゃ負ける…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 100251,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（…取るべき一手は…）"
+            },
+            {
+                "select": [
+                    {
+                        "alternativeId": 6,
+                        "group": "group_2",
+                        "textSelect": "一気にペースを上げる"
+                    },
+                    {
+                        "alternativeId": 7,
+                        "group": "group_3",
+                        "textSelect": "このままペースを守る"
+                    }
+                ],
+                "turnEffect": "stop"
+            }
+        ],
+        "group_2": [
+            {
+                "autoTurnLast": 0.2,
+                "bg": "bg_adv_20331.jpg",
+                "bgm": "bgm05_event03",
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100251,
+                        "motion": 200,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 100251,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "やちよ",
+                "textCenter": "（…ここが勝負所ね！）",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100251,
+                        "lipSynch": 0,
+                        "motion": 201
+                    }
+                ],
+                "textCenter": "（ラストスパートを@かけて一気に引き離す！）"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            }
+        ],
+        "group_3": [
+            {
+                "autoTurnLast": 0.2,
+                "bg": "bg_adv_20331.jpg",
+                "bgm": "bgm05_event03",
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100251,
+                        "motion": 200,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100251,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "やちよ",
+                "textCenter": "（…焦りは禁物よ…）",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 100251,
+                        "lipSynch": 0,
+                        "motion": 301
+                    }
+                ],
+                "textCenter": "（ここはじっくり構える…！）"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            }
+        ],
+        "group_4": [
+            {
+                "autoTurnLast": 0.2,
+                "bg": "bg_adv_20331.jpg",
+                "bgm": "bgm05_event03",
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100251,
+                        "motion": 200,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100251,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "やちよ",
+                "textCenter": "（…取るべき一手は…）",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "select": [
+                    {
+                        "alternativeId": 6,
+                        "group": "group_2",
+                        "textSelect": "一気にペースを上げる"
+                    },
+                    {
+                        "alternativeId": 7,
+                        "group": "group_3",
+                        "textSelect": "このままペースを守る"
+                    }
+                ],
+                "turnEffect": "stop"
+            }
+        ]
+    },
+    "version": 3
+}

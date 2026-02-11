@@ -1,0 +1,696 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "white",
+                "bgm": "stop",
+                "deleteArmatureList": [
+                    0
+                ],
+                "item": [
+                    {
+                        "iPhoneXScale": 1,
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "日记的一页",
+                "narration": "[textBlack:20××年12月24日　23:20]",
+                "narrationBg": "",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 180,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "[textBlack:有一位女孩遇见了]@[textBlack:一只会说话的奇妙动物]"
+            },
+            {
+                "narration": "[textBlack:然后，她许下愿望]@[textBlack:『希望能和圣诞守护灵小姐们相遇』]"
+            },
+            {
+                "narration": "[textBlack:就这样，出现了一本神奇的日记]@[textBlack:它绽放着光芒，过了一会儿]@[textBlack:就消失在了什么地方…]"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21077.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 801600,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110702,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "visible": "hide"
+                    },
+                    {
+                        "path": "resource/scenario/img/51120_touka_nemu_christmas/51120_magicalbook1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm05_event05",
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "…空白的书页在被填补着…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801600
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "是说这本书吗…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "这多半是…@你的愿望所孕育出的日记吧"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "而它之所以会以@“书本”的形式出现"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "应该出于对「圣诞之绊」这本书@持有的强烈情感的映照"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 200
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "然后在这本日记中…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "详细记录了至今为止的所有事件"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "恐怕其中记述的内容@对于我们而言就是未来本身"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801600,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "…………？"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 801600
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 300
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110701,
+                        "motion": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "surround": "7202_telepathy",
+                "textRight": "是因为有这本日记存在@才导致我们成为守护灵的吗",
+                "turnEffect": "ef_adv_02"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "还是因为有我们扮演了守护灵@这孩子在成为魔法少女后"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "这本日记才得以出现呢"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "换言之就是鸡和蛋的问题吗…@但这方面我不是很了解"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "对于这个问题@以前的人们绞尽脑汁思考"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "基本上已经解答差不多了哦ー？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "…是吗？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "引导悖论@所谓的因果循环呢"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "…用超通俗的话讲"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 110701,
+                        "motion": 201
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "鸡和蛋哪个先出现这个问题@无论你想再多都没用"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "但它们彼此之间不会矛盾@所以不属于时间悖论"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110701,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "既然不属于时间悖论的话@那我们就不会消失"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "…就是这样！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "…是这样吗"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 110701,
+                        "motion": 1
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "比起这些，关于这本日记@还有一点让我十分在意"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    },
+                    {
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "对于日记而言@一切应该都是既定的过去"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "但中间却出现了空白的页数…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 200
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "就在我们帮助@这孩子父母的时候对吧？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "没错…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "虽说最后达成的结果可称浪漫"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "但我认为这都是必须要"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "交给我们自由抉择的"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110701,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "为什么？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110702,
+                        "motion": 200
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "因为我们再怎么说"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "都是时刻在寻求着某样使命@神圣的圣诞守护灵呢"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701,
+                        "lipSynch": 0,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "…………？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "假设我们只是被强制着"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "是出于怜惜自己的生命@方才拯救他人的存在的话"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 300
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "那还有资格被称为@真正的圣诞守护灵吗？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "因为能被召唤到这里来的@一定会是真正的守护灵"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "只有以自己的意志帮助他人@才能得到通往这里的资格"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701,
+                        "motion": 1
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "呜…是想说@这本日记其实是在试探我们吗？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "就是这么回事呢"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 110701
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51120_touka_nemu_christmas/51120_magicalbook1.png",
+                        "visible": "hide"
+                    }
+                ],
+                "surround": "stop",
+                "textClear": 1,
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 801600,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "那…那个…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "啊…抱歉"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "刚才在和同伴说些悄悄话呢"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 801600
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "这样呀…"
+            },
+            {
+                "bgm": "bgm05_event11",
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 400
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "好了…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "难得愿望成真，有什么想要@拜托我们的事情吗"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 801600,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "是的…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110701,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "灯花",
+                "textRight": "是什么呢？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801600
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "我想让守护灵小姐们@好好跟我说说…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 801600
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "当初相遇的时候@爸爸妈妈是什么样子的！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 110701,
+                        "motion": 400
+                    }
+                ],
+                "nameRight": "灯花",
+                "textRight": "哼哼哼"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 110702,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "…想要听故事的话@倒还真有不少呢"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

@@ -1,0 +1,309 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51156_singleraid_folklore/515601_friends_number_1.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "black",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51156_singleraid_folklore/515601_group_chat.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    },
+                    {
+                        "path": "resource/scenario/img/51156_singleraid_folklore/515601_friends_number_1.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm23_folklore06",
+                "nameNarration": "亚历山德拉",
+                "narration": "现在我们在汤国市全明星祭@并且在这附近感知到了魔女的气息",
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 100,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "数量是两只@那是从很早之前就有的魔女反应@所以可以认为它们已经成长变强了"
+            },
+            {
+                "narration": "我们这里有三个人@但是，我们想把受害范围压缩在最小@请问有人愿意过来帮忙吗？"
+            },
+            {
+                "nameNarration": "",
+                "narration": "我们正好也在附近",
+                "narrationHAlignment": "left",
+                "narrationPosX": 300
+            },
+            {
+                "narration": "有一个人正在忙全明星祭的事情@要参加恐怕很难，但如果是另外两个人@应该能从中途开始帮忙"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "bg_adv_21611.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp3.json",
+                        "id": 103501,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp3.json",
+                        "id": 103301,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51156_singleraid_folklore/515601_group_chat.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103501,
+                        "motion": 300
+                    }
+                ],
+                "nameRight": "亚历山德拉",
+                "textRight": "没有@等她们两个来的余裕了呢…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103301,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "拉比",
+                "textLeft": "我们先出发和魔女战斗吧"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103301
+                    }
+                ],
+                "nameLeft": "拉比",
+                "textLeft": "不过，在没能完全处理掉的时候@就让她们支援一下这边吧"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp3.json",
+                        "id": 103401,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "旭",
+                "textRight": "是啊"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103401
+                    }
+                ],
+                "nameRight": "旭",
+                "textRight": "就靠我们和她们的两手准备@确实地收拾掉魔女吧"
+            },
+            {
+                "autoTurnLast": 0.3,
+                "bg": "bg_adv_20321.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp3.json",
+                        "id": 103400,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp3.json",
+                        "id": 103500,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6107_durbar_emblem.png",
+                        "posX": 0,
+                        "posY": 120,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "rollInFast",
+                "turnEffect": "ef_adv_06"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103400,
+                        "motion": 300
+                    }
+                ],
+                "nameRight": "旭",
+                "textRight": "糟糕…",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103400
+                    }
+                ],
+                "nameRight": "旭",
+                "textRight": "虽然一共有两只，@但看来只有一只正在移动"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103500,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "亚历山德拉",
+                "textLeft": "原本只要不兵分两路，@我们就无法同时压制两只魔女"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103500
+                    }
+                ],
+                "nameLeft": "亚历山德拉",
+                "textLeft": "这里就由一个人对付，@另外两个人去找另一只魔女吧"
+            },
+            {
+                "autoTurnLast": 0.3,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp3.json",
+                        "id": 103300,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 2.5,
+                "flashEffect": "flashWhiteSlow2",
+                "se": "7211_souljem_02",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 103300
+                    }
+                ],
+                "nameLeft": "拉比",
+                "textLeft": "还没有跑那么远@应该很快就能追上"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103300
+                    }
+                ],
+                "nameLeft": "拉比",
+                "textLeft": "栗栖比较擅长辅助@所以你和其中一个人一起走"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103300
+                    }
+                ],
+                "nameLeft": "拉比",
+                "textLeft": "我和三浦就分成两边吧"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103400,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "旭",
+                "textRight": "那么，我就一个人@留下和这个魔女战斗吧"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103400
+                    }
+                ],
+                "nameRight": "旭",
+                "textRight": "所以，你们两位@就去解决另一只"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp3.json",
+                        "id": 103500,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "亚历山德拉",
+                "textRight": "我知道了@冰室小姐觉得这样可以吗？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103300,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "拉比",
+                "textLeft": "嗯，当然了"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

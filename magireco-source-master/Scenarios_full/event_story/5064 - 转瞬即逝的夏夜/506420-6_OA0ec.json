@@ -1,0 +1,594 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_20273.jpg",
+                "bgm": "bgm03_story10",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51064_swim_amane/amane_sisters_crisis.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "月咲",
+                "narration": "―月咲―@くっ…@みすみす捕まるなんて…",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 10,
+                "narrationLineSpace": 20,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "nameNarration": "月夜",
+                "narration": "―月夜―@村の人たちの様子がおかしい@ような気はしていましたが…"
+            },
+            {
+                "nameNarration": "月咲",
+                "narration": "―月咲―@魔女の気配がないせいで@油断しちゃったね…"
+            },
+            {
+                "nameNarration": "月夜",
+                "narration": "―月夜―@うぅ…大失態でございます…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101901,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101801,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51064_swim_amane/amane_sisters_crisis.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101901,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "月夜",
+                "nameRight": "月咲",
+                "textRight": "…でも待って、月夜ちゃん@これが魔女のせいじゃないなら…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101801,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "…村の皆さんが、最初から私たち@ふたりを犠牲にしようとしていた"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101801
+                    }
+                ],
+                "textLeft": "…ということでございますか…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101901,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "そんなはずない…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101901
+                    }
+                ],
+                "textRight": "…けど…村のみんなが正気なら@ここで変身するのはまずいし…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101801,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "とにかく、@この包囲から抜け出して"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101801
+                    }
+                ],
+                "textLeft": "みふゆさんたちと@合流するでございます…！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 101801
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101901
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 800900,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "長老",
+                "textCenter": "ふたりの指輪を取り上げよ"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 800900
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "bgm": "bgm03_story17",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101901,
+                        "motion": 400,
+                        "mouthOpen": 1,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101801,
+                        "motion": 400,
+                        "mouthOpen": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameCenter": "月夜＆月咲",
+                "textBg": "shout",
+                "textCenter": "きゃぁっ!?"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101401,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100801,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101401
+                    }
+                ],
+                "nameLeft": "アリナ",
+                "nameRight": "ねむ",
+                "textRight": "魔法少女を知ってる…!?",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_05",
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100800,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "se": "7205_magic_girl",
+                "textLeft": "コイツら…@調子づいてウザイんですケド…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100800,
+                        "motion": 400
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 801000,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "textLeft": "[flashEffect:flashWhite2][surround:1008A02]死んでも知らないカラ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801000,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "",
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100800,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100800
+                    }
+                ],
+                "textLeft": "避けられた…！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 801000
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 100800
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800600,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800500,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100601,
+                        "motion": 400,
+                        "pos": 1
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100601
+                    }
+                ],
+                "nameCenter": "みふゆ",
+                "textCenter": "くっ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100601
+                    }
+                ],
+                "textCenter": "こんなに囲まれては@月夜さんたちを助けられない…！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 800900,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101801,
+                        "motion": 0,
+                        "pos": 1,
+                        "posX": 50,
+                        "soulGem": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101901,
+                        "motion": 0,
+                        "pos": 2,
+                        "soulGem": 0
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101901,
+                        "motion": 200
+                    }
+                ],
+                "nameCenter": "月夜",
+                "nameLeft": "長老",
+                "nameRight": "月咲",
+                "textRight": "長老さん！@魔法少女のこと、知ってるの!?",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101801,
+                        "motion": 100
+                    }
+                ],
+                "textCenter": "一体、何が@目的なのでございますか…!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800900,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800900
+                    }
+                ],
+                "textLeft": "岬へ連れて行け"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "shake",
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101801,
+                        "motion": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "effect": "shake",
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101901,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "きゃっ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101901
+                    }
+                ],
+                "textRight": "ちょ、ちょっと…！@どこへ行くって…岬…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800900
+                    }
+                ],
+                "textLeft": "…お前たちも…絶望すればいい"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101801,
+                        "lipSynch": 0,
+                        "motion": 400
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101901,
+                        "motion": 400
+                    }
+                ],
+                "nameCenter": "月夜＆月咲",
+                "textCenter": "――っ!?"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100601,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100701,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100601
+                    }
+                ],
+                "nameLeft": "みふゆ",
+                "textLeft": "あっ…！",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100601,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "ここに足止めされていては@ふたりを見失ってしまいます！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_05",
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100700,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "灯花",
+                "se": "7205_magic_girl",
+                "textRight": "もー！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100700,
+                        "motion": 201
+                    }
+                ],
+                "textRight": "[flashEffect:flashWhite2][surround:1007A01]汚い手で@わたくしに触らないでー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800700,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "[flashEffect:flashWhite2]…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101400,
+                        "motion": 300,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "ねむ",
+                "textRight": "はぁ…@青天の霹靂だね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100600,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "みふゆ",
+                "textLeft": "皆さん！@ここを突破しますよ！"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

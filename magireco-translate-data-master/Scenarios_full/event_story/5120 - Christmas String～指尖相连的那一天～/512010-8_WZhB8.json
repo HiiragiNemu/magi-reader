@@ -1,0 +1,583 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "white",
+                "bgm": "stop",
+                "deleteArmatureList": [
+                    0
+                ],
+                "item": [
+                    {
+                        "iPhoneXScale": 1,
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "日记的一页",
+                "narration": "[textBlack:20××年12月××日　15:40]",
+                "narrationBg": "",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 180,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "[textBlack:翻阅了新作的前辈和往常一样]@[textBlack:没有夸奖后辈一句]"
+            },
+            {
+                "narration": "[textBlack:一切都和往常一样]@[textBlack:只有时间在悄然逝去]"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_21491.jpg",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110701,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110702,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "flashEffect": "explosion",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    },
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameCenter": "灯花和音梦",
+                "textCenter": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 100
+                    },
+                    {
+                        "eyeClose": 0,
+                        "id": 110701
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "快看"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110701,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "阿莉娜…！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 110701
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 110702
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_21491.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "bgm": "bgm05_event01",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101201,
+                        "motion": 100,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100801,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "阿莉娜",
+                "nameRight": "御园 花凛",
+                "textRight": "真没想到今天会遇见呢"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 100801,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…毕竟才放的寒假@一般都不会过来吧"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101201,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "我的漫画研究部@和前辈的美术部"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201
+                    }
+                ],
+                "textRight": "哪怕冬天也是绝赞活动中呢！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "…这么说来"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801
+                    }
+                ],
+                "textLeft": "你刚才好像是@完成了什么作品吧？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101201,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "没错@才刚画完还是热乎乎的哦！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101201,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "名为「圣诞死神少女@Death・Caribou」的新作！"
+            },
+            {
+                "autoTurnLast": 2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 101201,
+                        "motion": 1,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 100801,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "嗯…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801
+                    }
+                ],
+                "textLeft": "算不上好，也算不上坏的垃圾呢"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101201,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "…真的吗!?@[chara:101201:lipSynch_0][wait:0.8][chara:101201:effect_emotion_joy_0][se:7222_happy][chara:101201:cheek_0][chara:101201:face_mtn_ex_011.exp.json][chara:101201:lipSynch_1]我好开心啊！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100801,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "[chara:100801:effect_emotion_surprise_0][se:7226_shock]这有什么好高兴的？@我可没在夸你啊"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101201
+                    }
+                ],
+                "textRight": "连一直以来都很严厉的前辈@都亲口说了算不上坏！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100801,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（在后面可还@跟着一句垃圾啊…？）",
+                "turnEffect": "thinking"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101201,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 100801,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801
+                    }
+                ],
+                "textLeft": "那么，阿莉娜就先走了",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "nameNarration": "",
+                "narration": "咚…",
+                "narrationBg": "bg_adv_21491.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101201,
+                        "motion": 400
+                    }
+                ],
+                "narrationEffect": "out",
+                "textRight": "诶…@草莓牛奶？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "之前不是说了吗？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801
+                    }
+                ],
+                "textLeft": "下次会买来还你的"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201,
+                        "motion": 0,
+                        "pos": 1
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 100801
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "咣当",
+                "narrationBg": "bg_adv_21491.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201
+                    }
+                ],
+                "nameCenter": "御园 花凛",
+                "narrationEffect": "out",
+                "textCenter": "…难道这个@是圣诞礼物吗？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101201,
+                        "motion": 200
+                    }
+                ],
+                "textCenter": "[chara:101201:effect_emotion_joy_0][se:7222_happy]前辈，谢谢你～"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 101201
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_21491.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "bgm": "bgm03_story20",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110701,
+                        "motion": 100,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "…我们是牵连起断开的因缘的@圣诞守护灵来着吧？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "是这么说的"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110701,
+                        "motion": 1
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "什么牵连起因缘什么的…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "这从一开始情节就完全不对吧？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "是不是只要本人能够开心@就算是happy end了…？"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "flashEffect": "explosion",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51120_touka_nemu_christmas/51120_magicalbook1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110702,
+                        "motion": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110701,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "啊…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "日记又开始发光了…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "下一页上面是什么…？"
+            },
+            {
+                "autoTurnLast": 2,
+                "bg": "white",
+                "deleteArmatureList": [
+                    0
+                ],
+                "item": [
+                    {
+                        "iPhoneXScale": 1,
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "whiteIn"
+            },
+            {
+                "nameNarration": "日记的一页",
+                "narration": "[textBlack:20××年××月××日　13:40]",
+                "narrationBg": "",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 180,
+                "turnChangeOut": "whiteOut"
+            },
+            {
+                "narration": "[textBlack:在那之后，岁月流逝]@[textBlack:那时的“往常”已经…]"
+            },
+            {
+                "narration": "[textBlack:无处可寻了]"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "whiteIn"
+            }
+        ]
+    },
+    "version": 3
+}

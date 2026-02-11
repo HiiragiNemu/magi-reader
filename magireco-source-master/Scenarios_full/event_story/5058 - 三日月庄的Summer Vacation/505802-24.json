@@ -1,0 +1,912 @@
+{
+    "skipTransitionList": [
+        {
+            "from": "group_1",
+            "to": "group_4"
+        },
+        {
+            "canSkip": false,
+            "from": "group_4"
+        }
+    ],
+    "story": {
+        "group_1": [
+            {
+                "nameNarration": "いろは",
+                "narration": "お祭りのサブタイトル@「リアフェスティバル」@その「リア」が示していたのは…",
+                "narrationBg": "bg_adv_20351.jpg",
+                "narrationEffect": "in",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_20351.jpg",
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100301,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "？？？",
+                "narration": "「そりゃあもう、私のことよ！」",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "narrationEffect": "out",
+                "textLeft": "…あら"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301,
+                        "motion": 400,
+                        "mouthOpen": 1
+                    }
+                ],
+                "nameRight": "鶴乃",
+                "textRight": "[chara:100301:effect_emotion_surprise_0][se:7226_shock]おお！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100201
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 100301
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 300601,
+                        "motion": 200,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "木崎 衣美里",
+                "textCenter": "あー、きたきたー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 300601
+                    }
+                ],
+                "textCenter": "莉愛様ー！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "id": 300601,
+                        "pos": 0
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "bgm": "bgm03_story01",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301001,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "阿見 莉愛",
+                "textRight": "…どうも@ごきげんよう、皆さん…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "（…やっぱり…！）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100301,
+                        "motion": 201,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "鶴乃",
+                "textLeft": "出たな～…",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301
+                    }
+                ],
+                "textLeft": "ボア様！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301001,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "誰がモコモコしてんのよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101001,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "ももこ",
+                "textLeft": "いや、確か…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101001,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "リブ様！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301001,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "誰が肋骨なのよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100901,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "レナ",
+                "textLeft": "違うって…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "利子様でしょ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301001,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "私は増えないわよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101101,
+                        "motion": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "かえで",
+                "textLeft": "何言ってるの、みんな…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101101
+                    }
+                ],
+                "textLeft": "リタイア様でしょ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "id": 301001,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "やめないわよ！私は私を！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301001
+                    }
+                ],
+                "textRight": "ていうか、文字数全然@変わっちゃってるし！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301001,
+                        "motion": 0,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textRight": "はぁ…はぁ…はぁ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301001,
+                        "motion": 1,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textRight": "…他には！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "あ…今日の所は以上です…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301001
+                    }
+                ],
+                "textRight": "…よろしい！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301001,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "[chara:301001:effect_emotion_surprise_0][se:7226_shock]…いや、よろしくない！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 300601,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "木崎 衣美里",
+                "textLeft": "でさー、お祭りにはこう@シンボルっていうの？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300601
+                    }
+                ],
+                "textLeft": "そういうキャラ立った人が@必要だと思ってさー"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301001,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "話は進めるのね！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 300601,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "そんなゴージャスな人@やっぱ莉愛様でしょ！ってなって"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100401,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "さな",
+                "textLeft": "ゴージャス…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301001,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "…ふふ…さすがプロデューサーは@分かっているわね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301001
+                    }
+                ],
+                "textRight": "そう！私がこの祭りの@シンボル的な女神なのよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301001,
+                        "motion": 100,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textRight": "ほほほほほー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100201,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "id": 301001,
+                        "mouthOpen": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301001,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "…どうやら私の神々しさに@言葉を失っているようね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 100201,
+                        "motion": 401
+                    }
+                ],
+                "textLeft": "…え…？@あ、いや、ボーっとしてて…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 301001
+                    }
+                ],
+                "textRight": "無理もないわ！@ショックなのよね！"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 301001
+                    }
+                ],
+                "textRight": "私じゃなくてどうして@あの人なのって…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301001,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "くやしくてしょうがないわ！@こんちくしょうめ！…って！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 100201,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "そんなことは別に…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301001,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "仕方ないわね！七海やちよ！@…チャンスをあげるわ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301001
+                    }
+                ],
+                "textRight": "この女神の座を奪える@チャンスをね！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_042.exp.json",
+                        "id": 100201,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "…完全にスルーね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301001,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "…エミリー、彼女も@エントリーしといてもらえる？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 300601,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "木崎 衣美里",
+                "textLeft": "おー！「女神チャレンジ」だね！@やちょさんもやるんだ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_042.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "やちよ",
+                "textRight": "…あのね、あなたも@話の流れ見ていたでしょ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101101,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "かえで",
+                "textLeft": "あの…@「女神チャレンジ」って…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301001,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "阿見 莉愛",
+                "textRight": "この後、櫓前特設ステージで@繰り広げられる…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301001
+                    }
+                ],
+                "textRight": "女神の座をかけた@高貴なる戦いのことよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 303101,
+                        "motion": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "綾野 梨花",
+                "textLeft": "お祭りのステージイベントね"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 303101
+                    }
+                ],
+                "textLeft": "女神様とゲームで競って@勝ったら景品がもらえるんだよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100901,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "レナ",
+                "textLeft": "つまり…余興ね！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301001,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "違うわ！高貴なる戦いよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301001,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "七海やちよ！@私と戦いなさい！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301001,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "祭りの観衆の前で女神の実力を@思い知らせてあげるわ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 301,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "…何で私が@思い知らなくちゃ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301001,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "思い知らせてあげるわって！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "…もう～…"
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100201
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 301001
+                    }
+                ],
+                "nameNarration": "いろは",
+                "narration": "莉愛さんからの誘いを受けたやちよさん@この勝負を…",
+                "narrationBg": "bg_adv_20351.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "narrationEffect": "out",
+                "select": [
+                    {
+                        "alternativeId": 24,
+                        "group": "group_2",
+                        "textSelect": "まだ考える"
+                    },
+                    {
+                        "alternativeId": 25,
+                        "group": "group_3",
+                        "textSelect": "受けない"
+                    }
+                ]
+            }
+        ],
+        "group_2": [
+            {
+                "autoTurnLast": 0.2,
+                "bg": "bg_adv_20351.jpg",
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301001,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "（はぁ…どうしようかしら…）",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "lipSynch": 1,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "あの…",
+                "turnEffect": "stop"
+            },
+            {
+                "bgm": "stop",
+                "nameNarration": "？？？",
+                "narration": "「やってやるぜー！」",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 100201
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301001
+                    }
+                ],
+                "narrationEffect": "out",
+                "textLeft": "…え？"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ],
+        "group_3": [
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_20351.jpg",
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301001,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "lipSynch": 0,
+                        "motion": 301
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "（…あまり気が進まないわね…）",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（普通にお祭りを楽しみたいし@ここは申し訳ないけど…）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "lipSynch": 1,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "あの…",
+                "turnEffect": "stop"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "turnChangeIn": "fadeIn"
+            }
+        ],
+        "group_4": [
+            {
+                "bg": "bg_adv_20351.jpg",
+                "nameNarration": "いろは",
+                "narration": "莉愛さんからの誘いを受けたやちよさん@この勝負を…",
+                "narrationBg": "bg_adv_20351.jpg",
+                "narrationEffect": "in",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narrationEffect": "out",
+                "select": [
+                    {
+                        "alternativeId": 24,
+                        "group": "group_2",
+                        "textSelect": "まだ考える"
+                    },
+                    {
+                        "alternativeId": 25,
+                        "group": "group_3",
+                        "textSelect": "受けない"
+                    }
+                ]
+            }
+        ]
+    },
+    "version": 3
+}

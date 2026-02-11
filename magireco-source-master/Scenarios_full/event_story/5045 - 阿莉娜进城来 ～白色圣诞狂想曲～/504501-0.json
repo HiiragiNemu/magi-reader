@@ -1,0 +1,71 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "bg": "black",
+                "bgm": "bgm05_event01",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 250000,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "クリスマス",
+                "narrationBg": "black",
+                "narrationEffect": "in",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 250000,
+                        "motion": 101
+                    }
+                ],
+                "narration": "神浜に舞い降りた聖女が@悩める人々に@静かな救いを施す傍らで…",
+                "narrationBg": ""
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 250000
+                    }
+                ],
+                "narration": "人々を騒がす@もうひとりの少女がいた"
+            },
+            {
+                "bgm": "stop",
+                "narration": "その名も死神少女クリスマス・デス・カリブー@通称“デスサンタ”…！"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/adv_eve_1045.ExportJson",
+                        "zOrder": "charaFront"
+                    }
+                ],
+                "autoTurnLast": 0.1,
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

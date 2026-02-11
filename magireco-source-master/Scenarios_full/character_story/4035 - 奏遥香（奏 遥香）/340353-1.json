@@ -1,0 +1,778 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_narration.jpg",
+                "bgm": "bgm03_story10",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300201,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302301,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300201
+                    }
+                ],
+                "nameLeft": "空穂 夏希",
+                "nameRight": "江利 あいみ",
+                "textLeft": "魔女の口付けを受けた@お姉ちゃん…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300201,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "きっともう、そっちに@来ちゃってるかも！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302301
+                    }
+                ],
+                "textRight": "えぇっ!?"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "bg": "bg_adv_21131.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302301,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302301,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "江利 あいみ",
+                "textCenter": "[chara:302301:effect_ef_adv_01][se:7201_detect_magic]――っ!?",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302301,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（本当だ…@魔女の反応…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302301,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "textCenter": "（まずい、妹ちゃん連れて@ここから離れないと…）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302301,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（こうなったら力づくで…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302301,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "…あれ？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302301,
+                        "motion": 400
+                    }
+                ],
+                "textCenter": "妹ちゃんは!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302301,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "…………[wait:0.8][chara:302301:lipSynch_1]あ!!"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 801200,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800100,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6001_candy_emblem.png",
+                        "posX": 0,
+                        "posY": 120,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "rollInFast",
+                "turnEffect": "ef_adv_06"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 403501,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300201,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "rollInFast",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300201,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "奏 遥香",
+                "nameRight": "空穂 夏希",
+                "textRight": "まずい、急がないと！",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 403501,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "ふたりとも！@巻き込まれるわ!!"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "slideOutLeftFast",
+                        "id": 300201
+                    },
+                    {
+                        "effect": "slideOutLeftFast",
+                        "id": 403501
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 801200,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800100,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6001_candy_emblem.png",
+                        "posX": 0,
+                        "posY": 120,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "rollInFast",
+                "turnEffect": "ef_adv_06"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302301,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "rollInFast",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302301,
+                        "motion": 200
+                    }
+                ],
+                "nameCenter": "江利 あいみ",
+                "textCenter": "間に合え!!",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "slideOutLeftFast",
+                        "id": 302301
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 801200,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800100,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6001_candy_emblem.png",
+                        "posX": 0,
+                        "posY": 120,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "rollInFast",
+                "turnEffect": "ef_adv_06"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800100
+                    }
+                ],
+                "nameLeft": "",
+                "nameRight": "",
+                "textRight": "それじゃあ、@お望みどおり…",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800100
+                    }
+                ],
+                "textRight": "消えてあげる"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800100
+                    }
+                ],
+                "textRight": "あんたの為に"
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 800100
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "フ…",
+                "narrationBg": "",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 801200
+                    }
+                ],
+                "narrationEffect": "out",
+                "textLeft": "え…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801200
+                    }
+                ],
+                "surround": "7003_wind",
+                "textLeft": "え？え？@ど、どこ…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 801200
+                    }
+                ],
+                "textLeft": "お姉ちゃん…どこ？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801200
+                    }
+                ],
+                "textBg": "shout",
+                "textLeft": "なんで…どうして…@おねえちゃーん！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300201,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "空穂 夏希",
+                "textRight": "落ち着いて！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302301,
+                        "motion": 300,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "江利 あいみ",
+                "textRight": "大丈夫だから！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801200
+                    }
+                ],
+                "textLeft": "お姉ちゃん、いなくなっちゃった"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801200
+                    }
+                ],
+                "textLeft": "お姉ちゃん、消えちゃった"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801200
+                    }
+                ],
+                "textLeft": "わたしが消えてって言ったからだ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801200
+                    }
+                ],
+                "textBg": "shout",
+                "textLeft": "消えてなんて@言っちゃったからだ!!"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801200
+                    }
+                ],
+                "textLeft": "どうしよう…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801200
+                    }
+                ],
+                "textLeft": "お姉ちゃん…@戻ってきてよ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 801200
+                    }
+                ],
+                "textLeft": "お姉ちゃん…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 403501,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "奏 遥香",
+                "textRight": "…………"
+            },
+            {
+                "autoTurnLast": 2,
+                "bg": "bg_adv_21072.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "id": 810000,
+                        "motion": 0,
+                        "pos": 1,
+                        "posX": 0,
+                        "posY": 80
+                    }
+                ],
+                "surround": "stop",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "bgm": "bgm03_story12",
+                "nameCenter": "キュゥべえ",
+                "textCenter": "君の望むこと@ひとつだけ叶えてあげるよ",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "sepiaFrame"
+            },
+            {
+                "nameNarration": "奏 遥香",
+                "narration": "「何でも…？」",
+                "narrationBg": "",
+                "narrationEffect": "in"
+            },
+            {
+                "narration": "ほんの出来心だった",
+                "narrationBg": "black"
+            },
+            {
+                "narration": "願い事を叶える？@そんなこと出来るはずがない@…そう思っていた"
+            },
+            {
+                "narration": "だから私は…@ほんの少し、不満をぶつけるつもりで…"
+            },
+            {
+                "narration": "「…お姉ちゃんを@消してほしい！」",
+                "narrationBg": ""
+            },
+            {
+                "narration": "…そう言ってしまった",
+                "narrationBg": "black"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "white",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "奏 遥香",
+                "narration": "その日の夜、私は酷い後悔の念に襲われた@絶対に言ってはいけない言葉だった@出来心、という言い訳をしたところで@許されるものではなかった",
+                "narrationBg": "",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "…謝ろう"
+            },
+            {
+                "narration": "そしたらお姉ちゃんは@「なんのこと？」って笑うかもしれない@笑われてもいい"
+            },
+            {
+                "narration": "意味が伝わらなくてもいい@謝るんだ@今日のこと、昨日のこと、今までのこと…"
+            },
+            {
+                "narration": "だって私は、本当はお姉ちゃんのことが…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21081.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800700,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800600,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "奏 遥香",
+                "narration": "「おはよ」",
+                "narrationBg": "",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800600
+                    }
+                ],
+                "nameLeft": "遥香の父",
+                "nameRight": "遥香の母",
+                "narrationEffect": "out",
+                "textRight": "あらハルカちゃん@おはよう"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800700
+                    }
+                ],
+                "textLeft": "今日は少し早いんじゃないか？"
+            },
+            {
+                "nameNarration": "奏 遥香",
+                "narration": "「…………」",
+                "narrationBg": "",
+                "narrationEffect": "in"
+            },
+            {
+                "narration": "「…あれ…？」"
+            },
+            {
+                "narration": "姉は早起きだった@でもその朝、姉はリビングにいなくて…",
+                "narrationBg": "black"
+            },
+            {
+                "narration": "姉のいつも座っているイスがなくて@姉の活けた花もなくて@コンクールに出したあの絵画もない"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 800600
+                    }
+                ],
+                "narrationEffect": "out",
+                "textRight": "ハルカちゃん？@どうしたの？そんな顔して"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800700
+                    }
+                ],
+                "textLeft": "わかった@まだ寝ぼけてるんだな"
+            },
+            {
+                "nameNarration": "奏 遥香",
+                "narration": "「…お…お姉ちゃんは…？」",
+                "narrationBg": "",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800600
+                    }
+                ],
+                "narrationEffect": "out",
+                "textRight": "お姉ちゃん…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 800700
+                    }
+                ],
+                "textLeft": "ははっ…@何を言ってるんだ…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800600
+                    }
+                ],
+                "textRight": "まさか、本当に寝ぼけてるの…？"
+            },
+            {
+                "nameNarration": "奏 遥香",
+                "narration": "「ね、寝ぼけてなんか…」",
+                "narrationBg": "",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800700
+                    }
+                ],
+                "narrationEffect": "out",
+                "textLeft": "でもハルカ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800600
+                    }
+                ],
+                "textRight": "だってアナタには…"
+            },
+            {
+                "nameCenter": "遥香の父＆母",
+                "textCenter": "お姉ちゃんなんていないのに"
+            },
+            {
+                "nameNarration": "奏 遥香",
+                "narration": "「――っ!?」",
+                "narrationBg": "",
+                "narrationEffect": "in"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "奏 遥香",
+                "narration": "無我夢中で階段を駆け上がった",
+                "narrationBg": "black",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "一目散にあの部屋へ"
+            },
+            {
+                "narration": "そこに行けばわかる"
+            },
+            {
+                "narration": "そこに答えがある"
+            },
+            {
+                "narration": "あの部屋に！お姉ちゃんの部屋に！"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_21074.jpg",
+                "bgm": "stop",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 3,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

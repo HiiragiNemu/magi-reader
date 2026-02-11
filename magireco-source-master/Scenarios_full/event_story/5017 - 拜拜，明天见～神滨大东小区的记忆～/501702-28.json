@@ -1,0 +1,167 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "bg": "bg_adv_17082.jpg",
+                "bgm": "bgm03_story10",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301301,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301501,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameNarration": "桑水 せいか",
+                "narration": "私たちは元にいた場所…@12号棟に戻ることにした",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301301,
+                        "motion": 1
+                    }
+                ],
+                "nameLeft": "伊吹 れいら",
+                "nameRight": "相野 みと",
+                "narrationEffect": "out",
+                "textLeft": "ちゃんと戻れるか…だよね"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301501,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "うん…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301401,
+                        "motion": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "桑水 せいか",
+                "textLeft": "…行こうか"
+            },
+            {
+                "bg": "bg_adv_17061.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301401,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301301,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameNarration": "桑水 せいか",
+                "narration": "そして私たちは…",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301401,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "桑水 せいか",
+                "narrationEffect": "out",
+                "surround": "7003_wind",
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301301
+                    }
+                ],
+                "nameRight": "伊吹 れいら",
+                "textRight": "…普通に…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301501,
+                        "motion": 300,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "相野 みと",
+                "textRight": "…戻れちゃったね…"
+            },
+            {
+                "bgm": "bgm03_story08",
+                "nameNarration": "桑水 せいか",
+                "narration": "私たちはこの後@改めて12号棟を調べたが@バツの落書きはもう見つからなかった…",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "surround": "stop"
+            },
+            {
+                "narration": "翌日以降も調べたが@もう二度とあのような現象が@起きることはなかった…"
+            },
+            {
+                "narration": "私たちは千載一遇の機会を@逃してしまったのかもしれない…"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "black",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/adv_eve_badend.ExportJson",
+                        "zOrder": "charaFront"
+                    }
+                ],
+                "autoTurnLast": 0.01,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

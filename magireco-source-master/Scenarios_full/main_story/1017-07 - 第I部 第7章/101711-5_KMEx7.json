@@ -1,0 +1,139 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "bgm": "bgm02_boss02",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101800,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101900,
+                        "motion": 0,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101600,
+                        "motion": 1,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_101711/vo_full_101711-5-1"
+                    }
+                ],
+                "nameCenter": "月咲",
+                "nameLeft": "月夜",
+                "nameRight": "十七夜",
+                "questBg": "bg_adv_16051.jpg",
+                "textRight": "いくつか選択肢をやろう",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 101600,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_101711/vo_full_101711-5-2",
+                        "voiceFullStop": "fullvoice/section_101711/vo_full_101711-5-1"
+                    }
+                ],
+                "textRight": "その１、このまま自分に@むざむざとやられる"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101600,
+                        "voiceFull": "fullvoice/section_101711/vo_full_101711-5-3",
+                        "voiceFullStop": "fullvoice/section_101711/vo_full_101711-5-2"
+                    }
+                ],
+                "textRight": "その２、素直に全てを吐いて@楽になる"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101600,
+                        "voiceFull": "fullvoice/section_101711/vo_full_101711-5-4",
+                        "voiceFullStop": "fullvoice/section_101711/vo_full_101711-5-3"
+                    }
+                ],
+                "textRight": "その３、尻を出して@お尻ペンペンで許してもらう"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 101600,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101711/vo_full_101711-5-5",
+                        "voiceFullStop": "fullvoice/section_101711/vo_full_101711-5-4"
+                    }
+                ],
+                "textRight": "さぁ、選べ"
+            },
+            {
+                "select": [
+                    {
+                        "group": "group_2",
+                        "textSelect": "その１@このままむざむざとやられる"
+                    },
+                    {
+                        "group": "group_2",
+                        "textSelect": "その２@素直に全てを吐いて楽になる"
+                    },
+                    {
+                        "group": "group_2",
+                        "textSelect": "その３@お尻ペンペンで許してもらう"
+                    }
+                ],
+                "voiceFullStop": "fullvoice/section_101711/vo_full_101711-5-5"
+            }
+        ],
+        "group_2": [
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "id": 101800,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101711/vo_full_101711-5-6"
+                    },
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101600
+                    }
+                ],
+                "textLeft": "その４でございます！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "id": 101900,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101711/vo_full_101711-5-7",
+                        "voiceFullStop": "fullvoice/section_101711/vo_full_101711-5-6"
+                    }
+                ],
+                "textCenter": "十七夜さんも抑えて、@更なる功績を積んでみせる！"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101711/vo_full_101711-5-7"
+            }
+        ]
+    },
+    "version": 3
+}

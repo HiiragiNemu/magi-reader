@@ -1,0 +1,322 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51023_singleraid_suzune/51023_title04.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51023_singleraid_suzune/51023_title04.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bg": "bg_adv_14021.jpg",
+                "bgm": "bgm03_story12",
+                "nameNarration": "詩音 千里",
+                "narration": "私は絵本を探しに神浜市までやって来た@その絵本は、かつて父が描いたもの…",
+                "narrationBg": "narration",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "私の父は、かつて絵本作家“だった”@“だった”というのは…"
+            },
+            {
+                "bg": "black",
+                "narration": "…私が魔法で父を変えてしまったからだ…"
+            },
+            {
+                "narration": "父は絵本作家として@独自の作風で注目されていた@しかし、次第に周囲の興味は薄れたのか@新作ごとに部数は減っていき@取り巻く人たちも姿を消していった"
+            },
+            {
+                "narration": "父は次第に酒に溺れ、母に当たり散らすという@日々を送るようになった@母は必死に耐えて、家計を支えるために働いた@しかしやがて体を壊し…"
+            },
+            {
+                "narration": "母は死んでしまった…"
+            },
+            {
+                "narration": "母が死んでから、父の憂さ晴らしの矛先は@自然と私に向かった@私もずっと我慢してきた@我慢してきたけど…@ある日、耐えられなくなった"
+            },
+            {
+                "narration": "その時、現れたのが…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 810000,
+                        "motion": 0,
+                        "pos": 1,
+                        "posX": 0,
+                        "posY": 80
+                    }
+                ],
+                "narration": "キュゥべえだった"
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 810000
+                    }
+                ],
+                "narration": "私は願った…@父さんを…優しくて立派な理想の父に@更生してほしいと…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 403400,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "詩音 千里",
+                "narration": "そして私は魔女と戦う「魔法少女」になった…",
+                "narrationBg": "narration",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "まるで私が、絵本の登場人物に@なったみたいだった…"
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 403400
+                    }
+                ],
+                "narration": "だが、それは罪悪感を伴うものだった@父は絵本を描くことはなくなり@理想の父親をやってくれている@そうやって、魔法で変えてしまうなんて…"
+            },
+            {
+                "narration": "そのことをアリサに言った時@彼女の言葉で私の心は少し軽くなった"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 403301,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bg": "bg_adv_narration.jpg",
+                "bgm": "bgm03_story03",
+                "chara": [
+                    {
+                        "id": 403301
+                    }
+                ],
+                "nameCenter": "成見 亜里紗",
+                "narrationEffect": "out",
+                "textCenter": "だってチサトは何も@悪くないじゃない",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "blackFrame"
+            },
+            {
+                "nameNarration": "成見 亜里紗",
+                "narration": "アンタのママだって子供を傷つけてまで@本を描いてほしいなんて…思わないよ",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnEffect": "stop"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 403401,
+                        "lipSynch": 0,
+                        "motion": 300,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bg": "bg_adv_14021.jpg",
+                "nameCenter": "詩音 千里",
+                "narrationEffect": "out",
+                "textCenter": "（あれは本当に嬉しかった…）",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 403401,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（だから、今日も付き合うって@言ってくれたのかな、アリサ…）"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 403401,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "textClear": 1,
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 403401,
+                        "lipSynch": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 403301,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "詩音 千里",
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 403301
+                    }
+                ],
+                "nameRight": "成見 亜里紗",
+                "textRight": "…何よ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 403401,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "今日、何で一緒にきてくれたの？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 403301,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "まあ…暇だったから？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 403401
+                    }
+                ],
+                "textLeft": "…そう"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 403301,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 403301,
+                        "lipSynch": 1,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "…あとはその…@気になったから？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 403301
+                    }
+                ],
+                "textRight": "探してる…チサトのパパの@描いた絵本っていうのが…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 403401,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…そっか"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 403401,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "そう言ってたもんね、アリサ…"
+            },
+            {
+                "nameNarration": "詩音 千里",
+                "narration": "そもそもの話は数日前…",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "narration": "あの写真を見たのが始まりだった…"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

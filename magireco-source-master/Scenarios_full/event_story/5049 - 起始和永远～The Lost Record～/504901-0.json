@@ -1,0 +1,439 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "bgm": "stop",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "movie": "prologue_movie_1.usm",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/3002_cloud_of_dust.ExportJson",
+                        "zOrder": "charaBack"
+                    }
+                ],
+                "autoTurnLast": 0.01,
+                "bgm": "stop",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51049_storyselect_homura/51049_walpurgisnacht.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "visible": "appear",
+                        "zOrder": "bgFront"
+                    }
+                ],
+                "surround": "7015_walpurgis_voice",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 3,
+                "bgm": "bgm02_anime10",
+                "surround": "7003_wind",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 2,
+                "surround": "7015_walpurgis_voice"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_23041.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200200,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "nameCenter": "ほむら",
+                "textCenter": "[flashEffect:flashWhite2]――っ!?",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgEffect": "shakeLarge",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "shake",
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200
+                    }
+                ],
+                "flashEffect": "flashRed2",
+                "se": "3001_chara_damage",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "id": 810000,
+                        "pos": 0,
+                        "posX": -50,
+                        "posY": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200101,
+                        "motion": 0,
+                        "pos": 2,
+                        "soulGem": 0
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200101,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "キュゥべえ",
+                "nameRight": "まどか",
+                "textRight": "ひどい…",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "textLeft": "仕方ないよ@彼女ひとりでは荷が重すぎた"
+            },
+            {
+                "textLeft": "でも、彼女も覚悟の上だろう"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_23041.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200200,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "nameCenter": "ほむら",
+                "textCenter": "[flashEffect:flashWhite2]――っ!?",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgEffect": "shakeLarge",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "shake",
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200
+                    }
+                ],
+                "flashEffect": "flashRed2",
+                "se": "3001_chara_damage",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "id": 810000,
+                        "pos": 0,
+                        "posX": -50,
+                        "posY": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200101,
+                        "motion": 0,
+                        "pos": 2,
+                        "soulGem": 0
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101,
+                        "motion": 201
+                    }
+                ],
+                "textRight": "そんな…あんまりだよ！@[chara:200101:lipSynch_0][wait:1.0][chara:200101:cheek_0][chara:200101:face_mtn_ex_040.exp.json][chara:200101:lipSynch_1]こんなのってないよ！",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_23041.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "deleteArmatureList": [
+                    1
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 200200,
+                        "mouthOpen": 1
+                    }
+                ],
+                "nameNarration": "ほむら",
+                "narration": "…………！",
+                "narrationEffect": "in",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 2,
+                        "filePath": "resource/image_native/effect/story/general/3002_cloud_of_dust.ExportJson",
+                        "zOrder": "charaBack"
+                    }
+                ],
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "id": 810000,
+                        "pos": 0,
+                        "posX": -50,
+                        "posY": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200101,
+                        "motion": 0,
+                        "pos": 2,
+                        "soulGem": 0
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "textLeft": "諦めたら、それまでだ",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 200101,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "textLeft": "でもキミなら運命を変えられる"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200101,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…………@…………"
+            },
+            {
+                "textLeft": "避けようのない滅びも、嘆きも@すべてキミが覆せばいい"
+            },
+            {
+                "textLeft": "そのための力が@キミには備わってるんだから"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "…本当なの？"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_23041.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "deleteArmatureList": [
+                    2
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "mouthOpen": 1
+                    }
+                ],
+                "nameNarration": "ほむら",
+                "narration": "…………！",
+                "narrationEffect": "in",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 3,
+                        "filePath": "resource/image_native/effect/story/general/3002_cloud_of_dust.ExportJson",
+                        "zOrder": "charaBack"
+                    }
+                ],
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "id": 810000,
+                        "pos": 0,
+                        "posX": -50,
+                        "posY": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200101,
+                        "motion": 0,
+                        "pos": 2,
+                        "soulGem": 0
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200101,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "わたしなんかでも@本当に何かできるの？",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "こんな結末を変えられるの？"
+            },
+            {
+                "textLeft": "もちろんさ"
+            },
+            {
+                "deleteArmatureList": [
+                    3
+                ],
+                "nameNarration": "キュゥべえ",
+                "narration": "「だからボクと契約して」",
+                "narrationBg": "bg_adv_23041.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "narration": "「魔法少女になってよ！」"
+            },
+            {
+                "autoTurnLast": 2,
+                "bg": "black",
+                "bgm": "stop",
+                "narrationEffect": "out",
+                "surround": "stop",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/adv_eve_1049.ExportJson",
+                        "zOrder": "charaFront"
+                    }
+                ],
+                "autoTurnLast": 0.1,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

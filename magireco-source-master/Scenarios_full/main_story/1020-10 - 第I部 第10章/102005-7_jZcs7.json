@@ -1,0 +1,576 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_24011.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm02_anime12",
+                "chara": [
+                    {
+                        "id": 101600,
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-1"
+                    }
+                ],
+                "nameCenter": "十七夜",
+                "textBg": "shout",
+                "textCenter": "[flashEffect:flashWhite2][bgEffect:shakeLarge][surround:1016A01]ふっ、せやぁあああッ!!",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 101600
+                    }
+                ],
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-1"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/chapter10/102005_warupuru_chara.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "visible": "appear"
+                    }
+                ],
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in"
+            },
+            {
+                "bgEffect": "shakeLarge",
+                "flashEffect": "flashRed2",
+                "nameNarration": "ワルプルギスの夜",
+                "narration": "アハッ、ハハッハハッ!?",
+                "surround": "1016A05",
+                "voiceFull": "fullvoice/section_102005/vo_full_102005-7-2"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.3,
+                                "posY": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/adv_roll_fade.png",
+                        "posX": 0,
+                        "posY": -3000,
+                        "scale": 6,
+                        "setVisible": 1,
+                        "zOrder": "messageFront"
+                    }
+                ],
+                "narrationEffect": "out"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "bg_adv_18052.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/chapter10/102005_warupuru_chara.png",
+                        "visible": "hide"
+                    }
+                ],
+                "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-2"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 3000
+                            }
+                        },
+                        "path": "resource/scenario/img/adv_roll_fade.png"
+                    }
+                ]
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101600,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-3"
+                    }
+                ],
+                "nameCenter": "十七夜",
+                "textCenter": "よし、動きを止めた！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 101600
+                    }
+                ],
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-3"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100100,
+                        "motion": 400,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-4"
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100400,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "いろは",
+                "nameRight": "さな",
+                "textLeft": "やった、@これで完全に隙ができた…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100400,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-5",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-4"
+                    }
+                ],
+                "textRight": "さっきまで…@全然敵わなかった相手なのに…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100400,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-6",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-5"
+                    }
+                ],
+                "textRight": "いろはさん…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-7",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-6"
+                    }
+                ],
+                "textLeft": "うん、さなちゃん…@これなら本当に倒せるかも…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200500,
+                        "motion": 100,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-8",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-7"
+                    }
+                ],
+                "nameRight": "マミ",
+                "textRight": "まだ、@楽観的になっちゃいけないわ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-9",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-8"
+                    }
+                ],
+                "textLeft": "巴さん！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200100,
+                        "motion": 100,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-10",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-9"
+                    }
+                ],
+                "nameLeft": "まどか",
+                "textLeft": "マミさん繋ぎ止めてください！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200500,
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-11",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-10"
+                    }
+                ],
+                "textRight": "[flashEffect:flashWhite2][bgEffect:shakeLarge]ええ、ワルプルギスの夜も@私たちの未来も繋ぎ止める！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200500,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-12",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-11"
+                    }
+                ],
+                "textRight": "他のみんなもお願い！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 200100
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 200500
+                    }
+                ],
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-12"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300100,
+                        "motion": 100,
+                        "pos": 1,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-13"
+                    }
+                ],
+                "nameCenter": "矢宵 かのこ",
+                "textCenter": "おっけー！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300100,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-14",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-13"
+                    }
+                ],
+                "textCenter": "私もみんなの未来を@繋がせてもらうわ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300100,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-15",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-14"
+                    }
+                ],
+                "textCenter": "私は願いで@自分を夢に縛り付けた"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300100,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-16",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-15"
+                    }
+                ],
+                "textCenter": "だから、あなたも私の力で@ここに縛り付けてあげる！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300100,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-17",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-16"
+                    }
+                ],
+                "textCenter": "未来のファッションデザイナー@矢宵かのこの技術なんだから"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300100,
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-18",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-17"
+                    }
+                ],
+                "textBg": "shout",
+                "textCenter": "[flashEffect:flashWhite2][bgEffect:shakeLarge][jingle:300102_magia]喜んで縛られてよね！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 300100
+                    }
+                ],
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-18"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100900,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101100,
+                        "live2dName": "live2d_0",
+                        "motion": 200,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-19"
+                    }
+                ],
+                "nameLeft": "レナ",
+                "nameRight": "かえで",
+                "textRight": "最後は私がここに@ワルプルギスの夜を根付かせるよ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100900,
+                        "motion": 1,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-20",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-19"
+                    }
+                ],
+                "textLeft": "それならレナももう一度"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100900,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-21",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-20"
+                    }
+                ],
+                "textLeft": "変身能力なんて@使える時に使っておかないと"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100900,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-22",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-21"
+                    }
+                ],
+                "textLeft": "出番がなくなりそうだから"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101100,
+                        "live2dName": "live2d_0",
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-23",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-22"
+                    }
+                ],
+                "textRight": "そういう理由なら@手伝わなくていいよレナちゃん"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100900,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-24",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-23"
+                    }
+                ],
+                "textLeft": "なっ、ウソに決まってるでしょ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100900,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-25",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-24"
+                    }
+                ],
+                "textLeft": "かえでひとりだと不安だから@レナが手伝うって言ってるのよ！"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_05",
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101100,
+                        "live2dName": "live2d_1",
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "se": "7205_magic_girl",
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-25"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101100,
+                        "live2dName": "live2d_1",
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-26"
+                    }
+                ],
+                "textLeft": "ほら、やるわよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101100,
+                        "live2dName": "live2d_0",
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-27",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-26"
+                    }
+                ],
+                "textRight": "自分の姿で言われると、@なんだか変な感じがする…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101100,
+                        "live2dName": "live2d_1",
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-28",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-27"
+                    }
+                ],
+                "textLeft": "つべこべ言わずにやる！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101100,
+                        "live2dName": "live2d_0",
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-29",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-28"
+                    }
+                ],
+                "textRight": "なんでレナちゃんが怒るの!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101100,
+                        "live2dName": "live2d_0",
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-30",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-29"
+                    }
+                ],
+                "textRight": "もう、いいよ分かったよぅ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101100,
+                        "live2dName": "live2d_0",
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-31",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-30"
+                    }
+                ],
+                "textRight": "それじゃあ、一緒に@ワルプルギスの夜を固定しよう！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101100,
+                        "live2dName": "live2d_1",
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-32",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-31"
+                    }
+                ],
+                "textLeft": "そのつもりよ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101100,
+                        "live2dName": "live2d_1",
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_102005/vo_full_102005-7-33",
+                        "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-32"
+                    }
+                ],
+                "textLeft": "ダブルで@ガッチガチに固めてやりましょ！"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_102005/vo_full_102005-7-33"
+            }
+        ]
+    },
+    "version": 3
+}

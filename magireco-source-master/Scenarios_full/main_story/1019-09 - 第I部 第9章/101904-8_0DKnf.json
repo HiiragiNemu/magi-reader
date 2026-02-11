@@ -1,0 +1,368 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_19201.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 715004,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 715003,
+                        "motion": 0,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101000,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm03_story22",
+                "chara": [
+                    {
+                        "id": 715004,
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-1"
+                    }
+                ],
+                "nameCenter": "黒羽根",
+                "nameLeft": "黒羽根",
+                "nameRight": "ももこ",
+                "textLeft": "[flashEffect:flashRed2][se:6100_hit_slash_01_s][bgEffect:shakeLarge][chara:715004:effect_shake]ぁぅ…!!",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 715003,
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-2",
+                        "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-1"
+                    }
+                ],
+                "textCenter": "くそっ…ここまで来て…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101000,
+                        "motion": 200,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-3",
+                        "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-2"
+                    }
+                ],
+                "textBg": "shout",
+                "textRight": "[flashEffect:flashWhite2][bgEffect:shakeLarge][se:6101_hit_slash_01_vh]これで、終わりだぁっ！"
+            },
+            {
+                "autoTurnLast": 0.7,
+                "chara": [
+                    {
+                        "effect": "shake",
+                        "id": 715003,
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-4",
+                        "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-3"
+                    },
+                    {
+                        "effect": "shake",
+                        "id": 715004,
+                        "motion": 200
+                    }
+                ],
+                "textCenter": "[flashEffect:flashRed2][se:6100_hit_slash_01_s][bgEffect:shakeLarge]くっ…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 715003
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 715004
+                    }
+                ],
+                "se": "3002_chara_dead",
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-4"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101000,
+                        "motion": 1,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-5"
+                    }
+                ],
+                "textRight": "いろはちゃん、大丈夫か!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "live2dParam": {
+                            "name": "PARAM_UNIFORM_RIBBON_A",
+                            "value": 0
+                        },
+                        "motion": 200,
+                        "pos": 0,
+                        "soulGem": 0,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-6",
+                        "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-5"
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "は、はい…@ありがとうございます…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101000,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-7",
+                        "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-6"
+                    }
+                ],
+                "textRight": "っていうか、@どうして変身してないのさ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101,
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-8",
+                        "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-7"
+                    }
+                ],
+                "textLeft": "実はソウルジェムを@マギウスに取られちゃって…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101000,
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-9",
+                        "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-8"
+                    }
+                ],
+                "textRight": "なっ、マジかよ…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 715104,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "rollInFast",
+                "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-9"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 715104,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-10"
+                    }
+                ],
+                "nameCenter": "白羽根",
+                "textCenter": "十咎ももこ…@ここまで辿り着いてたのか…",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "live2dParam": {
+                            "name": "PARAM_UNIFORM_RIBBON_A",
+                            "value": 0
+                        },
+                        "motion": 0,
+                        "pos": 0,
+                        "soulGem": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101000,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "rollInFast",
+                "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-10"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101000,
+                        "motion": 1,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-11"
+                    }
+                ],
+                "textRight": "今度は外から新手か…",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_01",
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101
+                    }
+                ],
+                "se": "7201_detect_magic",
+                "textClear": 1,
+                "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-11"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 401,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-12"
+                    }
+                ],
+                "textLeft": "あ、あの人たちです!!@私のソウルジェムを…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101000,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-13",
+                        "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-12"
+                    }
+                ],
+                "textRight": "あいつらが持ってるのか…!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100101,
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-14",
+                        "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-13"
+                    }
+                ],
+                "textLeft": "はいっ!!"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 715104,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 715003,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "rollInFast",
+                "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-14"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 715003,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-15"
+                    }
+                ],
+                "nameLeft": "白羽根",
+                "nameRight": "黒羽根",
+                "textRight": "は、早く先に！@せめてソウルジェムだけでも！",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 715104,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-16",
+                        "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-15"
+                    }
+                ],
+                "textLeft": "分かった！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101000,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "rollInFast",
+                "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-16"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101000,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_101914/vo_full_101914-3-17"
+                    }
+                ],
+                "nameCenter": "ももこ",
+                "textCenter": "まずい…！",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101914/vo_full_101914-3-17"
+            }
+        ]
+    },
+    "version": 3
+}

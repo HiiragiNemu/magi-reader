@@ -1,0 +1,819 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_19251.jpg",
+                "bgm": "bgm01_anime02",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100770,
+                        "live2dParam": {
+                            "name": "PARAM_BRACELET",
+                            "value": 1
+                        },
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101471,
+                        "live2dParam": {
+                            "name": "PARAM_BRACELET",
+                            "value": 1
+                        },
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51120_touka_nemu_christmas/51120_magicalbook1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100770
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "啊嘞…？",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101471,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "这本书是…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100770,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "不是我的哦ー"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101471,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "这本书是写什么的呢…@看上去还带有日期…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "white",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51120_touka_nemu_christmas/51120_magicalbook1.png",
+                        "visible": "hide"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "deleteArmatureList": [
+                    0
+                ],
+                "item": [
+                    {
+                        "iPhoneXScale": 1,
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ]
+            },
+            {
+                "nameNarration": "日记的一页",
+                "narration": "[textBlack:20××年12月××日　18:00]@[textBlack:在某个地方]@[textBlack:有一对双胞胎分居两处生活着]",
+                "narrationBg": "",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 180,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "[textBlack:双胞胎中的妹妹，在圣诞节前的某一天]@[textBlack:看到了一双绒毛的手套]"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_19251.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100770,
+                        "live2dParam": {
+                            "name": "PARAM_BRACELET",
+                            "value": 1
+                        },
+                        "motion": 1,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101471,
+                        "live2dParam": {
+                            "name": "PARAM_BRACELET",
+                            "value": 1
+                        },
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101471,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "日记…？",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101471,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "但上面的内容@看上去更像是童话…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgm": "stop",
+                "flashEffect": "explosion",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 100770,
+                        "lipSynch": 0,
+                        "motion": 400
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 101471,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "[chara:100770:effect_emotion_surprise_0][se:7226_shock]――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101471
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100770
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "光芒…！"
+            },
+            {
+                "autoTurnLast": 2,
+                "flashEffect": "flashWhiteSlow2",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51120_touka_nemu_christmas/memoria_1577.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "whiteIn",
+                "turnChangeInTime": 2
+            },
+            {
+                "bgm": "bgm05_event01",
+                "nameNarration": "灯花",
+                "narration": "―灯花―@诶…？@这里是…？",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 10,
+                "narrationLineSpace": 20,
+                "turnChangeOut": "whiteOut",
+                "turnChangeOutTime": 2
+            },
+            {
+                "nameNarration": "音梦",
+                "narration": "―音梦―@似乎是水德商业街呢"
+            },
+            {
+                "nameNarration": "灯花",
+                "narration": "―灯花―@我们为什么会在这种地方…？@啊…！"
+            },
+            {
+                "narration": "―灯花―@音梦！@我们是飘着的啊！在浮游着啊!!"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_13014.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110701,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110702,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "…没有肉体上的感触@甚至连圣诞树都无法碰触",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "看来我们如今@是属于灵体上的存在…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "也就是俗称为幽灵的状态呢"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "而且，这身衣服又是…？@变身成为了…魔法少女？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "音梦的腿…也治好了？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "的确，好像是可以自由行动了"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "…虽然像这样不依靠步行，直接@在空中移动，也只能说是讽刺了"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110701,
+                        "motion": 1
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "地点是水德商业街…？@这是在音梦你家附近吧？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "而且现在又不是什么圣诞的@为什么要装饰上圣诞树呢？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 200
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "不，这正是在圣诞前夕@这里看来是冬日的水德商业街"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "我们想必是时光穿越@回了去年12月吧"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 110701,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "…既然你能做出这样的推测@那应该是有什么根据吧？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "我对这棵圣诞树有一定的印象@再怎么说，我也是本地人呢"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "…还有，另一个理由是"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51120_touka_nemu_christmas/51120_magicalbook1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "就在变成这种状况之前@我们翻开了书的这一页"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "white",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51120_touka_nemu_christmas/51120_magicalbook1.png",
+                        "visible": "hide"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "deleteArmatureList": [
+                    0
+                ],
+                "item": [
+                    {
+                        "iPhoneXScale": 1,
+                        "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ]
+            },
+            {
+                "nameNarration": "日记的一页",
+                "narration": "[textBlack:20××年12月××日　18:00]",
+                "narrationBg": "",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 180,
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "blackFrame"
+            },
+            {
+                "narration": "[textBlack:在某个地方]@[textBlack:有一对双胞胎分居两处生活着]"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_13014.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 110701,
+                        "motion": 1,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51120_touka_nemu_christmas/51120_magicalbook1.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "这里写明的日期@就是去年的12月",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "在这一页发出光芒的瞬间@我们就身处此地了"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51120_touka_nemu_christmas/51120_magicalbook1.png",
+                        "visible": "hide"
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "也就意味着…@仅有我们的意识"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "被传送到了@日记所载的时期与地点…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "大概就是这么一回事吧？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "按你这说法，我们是被这本@魔法日记神奇的力量"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "传送回了去年圣诞节？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 200
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "若你还有更合理的解释@那我洗耳恭听"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110701,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "…………"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 110701
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 110702
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_13014.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "autoTurnLast": 2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800800,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800400,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 800800
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 800400
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_13014.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "autoTurnLast": 2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800100,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800200,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 800100
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 800200
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_13014.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 110701,
+                        "motion": 300,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 110702,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "没有任何人注意到我们…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "至少这现象与魔法相关@应该是正确无误的吧？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702,
+                        "motion": 400
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "以幽灵的姿态造访过去…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "这让我想起那个@有名的故事来了啊"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 110701,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "听你这么一说…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110701
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "好像爸爸大人给我的书上@有过这样的故事来着？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 110702,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "…「圣诞颂歌」"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 110702
+                    }
+                ],
+                "nameRight": "音梦",
+                "textRight": "狄更斯的经典之作哦"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

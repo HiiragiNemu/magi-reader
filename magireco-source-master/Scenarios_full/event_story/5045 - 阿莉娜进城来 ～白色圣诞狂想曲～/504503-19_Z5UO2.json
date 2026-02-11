@@ -1,0 +1,970 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "bgm": "stop",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/50450_day4.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narration": "Day 4",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "18 : 50",
+                "narrationAnchor": "bottom",
+                "narrationBg": "",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationFontSize": 40,
+                "narrationLineMargin": 190,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/50450_day4.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "栄区・並木通り",
+                "narrationBg": "black",
+                "narrationEffect": "in",
+                "narrationFontSize": 40,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_15024.jpg",
+                "bgm": "bgm03_story01",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "blackFrame"
+            },
+            {
+                "nameNarration": "",
+                "narration": "「よし、容疑者を確保！」",
+                "narrationBg": "",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "「デスサンタさん！@ご協力ありがとうございました！」"
+            },
+            {
+                "autoTurnLast": 2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100601,
+                        "motion": 1,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 110800,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100601
+                    }
+                ],
+                "nameLeft": "みふゆ",
+                "nameRight": "アリナ",
+                "textLeft": "爆弾魔の人…すぐに@連れていかれてしまいましたね",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_05",
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100801,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "se": "7205_magic_girl",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "…結局、ライフタイムは@回収できなかったんですケド"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100601,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "でもよかったです@怪我人も出ませんでしたし"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "ワタシも、アリナに@助けてもらえましたし"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "それに…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100601,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（アリナも罪を犯さないで@済みましたし…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 100801,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "それに…？",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100601,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "ふふふ…@なんでもありません"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100801,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "ま、みふゆのボディが無事なら@ノープロブレムだケド…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "shake",
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 100801,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "[chara:100801:effect_emotion_surprise_0][se:7226_shock]――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100601,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "大丈夫ですか、アリナ!?@ふらついていますよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100801,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "なんか…変身してる間"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801
+                    }
+                ],
+                "textRight": "ずっとウワサに魔力を@吸われてたみたいなんだヨネ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100601,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "融合しているだけでも@エネルギーを消費するのですね？"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 100801,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "想像以上に燃費が悪いヨネ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801
+                    }
+                ],
+                "textRight": "さっき変身したときも"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801
+                    }
+                ],
+                "textRight": "パワーをごっそり奪われる@カンジだったし…"
+            },
+            {
+                "bgm": "stop",
+                "nameNarration": "",
+                "narration": "～～♪～～♪",
+                "narrationBg": "bg_adv_15024.jpg",
+                "narrationEffect": "in",
+                "surround": "7105_telphone"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100601,
+                        "motion": 0
+                    }
+                ],
+                "enableSkipAutoTurn": 0,
+                "narrationEffect": "out",
+                "surround": "stop",
+                "textLeft": "あ…また着信"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 100801,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…誰カラ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100601,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "たぶん月夜さんからかと…@これ、月咲さんのスマホなんです"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "爆発騒ぎで、危うく忘れる@ところでしたけど…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "ワタシ、月咲さんにこれを@届けるために来たんです！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 800700,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101951,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100601,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "bgm": "bgm03_story09",
+                "chara": [
+                    {
+                        "id": 100601,
+                        "motion": 400
+                    }
+                ],
+                "nameCenter": "みふゆ",
+                "textCenter": "あっ…",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100601
+                    }
+                ],
+                "textCenter": "月咲さん@ちょうどいいところに！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "id": 100601,
+                        "pos": 0
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101951,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "みふゆ",
+                "nameRight": "月咲",
+                "textRight": "へっ…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101951,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…あ、みふゆさんとアリナさん"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101951
+                    }
+                ],
+                "textRight": "この騒ぎ…もしかして@アリナさんが…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100801,
+                        "motion": 400,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "アリナ",
+                "textLeft": "[chara:100801:effect_emotion_surprise_0][se:7226_shock]ノーノー！@アリナは無関係だカラ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100601,
+                        "motion": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "みふゆ",
+                "textLeft": "それよりこれ…月咲さんの@スマホですよね？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101951
+                    }
+                ],
+                "textRight": "…ほんとだ！@ウチ、置いてきちゃってた!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101951,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "ありがとうございます！@みふゆさん、わざわざ届けに？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "はい…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100601,
+                        "motion": 100
+                    }
+                ],
+                "surround": "7202_telepathy",
+                "textLeft": "おそらくこちら…@月夜さんからの着信ですよね？",
+                "turnEffect": "ef_adv_02"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101951,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "そうです…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "やっぱり…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100601,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "月夜さんに@ご連絡したかったんですが"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "新しい連絡先、聞いてなくて"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101951
+                    }
+                ],
+                "textRight": "あ…月夜ちゃん、最近@スマホ変えたんですよね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101951,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "…わー@着信がいっぱい来てる！"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "id": 101951
+                    }
+                ],
+                "textRight": "最新は…２分前!?"
+            },
+            {
+                "bgm": "bgm01_anime25",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 100601,
+                        "motion": 200
+                    }
+                ],
+                "surround": "stop",
+                "textLeft": "月咲さん！@急いで！",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "きっとまだ@待ってくれていますよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 101951,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "はいっ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101951
+                    }
+                ],
+                "textRight": "あっ…でも…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101951,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "（お父ちゃんが…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 800700,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "月咲の父",
+                "textLeft": "…ん？@どうかしたのか？",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101951,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "えっと…@イベントのお手伝いなんだけど…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800700
+                    }
+                ],
+                "textLeft": "ああ、後で友達と会うとか@言っていたな"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800700
+                    }
+                ],
+                "textLeft": "手伝いはもういいぞ@すまんな、遅くまでつきあわせて"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800700
+                    }
+                ],
+                "textLeft": "この騒ぎじゃ、さすがに中止だ@片付けは男衆にまかせとけ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101951,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "ほんと!?@お父ちゃん、ありがと！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101951,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "（お父ちゃん…@今日は機嫌がいいのかな？）",
+                "turnEffect": "thinking"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100601,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "textClear": 1,
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101951,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "みふゆさんも、ありがとう！@じゃ、ウチはこれで！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100601,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "みふゆ",
+                "textLeft": "いってらっしゃい！@全力疾走でね！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101951,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "はいっ！"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100601,
+                        "motion": 1,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100801,
+                        "motion": 300,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm01_anime02",
+                "chara": [
+                    {
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "月咲さん…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "イベントがなかなか終わらなくて@困っていたみたいですが"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "この騒ぎで@やっと解放されたみたいですね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100601,
+                        "motion": 100
+                    },
+                    {
+                        "eyeClose": 1,
+                        "id": 100801
+                    }
+                ],
+                "textLeft": "一歩間違えば、ワタシたちでなく"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "月咲さんがあの部屋に@いたかもしれないわけですし"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100601,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "死神少女のおかげで…@またひとり幸せになりましたね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "…ビルが壊れてしまって@所有者の方には災難でしたが"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "アリナ",
+                "textRight": "…………@…………"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 100801
+                    }
+                ],
+                "textRight": "またアクシデントに邪魔された…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "アリナのエネルギー回収…@どうして失敗するワケ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100601,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "さあ…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801
+                    }
+                ],
+                "textRight": "凍ったハートの持ち主というから@もっと可哀想な連中かと思ったら"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "まさかこんな物騒なのばかりとは@思わなかったヨネ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801
+                    }
+                ],
+                "textRight": "クリスマス前だっていうのに"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100801
+                    }
+                ],
+                "textRight": "誘拐とか、飛び降りとか@爆弾テロとか…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100601,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "ふふっ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100801,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "ん、なんで笑うワケ？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100601
+                    }
+                ],
+                "textLeft": "まるで正義の味方みたいな@怒り方でしたから"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100801,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "フン…！"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

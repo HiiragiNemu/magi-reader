@@ -1,0 +1,909 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_20251.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101051,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm03_story21",
+                "nameNarration": "フェリシア",
+                "narration": "夏にさ、いろはたちと@海に行ったんだ！",
+                "narrationBg": "bg_adv_20251.jpg",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "effect": "slideInRightFast",
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100550,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "フェリシア",
+                "narrationEffect": "out",
+                "textLeft": "おらー！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101051,
+                        "motion": 200
+                    }
+                ],
+                "nameCenter": "ももこ",
+                "textCenter": "はい、ゴール！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "effect": "slideInRight",
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 100351,
+                        "motion": 0,
+                        "mouthOpen": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "鶴乃",
+                "textRight": "なぁ～！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101051,
+                        "motion": 1
+                    },
+                    {
+                        "id": 100351,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textCenter": "フェリシアの勝ちね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100550,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "[chara:100550:effect_emotion_joy_0][se:7222_happy]しゃー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100351,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "くぅ～！@[chara:100351:lipSynch_0][wait:1.0][chara:100351:motion_101][chara:100351:lipSynch_1]も、もういっちょ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101051,
+                        "motion": 300,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "ももこ",
+                "textLeft": "あのさぁ…@この競争何回やるの？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101051
+                    }
+                ],
+                "textLeft": "この砂浜から海へ入って@ブイを回って戻ってくるって…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101051,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "もう８回くらい@やってるでしょ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100351,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "だから、９回目を…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 101051,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "鶴乃、全敗だろ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 100351,
+                        "motion": 400,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textRight": "ぐあぁっ！"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100351
+                    }
+                ],
+                "se": "3102_enemy_dead",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101051,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "はい、トータルで@フェリシアの勝ちね"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "id": 101051,
+                        "pos": 2
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100550,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "フェリシア",
+                "textLeft": "[chara:100550:effect_emotion_joy_0][se:7222_happy]いえーい！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "id": 101051,
+                        "pos": 0
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101051,
+                        "motion": 300
+                    },
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100351,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "ももこ",
+                "textLeft": "いい加減、休憩しよ@な？"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 100351,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "ううう…@[chara:100351:lipSynch_0][wait:1.0][chara:100351:cheek_1][chara:100351:face_mtn_ex_020.exp.json:motion_101][chara:100351:lipSynch_1:eyeClose_0]リベンジはまた申し込むから！"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "slideOutLeft",
+                        "id": 100351
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101051,
+                        "motion": 1,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100550,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "ももこ",
+                "textRight": "あ、いろはちゃんとこ行ったわ…@[chara:101051:lipSynch_0][wait:1.0][chara:101051:cheek_0][chara:101051:face_mtn_ex_041.exp.json][chara:101051:lipSynch_1]ひと騒ぎしそうだな…"
+            },
+            {
+                "bgm": "bgm03_story19",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101051
+                    }
+                ],
+                "textRight": "ま、とりあえず休憩しよう@フェリシア"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100550,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "フェリシア",
+                "textLeft": "いいぜー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100550
+                    }
+                ],
+                "textLeft": "ふぃ～！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101051,
+                        "motion": 0,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textRight": "はぁ～…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 101051,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textRight": "それにしても…@結構人がいるなぁ～"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100550,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "そうだな～"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101051,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "さすが夏！って感じだね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100550,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…ん？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "おい、ももこ！@あれ、なんだ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101051,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "あれ？@あれってどれ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101051,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "あー、あれ！首だけ出して@砂に埋まってるやつ？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "そう！あの変なやつ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101051
+                    }
+                ],
+                "textRight": "あれは…なんていうか…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101051,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "（そう言われると…@あれって何なの…？）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 101051,
+                        "lipSynch": 1
+                    }
+                ],
+                "textRight": "…う～ん…",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 101051,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "…海に来ると@やりたくなるやつ…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "[chara:100550:effect_emotion_surprise_0][se:7226_shock]え!?@そうなのか!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101051
+                    }
+                ],
+                "textRight": "…ま、まあ@そんな気分になるというか…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100550,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…そうか…だからか…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "オレも@埋まりたくなってきたんだ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101051,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "[chara:101051:effect_emotion_surprise_0][se:7226_shock]え、そうなの!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 101051,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "（やっぱり@そういうもんなんだ…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100550,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "ももこ！@オレを埋めてくれ！",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101051,
+                        "lipSynch": 1
+                    }
+                ],
+                "textRight": "…ん～、しょうがないなぁ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101051,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "よし！@じゃあ、いっちょ掘るか！"
+            },
+            {
+                "autoTurnLast": 1.5,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100550,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101051,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101051,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "はい！完成！",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550
+                    }
+                ],
+                "textLeft": "おー！埋まってるぞ、オレ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101051,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "すっぽりだね！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 101051,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "…それにしても@全然休憩になってないや…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100550
+                    }
+                ],
+                "textLeft": "[chara:100550:effect_emotion_joy_0][se:7222_happy]あはは！すげーすげー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101051
+                    }
+                ],
+                "textRight": "よかったね、フェリシア"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100550
+                    }
+                ],
+                "textLeft": "おう！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101051,
+                        "motion": 0,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textRight": "はー…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550,
+                        "lipSynch": 0
+                    },
+                    {
+                        "id": 101051,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101051,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textRight": "今日もいい天気だね～"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101051,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "あ、レナとかえでだ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100550,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101051,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "あーあー、またレナに@水かけられて…[chara:101051:lipSynch_0][wait:0.8][chara:101051:cheek_0][chara:101051:face_mtn_ex_011.exp.json][chara:101051:lipSynch_1]あはは…！"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100550,
+                        "lipSynch": 1,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textBg": "shout",
+                "textLeft": "…うぉー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101051,
+                        "motion": 400
+                    },
+                    {
+                        "id": 100550,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textRight": "[chara:101051:effect_emotion_surprise_0][se:7226_shock]ど、どうした!?"
+            },
+            {
+                "bgm": "bgm03_story01",
+                "chara": [
+                    {
+                        "id": 100550
+                    }
+                ],
+                "textLeft": "すげー退屈じゃん、これ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101051,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "…まあ、じっとするしかないし…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550
+                    }
+                ],
+                "textLeft": "あと、すげーあちーぞ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 101051
+                    }
+                ],
+                "textRight": "そう…なるよね"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550
+                    }
+                ],
+                "textLeft": "我慢できねー！@[chara:100550:lipSynch_0][wait:1.0][chara:100550:motion_200][chara:100550:lipSynch_1:effect_shake]ぬりゃあー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101051,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "うわっ！@飛び出した！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "水～！"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "slideOutRightFast",
+                        "id": 100550
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 101051,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "…すごい泳いでる…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101051
+                    }
+                ],
+                "textRight": "あ、戻ってきた！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "effect": "slideInRightFast",
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100550,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "textLeft": "ふぁ～！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100550,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textLeft": "あちーとこからつめてーとこ@行くと気持ちいいな！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100550,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "ももこ！@もう１回埋めてくれ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101051,
+                        "motion": 200,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textRight": "えぇ～!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100550,
+                        "motion": 100
+                    },
+                    {
+                        "id": 101051,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textLeft": "[chara:100550:effect_emotion_joy_0][se:7222_happy]なはは～！"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

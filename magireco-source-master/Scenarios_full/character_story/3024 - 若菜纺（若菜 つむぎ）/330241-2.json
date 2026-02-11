@@ -1,0 +1,768 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.2,
+                "bg": "bg_adv_21151.jpg",
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 302401,
+                        "motion": 0,
+                        "pos": 1,
+                        "soulGem": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "blackFrame"
+            },
+            {
+                "bgm": "bgm03_story03",
+                "chara": [
+                    {
+                        "id": 302401,
+                        "motion": 100
+                    }
+                ],
+                "nameCenter": "若菜 つむぎ",
+                "textCenter": "ふふ…うへへへへへへ…@[chara:302401:lipSynch_0][wait:0.8][chara:302401:lipSynch_1]待っててね、お団子ちゃん…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "nameNarration": "若菜 つむぎ",
+                "narration": "その日私は…",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnEffect": "stop"
+            },
+            {
+                "narration": "食レポサイトを読みすぎて徹夜という@最悪のコンディションの中"
+            },
+            {
+                "narration": "限定200個の@お団子を手に入れるために"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302401,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narration": "全力でお店に向かっていたの！"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 302401,
+                        "motion": 300
+                    }
+                ],
+                "nameCenter": "若菜 つむぎ",
+                "narrationEffect": "out",
+                "textCenter": "ねむぃ…………[chara:302401:lipSynch_0][wait:1.0][chara:302401:cheek_0][chara:302401:face_mtn_ex_050.exp.json:motion_400:eyeClose_0][chara:302401:lipSynch_1]はっ、ダメ…！",
+                "turnEffect": "blackFrame"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302401
+                    }
+                ],
+                "nameCenter": "若菜 つむぎ",
+                "textCenter": "お団子を手に入れるまでは…@寝ちゃダメ、私…！"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bgm": "stop",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_47103.jpg",
+                "bgChangeEffect": "enterWitchSpace",
+                "se": "7208_wander_into"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302401,
+                        "motion": 0
+                    }
+                ],
+                "nameCenter": "若菜 つむぎ",
+                "textCenter": "…って、あれ、ここどこ？@ヘンな場所…"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "id": 302401,
+                        "pos": 2
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "bgm": "bgm01_anime12",
+                "chara": [
+                    {
+                        "id": 7103,
+                        "name": "sprite_0",
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "□◇▲シュシュ@☆◎ポッポー！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302401,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "若菜 つむぎ",
+                "textRight": "…………[wait:1.0][chara:302401:lipSynch_1]動くおだんご？@なんだ、夢か"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 302401,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "若菜 つむぎ",
+                "textRight": "それじゃあ、遠慮なく…@[chara:302401:lipSynch_0][wait:0.8][chara:302401:cheek_0][chara:302401:face_mtn_ex_011.exp.json:motion_100][chara:302401:lipSynch_1]いただきまーす…"
+            },
+            {
+                "nameCenter": "？？？",
+                "textBg": "shout",
+                "textCenter": "危なーい！"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300900,
+                        "motion": 100,
+                        "pos": 2
+                    },
+                    {
+                        "effect": "7001_attack02",
+                        "id": 7103,
+                        "name": "sprite_0"
+                    }
+                ],
+                "se": "4053_landing_throw2",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 1,
+                "bgEffect": "shakeSmall",
+                "chara": [
+                    {
+                        "effect": "7003_damage02",
+                        "id": 7103,
+                        "name": "sprite_0"
+                    }
+                ],
+                "se": "6200_hit_explosion_01_vh"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302401,
+                        "motion": 200,
+                        "pos": 0,
+                        "soulGem": 0
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textLeft": "あっ、邪魔しないで！@わたし、おだんご、たべるー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300900,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "胡桃 まなか",
+                "textRight": "た、食べる!?@使い魔を…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300900,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "胡桃 まなか",
+                "textRight": "まさか、魔女の口づけが…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300900,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "胡桃 まなか",
+                "textRight": "…………[wait:1.0][chara:300900:cheek_0][chara:300900:face_mtn_ex_030.exp.json:motion_200][chara:300900:lipSynch_1]いえ、ありませんね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302401,
+                        "motion": 300,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textLeft": "おだんご…たべ…[chara:302401:lipSynch_0][wait:0.8][chara:302401:lipSynch_1:eyeClose_1]たべる…"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 302401
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300900
+                    }
+                ],
+                "se": "3002_chara_dead",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "bg_adv_19221.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302401,
+                        "motion": 0,
+                        "pos": 0,
+                        "soulGem": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300902,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 302401,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textLeft": "…………[wait:1.2][chara:302401:cheek_0][chara:302401:face_mtn_ex_050.exp.json:motion_400:eyeClose_0][chara:302401:lipSynch_1]はっ!!@この匂いはオムライス!?",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "bgm": "bgm03_story02",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300902,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "胡桃 まなか",
+                "textRight": "えっ、あ、あの…@目が覚めましたか？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302401,
+                        "motion": 1,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textLeft": "…あれ、ここは…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 300902,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "胡桃 まなか",
+                "textRight": "ここはウォールナッツ@洋食屋ですよ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902
+                    }
+                ],
+                "nameRight": "胡桃 まなか",
+                "textRight": "あなた路上で寝ちゃったので@連れてきたんです"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302401,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textLeft": "なるほど、洋食屋…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 302401,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textLeft": "それでとっても美味しそうな@オムライスを持ってるんだね！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 302401,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textLeft": "美味しそうなオムライス…@美味しそう…絶対に、美味しい…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_012.exp.json",
+                        "id": 300902,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "胡桃 まなか",
+                "textRight": "…物欲しそうな顔しなくても@これはあなたのです"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302401,
+                        "motion": 400,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textLeft": "ほ、ホント？@夢じゃない…!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902,
+                        "motion": 200
+                    }
+                ],
+                "nameRight": "胡桃 まなか",
+                "textRight": "夢じゃないですよ@さ、召し上がれ"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 302401,
+                        "motion": 100,
+                        "pos": 1,
+                        "soulGem": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 302401
+                    }
+                ],
+                "nameCenter": "若菜 つむぎ",
+                "textCenter": "寝不足で白昼夢を@見ていた私を…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 302401
+                    }
+                ],
+                "nameCenter": "若菜 つむぎ",
+                "textCenter": "まなかが拾ってくれたの"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "eyeClose": 1,
+                        "id": 302401
+                    }
+                ],
+                "nameCenter": "若菜 つむぎ",
+                "textCenter": "そして初めての@まなかのオムライス…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 302401,
+                        "motion": 0
+                    }
+                ],
+                "nameCenter": "若菜 つむぎ",
+                "textCenter": "一口食べて思ったんだ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 302401,
+                        "motion": 200
+                    }
+                ],
+                "nameCenter": "若菜 つむぎ",
+                "textCenter": "これが私のずっと求めてた@味なんだって…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302401
+                    }
+                ],
+                "nameCenter": "若菜 つむぎ",
+                "textCenter": "もう限定お団子のことなんか@頭からふっとんじゃったよ！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 302401
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301001,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300902,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "阿見 莉愛",
+                "textRight": "は、はぁ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "胡桃 まなか",
+                "textLeft": "それからつむぎさんは連日@うちに通ってるんですが"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902
+                    }
+                ],
+                "nameLeft": "胡桃 まなか",
+                "textLeft": "ご覧のとおりガラガラの@この店を心配してくれまして…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302401,
+                        "motion": 300,
+                        "pos": 2,
+                        "soulGem": 0
+                    }
+                ],
+                "nameRight": "若菜 つむぎ",
+                "textRight": "だって、万が一にでも@ウォールナッツが潰れたら"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302401
+                    }
+                ],
+                "nameRight": "若菜 つむぎ",
+                "textRight": "まなかの料理が食べられなく@なっちゃうから…"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "id": 302401,
+                        "pos": 0
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301001,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "阿見 莉愛",
+                "textRight": "…それで、先ほどの@レビューなんですの？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 302401,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textLeft": "うん！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 302401,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textLeft": "私、いろんなお店をまわって@美味しいものを食べて"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 302401
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textLeft": "レビューを投稿するのが@趣味なんだ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 302401,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "若菜 つむぎ",
+                "textLeft": "うまくやれば宣伝になるし@このお店の役に立てるかなって！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "id": 302401,
+                        "pos": 2
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300902,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "胡桃 まなか",
+                "textLeft": "…うちではそういうの@間に合っているので"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 302401,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "若菜 つむぎ",
+                "textRight": "もー、そればっかり！@遠慮しなくていいんだよ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902,
+                        "motion": 0
+                    }
+                ],
+                "nameLeft": "胡桃 まなか",
+                "textLeft": "遠慮してるつもりは@ないんですが…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302401,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "若菜 つむぎ",
+                "textRight": "あっ@そろそろ晩ごはんの時間だ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 302401,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "若菜 つむぎ",
+                "textRight": "また明日ね、まなか！@莉愛先輩！"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "slideOutRightFast",
+                        "id": 302401
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301001,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "阿見 莉愛",
+                "textRight": "…熱心な子じゃない@宣伝くらい頼めばいいのに"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "胡桃 まなか",
+                "textLeft": "いえ、気持ちは@本当に嬉しいんですけど…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902
+                    }
+                ],
+                "nameLeft": "胡桃 まなか",
+                "textLeft": "…なんとなく、任せるのが@心配なんですよ"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

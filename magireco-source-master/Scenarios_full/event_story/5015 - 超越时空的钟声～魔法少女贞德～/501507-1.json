@@ -1,0 +1,615 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "bg": "bg_adv_20231.jpg",
+                "bgm": "stop",
+                "nameNarration": "",
+                "narration": "第２部",
+                "narrationEffect": "in",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "sepiaFrame"
+            },
+            {
+                "narration": "第７章「オルレアン奪還作戦」",
+                "narrationBg": "bg_adv_narration.jpg"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bg": "bg_adv_20231.jpg",
+                "bgm": "bgm01_battle02",
+                "narration": "＜1429年5月＞",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "sepiaFrame"
+            },
+            {
+                "nameNarration": "シャルル王太子",
+                "narration": "「コルボーの急襲により陥落した@要衝オルレアンを奪還せよ…」"
+            },
+            {
+                "nameNarration": "",
+                "narration": "＜王位継承者シャルル王太子の命を受け@ジル・ド・レ、“憤怒（ラ・イル）”ら率いる@フランス軍がシノン城を進発した＞"
+            },
+            {
+                "narration": "＜進路に点在する@砦や村落を解放しながらの行軍である＞"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "bg": "bg_adv_20091.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 402100,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narration": "＜先頭を馳せる白馬の旗手は、天使の声により@“タルト”と命名された魔法少女＞",
+                "narrationBg": "narration",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "＜またの名を“乙女”ジャンヌといった…＞"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "stay"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/4000_darkmist.ExportJson",
+                        "zOrder": "charaBack"
+                    }
+                ],
+                "autoTurnLast": 0.2,
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 760000,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 402100,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "",
+                "nameRight": "タルト",
+                "narrationEffect": "out",
+                "textBg": "shout",
+                "textLeft": "БЯЯЯЯЯЯяЯЯЯ!!!!",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 402100,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "[flashEffect:flashWhite2][surround:4021A01]はぁっ！"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgEffect": "shakeLarge",
+                "chara": [
+                    {
+                        "effect": "shake",
+                        "id": 760000
+                    }
+                ],
+                "flashEffect": "flashRed2",
+                "surround": "4021A04",
+                "textClear": 1
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "out"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/4000_darkmist.ExportJson",
+                        "zOrder": "charaBack"
+                    }
+                ],
+                "autoTurnLast": 2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 760000
+                    }
+                ],
+                "se": "3102_enemy_dead"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6105_stacey_emblem.png",
+                        "posX": 0,
+                        "posY": 120,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "ef_adv_06"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 402301,
+                        "motion": 0,
+                        "pos": 2,
+                        "soulGem": 0
+                    }
+                ],
+                "nameRight": "メリッサ･ド･ヴィニョル",
+                "textRight": "見てください、リズ！",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 402200,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "リズ・ホークウッド",
+                "textRight": "魔女の結界！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 402200
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6105_stacey_emblem.png",
+                        "visible": "hide"
+                    }
+                ],
+                "textClear": 1,
+                "turnEffect": "stop"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_96105.jpg",
+                "bgChangeEffect": "enterWitchSpace",
+                "bgm": "stop",
+                "se": "7208_wander_into"
+            },
+            {
+                "bgm": "bgm01_anime15",
+                "chara": [
+                    {
+                        "id": 6105,
+                        "name": "sprite_0",
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "",
+                "textBg": "shout",
+                "textCenter": "蜃ｺ縺ｦ陦後▲縺ｦ繧茨ｼ!!!"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 6105,
+                        "name": "sprite_0"
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 402100,
+                        "motion": 1,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "タルト",
+                "textLeft": "いろはさん、やちよさん@お願いします！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "はいっ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100200,
+                        "motion": 201,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "…いろは@左右の使い魔を押さえるわ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "じゃあ、私は右を"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100200
+                    },
+                    {
+                        "effect": "slideOutRightFast",
+                        "id": 100100
+                    }
+                ],
+                "textLeft": "わかったわ@私は左ね"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "slideOutLeftFast",
+                        "id": 100200
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 7105,
+                        "name": "sprite_0",
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "effect": "slideInLeftFast",
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "nameRight": "",
+                "textBg": "shout",
+                "textRight": "∀Φщ∂∬β≠!∞!!!"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "[flashEffect:flashWhite2][se:4001_equip_arms_bow_vh]はっ！"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgEffect": "shakeLarge",
+                "chara": [
+                    {
+                        "effect": "shake",
+                        "id": 7105,
+                        "name": "sprite_0"
+                    }
+                ],
+                "flashEffect": "flashRed2",
+                "se": "6001_hit_shooting_01_vh"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 7105,
+                        "name": "sprite_0"
+                    }
+                ],
+                "se": "3102_enemy_dead"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 7105,
+                        "name": "sprite_1",
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "effect": "slideInRightFast",
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100200,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "",
+                "nameRight": "やちよ",
+                "textBg": "shout",
+                "textLeft": "≠!∞∀Φщ∂β∬!!!"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100200,
+                        "motion": 201
+                    }
+                ],
+                "textRight": "[flashEffect:flashWhite2][se:4050_landing_jump]やぁっ！"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgEffect": "shakeLarge",
+                "chara": [
+                    {
+                        "effect": "shake",
+                        "id": 7105,
+                        "name": "sprite_1"
+                    }
+                ],
+                "flashEffect": "flashRed2",
+                "se": "6256_hit_spike_02_v"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 7105,
+                        "name": "sprite_1"
+                    }
+                ],
+                "se": "3102_enemy_dead"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 402200,
+                        "motion": 200,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 402100,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "タルト",
+                "nameRight": "リズ・ホークウッド",
+                "textRight": "今よ、タルト！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 402100
+                    }
+                ],
+                "textLeft": "魔女よ、消え去れ…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgEffect": "shakeLarge",
+                "chara": [
+                    {
+                        "id": 402100,
+                        "motion": 100
+                    }
+                ],
+                "flashEffect": "flashWhite2",
+                "surround": "4021A03",
+                "textLeft": "ラ・リュミエール！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "bg": "white",
+                "turnChangeIn": "whiteIn",
+                "turnChangeOut": "whiteOut"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgEffect": "shakeLarge",
+                "surround": "4021A05"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "bg_adv_96105.jpg",
+                "turnChangeIn": "whiteIn"
+            },
+            {
+                "autoTurnLast": 1,
+                "turnChangeOut": "whiteOut",
+                "turnChangeOutTime": 1.5
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_20071.jpg",
+                "bgChangeEffect": "exitWitchSpace",
+                "bgm": "stop",
+                "se": "7209_gate_close"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 830000,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "ラ・イル",
+                "nameRight": "リズ・ホークウッド",
+                "textLeft": "しっかし、何度見ても@おっかねえ魔法だな…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 402200,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "textRight": "魔女はタルトが退けたわ！"
+            },
+            {
+                "bgm": "bgm01_battle06",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 830100,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "ジル・ド・レ",
+                "textLeft": "よし、今こそフランス軍の@底力を見せるときだ！"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 830300,
+                        "motion": 0,
+                        "mouthOpen": 1,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 830400,
+                        "motion": 0,
+                        "mouthOpen": 1,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 830500,
+                        "motion": 0,
+                        "mouthOpen": 1,
+                        "pos": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgEffect": "shakeLarge",
+                "nameNarration": "",
+                "narration": "「おおおおっ！」",
+                "narrationBg": "narration",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100100,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100200,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100200,
+                        "motion": 201
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "nameRight": "いろは",
+                "narrationEffect": "out",
+                "textLeft": "いろは、私たちも",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100100,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "はい！"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

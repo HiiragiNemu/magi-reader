@@ -1,0 +1,792 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51032_storyselect_mizugi/51032_day1.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51032_storyselect_mizugi/51032_day1.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bg": "bg_adv_20291.jpg",
+                "bgm": "bgm03_story21",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100301,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100501,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameNarration": "いろは",
+                "narration": "私が幸運にも商店街の福引で引き当てたのは@海水浴場近くにある民宿の宿泊券！@それも５名分！",
+                "narrationBg": "black",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "ということで、夏休みの時期に予定を合わせて@やちよさん、さなちゃん、フェリシアちゃん@そして鶴乃ちゃんと一緒に…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301,
+                        "motion": 201
+                    }
+                ],
+                "nameLeft": "鶴乃",
+                "nameRight": "フェリシア",
+                "narrationEffect": "out",
+                "textLeft": "宿にとーちゃーく！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100501,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "うおー！ここかー！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_014.exp.json",
+                        "id": 100201,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "辺りも落ち着いた感じでいいわね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100401,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "さな",
+                "textRight": "（うう…@みんなとお泊り…嬉しい！）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100101,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "じゃあ@チェックインしましょうか"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100101
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 100401
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100901,
+                        "motion": 100,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "レナ",
+                "textLeft": "そうだね@かえで、よろしく"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101101,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "かえで",
+                "textRight": "うん、いいよ"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100901
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101101
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100101,
+                        "motion": 1,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "えーっと、フロントは…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 401,
+                        "mouthOpen": 1
+                    },
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 100201,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "[chara:100101:effect_emotion_surprise_0][chara:100201:effect_emotion_surprise_0][se:7226_shock]…って、えーっ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "motion": 301
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "あなたたち！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100901,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "レナ",
+                "textRight": "…どーも"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101101,
+                        "motion": 300,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "かえで",
+                "textRight": "えへへ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "ふたりとも…どうしたの!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 101001,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "ももこ",
+                "textRight": "まあ…その…３人で旅行…@みたいな？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100101,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "ももこさん！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "ももこ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100901,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "レナ",
+                "textRight": "こ、こういう偶然も@あるもんね～！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100501,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "フェリシア",
+                "textLeft": "おー、本当に来たな！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100901,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "こ、こら！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 100201,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "本当に…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101101,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "かえで",
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101101,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "いろはちゃん@ちょっと…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "え？な、何…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101101
+                    }
+                ],
+                "textRight": "実はね…"
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100101
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101101
+                    }
+                ],
+                "nameNarration": "いろは",
+                "narration": "かえでちゃんがゴニョゴニョと@こっそり教えてくれたんだけど…",
+                "narrationBg": "bg_adv_20291.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100901,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narration": "フェリシアちゃんから旅行の話を聞いて@レナちゃんも行きたくなったみたいで@ももこさんとかえでちゃんに@ワガママ言ったとか…"
+            },
+            {
+                "narration": "私たちと日程も合わせて@本人としてはたまたま鉢合わせたと@装っているらしいんだけど…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 200
+                    }
+                ],
+                "nameCenter": "レナ",
+                "narrationEffect": "out",
+                "textCenter": "いやー、すごい確率ね！@まさか日程が丸被りだなんて！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901
+                    }
+                ],
+                "textCenter": "偶然って怖いわね～！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100901
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101101,
+                        "motion": 100,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "nameRight": "かえで",
+                "textRight": "…ごめんね、こんな感じで@付き合ってもらいたいんだけど…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100101,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "あ、う、うん…@[chara:100101:lipSynch_0][wait:0.8][chara:100101:motion_400][chara:100101:lipSynch_1]やちよさん！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "id": 100101,
+                        "pos": 2
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100201,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "何？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "実は…ゴニョゴニョ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "…そう…@…仕方ないわねぇ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100201,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "そうね@偶然ってすごいわね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_014.exp.json",
+                        "id": 100201
+                    }
+                ],
+                "textLeft": "じゃあ、同宿ってことで@よろしく"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 101001,
+                        "motion": 300,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "ももこ",
+                "textRight": "あ、ああ…！@いやー偶然偶然！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100901,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "レナ",
+                "textLeft": "そうそう！@偶然偶然！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101101,
+                        "motion": 300,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "かえで",
+                "textRight": "…あの～…@なんかごめんね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100901,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "何で謝ってるのよ！@偶然なんだから！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 100101,
+                        "motion": 301,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "そ、そうだよ！@偶然だもんね！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100501,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "へー！偶然なのか！@すげーなそれ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 300,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "素直な子…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100501,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "へ？何か言った？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100201,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…別に何も"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 100101,
+                        "motion": 400,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "じゃ、じゃあ@よろしく！…ということで"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100401,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "さな",
+                "textRight": "よ、よろしくお願いします！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "（こんなにいっぱいでお泊り…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100401,
+                        "lipSynch": 0,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "（うう…！楽しみすぎます…！）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100501,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100101,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "おーし！@こうして集まったことだし…",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100501,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "[chara:100501:effect_emotion_joy_0][se:7222_happy]早く行こうぜ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100301,
+                        "motion": 101,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "鶴乃",
+                "textRight": "そうだね！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "行くって…どこへ？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100301,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "何言ってんの！@いろはちゃん！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100501,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "海に決まってるだろーがー！"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

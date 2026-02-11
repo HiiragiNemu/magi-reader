@@ -1,0 +1,612 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/3000_snow_messageback.ExportJson",
+                        "zOrder": "messageFront"
+                    },
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 2,
+                        "filePath": "resource/image_native/effect/story/general/6000_snow_bgfront.ExportJson",
+                        "zOrder": "messageBack"
+                    }
+                ],
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "bgm": "bgm05_event11",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/50450_chapter4.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "deleteArmatureList": [
+                    2
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/50450_chapter4.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bgm": "stop",
+                "deleteArmatureList": [
+                    1
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/50450_day5.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narration": "Day 5"
+            },
+            {
+                "nameNarration": "",
+                "narration": "15 : 40",
+                "narrationAnchor": "bottom",
+                "narrationBg": "",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationFontSize": 40,
+                "narrationLineMargin": 190,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/50450_day5.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "栄総合学園",
+                "narrationBg": "black",
+                "narrationEffect": "in",
+                "narrationFontSize": 40,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bgm": "bgm01_anime03",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/memoria_1291.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "「はい、死神少女のおかげで@自首する決心がついたんです…！」",
+                "narrationBg": "",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 801100,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narration": "「デスサンタさんのおかげで背が伸びました！」"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800700,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narration": "「10年に渡って内戦が続いているＸ連邦で@クリスマス休戦が成立しました」"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 801100,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800600,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "narration": "「メリークリスマス・オブ・デス！」"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21491.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101201,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100801,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/50450_tower_christmas18/memoria_1291.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "アリナ",
+                "nameRight": "御園 かりん",
+                "textRight": "[chara:101201:effect_emotion_joy_0][se:7222_happy]クリスマス・デス・カリブーは@今日も大人気なの",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "…明らかに無関係なデマとか@ただのニュースが混じってたヨネ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "クリスマス・デス・カリブーは@もう誰のものでもないの"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201
+                    }
+                ],
+                "textRight": "名前をつけてマンガにしたのは@わたしだけど"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201
+                    }
+                ],
+                "textRight": "わたしの手を離れた後は@みんなのものなの"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100801,
+                        "lipSynch": 0,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（意外と達観してるヨネ…@フールガールの作品観）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101201,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "それより先輩",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201
+                    }
+                ],
+                "textRight": "今日会えるとは思わなかったの"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 100801,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…冬休みに入ったばかりだし@普通来ないヨネ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101201,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "わたしの漫画研究部と@先輩の美術部は"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201
+                    }
+                ],
+                "textRight": "冬休みも絶賛活動中なの！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "…そういえば"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801
+                    }
+                ],
+                "textLeft": "さっき何か@完成させたみたいだケド？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101201,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "そうなの！@描きたてほやほやなの！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101201,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "「死神少女クリスマス・デス@カリブー」の新作なの！"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 101201,
+                        "motion": 1,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 100801,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm03_story20",
+                "chara": [
+                    {
+                        "id": 100801,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "ふーん…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801
+                    }
+                ],
+                "textLeft": "可もなく不可もないゴミだヨネ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101201,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "…ほんとなの!?@[chara:101201:lipSynch_0][wait:0.8][chara:101201:effect_emotion_joy_0][se:7222_happy][chara:101201:cheek_0][chara:101201:face_mtn_ex_011.exp.json][chara:101201:lipSynch_1]すごく嬉しいの！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100801,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "[chara:100801:effect_emotion_surprise_0][se:7226_shock]なんで喜ぶワケ？@誉めてないんですケド"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101201
+                    }
+                ],
+                "textRight": "いつも辛口の先輩に@不可じゃないって言われたの！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100801,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（その後に@ゴミって付けたんですケド…？）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101201,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "今夜も町に死神少女が現れて",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201
+                    }
+                ],
+                "textRight": "みんなをハッピーにしてほしいと@お願いしながら描いたの"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100801,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "あ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 100801
+                    }
+                ],
+                "textLeft": "クリスマス・デス・カリブーなら@もう現れないカラ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101201,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "へっ？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201
+                    }
+                ],
+                "textRight": "どうしてなの、先輩？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100801
+                    }
+                ],
+                "textLeft": "エネルギーの無駄だカラ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "…………??@[wait:0.8][chara:101201:cheek_0][chara:101201:face_mtn_ex_030.exp.json][chara:101201:lipSynch_1]意味が分からないの…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 100801,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "じゃ、アリナは行くカラ"
+            },
+            {
+                "nameNarration": "",
+                "narration": "トン…",
+                "narrationBg": "bg_adv_21491.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101201,
+                        "motion": 400
+                    }
+                ],
+                "narrationEffect": "out",
+                "textRight": "えっ…@イチゴ牛乳？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "前に言ったヨネ？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100801
+                    }
+                ],
+                "textLeft": "今度買って返すって"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "id": 101201,
+                        "motion": 0,
+                        "pos": 1
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 100801
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "バタン",
+                "narrationBg": "bg_adv_21491.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101201
+                    }
+                ],
+                "nameCenter": "御園 かりん",
+                "narrationEffect": "out",
+                "textCenter": "…もしかして@クリスマスプレゼントなの？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101201,
+                        "motion": 200
+                    }
+                ],
+                "textCenter": "[chara:101201:effect_emotion_joy_0][se:7222_happy]先輩、ありがとうなの～"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

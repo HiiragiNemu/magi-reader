@@ -1,0 +1,1176 @@
+{
+    "skipTransitionList": [
+        {
+            "from": "group_1",
+            "to": "group_4"
+        },
+        {
+            "canSkip": false,
+            "from": "group_4"
+        }
+    ],
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.2,
+                "bg": "black",
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "effect": "ef_adv_08",
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121004,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "…………@…………",
+                "narrationBg": "black",
+                "narrationEffect": "in",
+                "surround": "7031_bubble_loop",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "好痛苦…"
+            },
+            {
+                "narration": "好痛苦…"
+            },
+            {
+                "narration": "和你生离死别…@一直在海上漂流…@又飘回到了那个村子…@一直等待着你…"
+            },
+            {
+                "narration": "一直一直都好痛苦…"
+            },
+            {
+                "narration": "与其这么痛苦…@还不如在和你分离的时候@就死在这里好了…"
+            },
+            {
+                "autoTurnLast": 2,
+                "narrationEffect": "out"
+            },
+            {
+                "autoTurnLast": 1,
+                "turnChangeIn": "fadeIn",
+                "turnChangeInTime": 1.5
+            },
+            {
+                "autoTurnLast": 0.01,
+                "surround": "7032_bubble_nonloop"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/1504_bubble_scene.ExportJson",
+                        "zOrder": "charaFront"
+                    }
+                ],
+                "autoTurnLast": 0.1,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "surround": "stop",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "扑腾!!",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "narrationEffect": "out"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.2,
+                                "posY": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/adv_roll_fade.png",
+                        "posX": 0,
+                        "posY": -3000,
+                        "scale": 6,
+                        "setVisible": 1,
+                        "zOrder": "messageFront"
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_20682.jpg",
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 121003,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": -1,
+                        "effect": "ef_adv_08",
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121004,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.2,
+                                "posY": 3000
+                            }
+                        },
+                        "path": "resource/scenario/img/adv_roll_fade.png"
+                    }
+                ]
+            },
+            {
+                "bgm": "bgm03_story12",
+                "chara": [
+                    {
+                        "id": 121003,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "御魂",
+                "surround": "7202_telepathy",
+                "textLeft": "桃子！@坚持住，桃子！",
+                "turnEffect": "ef_adv_02"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121003
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "我们一起回船上啊…！"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 121004,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121003,
+                        "motion": 300,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "桃子…！求你了，回答我啊…！"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 121004,
+                        "lipSynch": 1
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "这样…就可以了…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121003
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "诶？"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 121004,
+                        "tear": 1
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "能去那个人的身边了…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_052.exp.json",
+                        "id": 121003,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "怎么会…!?"
+            },
+            {
+                "select": [
+                    {
+                        "alternativeId": 11,
+                        "group": "group_2",
+                        "textSelect": "不要放弃"
+                    },
+                    {
+                        "alternativeId": 12,
+                        "group": "group_3",
+                        "textSelect": "开什么玩笑"
+                    }
+                ]
+            }
+        ],
+        "group_2": [
+            {
+                "autoTurnLast": 0.2,
+                "bg": "bg_adv_20682.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121003,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": -1,
+                        "effect": "ef_adv_08",
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121004,
+                        "motion": 0,
+                        "pos": 2,
+                        "tear": 1
+                    }
+                ],
+                "surround": "stop",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm03_story08",
+                "chara": [
+                    {
+                        "id": 121003,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "御魂",
+                "surround": "7202_telepathy",
+                "textLeft": "求你了，不要放弃…",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "ef_adv_02"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121003
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "也许那个人还活着啊…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121003,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "我们一起寻找吧…！行吗…？"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 121004,
+                        "lipSynch": 0,
+                        "tear": 1
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "…………！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121004,
+                        "lipSynch": 1,
+                        "motion": 200
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "对我说这种话的…@你还是第一个…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_032.exp.json",
+                        "id": 121003,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121003,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "surround": "stop",
+                "textLeft": "（…其实那个人现在@不可能还活着…）",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 121003,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "（…对不起，说了@这种让人空怀希望的话…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121003,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "[chara:121003:effect_shake]呜…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121003,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "（糟了，呼吸，已经…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 121004,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "[chara:121004:effect_shake]呜…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 121003,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "（桃子…！）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_032.exp.json",
+                        "id": 121003,
+                        "lipSynch": 0,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "（怎样才能救你…？@我该怎么办…！）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121003,
+                        "motion": 100,
+                        "pos": 1
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "[chara:121004:effect_shake]紧紧抱住…！",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 121003,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "御魂",
+                "narrationEffect": "out",
+                "textCenter": "[flashEffect:flashWhite2]…………！"
+            },
+            {
+                "autoTurnLast": 2,
+                "bg": "bg_adv_20271.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 800103,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 801100,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "whiteIn",
+                "turnEffect": "promist"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800103
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "我是…非常幸福的人…",
+                "turnChangeOut": "whiteOut",
+                "turnChangeOutTime": 1.5
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800103
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "能够靠巫的力量，@把自己的心意传达给你…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800103
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "还有这双没用的腿@也能开始动了…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800103
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "就算不变成鱼@我也可以跟随你…"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "white",
+                "turnChangeIn": "whiteIn",
+                "turnEffect": "stop"
+            },
+            {
+                "bgm": "bgm05_event05",
+                "nameNarration": "御魂",
+                "narration": "[textBlack:是啊…]",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "turnChangeOut": "whiteOut"
+            },
+            {
+                "narration": "[textBlack:如果我们能变成]@[textBlack:可以在这广阔的大海上自由畅游]@[textBlack:不受任何束缚的存在的话…！]"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 2,
+                        "filePath": "resource/image_native/effect/story/general/4005_bubble.ExportJson",
+                        "zOrder": "charaFront"
+                    }
+                ],
+                "autoTurnLast": 1.5,
+                "bg": "bg_adv_20682.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 121001,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121002,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "whiteIn"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 121001
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "啊…",
+                "turnChangeOut": "whiteOut",
+                "turnChangeOutTime": 1.5
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121001,
+                        "motion": 300,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "太好了，看起来成功了呢…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 121002
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "这个样子是…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 121001
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "是根据你的记忆中的灵感@由我调整的结果…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121001,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "也就是说在你的帮助下@变身成这样了哦"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121002,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121001
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "…来吧，我们走吧@去寻找那个人…"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "deleteArmatureList": [
+                    2
+                ],
+                "turnChangeIn": "fadeIn"
+            }
+        ],
+        "group_3": [
+            {
+                "autoTurnLast": 0.2,
+                "bg": "bg_adv_20682.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 121003,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": -1,
+                        "effect": "ef_adv_08",
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121004,
+                        "motion": 0,
+                        "pos": 2,
+                        "tear": 1
+                    }
+                ],
+                "surround": "stop",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 121003
+                    }
+                ],
+                "nameLeft": "御魂",
+                "surround": "7202_telepathy",
+                "textLeft": "…开什么玩笑",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "ef_adv_02"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121003,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "…………[wait:0.8][chara:121003:cheek_0][chara:121003:eyeClose_0:motion_200][chara:121003:lipSynch_1]开什么玩笑啊…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 121004,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "…………"
+            },
+            {
+                "bgm": "bgm03_story23",
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 121003
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "你不是说不想让悲剧重演吗？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121003,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "你不是祝愿@大家能获得自由…和幸福吗…!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_032.exp.json",
+                        "id": 121003
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "但是，却要选择这样的结局…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 121003,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "这真的是你希望的吗!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121004,
+                        "lipSynch": 1
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "啊…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121003,
+                        "motion": 100
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textBg": "shout",
+                "textLeft": "别想把桃子带走啊！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121004
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "我……"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 121004
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "[chara:121004:effect_shake]呜…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_052.exp.json",
+                        "id": 121003,
+                        "motion": 400,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "桃子ー!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121003,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "surround": "stop",
+                "textLeft": "[chara:121003:effect_shake]呜…",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 121003,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "（糟了，呼吸，已经…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_032.exp.json",
+                        "id": 121003,
+                        "lipSynch": 0,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "（怎样才能救你…？@我该怎么办…！）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121003,
+                        "motion": 100,
+                        "pos": 1
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "[chara:121004:effect_shake]紧紧抱住…！",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 121003,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "御魂",
+                "narrationEffect": "out",
+                "textCenter": "[flashEffect:flashWhite2]…………！"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "bg_adv_20271.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 800103,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 801100,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "whiteIn",
+                "turnChangeOutTime": 1.5,
+                "turnEffect": "promist"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800103
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "我是…非常幸福的人…",
+                "turnChangeOut": "whiteOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800103
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "能够靠巫的力量，@把自己的心意传达给你…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800103
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "还有这双没用的腿@也能开始动了…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800103
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "就算不变成鱼@我也可以跟随你…"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "white",
+                "turnChangeIn": "whiteIn",
+                "turnEffect": "stop"
+            },
+            {
+                "nameNarration": "御魂",
+                "narration": "[textBlack:是啊…]",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "turnChangeOut": "whiteOut"
+            },
+            {
+                "narration": "[textBlack:如果我们能变成]@[textBlack:可以在这广阔的大海上自由畅游]@[textBlack:不受任何束缚的存在的话…！]"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 3,
+                        "filePath": "resource/image_native/effect/story/general/4005_bubble.ExportJson",
+                        "zOrder": "charaFront"
+                    }
+                ],
+                "autoTurnLast": 1.5,
+                "bg": "bg_adv_20682.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 121001,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121002,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "whiteIn"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 121001
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "啊…",
+                "turnChangeOut": "whiteOut",
+                "turnChangeOutTime": 1.5
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121001,
+                        "motion": 300,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "太好了，看起来成功了呢…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 121002
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "这个样子是…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 121001
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "是根据你的记忆中的灵感@由我调整的结果…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121001,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "也就是说在你的帮助下@变身成这样了哦"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121002,
+                        "motion": 1
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "这样啊…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121002,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121002,
+                        "lipSynch": 1,
+                        "motion": 300
+                    },
+                    {
+                        "id": 121001,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "…我…搞错了…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 121002
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "我希望的是…@和那个人再见一面…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 121002,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "桃子",
+                "textRight": "所以…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 121001,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "御魂",
+                "textLeft": "…嗯@我们一起去找吧"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "deleteArmatureList": [
+                    3
+                ],
+                "turnChangeIn": "fadeIn"
+            }
+        ],
+        "group_4": [
+            {
+                "autoTurnLast": 1,
+                "bg": "bg_adv_20682.jpg",
+                "bgm": "bgm03_story08",
+                "chara": [
+                    {
+                        "cheek": -1,
+                        "effect": "ef_adv_08",
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 121004,
+                        "motion": 0,
+                        "pos": 2,
+                        "tear": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_052.exp.json",
+                        "id": 121003,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "surround": "stop",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "select": [
+                    {
+                        "alternativeId": 11,
+                        "group": "group_2",
+                        "textSelect": "不要放弃"
+                    },
+                    {
+                        "alternativeId": 12,
+                        "group": "group_3",
+                        "textSelect": "开什么玩笑"
+                    }
+                ],
+                "surround": "7202_telepathy",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "ef_adv_02"
+            }
+        ]
+    },
+    "version": 3
+}

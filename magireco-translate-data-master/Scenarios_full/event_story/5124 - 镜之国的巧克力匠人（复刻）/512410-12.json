@@ -1,0 +1,875 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "bgm": "stop",
+                "item": [
+                    {
+                        "iPhoneXScale": 1,
+                        "path": "resource/scenario/img/51040_tower_nagisa/51040_picture-book.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/3003_act_stage.ExportJson",
+                        "zOrder": "charaFront"
+                    }
+                ],
+                "autoTurnLast": 0.01
+            },
+            {
+                "nameNarration": "绘本的一页",
+                "narration": "[textBlack:Dance Dance Dance]@[textBlack:互相追赶尾巴]@[textBlack:两条绕圈的小狗]@[textBlack:为宇宙第一而奔走。]",
+                "narrationBg": "",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 120,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "[textBlack:Combo Combo Combo ]@[textBlack:互相追赶尾巴]@[textBlack:旋转木狗般奔走]@[textBlack:追逐着彼此奔走。]"
+            },
+            {
+                "autoTurnLast": 2,
+                "bg": "bg_adv_23031.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200450,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200652,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51040_tower_nagisa/51040_picture-book.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm01_anime06",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200652,
+                        "motion": 200
+                    }
+                ],
+                "nameLeft": "沙耶香",
+                "nameRight": "杏子",
+                "textRight": "好耶！",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 200450,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "我不是说过了嘛！"
+            },
+            {
+                "nameNarration": "",
+                "narration": "总分　2,176,230",
+                "narrationBg": "bg_adv_23031.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200652,
+                        "motion": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "textRight": "…追回来了！@这下我们绝对领先！"
+            },
+            {
+                "autoTurnLast": 0.25,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 200652
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 200450
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "bg_adv_21031.jpg",
+                "bgChangeEffect": "cameraPan"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 270000,
+                        "motion": 200,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200552,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "渚",
+                "nameRight": "麻美",
+                "textLeft": "…我明白了的说！@关键在于“Combo“的说！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200552,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "嗯嗯"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552
+                    }
+                ],
+                "textRight": "比起自己紧跟乐曲的节奏@两个人用配合得当的动作"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552
+                    }
+                ],
+                "textRight": "连续的打出Combo@得到的分数反而更高"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 270000,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "即使是真正的游戏厅@也有这样的规则吗？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "那倒是不太清楚…@至少在这个梦里是这样的"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 270000
+                    }
+                ],
+                "textLeft": "…沙耶香和杏子的组合@分数不太稳定的说"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 200552,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "这是她们俩的策略"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552
+                    }
+                ],
+                "textRight": "佐仓同学技术比较好@她会在合适的时机做出动作"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 200552
+                    }
+                ],
+                "textRight": "如果美树同学能跟上的话@就会打出很高的分数…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 270000,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "…杏子好像没有配合沙耶香来做动作的打算的说"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "嗯，所以最终得分取决于@美树同学的努力"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200552,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "但是，鹿目同学和晓美同学"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552
+                    }
+                ],
+                "textRight": "两个人配合时机@集中精力打出Combo"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552
+                    }
+                ],
+                "textRight": "一口气提高了分数"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 270000,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "如果是这种组合游戏@渚我们也不会输的说！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 200552,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "是啊，我们可是…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552
+                    }
+                ],
+                "textRight": "一起做出宇宙第一的巧克力蛋糕的@完美组合"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 270000,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "是的说！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 270000
+                    }
+                ],
+                "textLeft": "那么，特别训练开始的说！"
+            },
+            {
+                "bgm": "stop",
+                "nameNarration": "渚",
+                "narration": "随后…",
+                "narrationBg": "bg_adv_21031.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_23031.jpg",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200652,
+                        "motion": 0,
+                        "mouthOpen": 1,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200450,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "narrationBg": "bg_adv_23031.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "bgm": "bgm01_anime12",
+                "nameNarration": "",
+                "narration": "Top　2,245,800@・Mami/Nagisa",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200450,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "沙耶香",
+                "nameRight": "杏子",
+                "narrationEffect": "out",
+                "textLeft": "[chara:200450:effect_emotion_surprise_0][chara:200652:effect_emotion_surprise_0][se:7226_shock]…嗯!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 200652,
+                        "motion": 200,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textRight": "麻美她们突然@成为了第一名！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200450,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "小圆她们也超过200万分了…@水平提高了啊…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200652,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "啊，还挺能干的"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200450,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "大概…是重视了Combo@以此提高了成绩吧…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200652
+                    }
+                ],
+                "textRight": "被强有力的对手追上来了@我也燃起来了"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200652,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "虽然不能面对面的竞争@不过这样也很让人激动呢！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 200450,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "…对不起啊，杏子"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200450
+                    }
+                ],
+                "textLeft": "本来以为是很轻松的@我拖了你的后腿吧？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200450,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "如果只有你一个人的话@明明能做到完美的"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 200652,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "明明你还没习惯这种游戏呢@做到这种程度很厉害了"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200652
+                    }
+                ],
+                "textRight": "沙耶香你越熟练@我们的分数就能越高"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200652
+                    }
+                ],
+                "textRight": "所以还有逆转的机会啊"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200450,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "嗯@我们接着按我们的方式努力吧"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200450
+                    }
+                ],
+                "textLeft": "不需要考虑怎样用奇怪的方式来配合我"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 200652,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "…正合我意！@我不会有所保留的！"
+            },
+            {
+                "autoTurnLast": 1.2,
+                "bg": "black",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200552,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 270000,
+                        "motion": 0,
+                        "mouthOpen": 1,
+                        "pos": 0
+                    }
+                ],
+                "narrationBg": "bg_adv_23031.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "nameNarration": "",
+                "narration": "Top　2,512,440@・Kyoko/Sayaka",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21031.jpg"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 270000,
+                        "motion": 100,
+                        "mouthOpen": 0
+                    }
+                ],
+                "nameLeft": "渚",
+                "nameRight": "麻美",
+                "narrationEffect": "out",
+                "textLeft": "啊，沙耶香她们@又变成了第一的说！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "太强了…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 200552
+                    }
+                ],
+                "textRight": "这个分数@基本都是perfect了吧！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 270000,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "不能接受的说"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 270000
+                    }
+                ],
+                "textLeft": "明明为了救沙耶香和杏子@已经这么努力了"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 270000,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "结果她们本人在不遗余力的阻碍我们的说！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 200552,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "没办法啊…@她们又不知道自己是在梦里"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 270000,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "放弃宇宙第一的巧克力蛋糕"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 270000
+                    }
+                ],
+                "textLeft": "高兴的收下十块巧克力奖牌…@变成这样的情况了吗？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "…谁知道呢？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 270000,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "但是，渚不想这样@不想这样白白的输掉的说"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200552,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "我也是啊…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552
+                    }
+                ],
+                "textRight": "可是，这样的局面下想要逆转@单纯注重Combo是不够的"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552
+                    }
+                ],
+                "textRight": "两个人还要很完美的@配合乐曲的节奏…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 270000,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "这样的话…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 270000
+                    }
+                ],
+                "textLeft": "那就干脆换首歌！@换成麻美和渚擅长的歌的说！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 200552,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "有这样的歌吗…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 270000,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "一起来找的说！"
+            },
+            {
+                "autoTurnLast": 1.2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200552,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 270000,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 270000,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "…啊？",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 270000
+                    }
+                ],
+                "textLeft": "这首歌的话就没问题了的说！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200552,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "没想到真的有呢@不愧是在梦里"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200552,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "马上就要到决胜的阶段了"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200552
+                    }
+                ],
+                "textRight": "选定了这首歌@就没有机会再改了"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 270000,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "求之不得的说！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 200552,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "那么，开始最后的战斗吧"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 270000,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "特训再开始的说！"
+            },
+            {
+                "autoTurnLast": 2,
+                "deleteArmatureList": [
+                    1
+                ],
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

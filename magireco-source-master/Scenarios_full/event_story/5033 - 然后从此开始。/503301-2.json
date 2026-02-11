@@ -1,0 +1,798 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "white",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 820000,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm03_story14",
+                "chara": [
+                    {
+                        "id": 820000,
+                        "voiceFull": "fullvoice/section_event_1033/vo_full_503301-2-1"
+                    }
+                ],
+                "nameNarration": "ウワサさん",
+                "narration": "アラもう聞いた？誰から聞いた？@絶交ルールのそのウワサ",
+                "narrationBg": "narration",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 820000,
+                        "voiceFull": "fullvoice/section_event_1033/vo_full_503301-2-2",
+                        "voiceFullStop": "fullvoice/section_event_1033/vo_full_503301-2-1"
+                    }
+                ],
+                "narration": "知らないと後悔するよ？@知らないと怖いんだよ？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 820000,
+                        "voiceFull": "fullvoice/section_event_1033/vo_full_503301-2-3",
+                        "voiceFullStop": "fullvoice/section_event_1033/vo_full_503301-2-2"
+                    }
+                ],
+                "narration": "後悔して謝ると、嘘つき呼ばわりでたーいへん！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 820000,
+                        "voiceFull": "fullvoice/section_event_1033/vo_full_503301-2-4",
+                        "voiceFullStop": "fullvoice/section_event_1033/vo_full_503301-2-3"
+                    }
+                ],
+                "narration": "怖いバケモノに捕まって@無限に階段掃除をさせられちゃう！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 820000,
+                        "voiceFull": "fullvoice/section_event_1033/vo_full_503301-2-5",
+                        "voiceFullStop": "fullvoice/section_event_1033/vo_full_503301-2-4"
+                    }
+                ],
+                "narration": "ケンカをすれば、ひとりは消えちゃうって@神浜市の子ども達の間ではもっぱらのウワサ"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21221.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100901,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_event_1033/vo_full_503301-2-5"
+            },
+            {
+                "bgm": "bgm03_story06",
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 300
+                    }
+                ],
+                "nameCenter": "レナ",
+                "textCenter": "オッソロシ～…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（…だっけ…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 200
+                    }
+                ],
+                "textCenter": "…ふんっ…",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901
+                    }
+                ],
+                "textCenter": "…あ…@[chara:100901:lipSynch_0][wait:1.0][chara:100901:cheek_0][chara:100901:face_mtn_ex_010.exp.json][chara:100901:motion_100][chara:100901:lipSynch_1]ももこ！かえで！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100901
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101001,
+                        "motion": 100,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "ももこ",
+                "nameRight": "かえで",
+                "textLeft": "お、いたいた"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101101,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "お待たせ～！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101001,
+                        "motion": 0,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 101101,
+                        "motion": 0
+                    }
+                ],
+                "nameNarration": "レナ",
+                "narration": "やちよさんから「[textBlue:うわさ]」の追跡調査を@手伝ってくれって言われて@ももことかえでとで、かつてレナたちが@巻き込まれた「[textBlue:うわさ]」を調べることになった",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100901,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "narration": "それが…「絶交ルールの[textBlue:うわさ]」"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 1
+                    }
+                ],
+                "nameCenter": "ももこ",
+                "nameLeft": "レナ",
+                "nameRight": "かえで",
+                "narrationEffect": "out",
+                "textLeft": "…で？@どうだった？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101001,
+                        "motion": 100
+                    }
+                ],
+                "textCenter": "アタシの方は空振り…@レナは？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100901,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "同じく…ね"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101001,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "…じゃあ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101001,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "…かえでの情報だけだね"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…え？アンタ、何か聞いたの？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 101101,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "ふふーん…@知り合いから聞いちゃったんだ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "…どんな話を？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101101,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "あのね…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21141.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 800100,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 800200,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "blackFrame"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800100
+                    }
+                ],
+                "nameLeft": "",
+                "nameRight": "",
+                "textLeft": "絶交する…噂？",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800200
+                    }
+                ],
+                "textRight": "何それ？@…え？都市伝説…みたいな？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800100
+                    }
+                ],
+                "textLeft": "…あー…@ひとつ知ってるよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800100
+                    }
+                ],
+                "textLeft": "階段でおまじないを唱えると@嫌いな子と離れることができる…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 800100
+                    }
+                ],
+                "textLeft": "…ってやつ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 800200
+                    }
+                ],
+                "textRight": "あー！なんかTLに@回って来たわ、それ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800200
+                    }
+                ],
+                "textRight": "何で階段？…って@笑っちゃったけど…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800100
+                    }
+                ],
+                "textLeft": "そうそう！@変な話だよね～"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21221.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100901,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101001,
+                        "motion": 0,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101101,
+                        "motion": 0
+                    }
+                ],
+                "nameCenter": "ももこ",
+                "nameLeft": "レナ",
+                "nameRight": "かえで",
+                "textRight": "…っていう感じ",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101001,
+                        "motion": 300
+                    }
+                ],
+                "textCenter": "階段って…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101101,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "うん…同じだね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100901
+                    }
+                ],
+                "textLeft": "…でもそれって@要はネットの噂話でしょ？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "…いや、噂話でもないわね@適当なオカルト話じゃない"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101001,
+                        "motion": 0
+                    },
+                    {
+                        "id": 101101,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "でも、あの「ウワサ」と@共通する部分があるよ…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "単に「階段」ってとこだけ@残ったって話でしょ？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101001,
+                        "motion": 100
+                    }
+                ],
+                "textCenter": "…うーん、まあそうかも@しれないけど…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 201
+                    }
+                ],
+                "textLeft": "それが結果じゃないの？@はい、これで終了！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101001,
+                        "motion": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101101,
+                        "motion": 100
+                    }
+                ],
+                "textBg": "shout",
+                "textRight": "…レナちゃん！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "…なによ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101101,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "適当じゃなくて@ちゃんと調べようよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "id": 100901,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "はぁ？適当じゃないし！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101101,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "あの時、私たち@大変な目に遭ったでしょ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…ふんっ…"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "そうだね！@かえでのせいでね！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101001
+                    },
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101101,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "あ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101001,
+                        "motion": 200
+                    }
+                ],
+                "textCenter": "ちょっと！レナ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100901,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "（…しまった…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101101,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "う…う…う…",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101001,
+                        "motion": 1
+                    }
+                ],
+                "textCenter": "ちょ、ちょっと@かえで…"
+            },
+            {
+                "bgm": "bgm05_event08",
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 101101,
+                        "motion": 100
+                    }
+                ],
+                "textBg": "shout",
+                "textRight": "[bgEffect:shakeLarge]…元をただせば@レナちゃんが悪いんだから！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100901,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "あの時、散々謝ったでしょ！@また蒸し返すの!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101101,
+                        "motion": 200
+                    }
+                ],
+                "textBg": "shout",
+                "textRight": "[bgEffect:shakeLarge]蒸し返したのは@レナちゃんじゃない！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 101001,
+                        "motion": 200
+                    }
+                ],
+                "textCenter": "落ち着いて！@ふたりとも！ね!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100901,
+                        "motion": 201
+                    }
+                ],
+                "textLeft": "…あーもういい！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901
+                    }
+                ],
+                "textLeft": "だから気乗りしなかったのよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101001,
+                        "motion": 300
+                    },
+                    {
+                        "id": 101101,
+                        "tear": 1
+                    }
+                ],
+                "textRight": "うう～…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100901,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "…なによ、その顔！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 100901
+                    }
+                ],
+                "textBg": "shout",
+                "textLeft": "もうレナ、帰る！"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100901
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101001,
+                        "motion": 1
+                    }
+                ],
+                "textCenter": "…あーあ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 101101,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "tear": 1
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

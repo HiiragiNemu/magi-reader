@@ -1,0 +1,303 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "bg": "bg_adv_12012.jpg",
+                "bgm": "bgm03_story02",
+                "nameNarration": "",
+                "narration": "―水名区―",
+                "narrationEffect": "in",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100102,
+                        "motion": 200,
+                        "mouthOpen": 0,
+                        "pos": 0
+                    },
+                    {
+                        "id": 810100,
+                        "motion": 0,
+                        "pos": 2,
+                        "posX": 40,
+                        "posY": 0
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bg": "bg_adv_12022.jpg",
+                "chara": [
+                    {
+                        "id": 100102,
+                        "voiceFull": "fullvoice/section_101302/vo_full_101302-3-2"
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "水名女学園@この辺りのはずなんだけど…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 100102,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101302/vo_full_101302-3-3",
+                        "voiceFullStop": "fullvoice/section_101302/vo_full_101302-3-2"
+                    }
+                ],
+                "textLeft": "地図だと…右かな？"
+            },
+            {
+                "select": [
+                    {
+                        "group": "group_2",
+                        "textSelect": "プイッ！@（左だよ！）"
+                    }
+                ],
+                "voiceFullStop": "fullvoice/section_101302/vo_full_101302-3-3"
+            }
+        ],
+        "group_2": [
+            {
+                "chara": [
+                    {
+                        "id": 810100,
+                        "motion": 100
+                    },
+                    {
+                        "id": 100102,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "userName",
+                "textRight": "プイッ！",
+                "voice": "vo_kyube_0001_13"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "voice": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100102,
+                        "motion": 100,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101302/vo_full_101302-3-5"
+                    }
+                ],
+                "textLeft": "あ、こっちだね"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100102,
+                        "motion": 0,
+                        "mouthOpen": 0,
+                        "pos": 0
+                    },
+                    {
+                        "id": 810100,
+                        "motion": 0,
+                        "pos": 2,
+                        "posX": 40,
+                        "posY": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101302/vo_full_101302-3-5"
+            },
+            {
+                "bg": "bg_adv_12072.jpg",
+                "chara": [
+                    {
+                        "id": 100102,
+                        "voiceFull": "fullvoice/section_101302/vo_full_101302-3-6"
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "あった、ここだ…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100102,
+                        "lipSynch": 0,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101302/vo_full_101302-3-7",
+                        "voiceFullStop": "fullvoice/section_101302/vo_full_101302-3-6"
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 100102,
+                        "lipSynch": 0,
+                        "motion": 200,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101302/vo_full_101302-3-8",
+                        "voiceFullStop": "fullvoice/section_101302/vo_full_101302-3-7"
+                    }
+                ],
+                "textLeft": "（ひゃぁ…@歴史が古そうな校舎…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 100102,
+                        "lipSynch": 0,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101302/vo_full_101302-3-9",
+                        "voiceFullStop": "fullvoice/section_101302/vo_full_101302-3-8"
+                    }
+                ],
+                "textLeft": "（確かに同い年ぐらいの人なら@聞けそうな気がしたけど…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 100102,
+                        "lipSynch": 1,
+                        "motion": 0,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101302/vo_full_101302-3-10",
+                        "voiceFullStop": "fullvoice/section_101302/vo_full_101302-3-9"
+                    }
+                ],
+                "textLeft": "これはこれで敷居が高いような…",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100102,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101302/vo_full_101302-3-11",
+                        "voiceFullStop": "fullvoice/section_101302/vo_full_101302-3-10"
+                    }
+                ],
+                "textLeft": "でも、ここで頑張らないとね？"
+            },
+            {
+                "select": [
+                    {
+                        "group": "group_3",
+                        "textSelect": "モキュ！@（頑張ろう！）"
+                    },
+                    {
+                        "group": "group_4",
+                        "textSelect": "モキュ？@（頑張るの？）"
+                    }
+                ],
+                "voiceFullStop": "fullvoice/section_101302/vo_full_101302-3-11"
+            }
+        ],
+        "group_3": [
+            {
+                "chara": [
+                    {
+                        "id": 810100,
+                        "motion": 100
+                    },
+                    {
+                        "id": 100102,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "userName",
+                "textRight": "モキュ！",
+                "voice": "vo_kyube_0001_14"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "voice": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100102,
+                        "motion": 200,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101302/vo_full_101302-3-14"
+                    }
+                ],
+                "textLeft": "うん、ようやく@一歩前進したんだから"
+            },
+            {
+                "changeGroup": "group_5"
+            }
+        ],
+        "group_4": [
+            {
+                "chara": [
+                    {
+                        "id": 810100,
+                        "motion": 100
+                    },
+                    {
+                        "id": 100102,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameRight": "userName",
+                "textRight": "モキュ？",
+                "voice": "vo_kyube_0001_06"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "voice": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100102,
+                        "motion": 200,
+                        "mouthOpen": 0,
+                        "voiceFull": "fullvoice/section_101302/vo_full_101302-3-14"
+                    }
+                ],
+                "textLeft": "うん、ようやく@一歩前進したんだから"
+            },
+            {
+                "changeGroup": "group_5"
+            }
+        ],
+        "group_5": [
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_101302/vo_full_101302-3-14"
+            }
+        ]
+    },
+    "version": 3
+}

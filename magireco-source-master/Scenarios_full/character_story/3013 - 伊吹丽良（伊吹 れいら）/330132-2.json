@@ -1,0 +1,428 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "bgm": "bgm03_story02",
+                "nameNarration": "伊吹 れいら",
+                "narration": "教えてもらったケーキも作れて@料理教室は無事終了！",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 300902,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narration": "と、思いきや…@ここでトラブルが発生！"
+            },
+            {
+                "bg": "bg_adv_19221.jpg",
+                "chara": [
+                    {
+                        "id": 300902
+                    }
+                ],
+                "nameCenter": "胡桃 まなか",
+                "narrationEffect": "out",
+                "textCenter": "はい、じゃあ皆さん@本日はこれで終了です！"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800100,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301301,
+                        "motion": 0,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800200,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "effect": "emotion_joy_0",
+                        "id": 800100
+                    },
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301301
+                    },
+                    {
+                        "cheek": 1,
+                        "effect": "emotion_joy_0",
+                        "id": 800200
+                    }
+                ],
+                "nameCenter": "れいら&生徒",
+                "textCenter": "[chara:301301:effect_emotion_joy_0][se:7222_happy]ありがとうございましたー！"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 800100
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 301301
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 800200
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300902,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "胡桃 まなか",
+                "textCenter": "おっと、電話だ…"
+            },
+            {
+                "autoTurnLast": 0.3,
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301301,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "rollIn"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 301301,
+                        "lipSynch": 0,
+                        "motion": 100
+                    }
+                ],
+                "nameCenter": "伊吹 れいら",
+                "textCenter": "（はー、よかった…@ちゃんと作れて！）",
+                "turnChangeOut": "rollOut",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301301,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（帰ったらうちにある材料を@確認しなくっちゃ…！）"
+            },
+            {
+                "autoTurnLast": 0.3,
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301301,
+                        "lipSynch": 1,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "textClear": 1,
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301301
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300902,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "伊吹 れいら",
+                "textRight": "それじゃあ、まなか先生！@今日はどうも…"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300902,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "胡桃 まなか",
+                "textLeft": "…えー！@[chara:300902:effect_emotion_sad_0][se:7224_fall_into]そ、そんなぁ～！"
+            },
+            {
+                "bgm": "bgm03_story08",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301301
+                    }
+                ],
+                "textRight": "えっ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300902,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "…ああ、いえ、別に何でも…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300902
+                    }
+                ],
+                "textLeft": "…あの、ちょ、ちょっとアレで…@かけ直すから！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300902,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301301,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "胡桃 まなか",
+                "nameRight": "伊吹 れいら",
+                "textLeft": "…うう…どうしよう…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301301
+                    }
+                ],
+                "textRight": "…あの…まなか先生…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "id": 300902,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…伊吹さん…"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300902
+                    }
+                ],
+                "textLeft": "…伊吹さん…？"
+            },
+            {
+                "bgm": "bgm03_story01",
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 300902,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "[chara:300902:effect_emotion_joy_0][se:7222_happy]そうか！…伊吹さん！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301301
+                    }
+                ],
+                "textRight": "は、はい！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902
+                    }
+                ],
+                "textLeft": "あのあの！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 300902,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…あのですね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301301
+                    }
+                ],
+                "textRight": "はい…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300902
+                    }
+                ],
+                "textLeft": "…伊吹さん@折り入ってお話が…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301301,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "私に…ですか？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902
+                    }
+                ],
+                "textLeft": "伊吹さん…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902
+                    }
+                ],
+                "textLeft": "…出ていただけないでしょうか？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301301
+                    }
+                ],
+                "textRight": "出る？@出るというのは…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300902
+                    }
+                ],
+                "textLeft": "このウォールナッツに代わって…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "id": 300902,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "[chara:300902:effect_emotion_angry_1][se:7218_anger]戦いの場に！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301301,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "[chara:301301:effect_emotion_surprise_0][se:7226_shock]戦いの…場!?"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

@@ -1,0 +1,633 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21201.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 831000,
+                        "motion": 1,
+                        "pos": 1,
+                        "posY": 40
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm03_story01",
+                "nameNarration": "さな",
+                "narration": "６日目@ゴロジローは、色んな物に興味が出てきて@日に日にいたずらが増えてきた",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "narrationHAlignment": "left",
+                "narrationPosX": 180,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 831000
+                    }
+                ],
+                "nameCenter": "ゴロジロー",
+                "narrationEffect": "out",
+                "textCenter": "…………"
+            },
+            {
+                "nameNarration": "",
+                "narration": "カサカサ、カサ…",
+                "narrationEffect": "in"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "id": 831000,
+                        "pos": 2,
+                        "posY": 40
+                    }
+                ],
+                "narrationEffect": "out"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100401,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "さな",
+                "textLeft": "…？@[chara:100401:lipSynch_0][wait:0.8][chara:100401:cheek_0][chara:100401:face_mtn_ex_010.exp.json][chara:100401:lipSynch_1]ゴロジロー、何してるの…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100401,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "[chara:100401:effect_emotion_surprise_0][se:7226_shock]…ぴゃぁっ!?@ゴロジロー、それ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401
+                    }
+                ],
+                "textLeft": "フェリシアさんの宝物の…@デカゴンボールのシール…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100401,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "ご、ごめんね…！@ちょっと返してね…"
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "shake",
+                        "id": 831000,
+                        "motion": 100
+                    }
+                ],
+                "nameRight": "ゴロジロー",
+                "textRight": "ニャッ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 831000,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "…あぁ、シールに噛んだ跡が…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "どうしよう…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401
+                    }
+                ],
+                "textLeft": "新しいのを買う時間はないし…@でも、隠すのは良くないし…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 100401,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "うぅぅ…"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 831000
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 100401
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100501,
+                        "motion": 100,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100201,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "う～…腹減ったぁ～…@[chara:100501:lipSynch_0][wait:1.0][chara:100501:eyeClose_0][chara:100501:lipSynch_1]やちよー、メシー"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_042.exp.json",
+                        "id": 100201,
+                        "motion": 201
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "私はメシじゃないわよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 100101,
+                        "motion": 100,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "もうちょっと待っててね@フェリシアちゃん"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100401,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "さな",
+                "textLeft": "あっ！フェリシアさん…！@えっと…その…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100501,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "んぁ？何だよ、さな"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 100401,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "その…ご、ごめんなさい…！@これ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100501,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100501,
+                        "lipSynch": 1,
+                        "motion": 400,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textBg": "shout",
+                "textRight": "…がぁー!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100501,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textRight": "クウシンサイ先生のシールが@ボロボロじゃねーか!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100501,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "[chara:100501:effect_emotion_angry_1][se:7218_anger]お前がやったのかよ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100401,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "え…えっと…うぅんと…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100201,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "やちよ",
+                "textRight": "ちょっと、シールを見せて？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201
+                    }
+                ],
+                "textRight": "…あぁ、ゴロジローが噛んだのね"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "あ…はい…"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100201
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 100401
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100501,
+                        "motion": 200,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 831000,
+                        "motion": 1,
+                        "pos": 0,
+                        "posY": 40
+                    }
+                ],
+                "nameRight": "フェリシア",
+                "textRight": "お前のせいかよっ！ゴロジロー！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 831000
+                    }
+                ],
+                "nameLeft": "ゴロジロー",
+                "textLeft": "…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "motion": 200,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "フェリシアちゃん、@落ち着いて…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100501,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "ガルルルル…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 301,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "また新しいのを買ってあげるから@これくらい許してあげて…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100501,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "はっ！@ぜってぇー許さねぇ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100501,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "おい、さな！そんなヤツ、@早くかえでに返してこいよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100401,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "さな",
+                "textLeft": "そ…そんなぁ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "ゴロジローは…遊びたいだけで…@悪気はないんです…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100501,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "だからってオレのモノを@ボロボロにしていいのかよ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "それは…違いますけど…っ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401
+                    }
+                ],
+                "textLeft": "でも…明日にはゴロジローは@帰っちゃうんですよ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100501,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "むぅ…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 100501,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "…ふんっ、そんなの知るか！"
+            },
+            {
+                "autoTurnLast": 0.8,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100501
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "フェリシアさん…"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100401
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 200,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 831000,
+                        "motion": 1,
+                        "pos": 0,
+                        "posY": 40
+                    }
+                ],
+                "nameRight": "やちよ",
+                "textRight": "しょうがないわね…@[chara:100201:lipSynch_0][wait:0.8][chara:100201:cheek_0][chara:100201:face_mtn_ex_014.exp.json][chara:100201:lipSynch_1]私と遊びましょう、ゴロジロー"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 831000
+                    }
+                ],
+                "nameLeft": "ゴロジロー",
+                "textLeft": "…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "ねぇ二葉さん、おもちゃを@貸してもらえないかしら？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100401,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "さな",
+                "textLeft": "え…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100201,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "二葉さんが作ったおもちゃだと@ゴロジロー、楽しそうに遊ぶから"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "…っ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100101,
+                        "motion": 100,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "あ、さなちゃん@私もおもちゃ、借りていいかな？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100401,
+                        "lipSynch": 1,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "…はい…っ！"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

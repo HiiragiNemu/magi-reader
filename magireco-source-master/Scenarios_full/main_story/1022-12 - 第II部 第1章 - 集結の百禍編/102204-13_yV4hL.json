@@ -1,0 +1,906 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 1,
+                "bg": "bg_adv_19023.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 101601,
+                        "motion": 200,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 101701,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "ef_adv_01",
+                        "id": 101701
+                    }
+                ],
+                "se": "7201_detect_magic",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101701,
+                        "lipSynch": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-1"
+                    }
+                ],
+                "nameLeft": "みたま",
+                "textLeft": "――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100101,
+                        "motion": 0,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-2",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-1"
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "みたまさん…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_052.exp.json",
+                        "id": 101701,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-3",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-2"
+                    }
+                ],
+                "textLeft": "…うそ"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "nameNarration": "？？？",
+                "narrationBg": "bg_adv_19023.jpg",
+                "narrationEffect": "in",
+                "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-3"
+            },
+            {
+                "narration": "「ずいぶんと山の中で@長話をしてたみたいやなぁ」",
+                "voiceFull": "fullvoice/section_102204/vo_full_102204-13-4"
+            },
+            {
+                "narration": "「連れは早々に山に入って@帰ってまうし」",
+                "voiceFull": "fullvoice/section_102204/vo_full_102204-13-4b",
+                "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-4"
+            },
+            {
+                "narration": "「ヒマ潰しに@ドライブしてもうたやないか」",
+                "voiceFull": "fullvoice/section_102204/vo_full_102204-13-5",
+                "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-4b"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bgm": "stop",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter1/memoria_1449.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-5"
+            },
+            {
+                "bgm": "bgm23_puella01",
+                "nameNarration": "みたま",
+                "narration": "―みたま―@先生…",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 35,
+                "narrationLineSpace": 20,
+                "turnChangeOut": "fadeOut",
+                "voiceFull": "fullvoice/section_102204/vo_full_102204-13-6"
+            },
+            {
+                "nameNarration": "？？？",
+                "narration": "―？？？―@神浜に来たんは結構前なんやけど@挨拶するタイミングを見計らってたんや",
+                "voiceFull": "fullvoice/section_102204/vo_full_102204-13-7",
+                "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-6"
+            },
+            {
+                "nameNarration": "みたま",
+                "narration": "―みたま―@本当にいらしてたんですね…",
+                "voiceFull": "fullvoice/section_102204/vo_full_102204-13-8",
+                "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-7"
+            },
+            {
+                "nameNarration": "？？？",
+                "narration": "―？？？―@あんたが中立を破ったって聞いたから@こっちから出向いたんやないか",
+                "voiceFull": "fullvoice/section_102204/vo_full_102204-13-9",
+                "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-8"
+            },
+            {
+                "narration": "―？？？―@舐め腐ったマネしてくれたなぁ@調整屋の面汚しもええところやわ",
+                "voiceFull": "fullvoice/section_102204/vo_full_102204-13-10",
+                "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-9"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_19023.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100301,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 104100,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/part2_chapter1/memoria_1449.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-10"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-11"
+                    }
+                ],
+                "nameLeft": "鶴乃",
+                "nameRight": "？？？",
+                "textLeft": "調整屋…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-12",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-11"
+                    }
+                ],
+                "textLeft": "まさかこの人たちが、@他の魔法少女の調整を…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 104100,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-13",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-12"
+                    }
+                ],
+                "textRight": "察しがええなぁ@鶴乃ちゃん"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "id": 100301,
+                        "motion": 400,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-14",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-13"
+                    }
+                ],
+                "textLeft": "わたしのこと知ってるの!?@最強すぎて!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 104100,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-15",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-14"
+                    }
+                ],
+                "textRight": "そら、関係あらへんわ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 104100,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-16",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-15"
+                    }
+                ],
+                "textRight": "情報には事欠かんから@けっこう物知りなだけやで"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101701,
+                        "motion": 0,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-17",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-16"
+                    }
+                ],
+                "nameLeft": "みたま",
+                "textLeft": "どうして先生が…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 104100,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-18",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-17"
+                    }
+                ],
+                "textRight": "聞いてなかったんか？"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 104100
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 101701,
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-18"
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 104000,
+                        "motion": 1,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-19"
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 103900,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "？？？",
+                "nameRight": "？？？",
+                "textLeft": "先生が@申し上げた通りですよ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 104000,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-20",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-19"
+                    }
+                ],
+                "textLeft": "我々が来たのは@中立の調整屋として"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103900,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-21",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-20"
+                    }
+                ],
+                "textRight": "ふん、ふんふふ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 103900,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-22",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-21"
+                    }
+                ],
+                "textRight": "ふんふふ、ふんふん@んふふふふんっふふ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 104000,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-23",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-22"
+                    }
+                ],
+                "textLeft": "うん、そうだよ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 104000,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-24",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-23"
+                    }
+                ],
+                "textLeft": "キュゥべえに言われて@ここまで来たんだよ"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 104000,
+                        "motion": 300,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-25",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-24"
+                    }
+                ],
+                "textLeft": "そう申しております"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 104100,
+                        "motion": 100,
+                        "pos": 1,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-26",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-25"
+                    },
+                    {
+                        "eyeClose": 0,
+                        "id": 104000
+                    }
+                ],
+                "nameCenter": "？？？",
+                "textCenter": "まぁ、今日は顔を見せるぐらいの@つもりやったから"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 104100,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-27",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-26"
+                    }
+                ],
+                "textCenter": "挨拶だけして帰らせてもらうわ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 104100,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-28",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-27"
+                    }
+                ],
+                "nameCenter": "リヴィア",
+                "textCenter": "私は[textRed:ピュエラケア]の@[textRed:リヴィア・メディロス]"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 104000,
+                        "motion": 1,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-29",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-28"
+                    }
+                ],
+                "nameLeft": "ヨヅル",
+                "textLeft": "私は[textRed:篠目ヨヅル]@（ささめ　よづる）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 104000,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-30",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-29"
+                    }
+                ],
+                "textLeft": "絶対的中立の下に皆様を調整し@ケアするのが務めでございます"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103900,
+                        "motion": 1,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-31",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-30"
+                    }
+                ],
+                "textRight": "ふむふふむ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103900,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-32",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-31"
+                    }
+                ],
+                "textRight": "ふーふむふむむ、@ふむむむむ、ふむふむむ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 104000,
+                        "motion": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-33",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-32"
+                    }
+                ],
+                "textLeft": "[textRed:佐和月出里]（さわ　すだち）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 104000,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-34",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-33"
+                    }
+                ],
+                "textLeft": "中立だから@いつでも来ていいよ"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 104000,
+                        "motion": 100,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-35",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-34"
+                    }
+                ],
+                "textLeft": "と、申しております"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 104000,
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-35"
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 103900
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "id": 104100,
+                        "pos": 2
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101701,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-36"
+                    }
+                ],
+                "nameLeft": "みたま",
+                "nameRight": "リヴィア",
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 104100,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-37",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-36"
+                    }
+                ],
+                "textRight": "別に罰しようなんて@思うてへんよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 104100,
+                        "motion": 1,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-38",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-37"
+                    }
+                ],
+                "textRight": "ただなぁ、みたま@これだけは忘れたらあかんで"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 104100,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-39",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-38"
+                    }
+                ],
+                "textRight": "あんたは誰かに肩入れしていい@願いは叶えてへんはずや"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 104100,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-40",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-39"
+                    }
+                ],
+                "textRight": "ほな、@以後お見知りおきを"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 104100,
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-40"
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "bgm": "bgm03_story08",
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 101701,
+                        "lipSynch": 0,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-41"
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100201,
+                        "motion": 200,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-42",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-41"
+                    }
+                ],
+                "nameRight": "やちよ",
+                "textRight": "あの白ダヌキも@抜かりがないわね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100601,
+                        "motion": 100,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-43",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-42"
+                    }
+                ],
+                "nameLeft": "みふゆ",
+                "textLeft": "ワタシたちを争わせるのも対等に@ということですか…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 101601,
+                        "motion": 200,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-44",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-43"
+                    }
+                ],
+                "nameRight": "十七夜",
+                "textRight": "要は、あの３人を叩くのが、@一番穏便に終わるということか"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100501,
+                        "motion": 400,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-45",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-44"
+                    }
+                ],
+                "nameLeft": "フェリシア",
+                "textLeft": "ほんとだ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100501,
+                        "motion": 200,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-46",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-45"
+                    }
+                ],
+                "textLeft": "アイツらを追い出したら、@オレたちよゆーで勝てるじゃん！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100401,
+                        "motion": 1,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-47",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-46"
+                    }
+                ],
+                "nameRight": "さな",
+                "textRight": "そうなんでしょうか…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100401,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-48",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-47"
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100501,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "それなら普通に挨拶に来るなんて@思えないです…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101501,
+                        "motion": 100,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-49",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-48"
+                    }
+                ],
+                "nameRight": "うい",
+                "textRight": "灯花ちゃんとねむちゃんは、@どう思う？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 100770,
+                        "live2dParam": {
+                            "name": "PARAM_BRACELET",
+                            "value": 1
+                        },
+                        "motion": 200,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-50",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-49"
+                    }
+                ],
+                "nameLeft": "灯花",
+                "textLeft": "そーだねー"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100770,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-51",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-50"
+                    }
+                ],
+                "textLeft": "もしもそれで、丸く収まるなら、@来ていいなんて言わないよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 101471,
+                        "live2dParam": {
+                            "name": "PARAM_BRACELET",
+                            "value": 1
+                        },
+                        "motion": 1,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-52",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-51"
+                    }
+                ],
+                "nameRight": "ねむ",
+                "textRight": "僕も灯花に賛同するよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 101701,
+                        "motion": 200,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-53",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-52"
+                    }
+                ],
+                "nameLeft": "みたま",
+                "textLeft": "中立だからこそ@彼女たちは争いの種を蒔く"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 101701,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-54",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-53"
+                    }
+                ],
+                "textLeft": "だけど、それだけ旅の中で@多くの魔法少女を救ってきてるわ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "motion": 100,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-55",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-54"
+                    }
+                ],
+                "nameRight": "いろは",
+                "textRight": "味方の方が多いんですか…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 101701,
+                        "motion": 1,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-56",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-55"
+                    }
+                ],
+                "textLeft": "魔女と戦うために調整をするのが@本当の役目だから…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100201,
+                        "motion": 300,
+                        "pos": 2,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-57",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-56"
+                    }
+                ],
+                "nameRight": "やちよ",
+                "textRight": "手を出したら、@こちらが窮地に陥るのね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100101,
+                        "motion": 301,
+                        "pos": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-58",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-57"
+                    }
+                ],
+                "nameLeft": "いろは",
+                "textLeft": "みんな…根っ子にあるのは、@救われたい気持ちなのに…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 100101,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-59",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-58"
+                    }
+                ],
+                "textLeft": "争うための土壌だけが、@勝手に作られていく…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 102001,
+                        "motion": 300,
+                        "pos": 2,
+                        "soulGem": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-60",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-59"
+                    }
+                ],
+                "nameRight": "かごめ",
+                "textRight": "いろはさん…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 102001,
+                        "lipSynch": 0,
+                        "voiceFull": "fullvoice/section_102204/vo_full_102204-13-61",
+                        "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-60"
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn",
+                "voiceFullStop": "fullvoice/section_102204/vo_full_102204-13-61"
+            }
+        ]
+    },
+    "version": 3
+}

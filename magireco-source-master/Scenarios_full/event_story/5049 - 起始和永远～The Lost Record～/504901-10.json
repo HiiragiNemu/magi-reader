@@ -1,0 +1,612 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51049_storyselect_homura/51049_frame.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm02_anime10",
+                "nameNarration": "",
+                "narration": "誰の手も借りることなく@ワルプルギスの夜を倒す…",
+                "narrationCoverOpacity": 90,
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "そう決意した彼女の前に@災厄をもたらすその魔女は@再び、立ちはだかりました"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51049_storyselect_homura/51049_walpurgisnacht.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear",
+                        "zOrder": "bgFront"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "surround": "7015_walpurgis_voice",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 3,
+                "surround": "7003_wind"
+            },
+            {
+                "autoTurnLast": 3,
+                "surround": "7015_walpurgis_voice"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/3002_cloud_of_dust.ExportJson",
+                        "zOrder": "charaBack"
+                    }
+                ],
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_23041.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200200,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "nameCenter": "ほむら",
+                "textCenter": "[flashEffect:flashWhite2]――っ!?",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgEffect": "shakeLarge",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "shake",
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200
+                    }
+                ],
+                "flashEffect": "flashRed2",
+                "se": "3001_chara_damage",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "id": 810000,
+                        "pos": 0,
+                        "posX": -50,
+                        "posY": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200101,
+                        "motion": 0,
+                        "pos": 2,
+                        "soulGem": 0
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200101,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "キュゥべえ",
+                "nameRight": "まどか",
+                "textRight": "ひどい…",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "textLeft": "仕方ないよ@彼女ひとりでは荷が重すぎた"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "ほむら",
+                "textCenter": "[flashEffect:flashWhite2]――っ!?",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgEffect": "shakeLarge",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "shake",
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200
+                    }
+                ],
+                "flashEffect": "flashRed2",
+                "se": "3001_chara_damage",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "id": 810000,
+                        "pos": 0,
+                        "posX": -50,
+                        "posY": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200101,
+                        "motion": 0,
+                        "pos": 2,
+                        "soulGem": 0
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101,
+                        "motion": 201
+                    }
+                ],
+                "textRight": "そんな…あんまりだよ！@[chara:200101:lipSynch_0][wait:1.0][chara:200101:cheek_0][chara:200101:face_mtn_ex_040.exp.json][chara:200101:lipSynch_1]こんなのってないよ！",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200
+                    }
+                ],
+                "textBg": "shout",
+                "textCenter": "まどか！",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textBg": "shout",
+                "textCenter": "そいつの言葉に@耳を貸しちゃ駄目!!"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "id": 810000,
+                        "pos": 0,
+                        "posX": -50,
+                        "posY": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200101,
+                        "motion": 0,
+                        "pos": 2,
+                        "soulGem": 0
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "textLeft": "諦めたら、それまでだ",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 200101,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "textLeft": "でもキミなら運命を変えられる"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200101,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…………@…………"
+            },
+            {
+                "textLeft": "避けようのない滅びも、嘆きも@すべてキミが覆せばいい"
+            },
+            {
+                "textLeft": "そのための力が@キミには備わってるんだから"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "…本当なの？"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_23041.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textBg": "shout",
+                "textCenter": "騙されないで！@そいつの思う壺よ！",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "chara": [
+                    {
+                        "id": 810000,
+                        "pos": 0,
+                        "posX": -50,
+                        "posY": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200101,
+                        "motion": 0,
+                        "pos": 2,
+                        "soulGem": 0
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200101,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "わたしなんかでも@本当に何かできるの？",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "こんな結末を変えられるの？"
+            },
+            {
+                "textLeft": "もちろんさ"
+            },
+            {
+                "textLeft": "だからボクと契約して@魔法少女になってよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200101,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "…………@…………"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_23041.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "deleteArmatureList": [
+                    1
+                ],
+                "surround": "stop",
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "mouthOpen": 1
+                    }
+                ],
+                "nameNarration": "ほむら",
+                "narration": "『駄目ぇぇぇッ!!』",
+                "narrationEffect": "in",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51049_storyselect_homura/51049_witch_salvation.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm01_anime17",
+                "nameNarration": "キュゥべえ",
+                "narration": "―キュゥべえ―@本当に物凄かったね@変身したまどかは",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 10,
+                "narrationLineSpace": 20,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "nameNarration": "ほむら",
+                "narration": "―ほむら―@…………"
+            },
+            {
+                "nameNarration": "キュゥべえ",
+                "narration": "―キュゥべえ―@彼女なら最強の魔法少女に@なるだろうと予測していたけれど"
+            },
+            {
+                "narration": "―キュゥべえ―@まさかあのワルプルギスの夜を@一撃で倒すとはね…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_20181.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "id": 810000,
+                        "pos": 2,
+                        "posX": 40,
+                        "posY": 0
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200
+                    }
+                ],
+                "nameLeft": "ほむら",
+                "nameRight": "キュゥべえ",
+                "textLeft": "その結果どうなるのかも@見越した上だったの？",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "textRight": "遅かれ早かれ@結末は一緒だよ"
+            },
+            {
+                "textRight": "彼女は最強の魔法少女として@最大の敵を倒してしまったんだ"
+            },
+            {
+                "textRight": "もちろん後は@最悪の魔女になるしかない"
+            },
+            {
+                "textRight": "今のまどかなら@おそらく10日かそこいらで"
+            },
+            {
+                "textRight": "この星を壊滅させて@しまうんじゃないかな"
+            },
+            {
+                "textRight": "…まぁ@あとはキミたち人類の問題だ"
+            },
+            {
+                "textRight": "ボクらのエネルギー回収ノルマは@概ね達成できたしね"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "textRight": "…戦わないのかい？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200200,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "いいえ@私の戦場は、ここじゃない"
+            },
+            {
+                "textRight": "暁美ほむら@キミは…"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "flashEffect": "explosion",
+                "surround": "7017_homura_backtime",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 1,
+                "bgm": "stop",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51049_storyselect_homura/51049_homura_walking.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "whiteIn"
+            },
+            {
+                "bgm": "bgm01_anime05",
+                "nameNarration": "ほむら",
+                "narration": "繰り返す…@私は何度でも繰り返す…",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 35,
+                "narrationLineSpace": 20,
+                "turnChangeOut": "whiteOut"
+            },
+            {
+                "narration": "同じ時間を何度も巡り@たったひとつの出口を探る"
+            },
+            {
+                "narration": "あなたを絶望の運命から@救い出す道を…"
+            },
+            {
+                "narration": "まどか…@たったひとりの、私の友達"
+            },
+            {
+                "narration": "あなたの…@あなたのためなら"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bgm": "stop",
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "ほむら",
+                "narration": "私は永遠の迷路に@閉じ込められても構わない",
+                "narrationBg": "black",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

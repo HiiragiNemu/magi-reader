@@ -1,0 +1,532 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/3002_cloud_of_dust.ExportJson",
+                        "zOrder": "bgFront"
+                    }
+                ],
+                "autoTurnLast": 2,
+                "bg": "bg_adv_23041.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 200200,
+                        "motion": 1,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "whiteIn"
+            },
+            {
+                "autoTurnLast": 2,
+                "bg": "bg_adv_23041.jpg",
+                "se": "6200_hit_explosion_01_vh"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "ほむら",
+                "textCenter": "…………@…………",
+                "turnChangeOut": "whiteOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（やったの…？）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（いえ…）"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "textClear": 1,
+                "turnEffect": "stop"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "ef_adv_01",
+                        "id": 200200
+                    }
+                ],
+                "se": "7201_detect_magic"
+            },
+            {
+                "bgm": "bgm02_anime10",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200200,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "――っ!?"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "flashEffect": "flashWhite2",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "motion": 400,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textBg": "shout",
+                "textCenter": "[flashEffect:flashRed2][se:3001_chara_damage][bgEffect:shakeLarge][chara:200200:effect_shake]あああぁッ!!"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "deleteArmatureList": [
+                    1
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51049_storyselect_homura/51049_walpurgisnacht.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "surround": "7015_walpurgis_voice",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "ほむら",
+                "narration": "―ほむら―@（まずい…ッ）",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 35,
+                "narrationLineSpace": 20,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 2,
+                "flashEffect": "flashWhite2",
+                "item": [
+                    {
+                        "action": {
+                            "sequence": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.05,
+                                        "posX": -100,
+                                        "posY": -100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.05,
+                                        "posX": 100,
+                                        "posY": 100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.05,
+                                        "posX": -100,
+                                        "posY": -100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.05,
+                                        "posX": 100,
+                                        "posY": 100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.05,
+                                        "posX": 0,
+                                        "posY": 0
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/51049_storyselect_homura/51049_walpurgisnacht.jpg"
+                    }
+                ],
+                "narrationEffect": "out",
+                "surround": "7015_walpurgis_voice"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_20391.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "motion": 101
+                    }
+                ],
+                "nameCenter": "ほむら",
+                "textCenter": "これ以上先に進まれたら@避難所を襲われる…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200
+                    }
+                ],
+                "textCenter": "どうにかして@ここで食い止めないと"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "flashEffect": "flashWhite2",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200200,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "textCenter": "――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200
+                    }
+                ],
+                "textCenter": "そんな!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（時間を…止められない？@これが…限界…？）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200200,
+                        "motion": 300,
+                        "mouthOpen": 1
+                    }
+                ],
+                "textBg": "shout",
+                "textCenter": "[flashEffect:flashRed2][se:3001_chara_damage][bgEffect:shakeLarge][chara:200200:effect_shake]あぅああああぁッ!!",
+                "turnEffect": "stop"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgEffect": "shakeLarge",
+                "chara": [
+                    {
+                        "effect": "slideOutRightFast",
+                        "id": 200200
+                    }
+                ],
+                "flashEffect": "flashWhite2",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.01,
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "autoTurnLast": 1,
+                "bgEffect": "shakeLarge",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "slideInLeftFast",
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "flashEffect": "flashWhite2"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 200200,
+                        "motion": 400
+                    }
+                ],
+                "textCenter": "く…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200200
+                    }
+                ],
+                "textCenter": "どうして…どうしてなの"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 200200
+                    }
+                ],
+                "textCenter": "…何度やっても@…あいつに勝てない…ッ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（これ以上は、もう…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（時間を遡るしか…）"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200200,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "――っ!?",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（繰り返せば…@それだけまどかの因果が増える）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（私のやってきたことは@結局…！）"
+            },
+            {
+                "bgm": "bgm01_anime11",
+                "chara": [
+                    {
+                        "id": 200200,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "textCenter": "…………",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "ef_adv_08",
+                        "eyeClose": 1,
+                        "id": 200200,
+                        "lipSynch": 0,
+                        "tear": 1
+                    }
+                ],
+                "textCenter": "…………@…………"
+            },
+            {
+                "autoTurnLast": 2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 200101,
+                        "motion": 201,
+                        "pos": 0,
+                        "soulGem": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_051.exp.json",
+                        "id": 200200,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 200200,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameLeft": "まどか",
+                "nameRight": "ほむら",
+                "textRight": "――っ!?",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textLeft": "もういい…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textLeft": "もういいんだよ@ほむらちゃん"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "まどか…"
+            },
+            {
+                "autoTurnLast": 2,
+                "chara": [
+                    {
+                        "id": 810000,
+                        "pos": 0,
+                        "posX": -50,
+                        "posY": 0
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 200101,
+                        "motion": 0,
+                        "pos": 0,
+                        "soulGem": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200200
+                    }
+                ],
+                "textRight": "まどか、まさか…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200101
+                    }
+                ],
+                "textLeft": "ほむらちゃん…ごめんね@わたし、魔法少女になる"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

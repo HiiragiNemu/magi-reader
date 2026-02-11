@@ -1,0 +1,943 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_15041.jpg",
+                "bgm": "bgm01_anime03",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "motion": 1,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameCenter": "はぐむ",
+                "textCenter": "（萌花ちゃん@急でビックリしたかなぁ…）",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（でも、魔法少女の知り合いって@そんなにいないし…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "（それに萌花ちゃんって…）"
+            },
+            {
+                "nameRight": "萌花の声",
+                "textBg": "shout",
+                "textRight": "はぐむちゃーん！",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 103001,
+                        "pos": 1
+                    }
+                ],
+                "textCenter": "[chara:103001:effect_emotion_joy_0][se:7222_happy]あっ！@萌花ちゃ…[chara:103001:lipSynch_0][wait:1.5][chara:103001:face_mtn_ex_050.exp.json][chara:103001:cheek_1][chara:103001:motion_400][chara:103001:lipSynch_1]えっ!?"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "slideInRightFast",
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 303401,
+                        "motion": 0,
+                        "pos": 2,
+                        "posX": -65
+                    }
+                ]
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "shake",
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 303401,
+                        "motion": 400,
+                        "mouthOpen": 1
+                    }
+                ],
+                "nameRight": "恵 萌花",
+                "textRight": "あっ…"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 303401,
+                        "motion": 400,
+                        "mouthOpen": 1
+                    },
+                    {
+                        "effect": "shake",
+                        "eyeClose": 1,
+                        "id": 103001,
+                        "motion": 400
+                    }
+                ],
+                "nameCenter": "はぐむ＆萌花",
+                "textBg": "shout",
+                "textCenter": "[flashEffect:flashRed1][se:3001_chara_damage][bgEffect:shakeLarge]きゃあっ!?"
+            },
+            {
+                "autoTurnLast": 1.5,
+                "chara": [
+                    {
+                        "effect": "slideOutLeftFast",
+                        "id": 103001
+                    },
+                    {
+                        "effect": "slideOutLeftFast",
+                        "id": 303401
+                    }
+                ],
+                "se": "3002_chara_dead",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 303401,
+                        "motion": 1,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 1,
+                        "effect": "shake",
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 103001,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "はぐむ",
+                "textLeft": "いたた…@萌花ちゃん大丈夫…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 303401,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "う、うん…@ごめんね…転んじゃった…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 103001,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "大丈夫だよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 1
+                    },
+                    {
+                        "id": 303401,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "（…萌花ちゃんって@少しドジなところがあるから）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（なんだか、@親近感があるんだよね…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "それより、ごめんね@急にお話したいなんて…",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 303401,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "ううん@はぐむちゃんと会えて嬉しいよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 303401,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "それで、お話って何？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 103001,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "あっ…[chara:103001:lipSynch_0][wait:1][chara:103001:lipSynch_1]うん…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "萌花ちゃんは"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001
+                    }
+                ],
+                "textLeft": "神浜マギアユニオンに@参加するんだよね"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "参加を決めた理由@聞いてみたいなぁって…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001
+                    }
+                ],
+                "textLeft": "ムリにとは言わないんだけど…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 303401,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "理由…？@誘われたからかなぁ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 103001,
+                        "motion": 400
+                    }
+                ],
+                "textLeft": "えっ…@誘われたから入ったの？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 303401,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "うん"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 303401
+                    }
+                ],
+                "textRight": "仲間になってくれるって@言ってくれたから"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "まさか…その場で？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 303401,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "うん"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 1
+                    },
+                    {
+                        "id": 303401,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "（あっ…でも…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "（私も元黒羽根じゃなければ@そんな感じで入ってたかも…）"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（不安でいっぱいでも@結局は流されて…）"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "…………",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 0,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 103001,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "不安とかない？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 303401,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "不安…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "上手くやっていけるかなぁとか@考え方に違いがないかなぁとか…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 303401,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "みんな親切だし@優しいから大丈夫だよ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "そう、なの…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 303401,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "うんっ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 303401,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "ほんとに、ほんとに@優しい人たちなんだよ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 103001,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "そ、そうなんだ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（全然、疑ってないみたい…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（大丈夫かなぁ…@なんか心配になっちゃう…）"
+            },
+            {
+                "autoTurnLast": 0.25,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 103001
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 303401
+                    }
+                ],
+                "textClear": 1,
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800100,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800200,
+                        "motion": 0,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800300,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "",
+                "textBg": "shout",
+                "textLeft": "あっ！いたー！@萌花！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800200
+                    }
+                ],
+                "nameCenter": "",
+                "textCenter": "宿題のプリント@机に置いたままだったよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800300
+                    }
+                ],
+                "nameRight": "",
+                "textRight": "あと、家の鍵も！"
+            },
+            {
+                "autoTurnLast": 0.25,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 800100
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 800200
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 800300
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 303401,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "恵 萌花",
+                "textRight": "えっ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 1
+                    }
+                ],
+                "nameLeft": "はぐむ",
+                "textLeft": "（学校のお友だち、かな？）",
+                "turnEffect": "thinking"
+            },
+            {
+                "autoTurnLast": 0.25,
+                "chara": [
+                    {
+                        "id": 303401,
+                        "pos": 0
+                    }
+                ],
+                "textClear": 1,
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800200,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "",
+                "textRight": "はい、これ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 303401,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "恵 萌花",
+                "textLeft": "ごめんね…@全然、気付かなかった…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 800300,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "",
+                "textLeft": "いいの、いいの"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 800100,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "",
+                "textRight": "おかげでこうして@放課後に萌花に会えたし！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 800200,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "",
+                "textRight": "[chara:800200:effect_emotion_joy_0][se:7222_happy]萌花様々だね！"
+            },
+            {
+                "autoTurnLast": 0.25,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 800100
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 800200
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 800300
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "はぐむ",
+                "textCenter": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001
+                    }
+                ],
+                "textCenter": "あっ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 1
+                    }
+                ],
+                "textCenter": "（そっか…@だから、萌花ちゃんは…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "autoTurnLast": 0.3,
+                "chara": [
+                    {
+                        "id": 103001,
+                        "pos": 0
+                    }
+                ],
+                "textClear": 1,
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 103001,
+                        "motion": 100
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 303401,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameLeft": "はぐむ",
+                "textLeft": "…萌花ちゃん@お話ありがとう…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001
+                    }
+                ],
+                "textLeft": "お友だちとお話もあるだろうし@私は、これで…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 303401,
+                        "motion": 0
+                    }
+                ],
+                "nameRight": "恵 萌花",
+                "textRight": "えっ…[chara:303401:lipSynch_0][wait:1][chara:303401:lipSynch_1]あっ、はい…！@[chara:303401:cheek_0][chara:303401:face_mtn_ex_011.exp.json][chara:303401:motion_400][chara:103001:lipSynch_1]またね、はぐむちゃん…！"
+            },
+            {
+                "autoTurnLast": 1.2,
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "motion": 1,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "thinking"
+            },
+            {
+                "bgm": "bgm23_magus04",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 1
+                    }
+                ],
+                "textCenter": "（萌花ちゃんと私…）",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（ちょっと似てるかも@って思ったけど…）"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "textCenter": "（…全然、違う）"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "bg": "black",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 303401,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameNarration": "はぐむ",
+                "narrationBg": "",
+                "narrationCoverOpacity": 160,
+                "narrationEffect": "in",
+                "textClear": 1,
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "narration": "萌花ちゃんは@少し危なっかしいところがあっても@いつも真っ直ぐで人を疑わない",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "だから、みんな助けてあげたくなる"
+            },
+            {
+                "narration": "そして、助けてくれる人がいるから@真っ直ぐなまま…@…純粋なままでいられる"
+            },
+            {
+                "narration": "そんな…@“ガラスの靴”がなくても@素敵なお城に@みんなが迎えたくなる子…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_15041.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 103001,
+                        "motion": 1,
+                        "pos": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 103001
+                    }
+                ],
+                "textCenter": "…いいなぁ…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "（…他の子の話も聞いてみよう）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 103001,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "（元黒羽根の子とかなら…@参考になるかもしれない…）"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 0,
+                        "id": 103001,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（確か…）"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            }
+        ]
+    },
+    "version": 3
+}

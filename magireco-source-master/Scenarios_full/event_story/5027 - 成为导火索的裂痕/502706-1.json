@@ -1,0 +1,906 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_21201.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100602,
+                        "motion": 100,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "blackFrame"
+            },
+            {
+                "bgm": "bgm03_story12",
+                "chara": [
+                    {
+                        "id": 100602
+                    }
+                ],
+                "nameCenter": "みふゆ",
+                "textCenter": "…中央区に行くのを控えるよう@警告を出しましょう",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "bg": "bg_adv_21163.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 800203,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 800101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "みふゆとやちよが@“中央区に行かないよう”警告を出して@数日が経過した…",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "id": 800203
+                    }
+                ],
+                "nameLeft": "東側の魔法少女",
+                "narrationEffect": "out",
+                "textLeft": "怪我する前に帰んな！@温室育ちのお嬢様たちがよぉ！"
+            },
+            {
+                "bgm": "bgm05_event09",
+                "chara": [
+                    {
+                        "id": 800101
+                    }
+                ],
+                "nameRight": "西側の魔法少女",
+                "textRight": "帰るのはそちらです"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800302
+                    }
+                ],
+                "textRight": "ここら辺は私たちのチームが@押さえたんですから！"
+            },
+            {
+                "bgEffect": "shakeSmall",
+                "chara": [
+                    {
+                        "id": 800203
+                    }
+                ],
+                "textBg": "shout",
+                "textLeft": "[chara:800203:effect_emotion_angry_0][se:7219_strain]勝手に、決めてんじゃねぇよ!!"
+            },
+            {
+                "autoTurnLast": 0.4,
+                "bg": "black",
+                "se": "7205_magic_girl",
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "nameNarration": "東側の魔法少女",
+                "narration": "[flashEffect:flashWhite2][surround:715000A02]「おらぁ!!」",
+                "narrationBg": "narration",
+                "narrationEffect": "in",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "nameNarration": "西側の魔法少女",
+                "narration": "[flashEffect:flashRed1][surround:715000A05]「痛っ！@やられたまま黙ってると思わないで！」"
+            },
+            {
+                "narration": "[flashEffect:flashWhite2][surround:715010A01]「はぁああ!!」"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "しかし@中央区で争いを起こしていた魔法少女たちが@警告を守るはずもなく…",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "bg": "bg_adv_21202.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 100204,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "narration": "西側と東側の魔法少女たちの争いは@日に日に激しさを増していった…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "effect": "slideInRightFast",
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100301,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "鶴乃",
+                "narrationEffect": "out",
+                "textRight": "大変だよ！@また、負傷者が出たって！",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301,
+                        "motion": 201
+                    }
+                ],
+                "textRight": "こっちだけじゃなく東側にも！@中央区の子も巻き込まれたって！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100204,
+                        "motion": 201
+                    }
+                ],
+                "nameLeft": "やちよ",
+                "textLeft": "また!?"
+            },
+            {
+                "nameNarration": "",
+                "narration": "[bgEffect:shakeSmall]ドンッ！",
+                "narrationEffect": "in",
+                "narrationFontSize": 40
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100301,
+                        "motion": 400,
+                        "mouthOpen": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "textRight": "うわっ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "id": 100204,
+                        "motion": 200
+                    },
+                    {
+                        "id": 100301,
+                        "mouthOpen": 0
+                    }
+                ],
+                "textBg": "shout",
+                "textLeft": "[bgEffect:shakeSmall]今度は誰!?@中央区には行くなってあれほど！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100602,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "みふゆ",
+                "textRight": "やっちゃん、落ち着いて@ワタシたちは冷静でないと"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "id": 100204,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100204,
+                        "lipSynch": 1,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "…ごめんなさい@少し、頭を冷やしてくるわ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100602,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "はい、それがいいと思います"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 100204
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "id": 100602,
+                        "pos": 0
+                    }
+                ]
+            },
+            {
+                "bgm": "bgm03_story12",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100301,
+                        "motion": 1,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "鶴乃",
+                "textRight": "…あんなに余裕がないやちよ@初めて見た…机、穴開いてない？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100602,
+                        "motion": 1
+                    }
+                ],
+                "nameLeft": "みふゆ",
+                "textLeft": "机は、大丈夫ですよ@やっちゃんの手の方が心配です"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "そっか…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 100602,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "…やっちゃんの@気持ちもわかります"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100602
+                    }
+                ],
+                "textLeft": "打つ手がないんです…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100602,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "ここまで警告を無視されるとは@ワタシも思いませんでしたし…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…ねぇ、十七夜と@協力するってのは難しいかな？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100602
+                    }
+                ],
+                "textLeft": "はい…@交渉材料がありませんから…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 100602,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "せめて、最初の襲撃犯でも@わかればよかったのですが…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "…最初の襲撃犯かー"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301
+                    }
+                ],
+                "textRight": "うーん…考えてみれば"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100301,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "襲撃がなかったら、ここまで早く@対立が深まることはなかったよね"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301
+                    }
+                ],
+                "textRight": "ってことは、得する誰かが@煽ってるのかも"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100602
+                    }
+                ],
+                "textLeft": "得をする人…？魔法少女同士が@傷つけ合ってですか？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 100301,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "というか、対立が深まって@西と東が共倒れすることで、かな"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100301
+                    }
+                ],
+                "textRight": "内部も考えられるけど…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100301,
+                        "motion": 101
+                    }
+                ],
+                "textRight": "神浜市外の人とか？@神浜を欲しいと思ってたりして！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100301
+                    }
+                ],
+                "textRight": "それか、もう…@魔女の仕業、とかね！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100301,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "どう？どう？@名推理じゃない？"
+            },
+            {
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100602,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "bgm": "bgm03_story02",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 100602,
+                        "lipSynch": 1,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "…ふふっ@そうですね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100301,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "みふゆはさ、笑ってた方がいいよ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100301,
+                        "motion": 300
+                    }
+                ],
+                "textRight": "…こんな状況だと、そうも@言ってられないかもしれないけど"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100602
+                    }
+                ],
+                "textLeft": "そうですね、ワタシが@沈んでいてはだめですよね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 100602,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "…鶴乃さん、出掛けてきますので@やっちゃんをお願いします"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100602
+                    }
+                ],
+                "textLeft": "話を聞いてあげてください"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100301,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "[chara:100301:effect_emotion_surprise_0][se:7226_shock]えっ！@どこ行くの？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100602,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "中央区へ@とある方に呼び出されたので"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100301,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…ひとりで大丈夫？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100602,
+                        "motion": 1
+                    }
+                ],
+                "textLeft": "はい、理性的な方ですから@荒事にはなりませんよ"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_14043.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100602,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100602,
+                        "motion": 0
+                    }
+                ],
+                "nameCenter": "みふゆ",
+                "textCenter": "…えっ@あ、あれは…！",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "bg": "bg_adv_21153.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800100,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "turnChangeIn": "rollInFast"
+            },
+            {
+                "bgm": "bgm03_story10",
+                "chara": [
+                    {
+                        "id": 800100,
+                        "lipSynch": 0
+                    }
+                ],
+                "nameLeft": "中央区の魔法少女",
+                "textLeft": "…………",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100602,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "みふゆ",
+                "textRight": "大丈夫ですか!?@しっかりしてください！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800100,
+                        "lipSynch": 1
+                    }
+                ],
+                "textLeft": "…うぅ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100602,
+                        "lipSynch": 0,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "（意識はありませんが@息はありますね…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100602,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "（ヒドイ怪我…ソウルジェムも@こんなに穢れて…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 100602,
+                        "lipSynch": 0,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "（治療と浄化をしなければ…）"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "textClear": 1,
+                "turnEffect": "stop"
+            },
+            {
+                "autoTurnLast": 1.5,
+                "chara": [
+                    {
+                        "effect": "ef_adv_09",
+                        "id": 800100
+                    }
+                ],
+                "se": "7210_souljem_01"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100602,
+                        "lipSynch": 1,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "…はぁ@後は意識さえ戻れば…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 100602,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "（見たことない顔、ということは@東側か…中央区の子ですね）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 100602,
+                        "lipSynch": 0,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "（…一体何が…@まさかとは思いますが…）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800100
+                    }
+                ],
+                "textLeft": "…うっ…@わ、私…",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100602,
+                        "lipSynch": 1,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "よかった@気が付きましたか"
+            },
+            {
+                "bgEffect": "shakeSmall",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 800100
+                    }
+                ],
+                "textBg": "shout",
+                "textLeft": "きゃあぁあ!?@あ、梓みふゆ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 100602,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "[chara:100602:effect_emotion_surprise_0][se:7226_shock]えっ？ちょ、ちょっと@落ち着いてください"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800100
+                    }
+                ],
+                "textLeft": "ほ、本当だったんだ…！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800100
+                    }
+                ],
+                "textLeft": "西側が中央区の魔法少女を@追い出そうとしてるって！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100602,
+                        "lipSynch": 0,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 100602,
+                        "lipSynch": 1
+                    }
+                ],
+                "textRight": "落ち着いて、ワタシは危害を@加えに来たわけではありません"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 800100
+                    }
+                ],
+                "textLeft": "ウソだよ！さっきだって@西側の子に襲われたもん…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 800100
+                    }
+                ],
+                "textLeft": "新しく見つけたテリトリーだって@追い出されちゃったし…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "id": 800100
+                    }
+                ],
+                "textLeft": "もう嫌…もう嫌だよぉ…@誰も協定なんて守らないじゃん"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 800100
+                    }
+                ],
+                "textLeft": "なんで私ばっかり、こんな目に@合わなきゃいけないの…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100602,
+                        "lipSynch": 0,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "（やはり、西側の魔法少女も@協定を破って中央区の子を…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 100602,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "（これから話し合いなのに@頭の痛い問題がまたひとつ…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 100602,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "（いえ、まずはこの子を@落ち着かせて、家に帰さないと）"
+            },
+            {
+                "autoTurnLast": 2,
+                "bgm": "stop",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            }
+        ]
+    },
+    "version": 3
+}

@@ -1,0 +1,716 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.2,
+                "bg": "bg_adv_21152.jpg",
+                "bgm": "bgm03_story10",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300301,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 304601,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6106_shin_emblem.png",
+                        "posX": 0,
+                        "posY": 120,
+                        "visible": "appear"
+                    }
+                ],
+                "nameLeft": "都 ひなの",
+                "nameRight": "観鳥 令",
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "ef_adv_06"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 304601,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "あの子が魔法少女だとしても@そうじゃないとしても…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300301,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "いやな予感しかしないな@もしかして…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301201,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300301
+                    }
+                ],
+                "nameRight": "純 美雨",
+                "textRight": "悠長に話してるヒマは@ないヨ！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_05",
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301200,
+                        "motion": 200,
+                        "pos": 2
+                    },
+                    {
+                        "cheek": 0,
+                        "effect": "ef_adv_05",
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300300,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "se": "7205_magic_girl",
+                "textClear": 1
+            },
+            {
+                "textRight": "結界に入るネ！"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "bgm": "stop",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6106_shin_emblem.png",
+                        "visible": "hide"
+                    }
+                ],
+                "textClear": 1,
+                "turnEffect": "stop"
+            },
+            {
+                "autoTurnLast": 1,
+                "bg": "bg_adv_47106.jpg",
+                "bgChangeEffect": "enterWitchSpace",
+                "se": "7208_wander_into"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgm": "bgm01_anime12",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 303400,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "id": 7106,
+                        "name": "sprite_0",
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "",
+                "nameRight": "恵 萌花",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 303400,
+                        "motion": 100
+                    }
+                ],
+                "textBg": "shout",
+                "textRight": "えいっ！[chara:303400:lipSynch_0][wait:0.8][chara:303400:cheek_0:motion_200][chara:303400:lipSynch_1]えいっ！@[chara:303400:lipSynch_0][wait:0.8][chara:303400:cheek_0:motion_0][chara:303400:lipSynch_1]えいっ！[chara:303400:lipSynch_0][wait:0.8][chara:303400:cheek_0][chara:303400:motion_100][surround:3034A01][name:sprite_0:effect_7001_attack02][chara:303400:lipSynch_1]えいっ！",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "id": 7106,
+                        "name": "sprite_0"
+                    }
+                ],
+                "textBg": "shout",
+                "textLeft": "[surround:3034A02][name:sprite_0:effect_7003_damage02][bgEffect:shakeLarge]дЫНаЮВкцケケー…!!"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 7106,
+                        "name": "sprite_0"
+                    }
+                ],
+                "se": "3102_enemy_dead",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 303400
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300300,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 304600,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301200,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameCenter": "みんな",
+                "textCenter": "（いた…）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 300300,
+                        "motion": 300
+                    }
+                ],
+                "nameLeft": "都 ひなの",
+                "textLeft": "本当に魔法少女だなんて…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 304600,
+                        "motion": 300
+                    }
+                ],
+                "nameCenter": "観鳥 令",
+                "textCenter": "あんなので戦えるわけ？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301200,
+                        "motion": 300
+                    }
+                ],
+                "nameRight": "純 美雨",
+                "textRight": "見てられないネ…"
+            },
+            {
+                "autoTurnLast": 0.3,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 301200
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 300300
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 304600
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 303400,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "恵 萌花",
+                "textCenter": "あ、あれ…？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 303400,
+                        "motion": 300
+                    }
+                ],
+                "textCenter": "もしかして…どなたか…@いらしたんですか…？"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "id": 303400,
+                        "pos": 0
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_001.exp.json",
+                        "id": 301200,
+                        "motion": 100,
+                        "pos": 2
+                    },
+                    {
+                        "id": 303400,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "純 美雨",
+                "textRight": "ま、また会たネ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 303400,
+                        "motion": 400
+                    }
+                ],
+                "nameLeft": "恵 萌花",
+                "textLeft": "あれ!?@もしかしてその声は…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300300,
+                        "motion": 300,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "都 ひなの",
+                "textRight": "声…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 303400,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "そちらの方の声も！@えーと、スリにあった時に…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 304600,
+                        "motion": 400,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "観鳥 令",
+                "textRight": "ちょっと待って@さっきから『声』『声』って…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 304600,
+                        "motion": 1
+                    }
+                ],
+                "textRight": "というか、なんで@目をつむっているのかな…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 303400,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "あ…そうですよね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 303400
+                    }
+                ],
+                "textLeft": "私その…ホラー映画とか…@怖くて気持ち悪いのが苦手で…"
+            },
+            {
+                "textLeft": "それで…魔女さんとかも怖くて…@見ると足がすくんでしまって…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 303400,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "だから…@目を開けるのが怖くて…"
+            },
+            {
+                "autoTurnLast": 0.2,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 303400
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 300300,
+                        "motion": 0,
+                        "mouthOpen": 1,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301200,
+                        "motion": 0,
+                        "mouthOpen": 1,
+                        "pos": 1
+                    },
+                    {
+                        "id": 304600,
+                        "motion": 0,
+                        "mouthOpen": 1
+                    }
+                ],
+                "nameCenter": "みんな",
+                "textCenter": "えぇ…"
+            },
+            {
+                "autoTurnLast": 0.3,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 301200
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 300300
+                    },
+                    {
+                        "effect": "fadeout",
+                        "id": 304600
+                    }
+                ],
+                "textClear": 1,
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 303400,
+                        "motion": 1,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "恵 萌花",
+                "textCenter": "あ！@でもでも、大丈夫ですよ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 303400
+                    }
+                ],
+                "textCenter": "こんな状態でも戦えますので！@信じてください！"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "id": 303400,
+                        "pos": 2
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 303400,
+                        "motion": 100
+                    },
+                    {
+                        "id": 7106,
+                        "name": "sprite_0",
+                        "pos": 0
+                    }
+                ],
+                "textBg": "shout",
+                "textRight": "えいっ！[chara:303400:lipSynch_0][wait:0.8][chara:303400:cheek_0:motion_200][chara:303400:lipSynch_1]えいっ！@[chara:303400:lipSynch_0][wait:0.8][chara:303400:cheek_0:motion_0][chara:303400:lipSynch_1]えいっ！[chara:303400:lipSynch_0][wait:0.8][chara:303400:cheek_0][chara:303400:motion_100][surround:3034A01][name:sprite_0:effect_7001_attack02][chara:303400:lipSynch_1]えいっ！"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "id": 7106,
+                        "name": "sprite_0"
+                    }
+                ],
+                "textBg": "shout",
+                "textLeft": "[surround:3034A02][name:sprite_0:effect_7003_damage02][bgEffect:shakeLarge]ЕxМwмXыクク…!!"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 7106,
+                        "name": "sprite_0"
+                    }
+                ],
+                "se": "3102_enemy_dead",
+                "textClear": 1
+            },
+            {
+                "autoTurnLast": 0.5,
+                "chara": [
+                    {
+                        "id": 303400,
+                        "pos": 0
+                    }
+                ]
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 300300,
+                        "motion": 400,
+                        "pos": 2
+                    },
+                    {
+                        "id": 303400,
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "都 ひなの",
+                "textRight": "あ、たまには当たるんだな"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 303400,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "はいっ！なので…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301200,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "純 美雨",
+                "textRight": "もういい、下がるネ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 303400
+                    }
+                ],
+                "textLeft": "え…？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 304600,
+                        "motion": 300,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "観鳥 令",
+                "textRight": "そうだね…@戦わせる気にはなれないな…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 300300,
+                        "motion": 200,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "都 ひなの",
+                "textRight": "ここはアタシたちが引き受ける@お前は安全なところに逃げろ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "id": 303400,
+                        "motion": 300
+                    }
+                ],
+                "textLeft": "そんな…！@でも…！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 301200,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "純 美雨",
+                "textRight": "大丈夫、グリーフシードは@お裾分けはしてやるネ"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 301200
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "id": 303400,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "textCenter": "あ…あぅ…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 303400,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（まただ…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 303400,
+                        "lipSynch": 0,
+                        "motion": 200
+                    }
+                ],
+                "textCenter": "（どうして私はこうなんだろ…）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 303400,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（また守られるだけ…）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 303400,
+                        "lipSynch": 0,
+                        "motion": 300
+                    }
+                ],
+                "textCenter": "（それが嫌だから…@あんなに「特訓」したのに…）"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

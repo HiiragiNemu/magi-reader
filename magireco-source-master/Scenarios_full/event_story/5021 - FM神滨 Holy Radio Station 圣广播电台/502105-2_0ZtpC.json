@@ -1,0 +1,261 @@
+{
+    "skipTransitionList": [],
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_1b.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bgm": "bgm03_story01",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_1a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_1b.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "nameNarration": "空穂 夏希",
+                "narration": "オムライスおいしそう",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 0,
+                "narrationEffect": "in",
+                "narrationFontSize": 0,
+                "narrationLineSpace": 2000
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 900
+                            }
+                        },
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_1a.jpg"
+                    },
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posY": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_2b.jpg",
+                        "posX": 0,
+                        "posY": -900,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ]
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_2a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_2b.jpg",
+                        "visible": "hide"
+                    },
+                    {
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_1a.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "nameNarration": "空穂 夏希",
+                "narration": "さて、ここウォールナッツでは@特別なお客さんだけに行う珍しい挨拶があるんです！",
+                "narrationCoverOpacity": 0,
+                "narrationFontSize": 0,
+                "narrationLineSpace": 2000
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posX": 0,
+                                "posY": 900
+                            }
+                        },
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_2a.jpg"
+                    },
+                    {
+                        "action": {
+                            "moveTo": {
+                                "duration": 0.5,
+                                "posX": 0,
+                                "posY": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_3b.jpg",
+                        "posX": -1200,
+                        "posY": -900,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ]
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_3a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    },
+                    {
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_3b.jpg",
+                        "visible": "hide"
+                    },
+                    {
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_2a.jpg",
+                        "visible": "hide"
+                    }
+                ],
+                "nameNarration": "空穂 夏希",
+                "narration": "あっ、店員さんが来ましたよ@実際に聞けるでしょうか！",
+                "narrationCoverOpacity": 0,
+                "narrationFontSize": 0,
+                "narrationLineSpace": 2000
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "scaleTo": {
+                                "duration": 0.5,
+                                "scale": 0
+                            }
+                        },
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_3a.jpg"
+                    },
+                    {
+                        "action": {
+                            "scaleTo": {
+                                "duration": 0.5,
+                                "scale": 1
+                            }
+                        },
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_4b.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 0,
+                        "setVisible": 1
+                    }
+                ]
+            },
+            {
+                "autoTurnLast": 0.01,
+                "item": [
+                    {
+                        "action": {
+                            "sequence": [
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": 100,
+                                        "posY": 100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": -100,
+                                        "posY": -100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": 100,
+                                        "posY": 100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": -100,
+                                        "posY": -100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": 100,
+                                        "posY": 100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.02,
+                                        "posX": -100,
+                                        "posY": -100
+                                    }
+                                },
+                                {
+                                    "moveTo": {
+                                        "duration": 0.01,
+                                        "posX": 0,
+                                        "posY": 0
+                                    }
+                                }
+                            ]
+                        },
+                        "path": "resource/scenario/img/51021_PAPA_tower/0406/51021_12_4a.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "scale": 1,
+                        "setVisible": 1
+                    }
+                ],
+                "nameNarration": "胡桃 まなか",
+                "narration": "出ていけ",
+                "narrationCoverOpacity": 0,
+                "narrationFontSize": 0,
+                "narrationLineSpace": 2000
+            },
+            {
+                "nameNarration": "空穂 夏希",
+                "narration": "来週はウォールナッツからお届けします！",
+                "narrationCoverOpacity": 0,
+                "narrationFontSize": 0,
+                "narrationLineSpace": 2000
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}

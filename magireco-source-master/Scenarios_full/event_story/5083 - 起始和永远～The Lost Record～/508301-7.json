@@ -1,0 +1,972 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "bgm": "stop",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51049_storyselect_homura/51049_frame.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear",
+                        "zOrder": "charaFront"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm03_movie05",
+                "nameNarration": "",
+                "narration": "悲劇はさらなる悲劇を呼び@魔女へと成り果てた彼女が倒れたあとも@その幕は引かれませんでした",
+                "narrationCoverOpacity": 90,
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_23021.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_021.exp.json",
+                        "id": 200600,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "bgEffect": "shakeLarge",
+                "chara": [
+                    {
+                        "id": 200600,
+                        "motion": 200
+                    }
+                ],
+                "narration": "バンッ",
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200600
+                    }
+                ],
+                "nameCenter": "杏子",
+                "narrationEffect": "out",
+                "textCenter": "さやか…@畜生…こんなことって"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 200100,
+                        "motion": 300,
+                        "pos": 1,
+                        "tear": 1
+                    }
+                ],
+                "nameCenter": "まどか",
+                "textCenter": "酷いよ…@こんなの、あんまりだよ"
+            },
+            {
+                "autoTurnLast": 3,
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 200300,
+                        "motion": 300,
+                        "pos": 1,
+                        "tear": 1
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200300,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "item": [
+                    {
+                        "iPhoneXScale": 1,
+                        "path": "resource/scenario/img/chapter9/101907_mami_ribbon.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear",
+                        "zOrder": "bgFront"
+                    }
+                ],
+                "nameCenter": "ほむら",
+                "textCenter": "[flashEffect:flashWhite2][se:4055_landing_rotationjump_vh]――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200300,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（動けない…！）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200300,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（これ…巴さんのリボン!?）"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgEffect": "shakeLarge",
+                "flashEffect": "flashWhite2",
+                "se": "5003_shooting_02_vh",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 200600,
+                        "lipSynch": 0,
+                        "motion": 400,
+                        "pos": 1
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/chapter9/101907_mami_ribbon.png",
+                        "visible": "hide"
+                    }
+                ],
+                "nameCenter": "杏子",
+                "textCenter": "[flashEffect:flashRed2][se:3214_ban][bgEffect:shakeLarge][chara:200600:effect_shake]――っ!?"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 200600
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "ドサッ",
+                "se": "3002_chara_dead"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200300,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "item": [
+                    {
+                        "iPhoneXScale": 1,
+                        "path": "resource/scenario/img/chapter9/101907_mami_ribbon.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear",
+                        "zOrder": "bgFront"
+                    }
+                ],
+                "nameCenter": "ほむら",
+                "narrationEffect": "out",
+                "textCenter": "（巴さんが…佐倉さんを！）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 200300,
+                        "tear": 1
+                    }
+                ],
+                "textCenter": "巴さん…"
+            },
+            {
+                "autoTurnLast": 0.1,
+                "chara": [
+                    {
+                        "id": 200300,
+                        "pos": 2
+                    }
+                ],
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200500,
+                        "motion": 400,
+                        "pos": 0,
+                        "tear": 1
+                    }
+                ],
+                "nameLeft": "マミ",
+                "nameRight": "ほむら",
+                "textLeft": "ソウルジェムが魔女を産むなら…@…みんな死ぬしかないじゃない！"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200500
+                    }
+                ],
+                "textLeft": "あなたも、私もッ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200300,
+                        "tear": 0
+                    }
+                ],
+                "textRight": "や、やめて"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bgEffect": "shakeLarge",
+                "flashEffect": "flashWhite2",
+                "se": "5009_shooting_05_h",
+                "textClear": 1
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200500,
+                        "lipSynch": 0,
+                        "tear": 1
+                    }
+                ],
+                "textLeft": "[flashEffect:flashRed2][se:3214_ban][bgEffect:shakeLarge][chara:200500:effect_shake]――っ!?"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "narrationEffect": "in"
+            },
+            {
+                "chara": [
+                    {
+                        "effect": "fadeout",
+                        "id": 200500
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "ドサッ",
+                "se": "3002_chara_dead"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200300,
+                        "lipSynch": 0
+                    }
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/chapter9/101907_mami_ribbon.png",
+                        "visible": "hide"
+                    }
+                ],
+                "narrationEffect": "out",
+                "textRight": "（巴さんが倒れた…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200300,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "（鹿目さんが…@助けてくれたんだ…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 200100,
+                        "motion": 300,
+                        "pos": 0,
+                        "tear": 1
+                    }
+                ],
+                "nameLeft": "まどか",
+                "textLeft": "…嫌だ"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200100
+                    }
+                ],
+                "textLeft": "…もう、嫌だよ@こんなの…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 200300,
+                        "motion": 100
+                    }
+                ],
+                "textRight": "…大丈夫だよ@…ふたりで、頑張ろう"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200300
+                    }
+                ],
+                "textRight": "一緒に@ワルプルギスの夜を倒そう"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200100,
+                        "motion": 0,
+                        "tear": 1
+                    }
+                ],
+                "textLeft": "…うん…"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "black",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51049_storyselect_homura/51049_frame.png",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear",
+                        "zOrder": "charaFront"
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "",
+                "narration": "最悪の悲劇には、それにふさわしい@最悪の結末が待っていました",
+                "narrationCoverOpacity": 90,
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "narration": "そして最後の舞台となったのは@またしても、あの@ワルプルギスの夜との戦いでした…"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 1,
+                        "filePath": "resource/image_native/effect/story/general/3004_rainstorm.ExportJson",
+                        "zOrder": "messageBack"
+                    }
+                ],
+                "autoTurnLast": 2,
+                "bg": "bg_adv_20391.jpg",
+                "bgm": "stop",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 200301,
+                        "motion": 0,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_040.exp.json",
+                        "id": 200101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "bgm": "bgm01_anime17",
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "nameLeft": "ほむら",
+                "nameRight": "まどか",
+                "surround": "7004_rain",
+                "textRight": "わたしたちも@もう、おしまいだね…",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301
+                    }
+                ],
+                "textLeft": "うん…@グリーフシードは？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101,
+                        "lipSynch": 0
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "eyeClose": 1,
+                        "id": 200301
+                    }
+                ],
+                "textLeft": "…そう"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200301
+                    }
+                ],
+                "textLeft": "…ねぇ、私たち@このままふたりで怪物になって"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301
+                    }
+                ],
+                "textLeft": "…こんな世界@何もかも滅茶苦茶にしちゃおうか"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200101,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301,
+                        "tear": 1
+                    }
+                ],
+                "textLeft": "嫌なことも、悲しいことも"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301
+                    }
+                ],
+                "textLeft": "ぜんぶなかったことに@しちゃえるぐらい"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301
+                    }
+                ],
+                "textLeft": "壊して、壊して@壊しまくって、さ…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 200301,
+                        "tear": 1
+                    }
+                ],
+                "textLeft": "…それはそれで@いいと思わない？"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_20181.jpg",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "autoTurnLast": 3,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_20391.jpg",
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "eyeClose": 1,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 200301,
+                        "motion": 0,
+                        "pos": 0,
+                        "tear": 1
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_010.exp.json",
+                        "id": 200101,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101,
+                        "motion": 201
+                    }
+                ],
+                "nameNarration": "",
+                "narration": "カチッ",
+                "narrationEffect": "in",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 1,
+                "chara": [
+                    {
+                        "effect": "ef_adv_09",
+                        "id": 200301,
+                        "tear": 0
+                    }
+                ],
+                "narrationEffect": "out"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200301,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301,
+                        "lipSynch": 0,
+                        "tear": 0
+                    },
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_011.exp.json",
+                        "id": 200101
+                    }
+                ],
+                "textLeft": "（グリーフシード…？@もう…残ってないって…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "autoTurnLast": 1.5,
+                "deleteArmatureList": [
+                    1
+                ],
+                "item": [
+                    {
+                        "path": "resource/scenario/img/51049_storyselect_homura/memoria_1299.jpg",
+                        "posX": 0,
+                        "posY": 0,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "stop"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "se": "7210_souljem_01"
+            },
+            {
+                "nameNarration": "まどか",
+                "narration": "―まどか―@…さっきのは、嘘@１個だけ取っておいたんだ",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 10,
+                "narrationLineSpace": 20
+            },
+            {
+                "nameNarration": "ほむら",
+                "narration": "―ほむら―@そんな…@なんで、私に"
+            },
+            {
+                "armatureList": [
+                    {
+                        "animation": [
+                            "action"
+                        ],
+                        "armatureId": 2,
+                        "filePath": "resource/image_native/effect/story/general/3004_rainstorm.ExportJson",
+                        "zOrder": "messageBack"
+                    }
+                ],
+                "autoTurnLast": 1.5,
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200301,
+                        "motion": 100,
+                        "pos": 0
+                    },
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 200101,
+                        "motion": 201,
+                        "pos": 2
+                    }
+                ],
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "surround": "7004_rain",
+                "textRight": "わたしには出来なくて@ほむらちゃんに出来ること",
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "お願いしたいから…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "ほむらちゃん@過去に戻れるんだよね？"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "こんな終わり方にならないように"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101,
+                        "tear": 1
+                    }
+                ],
+                "textRight": "歴史を変えられるって@言ってたよね…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 200301,
+                        "tear": 1
+                    }
+                ],
+                "textLeft": "…うん"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200101,
+                        "tear": 1
+                    }
+                ],
+                "textRight": "キュゥべえに騙される前の@バカなわたしを…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "助けてあげて、くれないかな"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301
+                    }
+                ],
+                "textLeft": "約束するわ@絶対にあなたを救ってみせる"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301
+                    }
+                ],
+                "textLeft": "何度繰り返すことになっても@必ずあなたを守ってみせる"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "良かった…"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 200301,
+                        "motion": 0,
+                        "tear": 1
+                    },
+                    {
+                        "cheek": 1,
+                        "effect": "ef_adv_08",
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 200101,
+                        "motion": 0,
+                        "tear": 1
+                    }
+                ],
+                "textRight": "…う、ッ！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 200101,
+                        "tear": 1
+                    }
+                ],
+                "textRight": "…もうひとつ、頼んでいい？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 200301,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "tear": 1
+                    }
+                ],
+                "textLeft": "――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "わたし、魔女にはなりたくない"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "…嫌なことも@悲しいこともあったけど"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200101
+                    }
+                ],
+                "textRight": "守りたいものだって沢山@この世界にはあったから…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301,
+                        "motion": 200
+                    }
+                ],
+                "textLeft": "…まどか…ッ"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 200101,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "ほむらちゃん…@やっと、名前で呼んでくれたね"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 1,
+                        "face": "mtn_ex_041.exp.json",
+                        "id": 200101,
+                        "tear": 1
+                    }
+                ],
+                "textRight": "…嬉しい、な…"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200301,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textLeft": "…………"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "effect": "ef_adv_05",
+                        "face": "mtn_ex_031.exp.json",
+                        "id": 200300,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 0,
+                        "tear": 1
+                    }
+                ],
+                "se": "7205_magic_girl",
+                "textLeft": "（…まどかを…）",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 200300,
+                        "lipSynch": 0
+                    }
+                ],
+                "textLeft": "（この手で撃てるの…？）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 2,
+                        "face": "mtn_ex_060.exp.json",
+                        "id": 200300,
+                        "lipSynch": 0,
+                        "tear": 1
+                    }
+                ],
+                "textLeft": "…………@…………",
+                "turnEffect": "stop"
+            },
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_20181.jpg",
+                "bgm": "stop",
+                "deleteArmatureList": [
+                    2
+                ],
+                "surround": "stop",
+                "turnChangeIn": "fadeIn"
+            },
+            {
+                "nameNarration": "ほむら",
+                "narration": "―ほむら―@わぁぁあ…ッ!!",
+                "narrationAnchor": "bottom",
+                "narrationCoverOpacity": 110,
+                "narrationEffect": "in",
+                "narrationFontSize": 30,
+                "narrationLineMargin": 35,
+                "narrationLineSpace": 20,
+                "turnChangeOut": "fadeOut"
+            },
+            {
+                "autoTurnLast": 1.5,
+                "flashEffect": "flashWhite2",
+                "narrationEffect": "out",
+                "surround": "3023A02"
+            },
+            {
+                "autoTurnLast": 1.5,
+                "se": "3214_ban"
+            },
+            {
+                "autoTurnLast": 2,
+                "narrationEffect": "out",
+                "turnChangeIn": "fadeIn",
+                "turnChangeInTime": 3
+            }
+        ]
+    },
+    "version": 3
+}

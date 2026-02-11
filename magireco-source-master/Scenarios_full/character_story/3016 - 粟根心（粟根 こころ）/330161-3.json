@@ -1,0 +1,468 @@
+{
+    "story": {
+        "group_1": [
+            {
+                "autoTurnLast": 0.01,
+                "bg": "bg_adv_21161.jpg",
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6104_rebecca_emblem.png",
+                        "posX": 0,
+                        "posY": 120,
+                        "visible": "appear"
+                    }
+                ],
+                "turnChangeIn": "fadeIn",
+                "turnEffect": "ef_adv_06"
+            },
+            {
+                "bgm": "bgm03_story10",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301601,
+                        "motion": 0,
+                        "pos": 2
+                    }
+                ],
+                "nameRight": "粟根 こころ",
+                "textRight": "あった…！@結界…！",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "blackFrame"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301601,
+                        "motion": 200
+                    }
+                ],
+                "textRight": "…行かなきゃ…！"
+            },
+            {
+                "item": [
+                    {
+                        "path": "resource/scenario/img/6104_rebecca_emblem.png",
+                        "visible": "hide"
+                    }
+                ],
+                "nameNarration": "粟根 こころ",
+                "narration": "私が“加賀見まさら”と出会ったのは@私が魔法少女になってから@少し経ったくらいの頃だった",
+                "narrationBg": "bg_adv_narration.jpg",
+                "narrationEffect": "in",
+                "turnEffect": "stop"
+            },
+            {
+                "bg": "bg_adv_47104.jpg",
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301600,
+                        "lipSynch": 0,
+                        "motion": 300,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "粟根 こころ",
+                "narrationEffect": "out",
+                "textCenter": "（…ここまで…@使い魔が全然いない…）",
+                "turnChangeIn": "fadeIn",
+                "turnChangeOut": "fadeOut",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301600,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（でも結界があるってことは…@最深部に魔女はいるんだよね？）"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301600,
+                        "lipSynch": 0,
+                        "motion": 0
+                    }
+                ],
+                "textCenter": "（使い魔は…[wait:1.0][chara:301600:cheek_0][chara:301600:face_mtn_ex_050.exp.json]別の人が@もう全部倒したってこと…？）"
+            },
+            {
+                "autoTurnLast": 0.5,
+                "bg": "bg_adv_46104.jpg",
+                "bgChangeEffect": "enterWitchSpace",
+                "bgm": "stop",
+                "se": "7208_wander_into",
+                "turnEffect": "stop"
+            },
+            {
+                "bgm": "bgm01_anime15",
+                "chara": [
+                    {
+                        "id": 301600,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "textCenter": "――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 302900,
+                        "motion": 100,
+                        "pos": 2
+                    },
+                    {
+                        "id": 6104,
+                        "name": "sprite_0",
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "",
+                "nameRight": "加賀見 まさら",
+                "textRight": "[flashEffect::flashWhite2][se:4061_landing_jump5]ふっ…！",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "textLeft": "[flashEffect:flashRed2][chara:6104:effect_shake][se:6106_hit_slash_03_h][bgEffect:shakeLarge]………！？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302900,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "[flashEffect::flashWhite2][se:4061_landing_jump5]ハァ!!"
+            },
+            {
+                "textLeft": "[flashEffect:flashRed2][se:6106_hit_slash_03_h][chara:6104:effect_shake][bgEffect:shakeLarge]………！？！？"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301600,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "nameCenter": "粟根 こころ",
+                "textCenter": "（この人…@すごく強い…）",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301600,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（やっぱり…この人が@使い魔も全部倒したんだ…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302900,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "id": 6104,
+                        "name": "sprite_0",
+                        "pos": 0
+                    }
+                ],
+                "textLeft": "[flashEffect:flashWhite2][bgEffect:shakeSmall]…！！",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301600,
+                        "motion": 400,
+                        "mouthOpen": 1,
+                        "pos": 1
+                    }
+                ],
+                "textCenter": "危ないっ…!!",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301600
+                    }
+                ],
+                "textCenter": "え…!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302900,
+                        "motion": 200,
+                        "pos": 2
+                    },
+                    {
+                        "id": 6104,
+                        "name": "sprite_0",
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "加賀見 まさら",
+                "textRight": "[flashEffect::flashWhite2][se:4061_landing_jump5]ァア!!",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "textLeft": "[flashEffect:flashWhite2][bgEffect:shakeSmall]…！！！！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301600,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "textCenter": "（魔女の攻撃を@避けるどころか…）",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301600,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（真正面から@向かっていった…!?）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302900,
+                        "motion": 200,
+                        "pos": 2
+                    },
+                    {
+                        "id": 6104,
+                        "name": "sprite_0",
+                        "pos": 0
+                    }
+                ],
+                "textRight": "[flashEffect::flashWhite2][se:4061_landing_jump5]ハッ!!",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302900,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "[flashEffect:flashRed2][chara:302900:effect_shake][se:3001_chara_damage][bgEffect:shakeLarge]ぐっ…!!"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301600,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "textCenter": "（この人…@攻めることしかしてない…）",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302900,
+                        "motion": 100,
+                        "pos": 2
+                    },
+                    {
+                        "id": 6104,
+                        "name": "sprite_0",
+                        "pos": 0
+                    }
+                ],
+                "textLeft": "[flashEffect:flashWhite2][bgEffect:shakeSmall]…！！！",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_030.exp.json",
+                        "id": 301600,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 1
+                    }
+                ],
+                "textCenter": "（まるで…）",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast",
+                "turnEffect": "thinking"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301600,
+                        "lipSynch": 0
+                    }
+                ],
+                "textCenter": "（死ぬことを@少しも恐れてないみたい…）"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 301600,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "textCenter": "――っ!?",
+                "turnEffect": "stop"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302900,
+                        "lipSynch": 0,
+                        "motion": 0,
+                        "pos": 2
+                    },
+                    {
+                        "id": 6104,
+                        "name": "sprite_0",
+                        "pos": 0
+                    }
+                ],
+                "nameRight": "加賀見 まさら",
+                "textRight": "――っ!?@[wait:1.0][chara:302900:lipSynch_1]こっち…!?",
+                "turnChangeIn": "rollInFast",
+                "turnChangeOut": "rollOutFast"
+            },
+            {
+                "textLeft": "[flashEffect:flashWhite2][bgEffect:shakeSmall]…！！！！！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 302900
+                    }
+                ],
+                "textRight": "チッ…！"
+            },
+            {
+                "textLeft": "[flashEffect:flashRed2][chara:6104:effect_shake][surround:3016A03][bgEffect:shakeLarge]………！"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_050.exp.json",
+                        "id": 302900,
+                        "lipSynch": 0,
+                        "motion": 400
+                    }
+                ],
+                "textRight": "――っ!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_020.exp.json",
+                        "id": 301600,
+                        "motion": 0,
+                        "pos": 0
+                    }
+                ],
+                "nameLeft": "粟根 こころ",
+                "textLeft": "大丈夫!?"
+            },
+            {
+                "chara": [
+                    {
+                        "cheek": 0,
+                        "face": "mtn_ex_000.exp.json",
+                        "id": 302900,
+                        "motion": 0
+                    }
+                ],
+                "textRight": "…気が付かなかった@ほかの魔法少女も来てたのね"
+            },
+            {
+                "chara": [
+                    {
+                        "id": 301600,
+                        "motion": 100
+                    }
+                ],
+                "textLeft": "私がサポートします…！"
+            },
+            {
+                "autoTurnLast": 2,
+                "turnChangeIn": "fadeIn"
+            }
+        ]
+    },
+    "version": 3
+}
