@@ -16,7 +16,6 @@ def sanitize_path(p):
     return p.replace("\\", "/")
 
 def get_category(path):
-    
     if "main_story" in path: return "main_story"
     if "event_story" in path: return "event_story"
     if "character_story" in path: return "character_story"
@@ -27,8 +26,9 @@ def get_category(path):
         if "支线" in path or "sub" in path.lower(): return "scene0_sub"
         return "scene0_main"
     return "Unclassified"
+
 def count_sections(filepath):
-    """核心算法：计算文件中包含的 [Section] 数量"""
+    """核心算法：计算有效 Section 数量"""
     if not os.path.exists(filepath): return 0
     count = 0
     try:
@@ -38,6 +38,7 @@ def count_sections(filepath):
                     count += 1
         return count
     except: return 0
+
 def scan_directory(base_dir, lang_key):
     print(f"--- 扫描 [{lang_key}] ---")
     for root, dirs, files in os.walk(base_dir):
@@ -46,13 +47,15 @@ def scan_directory(base_dir, lang_key):
         for file in files:
             if not file.endswith(".txt"): continue
             
-            # 提取 ID (兼容所有格式)
-            # 101101_1-7.txt -> 101101
-            # 511901-09... -> 511901-09
-            # 9051_main.txt -> 9051
-            raw_id = file.split('_')[0]
-            if not raw_id: continue # 防止空ID
+            # 兼容：允许所有 txt，不再强制 _combined
+            # 但要排除 readme 之类的干扰
+            if not re.match(r'^\d+', file): continue
 
+            # 提取 ID (文件名第一个下划线前的部分)
+            # 101101_1-7.txt -> 101101
+            # 9051-9052_1-10.txt -> 9051-9052
+            raw_id = file.split('_')[0]
+            
             rel_path = os.path.relpath(root, base_dir)
             path_parts = rel_path.split(os.sep)
             
@@ -65,41 +68,39 @@ def scan_directory(base_dir, lang_key):
             dest_full = os.path.join(TARGET_DATA_DIR, dest_rel)
             os.makedirs(dest_full, exist_ok=True)
             
-            # 复制并加上后缀，避免冲突
+            # 为了前端方便，这里统一加上 _{lang} 后缀
+            # 如果源文件本身已经有 _cn/_jp 后缀（如S0），要注意不要重复
             if file.endswith(f"_{lang_key}.txt"):
                 dest_filename = file
             else:
+                # 101101_1-7.txt -> 101101_1-7_cn.txt
                 base_name = file.replace(".txt", "")
                 dest_filename = f"{base_name}_{lang_key}.txt"
 
             shutil.copy2(os.path.join(root, file), os.path.join(dest_full, dest_filename))
             
- # 注册/初始化
+            # 注册
             if raw_id not in story_map:
                 story_map[raw_id] = {
                     "id": raw_id,
                     "category": category,
                     "folder": folder_name,
                     "cn_path": "", "jp_path": "",
-                    "has_cn": False, "has_jp": False,
-                    "cn_secs": 0, "jp_secs": 0, # 新增计数位
-                    "filename_cn": "", "filename_jp": "" 
+                    "cn_secs": 0, "jp_secs": 0,
+                    "filename_cn": "" # 用于前端显示真实名字
                 }
             
             web_path = f"/data/{sanitize_path(dest_rel)}/{dest_filename}"
-            # 计算当前文件的 Section 数量
-            current_secs = count_sections(os.path.join(root, file))
+            secs = count_sections(os.path.join(root, file))
             
             if lang_key == "cn":
                 story_map[raw_id]["cn_path"] = web_path
-                story_map[raw_id]["has_cn"] = True
-                story_map[raw_id]["cn_secs"] = current_secs # 记录中文段落数
-                story_map[raw_id]["filename_cn"] = file 
+                story_map[raw_id]["cn_secs"] = secs
+                story_map[raw_id]["folder"] = folder_name
+                story_map[raw_id]["filename_cn"] = file # 记录原始文件名
             else:
                 story_map[raw_id]["jp_path"] = web_path
-                story_map[raw_id]["has_jp"] = True
-                story_map[raw_id]["jp_secs"] = current_secs # 记录日文段落数
-                story_map[raw_id]["filename_jp"] = file
+                story_map[raw_id]["jp_secs"] = secs
 
 # === 执行 ===
 if os.path.exists(TARGET_DATA_DIR): shutil.rmtree(TARGET_DATA_DIR)
@@ -110,32 +111,26 @@ scan_directory(DIR_CN, "cn")
 
 final_list = []
 for k, v in story_map.items():
-    # 简单汉化率：有中文就是100，无中文就是0
-    # 如果你需要之前的行数计算，可以把那个 count_sections 函数加回来
-# 精确汉化率计算
     p = 0
     if v["jp_secs"] > 0:
-        # 如果中文段落数大于等于日文，视为100%，否则按比例计算
         if v["cn_secs"] >= v["jp_secs"]: p = 100
         else: p = round((v["cn_secs"] / v["jp_secs"]) * 100)
     elif v["cn_secs"] > 0:
-        # 如果没有日文参考但有中文，视为100%
         p = 100
-                
+        
     final_list.append({
         "id": v["id"],
         "category": v["category"],
         "folder": v["folder"],
         "percent": p,
-        "has_cn": v["has_cn"],
-        "has_jp": v["has_jp"],
+        "has_cn": bool(v["cn_path"]),
+        "has_jp": bool(v["jp_path"]),
         "path_cn": v["cn_path"],
         "path_jp": v["jp_path"],
-        "filename_cn": v["filename_cn"],
-        "filename_jp": v["filename_jp"]
+        "filename_cn": v["filename_cn"]
     })
 
-    final_list = natsort.natsorted(final_list, key=lambda x: x["id"])
+final_list.sort(key=lambda x: x["id"])
 
 with open(os.path.join(TARGET_PUBLIC_DIR, "story_index.json"), "w", encoding="utf-8") as f:
     json.dump(final_list, f, ensure_ascii=False, indent=2)

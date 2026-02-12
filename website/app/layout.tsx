@@ -1,3 +1,4 @@
+// 只保留一行 runtime 导出
 export const runtime = 'edge';
 
 import type { Metadata } from "next";

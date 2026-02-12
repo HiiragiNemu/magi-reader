@@ -165,17 +165,32 @@ export default function Home() {
     });
   }, []);
 
-  useEffect(() => {
+useEffect(() => {
     // 只要有搜索词且模式涉及内容，就去加载索引
     if (searchTerm.length > 0 && searchIndex.length === 0 && !searchLoading && (searchMode === 'all' || searchMode === 'content')) {
       setSearchLoading(true);
-      fetch('/search_content.json')
-        .then(res => res.ok ? res.json() : [])
+      
+      // 智能加载逻辑：
+      // 如果是在本地开发环境 (localhost)，尝试加载本地文件（如果存在）
+      // 否则加载 R2 上的远程文件
+      const SEARCH_INDEX_URL = process.env.NODE_ENV === 'development' 
+        ? '/search_content.json' 
+        : 'https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev/search_content.json';
+
+      fetch(SEARCH_INDEX_URL)
+        .then(res => {
+          if (!res.ok) throw new Error("File not found");
+          return res.json();
+        })
+        .catch(() => {
+          // 如果本地文件加载失败（比如被 gitignore 删了），兜底加载 R2
+          return fetch('https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev/search_content.json').then(r => r.json());
+        })
         .then(data => setSearchIndex(data))
-        .catch(err => console.error(err))
+        .catch(err => console.error("搜索索引加载失败:", err))
         .finally(() => setSearchLoading(false));
     }
-  }, [searchTerm, searchMode]); // 依赖项
+  }, [searchTerm, searchMode]);
 
   const { categories, displayedGroups } = useMemo(() => {
     const cats = new Set<string>();
