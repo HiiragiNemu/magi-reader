@@ -51,11 +51,11 @@ export default function Sidebar({ stories, currentId, isOpen, onClose, className
   const [expandedCats, setExpandedCats] = useState<Record<string, boolean>>({});
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
 
-  // 容器样式
-  const themeClass = theme === 'dark' ? 'bg-gray-900 border-gray-700 text-gray-300' : 
-                     theme === 'paper' ? 'bg-[#f0e6d2] border-[#dcd6b6] text-[#5c4b37]' : 
-                     theme === 'green' ? 'bg-[#C7EDCC] border-[#A8D8B9] text-[#003300]' :
-                     'bg-gray-50 border-gray-200 text-gray-600';
+// 容器样式 - 增加 backdrop-blur 和 bg-opacity
+const themeClass = theme === 'dark' ? 'bg-gray-900/70 glass-morphism border-gray-700 text-gray-300' : 
+                     theme === 'paper' ? 'bg-[#f0e6d2]/60 glass-morphism border-[#dcd6b6] text-[#5c4b37]' : 
+                     theme === 'green' ? 'bg-[#d8e6d1]/60 glass-morphism border-[#b8cbb0] text-[#1b4d1b]' :
+                     'bg-white/70 glass-morphism border-gray-200 text-gray-600';
 
   const groupedData = useMemo(() => {
     const data: Record<string, Record<string, Story[]>> = {};

@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-// 新增 'green'
 type Theme = 'light' | 'dark' | 'paper' | 'green';
 
 interface GlobalState {
@@ -15,9 +14,9 @@ interface GlobalState {
 const GlobalContext = createContext<GlobalState | undefined>(undefined);
 
 export function GlobalProvider({ children }: { children: React.ReactNode }) {
-  // 默认改为 'paper' (你要求的暖黄色)
   const [theme, setThemeState] = useState<Theme>('paper');
   const [lastCategory, setLastCategory] = useState('main_story');
+  // 用 mounted 避免 hydration mismatch
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -31,25 +30,67 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
   const setTheme = (t: Theme) => {
     setThemeState(t);
     localStorage.setItem('magi_theme', t);
-    // 处理 CSS 类
+    
+    // 更新 HTML class 以支持 Tailwind 的 dark 模式选择器
     const root = document.documentElement;
-    root.classList.remove('dark', 'theme-paper', 'theme-green');
+    root.classList.remove('dark');
     if (t === 'dark') root.classList.add('dark');
-    if (t === 'paper') root.classList.add('theme-paper');
-    if (t === 'green') root.classList.add('theme-green');
   };
-
+  
   const setLastCategoryWrapper = (c: string) => {
     setLastCategory(c);
     localStorage.setItem('magi_cat', c);
   };
 
+  // 防止服务端渲染和客户端不一致导致的闪烁
+  if (!mounted) {
+    return <div className="min-h-screen bg-[#f3eacb]"></div>;
+  }
+
   return (
     <GlobalContext.Provider value={{ theme, setTheme, lastCategory, setLastCategory: setLastCategoryWrapper }}>
-      {/* 应用噪点背景 */}
-      <div className={`min-h-screen ${theme === 'paper' ? 'bg-noise theme-paper' : theme === 'green' ? 'theme-green' : theme === 'dark' ? 'dark bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}>
+      {/* 
+         结构说明：
+         1. 背景层 (div.magi-background): 负责颜色 + 气球动画，位于 z-index: -50
+         2. 内容层 (div.relative): 正常的页面内容，背景必须透明！
+         3. 纹理层 (div.magi-texture): 负责纸张质感，位于 z-index: 9999, pointer-events: none
+      */}
+      
+      {/* 1. 背景层：根据 theme 设置 data-bg-theme 属性，触发 CSS 中的背景色切换 */}
+      <div className="magi-background" data-bg-theme={theme} />
+      
+  <GlobalContext.Provider value={{ theme, setTheme, lastCategory, setLastCategory: setLastCategoryWrapper }}>
+    
+    {/* 1. 高度模糊底层背景 */}
+    <div className="magi-background" data-bg-theme={theme} />
+
+    {/* --- 修改此处：将之前的 magi-sharp-rain 替换为真实气球效果 --- */}
+    <div className="magi-balloon-rain" />
+    {/* --- 修改结束 --- */}
+
+    {/* 2. 内容层 */}
+    <div className={`min-h-screen transition-colors duration-300 relative z-0 bg-transparent ...`}>
+      {children}
+    </div>
+
+    {/* 3. 羊皮纸纹理滤镜 */}
+    <div className={`magi-texture ${theme === 'dark' ? 'magi-texture-dark' : 'magi-texture-light'}`} />
+    
+  </GlobalContext.Provider>
+);
+      {/* 2. 内容层：注意 text-color 的设置，但不要设置 bg-color */}
+      <div className={`min-h-screen transition-colors duration-300 relative z-0
+        ${theme === 'dark' ? 'text-gray-200' : ''}
+        ${theme === 'light' ? 'text-gray-900' : ''}
+        ${theme === 'paper' ? 'text-[#4a3b2a]' : ''}
+        ${theme === 'green' ? 'text-[#1b5e20]' : ''}
+      `}>
         {children}
       </div>
+
+      {/* 3. 纹理层：全覆盖 */}
+      <div className={`magi-texture ${theme === 'dark' ? 'magi-texture-dark' : 'magi-texture-light'}`} />
+      
     </GlobalContext.Provider>
   );
 }

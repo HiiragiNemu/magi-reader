@@ -15,9 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh" suppressHydrationWarning>
-      {/* 移除 Google 字体，直接使用系统默认字体，解决加载卡顿 */}
-      <body className="antialiased font-sans">
-        <GlobalProvider>
+        {/* 系统 serif 字体：优雅衬线，阅读沉浸 + antialiased 防锯齿 */}
+          <body className="antialiased font-serif">        
+            <GlobalProvider>
           {children}
         </GlobalProvider>
       </body>

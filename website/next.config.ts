@@ -1,15 +1,25 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
-    unoptimized: true, // 必须加这个，否则 Next.js 的图片优化在静态导出下会报错
+    unoptimized: true,
   },
-  webpack: (config: any) => {  // 用 any 避 TS 内部类型坑（Next.js webpack config 是动态的）
-    // 禁用 Node fs（Workers 无 fs API）
-    if (!config.resolve) config.resolve = {};
-    if (!config.resolve.fallback) config.resolve.fallback = {};
-    config.resolve.fallback.fs = false;
+  // 修正 1: 在 Next.js 16 中，这个配置移到了最外层
+  serverExternalPackages: ['@vercel/og', 'resvg', 'sharp'],
+  
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
+
+  // 修正 2: 强力屏蔽 Webpack 依赖
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@vercel/og': false,
+      'resvg': false,
+      'sharp': false,
+      'yoga-wasm-web': false,
+    };
     return config;
   },
 };

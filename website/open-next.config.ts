@@ -1,7 +1,5 @@
-// default open-next.config.ts file created by @opennextjs/cloudflare
-import { defineCloudflareConfig } from "@opennextjs/cloudflare/config";
-import r2IncrementalCache from "@opennextjs/cloudflare/overrides/incremental-cache/r2-incremental-cache";
+// C:\Users\cryne\Documents\magi-reader\website\open-next.config.ts
+import { defineCloudflareConfig } from '@opennextjs/cloudflare';
 
 export default defineCloudflareConfig({
-	incrementalCache: r2IncrementalCache,
 });

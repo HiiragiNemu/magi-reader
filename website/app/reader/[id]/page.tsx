@@ -181,17 +181,18 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   }, [cnPath, jpPath]);
 
   // 样式表
-  const themeStyles = {
-    light: "bg-white text-gray-900",
-    dark: "bg-[#0f172a] text-gray-200",
-    paper: "bg-[#f0e6d2] text-[#4a4036]",
-    green: "bg-[#C7EDCC] text-[#003300]",
-  };
-  const headerStyles = {
-    light: "border-gray-200 bg-white",
-    dark: "border-gray-800 bg-[#0f172a]",
-    paper: "border-[#e6dfc5] bg-[#f0e6d2]",
-    green: "border-[#A8D8B9] bg-[#C7EDCC]",
+// 在 ReaderPage 的 page.tsx 中修改这个常量
+const themeStyles = {
+    light: "bg-transparent text-gray-900", // 改为 transparent
+    dark: "bg-transparent text-gray-200",  // 改为 transparent
+    paper: "bg-transparent text-[#4a4036]",
+    green: "bg-transparent text-[#003300]", // 改为 transparent
+};
+ const headerStyles = {
+    light: "border-gray-200 bg-white/80 backdrop-blur-md",
+    dark: "border-gray-800 bg-[#0f172a]/80 backdrop-blur-md",
+    paper: "border-[#e6dfc5] bg-[#f0e6d2]/60 backdrop-blur-md", // 🔴 关键修改：半透明 + 模糊
+    green: "border-[#A8D8B9] bg-[#C7EDCC]/80 backdrop-blur-md",
   };
   const speakerColor = {
     light: "text-blue-700 bg-blue-50",
@@ -426,9 +427,11 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                     </div>
         </header>
 
-        {/* 内容区 */}
-        <div className="flex-1 overflow-y-auto scroll-smooth p-2 md:p-6" style={{ fontSize: `${fontSize}px`, lineHeight }}>
-                    <div className="max-w-6xl mx-auto pb-20">
+{/* 内容区 - 增加 z-10 确保文字在气球之上 */}
+        <div className="flex-1 overflow-y-auto scroll-smooth p-2 md:p-6 z-10" style={{ fontSize: `${fontSize}px`, lineHeight }}>
+            {/* 限制宽度为 3xl (约 65-75 个字符宽度，最适合阅读)，并增加底部留白 */}
+            <div className={`max-w-3xl mx-auto pb-32 min-h-screen transition-all duration-500 ease-in-out ${(theme === 'paper' || theme === 'green') ? 'md:bg-white/40 md:shadow-sm md:backdrop-blur-[2px] md:px-12 md:py-8 rounded-lg' : ''}`}>
+
  {isEditMode && (
   <div className="mb-6 p-4 rounded-xl bg-emerald-50/80 border border-emerald-200 shadow-sm backdrop-blur-sm">
     <div className="flex flex-wrap gap-3 items-center">

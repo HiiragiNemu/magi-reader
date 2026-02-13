@@ -6,78 +6,251 @@
 }
 
 @layer base {
-  :root {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
+  body {
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    /* 必须透明，否则看不到底层气球 */
+    background-color: transparent; 
   }
 }
 
-/* 噪点纹理类 */
-.bg-noise {
-  position: relative;
-}
-.bg-noise::before {
-  content: "";
+/* =========================================
+   1. 动态彩色气球层 (底层)
+   ========================================= */
+.magi-background {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 500vh;
+  z-index: -50; 
   pointer-events: none;
-  z-index: -1;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity: 0.6;
+  transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  background-color: #fafafa; /* 默认底色 */
+
+  /* 
+     升级：增强色彩和形状，使其更像局部出现的“气球”
+     使用 hard-light 混合模式让色彩在羊皮纸上更鲜艳
+  */
+  background-image: 
+    radial-gradient(circle at 15% 25%, rgba(255, 150, 150, 0.35) 0%, transparent 25%),
+    radial-gradient(circle at 85% 15%, rgba(130, 200, 255, 0.35) 0%, transparent 25%),
+    radial-gradient(circle at 35% 75%, rgba(255, 230, 130, 0.35) 0%, transparent 30%),
+    radial-gradient(circle at 75% 85%, rgba(140, 255, 170, 0.35) 0%, transparent 25%),
+    radial-gradient(circle at 50% 45%, rgba(210, 160, 255, 0.25) 0%, transparent 35%);
+    
+  background-size: 160% 160%;
+  animation: floatMist 25s ease-in-out infinite alternate;
 }
 
-/* 豆沙绿 (Green) */
-.theme-green {
-  background-color: #C7EDCC; /* 经典的豆沙绿 */
-  color: #003300;
+@keyframes floatMist {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 40% 100%; }
 }
 
-/* 羊皮纸 (Paper/Warm) */
-.theme-paper {
-  background-color: #f3eacb; /* 更深的米黄色 */
-  color: #3e2b1e;
+/* =========================================
+   2. 真·羊皮纸纹理层 (最顶层)
+   ========================================= */
+.magi-texture {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: none;
+  /* 
+     升级：优化噪点频率，0.7-0.8 是最接近真实纸张纤维的数值 
+  */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.1'/%3E%3C/svg%3E");
 }
 
-/* 暗黑 (Dark) */
-.dark {
-  background-color: #0a0a0a;
-  color: #ededed;
+.magi-texture-light { mix-blend-mode: multiply; opacity: 0.12; }
+.magi-texture-dark { mix-blend-mode: soft-light; opacity: 0.2; }
+
+/* =========================================
+   3. 主题状态机 (仅控制底色，不干扰气球)
+   ========================================= */
+[data-bg-theme='light'] { background-color: #fcfcfc; }
+[data-bg-theme='paper'] { background-color: #f3eacb; }
+[data-bg-theme='green'] { background-color: #dcedc8; }
+[data-bg-theme='dark'] { 
+  background-color: #0f172a; 
+  background-image: 
+    radial-gradient(circle at 15% 25%, rgba(255, 100, 100, 0.15) 0%, transparent 25%),
+    radial-gradient(circle at 85% 15%, rgba(100, 150, 255, 0.15) 0%, transparent 25%),
+    radial-gradient(circle at 50% 50%, rgba(150, 255, 150, 0.1) 0%, transparent 40%);
 }
 
-/* --- 极致缩减阅读器间距 --- */
-.whitespace-pre-wrap {
-  margin-top: -0.1em;
-  margin-bottom: -0.1em;
-  display: block;
+/* 关键：覆盖掉原来的实心背景类，确保它们透明 */
+.theme-paper, .theme-green {
+    background-color: transparent !important;
 }
 
-/* 移除 border-b 的默认大内边距 */
-div[id^="line-"] {
-  padding-top: 0.15rem !important;
-  padding-bottom: 0.15rem !important;
-}
-
-/* --- 搜索高亮增强 (红色框选) --- */
+/* =========================================
+   其他样式保持不变
+   ========================================= */
+.glass-panel { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.whitespace-pre-wrap { margin-top: -0.1em; margin-bottom: -0.1em; display: block; }
+div[id^="line-"] { padding-top: 0.15rem !important; padding-bottom: 0.15rem !important; }
 .bg-red-100.text-red-700.outline {
-  background-color: #fee2e2 !important; /* 浅红背景 */
-  color: #b91c1c !important;           /* 深红文字 */
-  outline: 2px solid #ef4444 !important; /* 明显的红色外边框 */
-  border-radius: 2px;
-  font-weight: bold;
-  box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
-  animation: pulse-red 1s infinite alternate;
+  background-color: rgba(254, 226, 226, 0.8) !important;
+  color: #b91c1c !important; 
+  outline: 2px solid #ef4444 !important;
 }
 
-@keyframes pulse-red {
-  from { outline-color: #ef4444; }
-  to { outline-color: transparent; }
+/* --- 增量代码：硬边缘彩色气球 (RAIN EFFECT) --- */
+.magi-sharp-rain {
+  position: fixed;
+  top: -100vh;
+  left: 0;
+  width: 100vw;
+  height: 200vh;
+  z-index: -30; /* 确保它在模糊背景之上，在文字层之下 */
+  pointer-events: none;
+  opacity: 0.8; /* 提高不透明度，确保看清颜色 */
+  
+  /* 
+     关键点：使用固定像素 (如 8px) 而非百分比。
+     颜色 0-8px，然后立即转透明，这样边缘是绝对锋利的。
+  */
+  background-image: 
+    radial-gradient(circle at 10% 10%, #ff8080 0px, #ff8080 8px, transparent 9px),
+    radial-gradient(circle at 30% 25%, #80b3ff 0px, #80b3ff 10px, transparent 11px),
+    radial-gradient(circle at 55% 15%, #ffe680 0px, #ffe680 7px, transparent 8px),
+    radial-gradient(circle at 85% 35%, #80ffaa 0px, #80ffaa 9px, transparent 10px),
+    radial-gradient(circle at 20% 60%, #e680ff 0px, #e680ff 8px, transparent 9px),
+    radial-gradient(circle at 50% 80%, #80ffff 0px, #80ffff 10px, transparent 11px),
+    radial-gradient(circle at 75% 55%, #ffb380 0px, #ffb380 8px, transparent 9px),
+    radial-gradient(circle at 45% 40%, #ff80b3 0px, #ff80b3 9px, transparent 10px),
+    radial-gradient(circle at 90% 85%, #b3ff80 0px, #b3ff80 7px, transparent 8px);
+
+  background-size: 100% 100vh;
+  animation: balloonRain 35s linear infinite; /* 稍微加快速度，更有“雨”感 */
 }
 
-/* 修正 Section 分割线间距 */
-.my-10 {
-  margin-top: 1.5rem !important;
-  margin-bottom: 1.5rem !important;
+/* 垂直降落动画 */
+@keyframes balloonRain {
+  from { transform: translateY(0); }
+  to { transform: translateY(100vh); }
+}
+
+/* 暗色模式下降低一点亮度，但不增加模糊 */
+.dark .magi-sharp-rain {
+  opacity: 0.4;
+  filter: brightness(0.8);
+}
+
+/* --- 增量代码：硬边缘彩色气球 (RAIN EFFECT) --- */
+.magi-sharp-rain {
+  position: fixed;
+  top: -100vh;
+  left: 0;
+  width: 100vw;
+  height: 200vh;
+  z-index: -30; /* 确保它在模糊背景之上，在文字层之下 */
+  pointer-events: none;
+  opacity: 0.8; /* 提高不透明度，确保看清颜色 */
+  
+  /* 
+     关键点：使用固定像素 (如 8px) 而非百分比。
+     颜色 0-8px，然后立即转透明，这样边缘是绝对锋利的。
+  */
+  background-image: 
+    radial-gradient(circle at 10% 10%, #ff8080 0px, #ff8080 8px, transparent 9px),
+    radial-gradient(circle at 30% 25%, #80b3ff 0px, #80b3ff 10px, transparent 11px),
+    radial-gradient(circle at 55% 15%, #ffe680 0px, #ffe680 7px, transparent 8px),
+    radial-gradient(circle at 85% 35%, #80ffaa 0px, #80ffaa 9px, transparent 10px),
+    radial-gradient(circle at 20% 60%, #e680ff 0px, #e680ff 8px, transparent 9px),
+    radial-gradient(circle at 50% 80%, #80ffff 0px, #80ffff 10px, transparent 11px),
+    radial-gradient(circle at 75% 55%, #ffb380 0px, #ffb380 8px, transparent 9px),
+    radial-gradient(circle at 45% 40%, #ff80b3 0px, #ff80b3 9px, transparent 10px),
+    radial-gradient(circle at 90% 85%, #b3ff80 0px, #b3ff80 7px, transparent 8px);
+
+  background-size: 100% 100vh;
+  animation: balloonRain 35s linear infinite; /* 稍微加快速度，更有“雨”感 */
+}
+
+/* 垂直降落动画 */
+@keyframes balloonRain {
+  from { transform: translateY(0); }
+  to { transform: translateY(100vh); }
+}
+
+/* 暗色模式下降低一点亮度，但不增加模糊 */
+.dark .magi-sharp-rain {
+  opacity: 0.4;
+  filter: brightness(0.8);
+}
+
+/* --- 增量代码：真实气球形状 (BALLOON RAIN) --- */
+.magi-balloon-rain {
+  position: fixed;
+  top: -120vh; /* 起始位置更高 */
+  left: 0;
+  width: 100vw;
+  height: 340vh; /* 显著增加高度，确保落全程 */
+  z-index: -30;
+  pointer-events: none;
+  opacity: 0.6;
+  
+  /* 使用 repeat 让气球在整个高度内铺满 */
+  background-repeat: repeat;
+  /* 平铺块大小：400px * 400px 内分布多个气球 */
+  background-size: 400px 600px;
+
+  background-image: 
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23ff99ad'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23ff99ad'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%2399ccff'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%2399ccff'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23ffff99'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23ffff99'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23b3ffb3'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23b3ffb3'/%3E%3C/svg%3E");
+
+  background-repeat: no-repeat;
+  background-size: 40px 50px;
+  background-position: 
+    15% 10%, 
+    40% 25%, 
+    65% 15%, 
+    85% 35%, 
+    25% 60%, 
+    55% 80%, 
+    75% 55%, 
+    45% 40%, 
+    90% 85%,
+    10% 80%;
+
+   animation: balloonRainEnhanced 80s linear infinite;
+}
+
+/* 修正位移距离：落满 220vh 确保从头到尾贯穿 */
+@keyframes balloonRainEnhanced {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(220vh) rotate(5deg); }
+}
+/* 增强的动画：垂直降落 + 轻微的左右晃动 */
+@keyframes balloonRainEnhanced {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(25vh) translateX(15px);
+  }
+  50% {
+    transform: translateY(50vh) translateX(-15px);
+  }
+  75% {
+    transform: translateY(75vh) translateX(10px);
+  }
+  100% {
+    transform: translateY(450vh) translateX(0);
+  }
+}
+
+/* 暗色模式滤镜 */
+.dark .magi-balloon-rain {
+  opacity: 0.3;
+  filter: saturate(0.8);
 }

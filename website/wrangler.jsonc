@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developers.cloudflare.com/workers/configuration/schema.json",
+  "main": ".open-next/worker.js",
+  "name": "magi-reader",
+  "compatibility_date": "2024-09-23",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  // 关键新增：告诉 Wrangler 遇到 .wasm 文件时该怎么做
+  "rules": [
+    {
+      "type": "CompiledWasm",
+      "globs": ["**/*.wasm"],
+      "fallthrough": true
+    }
+  ],
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "magi-reader"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "NEXT_CACHE_BUCKET",
+      "bucket_name": "magi-assets"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "NEXT_CACHE_WORKERS_KV",
+      // 请确保这里是你刚刚创建的真实 ID，如果忘了，重新运行 npx wrangler kv namespace list 查看
+      "id": "e6546f3eebf94393b6ca3e85b5536d7b" 
+    }
+  ]
+}
