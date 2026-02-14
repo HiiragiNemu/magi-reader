@@ -2,13 +2,14 @@
   "name": "website",
   "version": "0.1.0",
   "private": true,
-"scripts": {
+  "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "type-check": "tsc --noEmit",
     "preview": "npm run build && opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "npm run build && opennextjs-cloudflare build && opennextjs-cloudflare deploy"
-  },
+    "deploy:worker": "npm run build && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "deploy:pages": "npm run build && opennextjs-cloudflare build && node scripts/prepare-pages.js && wrangler pages deploy"
+},
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.7",
     "autoprefixer": "^10.4.20",
