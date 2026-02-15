@@ -197,24 +197,27 @@ const themeClass = theme === 'dark' ? 'bg-gray-900/70 glass-morphism border-gray
                                     const isActive = story.id === currentId;
                                   const p = story.percent || (story.has_cn ? 100 : 0);
                                     const getSectionId = (rawText: string) => {
-  // 1. 强力提取 Section 数字 (忽略前后的文件名和中文)
-  const secMatch = rawText.match(/Section\s*(\d+)/i);
-  const secNum = secMatch ? secMatch[1] : '';
-  
-  // 2. 提取 Branch 数字 (如果有)
-  const branchMatch = rawText.match(/(?:Branch|分支|group)\s*[_]?\s*(\d+)/i);
-  const branchNum = branchMatch ? branchMatch[1] : '';
+                            // 1. 提取开头的原始编号 (例如 "400008-1")
+                            // 逻辑：匹配开头的 数字-数字
+                            const sourceMatch = rawText.match(/^([\w\d\-]+)/);
+                            const sourceId = sourceMatch ? sourceMatch[1] : '';
 
-  // 3. 组合成标准 ID (必须与 ReaderPage.tsx 的逻辑完全一致)
-  if (secNum && branchNum) {
-    return `sec-${secNum}-branch-${branchNum}`;
-  } else if (secNum) {
-    return `sec-${secNum}`;
-  }
-  
-  // 兜底：如果完全没匹配到数字，才使用旧逻辑
-  return rawText.replace(/\s+/g, '-').toLowerCase();
-};
+                            // 2. 提取 Section 数字
+                            const secMatch = rawText.match(/Section\s*(\d+)/i);
+                            const secNum = secMatch ? secMatch[1] : '';
+                            
+                            // 3. 提取 Branch 数字
+                            const branchMatch = rawText.match(/(?:Branch|分支|group)\s*[_]?\s*(\d+)/i);
+                            const branchNum = branchMatch ? branchMatch[1] : '';
+
+                            // 4. 生成与 Page 严格一致的 ID
+                            if (sourceId && secNum) {
+                              return `sec-${sourceId}-${secNum}${branchNum ? `-branch-${branchNum}` : ''}`;
+                            }
+                            
+                            // 兜底
+                            return rawText.replace(/\s+/g, '-').toLowerCase();
+                          };
 
                     return (
                       <div key={story.id} className="mb-1">

@@ -5,20 +5,7 @@ import Link from 'next/link';
 import { Search, Book, Layers, User, Calendar, Folder, FileText, ChevronRight, ChevronDown, Sun, Moon, BookOpen, Leaf } from 'lucide-react';
 import { useGlobal } from '@/app/providers';
 import { SPEAKER_COLOR_MAP } from '@/app/config/dictionary';
-// 类型定义
-type Story = {
-  id: string;
-  category: string;
-  folder: string;
-  has_cn: boolean;
-  has_jp: boolean;
-  path_cn?: string;
-  path_jp?: string;
-  filename_cn?: string;
-  filename_jp?: string; // 确保后端 JSON 包含此字段
-  percent?: number;
-  title?: string;
-};
+import { Story } from '@/components/Sidebar';
 
 type SearchEntry = {
   id: string;

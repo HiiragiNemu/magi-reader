@@ -25,38 +25,37 @@ const parseText = (raw: string): StoryLine[] => {
     const line = lines[i].replace(/^\uFEFF/, '').trim();
     if (!line) continue;
 
-    // --- header 行 ---
-    if (line.startsWith('---')) {
-      const headerText = line.replace(/---/g, '').trim();
-      
-      // ★★★ 修复：强制生成标准 ID (sec-1) 以匹配 Sidebar ★★★
-      let headerId = '';
-      const secMatch = headerText.match(/Section\s*(\d+)/i);
-      const secNum = secMatch ? secMatch[1] : '';
-      const branchMatch = headerText.match(/(?:Branch|group_)\s*(\d+)/i);
-      const branchNum = branchMatch ? branchMatch[1] : '';
+if (line.startsWith('---')) {
+  const headerText = line.replace(/---/g, '').trim();
+  
+  // 1. 提取 Source 文件名 (例如: "400008-1")
+  const sourceMatch = headerText.match(/Source:\s*([\w\d\-]+)/i);
+  const sourceId = sourceMatch ? sourceMatch[1] : '';
 
-      if (secNum && branchNum) {
-        headerId = `sec-${secNum}-branch-${branchNum}`;
-      } else if (secNum) {
-        headerId = `sec-${secNum}`;
-      } else {
-        // 兜底：如果没有数字，才使用旧的字符串替换法
-        headerId = headerText
-          .replace(/[\[\]()]/g, '')
-          .replace(/Source:.*/, '')
-          .trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-      }
-      // ★★★ 结束 ★★★
-      
-      parsed.push({ 
-        speaker: '', 
-        text: line, 
-        isHeader: true, 
-        headerId: headerId // 现在的 ID 是标准的 sec-1 了
-      });
-      continue;
-    }
+  // 2. 提取 Section 和 Branch 数字
+  const secMatch = headerText.match(/Section\s*(\d+)/i);
+  const secNum = secMatch ? secMatch[1] : '';
+  const branchMatch = headerText.match(/(?:Branch|group_)\s*(\d+)/i);
+  const branchNum = branchMatch ? branchMatch[1] : '';
+
+  // 3. 组合唯一 ID：格式为 "sec-源文件-章节-分支"
+  // 以前是 "sec-1"，现在是 "sec-400008-1-1"
+  let headerId = '';
+  if (sourceId && secNum) {
+    headerId = `sec-${sourceId}-${secNum}${branchNum ? `-branch-${branchNum}` : ''}`;
+  } else {
+    // 兜底逻辑
+    headerId = headerText.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  }
+
+  parsed.push({ 
+    speaker: '', 
+    text: line, 
+    isHeader: true, 
+    headerId: headerId 
+  });
+  continue;
+}
     // --- 选项行 ---
     const choiceMatch = line.match(/^选项:\s*【(.+?)】→\s*(\S+)/);
     if (choiceMatch) {
