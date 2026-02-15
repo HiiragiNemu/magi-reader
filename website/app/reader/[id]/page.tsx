@@ -10,41 +10,143 @@ type StoryLine = {
   speaker: string;
   text: string;
   isHeader?: boolean;
+  headerId?: string;      // 用于锚点定位
+  isChoice?: boolean;     // 选项行
+  choiceLabel?: string;   // "応援したい"
+  choiceTargetId?: string; // 跳转目标的 headerId
 };
-
 const parseText = (raw: string): StoryLine[] => {
   if (!raw) return [];
+  
   const lines = raw.split('\n');
-  const result: StoryLine[] = [];
-  let currentSpeaker = '';
-  let currentText: string[] = [];
+  const parsed: StoryLine[] = [];
 
-  const flush = () => {
-    if (currentSpeaker || currentText.length > 0) {
-      result.push({ speaker: currentSpeaker, text: currentText.join('\n') });
-      currentSpeaker = '';
-      currentText = [];
-    }
-  };
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].replace(/^\uFEFF/, '').trim();
+    if (!line) continue;
 
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-    if (trimmed.startsWith('---') && trimmed.includes('[Section')) {
-      flush();
-      result.push({ speaker: '', text: trimmed, isHeader: true });
+    // --- header 行 ---
+    if (line.startsWith('---')) {
+      const headerText = line.replace(/---/g, '').trim();
+      // 生成锚点 ID: "[Section 5 - Branch 2]" → "sec-5-branch-2"
+      const headerId = headerText
+        .replace(/[\[\]()]/g, '')
+        .replace(/Source:.*/, '')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '');
+      
+      parsed.push({ 
+        speaker: '', 
+        text: line, 
+        isHeader: true, 
+        headerId: headerId || `header-${i}` 
+      });
       continue;
     }
-    const colonIdx = trimmed.indexOf(':');
-    if (colonIdx > -1 && colonIdx < 20) {
-      flush();
-      currentSpeaker = trimmed.substring(0, colonIdx).trim();
-      currentText.push(trimmed.substring(colonIdx + 1).trim().replace(/\\n/g, '\n'));
+
+    // --- 选项行 ---
+    const choiceMatch = line.match(/^选项:\s*【(.+?)】→\s*(\S+)/);
+    if (choiceMatch) {
+      const choiceLabel = choiceMatch[1];
+      const targetGroup = choiceMatch[2]; // e.g., "group_2"
+      
+      // 查找当前最近的 section 号，用于构建跳转目标
+      let currentSection = '';
+      for (let j = parsed.length - 1; j >= 0; j--) {
+        if (parsed[j].isHeader && parsed[j].headerId) {
+          // 从 headerId 提取 section 信息
+          const secMatch = parsed[j].headerId!.match(/sec(?:tion)?-?(\d+)/);
+          if (secMatch) {
+            currentSection = secMatch[1];
+            break;
+          }
+        }
+      }
+      
+const branchNum = targetGroup.replace('group_', '');
+      
+      parsed.push({
+        speaker: '选项',
+        text: `【${choiceLabel}】`,
+        isChoice: true,
+        choiceLabel: choiceLabel,
+        choiceTargetId: branchNum, 
+      });
+      continue;
+    }
+
+    // --- 普通对话行 ---
+    const separatorIdx = line.search(/[:：﹕︰︓]/);
+    
+    if (separatorIdx > 0 && separatorIdx < 20 && !line.startsWith('[')) {
+      const rawName = line.substring(0, separatorIdx).trim().replace(/\s+/g, '') || '旁白';
+      const content = line.substring(separatorIdx + 1).trim().replace(/\\n/g, '\n');
+      parsed.push({ speaker: rawName, text: content });
     } else {
-      currentText.push(trimmed.replace(/\\n/g, '\n'));
+      const content = line.trim().replace(/\\n/g, '\n');
+      parsed.push({ speaker: '旁白', text: content });
     }
   }
-  flush();
+
+  // 第二步：同名说话人合并（选项行和 header 不参与合并）
+  const result: StoryLine[] = [];
+  
+  for (let i = 0; i < parsed.length; i++) {
+    const current = parsed[i];
+    
+    if (current.isHeader || current.isChoice) {
+      result.push(current);
+      continue;
+    }
+    
+    const last = result.length > 0 ? result[result.length - 1] : null;
+    
+    if (last && !last.isHeader && !last.isChoice && last.speaker === current.speaker) {
+      last.text += '\n' + current.text;
+    } else {
+      result.push({ ...current });
+    }
+  }
+
+  return result;
+};
+
+// --- 增强版 alignSections：块数差大时 speaker 模糊匹配 ---
+const alignSections = (cn: StoryLine[], jp: StoryLine[]) => {
+  const result: { cn?: StoryLine; jp?: StoryLine }[] = [];
+  
+  const cnLen = cn.length;
+  const jpLen = jp.length;
+  const maxLen = Math.max(cnLen, jpLen);
+  
+  if (Math.abs(cnLen - jpLen) > 10) {
+    console.warn(`⚠️ 对齐警告: CN=${cnLen} 块, JP=${jpLen} 块 (差值=${Math.abs(cnLen - jpLen)})。尝试 speaker 匹配...`);
+    // 🔴 简单模糊对齐：按 speaker 配对，剩余按索引填充
+    const minLen = Math.min(cnLen, jpLen);
+    for (let i = 0; i < minLen; i++) {
+      // 如果 speaker 匹配（忽略空格），完美对齐；否则索引
+      const cnStd = cn[i].speaker.replace(/\s+/g, '');
+      const jpStd = jp[i].speaker.replace(/\s+/g, '');
+      if (cnStd === jpStd || cnStd === '旁白' || jpStd === '旁白') {
+        result.push({ cn: cn[i], jp: jp[i] });
+      } else {
+        result.push({ cn: cn[i], jp: jp[i] });
+      }
+    }
+    // 填充剩余
+    for (let i = minLen; i < maxLen; i++) {
+      if (i < cnLen) result.push({ cn: cn[i] });
+      if (i < jpLen) result.push({ jp: jp[i] });
+    }
+  } else {
+    // 正常索引对齐
+    for (let i = 0; i < maxLen; i++) {
+      result.push({ cn: cn[i], jp: jp[i] });
+    }
+  }
+
   return result;
 };
 
@@ -201,84 +303,54 @@ const themeStyles = {
     green: "text-green-800 bg-green-100",
   };
 
-  const alignSections = (cn: StoryLine[], jp: StoryLine[]) => {
-    const result: { cn?: StoryLine; jp?: StoryLine }[] = [];
-    
-    let i = 0, j = 0;
-    
-    while (i < cn.length || j < jp.length) {
-      const c = cn[i];
-      const p = jp[j];
-  
-      if (c?.isHeader && p?.isHeader) {
-        const cNum = c.text.match(/Section (\d+)/)?.[1];
-        const pNum = p.text.match(/Section (\d+)/)?.[1];
-        
-        if (cNum === pNum) {
-          result.push({ cn: c, jp: p });
-          i++; j++;
-        } else if ((cNum || 0) < (pNum || 0)) {
-          result.push({ cn: c, jp: undefined });
-          i++;
-        } else {
-          result.push({ cn: undefined, jp: p });
-          j++;
-        }
-        continue;
-      }
-  
-      if (c?.isHeader) {
-        result.push({ cn: c, jp: undefined });
-        i++;
-        continue;
-      }
-      if (p?.isHeader) {
-        result.push({ cn: undefined, jp: p });
-        j++;
-        continue;
-      }
-  
-      result.push({ cn: c, jp: p });
-      if (c) i++;
-      if (p) j++;
-    }
-    
-    return result;
-  };
-  
   const renderList = alignSections(cnLines, jpLines);
 
-  // 当搜索词变化时，计算所有匹配行
-  useEffect(() => {
-    if (!searchQuery) {
-      setMatchedIndices([]);
-      setCurrentMatchIdx(-1);
-      return;
-    }
-    const lowerQuery = searchQuery.toLowerCase();
-    const indices: number[] = [];
-    
-    renderList.forEach((row, idx) => {
-      const cnText = row.cn?.text?.toLowerCase() || '';
-      const cnSpeaker = row.cn?.speaker?.toLowerCase() || '';
-      const jpText = row.jp?.text?.toLowerCase() || '';
-      const jpSpeaker = row.jp?.speaker?.toLowerCase() || '';
+useEffect(() => {
+  if (!searchQuery) {
+    setMatchedIndices([]);
+    setCurrentMatchIdx(-1);
+    return;
+  }
+  const lowerQuery = searchQuery.toLowerCase();
+  const indices: number[] = [];
+  
+renderList.forEach((row, idx) => {
+  const cnText = row.cn?.text?.toLowerCase() || '';
+  const cnSpeaker = row.cn?.speaker?.toLowerCase() || '';
+  const jpText = row.jp?.text?.toLowerCase() || '';
+  const jpSpeaker = row.jp?.speaker?.toLowerCase() || '';
+  
+  // header 文本 + 中文别名
+  const headerRaw = (row.cn?.isHeader ? row.cn.text : row.jp?.isHeader ? row.jp.text : '');
+  let headerSearchable = headerRaw.toLowerCase();
+  
+  // ★ 给 header 添加中文搜索别名
+  const secNum = headerRaw.match(/Section\s*(\d+)/)?.[1];
+  const brNum = headerRaw.match(/Branch\s*(\d+)/)?.[1];
+  if (secNum) headerSearchable += ` 第${secNum}节 节${secNum}`;
+  if (brNum) headerSearchable += ` 分支${brNum} 路线${brNum} 选项${brNum}`;
+  
+  // 选项文本
+  const choiceText = (row.cn?.choiceLabel || row.jp?.choiceLabel || '').toLowerCase();
+  // ★ 选项也加 "选项" "分支" 关键词
+  const choiceSearchable = choiceText ? `${choiceText} 选项 分支` : '';
 
-      if (cnText.includes(lowerQuery) || cnSpeaker.includes(lowerQuery) || 
-          jpText.includes(lowerQuery) || jpSpeaker.includes(lowerQuery)) {
-        indices.push(idx);
-      }
-    });
-    
-    setMatchedIndices(indices);
-    setCurrentMatchIdx(indices.length > 0 ? 0 : -1);
-    
-    if (indices.length > 0) {
-       setTimeout(() => {
-         document.getElementById(`line-${indices[0]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-       }, 100);
-    }
-  }, [searchQuery, renderList.length]);
+  if (cnText.includes(lowerQuery) || cnSpeaker.includes(lowerQuery) || 
+      jpText.includes(lowerQuery) || jpSpeaker.includes(lowerQuery) ||
+      headerSearchable.includes(lowerQuery) || choiceSearchable.includes(lowerQuery)) {
+    indices.push(idx);
+  }
+});
+  
+  setMatchedIndices(indices);
+  setCurrentMatchIdx(indices.length > 0 ? 0 : -1);
+  
+  if (indices.length > 0) {
+     setTimeout(() => {
+       document.getElementById(`line-${indices[0]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+     }, 100);
+  }
+}, [searchQuery, renderList.length]);
 
   // 跳转到下一个匹配项
   const jumpToNextMatch = () => {
@@ -288,45 +360,71 @@ const themeStyles = {
     document.getElementById(`line-${matchedIndices[nextIdx]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
-  // 升级后的 renderStyledText，支持 forceHighlight（角色名搜索时整段高亮）
-  // 增强版文本解析逻辑
-  const renderStyledText = (text: string, forceHighlight: boolean = false) => {
-    // 1. 处理 <red> 标签：将字符串切分为 [普通文本, <red>文本, 普通文本]
-    const redParts = text.split(/(<red>.*?<\/red>)/g);
-    
-    return redParts.map((part, index) => {
-      let isRedTag = false;
-      let content = part;
 
-      if (part.startsWith('<red>') && part.endsWith('</red>')) {
-        content = part.replace(/<\/?red>/g, '');
-        isRedTag = true;
-      }
+const renderStyledText = (text: string, forceHighlight: boolean = false) => {
+  // 1. 切分文本
+  // 这里的 [\s\S] 非常重要，它能匹配包括换行符在内的任意字符
+  const parts = text.split(/(<red>[\s\S]*?<\/red>|<blue>[\s\S]*?<\/blue>|\[textBlack:[\s\S]*?\])/g);
+  
+  return parts.map((part, index) => {
+    let isRedTag = false;
+    let isBlueTag = false;
+    let isBlackTag = false;
+    let content = part;
 
-      // 2. 处理搜索高亮逻辑
-      if (searchQuery && (content.toLowerCase().includes(searchQuery.toLowerCase()) || forceHighlight)) {
-        const regex = new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-        const searchParts = content.split(regex);
-        
-        return (
-          <span key={index} className={isRedTag ? "text-red-500 font-bold" : ""}>
-            {searchParts.map((sp, i) => 
-              regex.test(sp) 
-                ? <span key={i} className="bg-red-100 text-red-700 outline outline-1 outline-red-500 rounded px-0.5 shadow-sm mx-0.5">{sp}</span> 
-                : sp
-            )}
-          </span>
-        );
-      }
+    if (part.startsWith('<red>') && part.endsWith('</red>')) {
+      content = part.replace(/<\/?red>/g, '');
+      isRedTag = true;
+    }
+    else if (part.startsWith('<blue>') && part.endsWith('</blue>')) {
+      content = part.replace(/<\/?blue>/g, '');
+      isBlueTag = true;
+    }
+    // 处理 [textBlack:...]
+    else if (part.startsWith('[textBlack:') && part.endsWith(']')) {
+      content = part.slice(11, -1); 
+      isBlackTag = true;
+    }
 
-      // 3. 正常渲染（含红色标签处理）
+    // 搜索高亮逻辑
+    if (searchQuery && (content.toLowerCase().includes(searchQuery.toLowerCase()) || forceHighlight)) {
+      const regex = new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      const searchParts = content.split(regex);
+      
+      // 注意：这里最外层的 span 不需要 block，因为父容器已经有 whitespace-pre-wrap
       return (
-        <span key={index} className={isRedTag ? "text-red-500 font-bold" : ""}>
-          {content}
+        <span 
+          key={index} 
+          className={
+            isRedTag ? "text-red-500 font-bold" : 
+            isBlueTag ? "text-blue-500 font-bold" : 
+            isBlackTag ? "font-black text-gray-900 drop-shadow-sm" : "" 
+          }
+        >
+          {searchParts.map((sp, i) => 
+            regex.test(sp) 
+              ? <span key={i} className="bg-yellow-200 text-black outline outline-1 outline-yellow-400 rounded px-0.5 shadow-sm mx-0.5">{sp}</span>
+              : sp
+          )}
         </span>
       );
-    });
-  };
+    }
+
+    // 正常渲染
+    return (
+      <span 
+        key={index} 
+        className={
+          isRedTag ? "text-red-500 font-bold" : 
+          isBlueTag ? "text-blue-500 font-bold" : 
+          isBlackTag ? "font-black text-gray-900 drop-shadow-sm" : ""
+        }
+      >
+        {content}
+      </span>
+    );
+  });
+};
 
   if (loading) return <div className="flex h-screen items-center justify-center opacity-50">Loading...</div>;
 
@@ -491,106 +589,224 @@ const themeStyles = {
                   )}
                </div>
             </div>
+                        {/* 🟢 新增：顶部宣传/信息栏 (利用顶部空白) */}
+            {!isEditMode && (
+              <div className={`mb-0 p-4 rounded-lg border text-sm text-center transition-colors ${
+                theme === 'dark' 
+                  ? 'bg-white/5 border-white/10 text-gray-400' 
+                  : 'bg-black/5 border-black/5 text-gray-600'
+              }`}>             
+                <div className="flex flex-wrap justify-center gap-3 text-xs font-bold">
+                  <a 
+                    href="https://space.bilibili.com/625821?spm_id_from=333.33.0.0" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="hover:text-blue-500 hover:underline transition-colors flex items-center gap-1"
+                  >
+                    <span>🐧群928098518</span>
+                  </a>
+                  <span>|</span>
+                  <Link 
+                    href="/" 
+                    className="hover:text-emerald-500 hover:underline transition-colors"
+                  >
+                    🏠 返回首页
+                  </Link>
+                  <span>|</span>
+                  <button 
+                    onClick={() => alert("感谢您的阅读！\n本站旨在保存魔法纪录的剧情。")}
+                    className="hover:text-pink-500 hover:underline transition-colors"
+                  >
+                    ❤️ 关于我们
+                  </button>
+                </div>
 
-            {renderList.map((row, idx) => {
-              const headerText = row.cn?.isHeader ? row.cn.text : row.jp?.isHeader ? row.jp.text : null;
-              
-              if (headerText) {
-                return (
-                  <div key={idx} className="my-10 pt-4 border-t border-dashed border-current opacity-30 text-center">
-                    <span className="text-xs px-3 py-1 rounded-full border border-current opacity-70 font-mono">
-                      {headerText.replace(/---/g, '').trim()}
-                    </span>
-                  </div>
-                );
-              }
-              
-              const isFocused = matchedIndices[currentMatchIdx] === idx;
-              const cnSpeakerMatch = searchQuery && row.cn?.speaker?.toLowerCase().includes(searchQuery.toLowerCase());
-              const jpSpeakerMatch = searchQuery && row.jp?.speaker?.toLowerCase().includes(searchQuery.toLowerCase());
+                {/* 装饰性分割线 */}
+                <div className="mt-4 mx-auto w-12 h-1 rounded-full bg-current opacity-20" />
+              </div>
+            )}
+            {/* 🔴 新增结束 */}
+{renderList.map((row, idx) => {
+  // === HEADER 渲染 ===
+  const headerLine = row.cn?.isHeader ? row.cn : row.jp?.isHeader ? row.jp : null;
+  
+  if (headerLine) {
+    const headerText = headerLine.text.replace(/---/g, '').trim();
+    const isBranch = headerText.includes('Branch');
+    const sectionMatch = headerText.match(/Section\s*(\d+)/);
+    const branchMatch = headerText.match(/Branch\s*(\d+)/);
+    
+    return (
+      <div 
+        key={idx} 
+        id={`line-${idx}`}
+        className={`mt-6 mb-4 pt-4 border-t-2 text-center ${
+          isBranch 
+            ? 'border-amber-400/50 bg-amber-50/30 rounded-lg py-3' 
+            : 'border-dashed border-current opacity-30'
+        }`}
+      >
+        {isBranch ? (
+          <div className="flex flex-col items-center gap-1">
+            <span className={`text-xs px-3 py-1.5 rounded-full font-bold ${
+              theme === 'dark' 
+                ? 'bg-amber-900/40 text-amber-300 border border-amber-700' 
+                : 'bg-amber-100 text-amber-800 border border-amber-300'
+            }`}>
+              🔀 {sectionMatch ? `第${sectionMatch[1]}节 ` : ''}
+              选项路线 {branchMatch ? branchMatch[1] : ''}
+            </span>
+            <span className="text-[10px] opacity-40 font-mono">
+              {headerText.match(/Source:\s*(.+?)\)/)?.[1] || ''}
+            </span>
+          </div>
+        ) : (
+          <span className="text-xs px-3 py-1 rounded-full border border-current opacity-70 font-mono">
+            {headerText}
+          </span>
+        )}
+      </div>
+    );
+  }
 
-              return (
+  // === 选项渲染 ===
+  const choiceLine = row.cn?.isChoice ? row.cn : row.jp?.isChoice ? row.jp : null;
+  
+  if (choiceLine) {
+    return (
+      <div key={idx} id={`line-${idx}`} className="my-3 flex justify-center">
+        <button
+onClick={() => {
+  const branchNum = choiceLine.choiceTargetId;
+  if (!branchNum) return;
+  
+  // 从当前位置向下搜索匹配的 Branch header
+  for (let i = idx + 1; i < renderList.length; i++) {
+    const r = renderList[i];
+    const h = r.cn?.isHeader ? r.cn : r.jp?.isHeader ? r.jp : null;
+    if (h && h.text.includes(`Branch ${branchNum}`)) {
+      const el = document.getElementById(`line-${i}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('ring-2', 'ring-amber-400', 'ring-offset-2');
+        setTimeout(() => el.classList.remove('ring-2', 'ring-amber-400', 'ring-offset-2'), 2000);
+      }
+      return;
+    }
+  }
+  // 如果向下没找到，从头搜索（兜底）
+  for (let i = 0; i < idx; i++) {
+    const r = renderList[i];
+    const h = r.cn?.isHeader ? r.cn : r.jp?.isHeader ? r.jp : null;
+    if (h && h.text.includes(`Branch ${branchNum}`)) {
+      document.getElementById(`line-${i}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+  }
+}}
+          className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all 
+            hover:scale-105 active:scale-95 cursor-pointer
+            ${theme === 'dark' 
+              ? 'bg-gradient-to-r from-amber-900/60 to-orange-900/60 text-amber-200 border border-amber-700 hover:border-amber-500' 
+              : 'bg-gradient-to-r from-amber-50 to-orange-50 text-amber-800 border-2 border-amber-300 hover:border-amber-500 shadow-sm hover:shadow-md'
+            }`}
+        >
+          <span className="mr-1">👆</span>
+          {choiceLine.choiceLabel || choiceLine.text}
+          <span className="ml-2 text-[10px] opacity-50">↓ 点击跳转</span>
+        </button>
+      </div>
+    );
+  }
+
+  // === 普通对话渲染（原有代码不变）===
+  const isFocused = matchedIndices[currentMatchIdx] === idx;
+  const cnSpeakerMatch = searchQuery && row.cn?.speaker?.toLowerCase().includes(searchQuery.toLowerCase());
+  const jpSpeakerMatch = searchQuery && row.jp?.speaker?.toLowerCase().includes(searchQuery.toLowerCase());
+
+  return (
+     <div 
+       key={idx} 
+       id={`line-${idx}`}
+       className={`
+         flex flex-col md:flex-row md:gap-4 py-1 border-b border-transparent transition-colors group
+         ${isFocused 
+            ? (theme === 'dark' ? 'bg-blue-900/30 ring-1 ring-blue-500/50' : 'bg-yellow-50 ring-1 ring-yellow-400/50')
+            : 'hover:border-current hover:border-opacity-10'}
+       `}
+     >
+    {mode !== 'jp' && (
+          <div className={`flex gap-3 ${mode === 'split' ? 'md:w-1/2' : 'w-full'}`}>
+            {isEditMode ? (
+              <>
+                <div className="w-16 md:w-20 text-right flex-shrink-0 text-xs font-bold pt-2 truncate opacity-60">
+                  {editedCnLines[idx]?.speaker || row.jp?.speaker || "旁白"}
+                </div>
+                <textarea
+                  className={`flex-1 p-2 rounded border focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-black'}`}
+                  value={editedCnLines[idx]?.text || ""}
+                  placeholder="在此输入翻译内容..."
+                  onChange={(e) => {
+                    const newLines = [...editedCnLines];
+                    newLines[idx] = { 
+                      speaker: newLines[idx]?.speaker || row.jp?.speaker || "旁白", 
+                      text: e.target.value,
+                      isHeader: row.jp?.isHeader || row.cn?.isHeader 
+                    };
+                    setEditedCnLines(newLines);
+                  }}
+                  rows={Math.max(1, (editedCnLines[idx]?.text || "").split('\n').length)}
+                />
+              </>
+            ) : row.cn ? (
+              <>
+                <div 
+                className={`w-20 md:w-24 text-right flex-shrink-0 text-[11px] leading-tight font-bold pt-1 break-words px-1 rounded h-fit ${cnSpeakerMatch ? "ring-2 ring-yellow-400" : ""}`}
+                style={{ 
+                  color: SPEAKER_COLOR_MAP[row.cn.speaker] 
+                    ? SPEAKER_COLOR_MAP[row.cn.speaker] 
+                    : SPEAKER_COLOR_MAP[row.cn.speaker.replace(/\s+/g, '')] || undefined,
+                  backgroundColor: (SPEAKER_COLOR_MAP[row.cn.speaker] || SPEAKER_COLOR_MAP[row.cn.speaker.replace(/\s+/g, '')]) ? 'transparent' : '' 
+                }}
+              >
+                {row.cn.speaker}
+              </div>
+                <div className="flex-1 whitespace-pre-wrap pt-0.5">
+                  {renderStyledText(row.cn.text, !!cnSpeakerMatch)}
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 text-xs opacity-20 italic py-1 border-b border-dashed border-black/5">等待翻译...</div>
+            )}
+          </div>
+        )}
+        
+        {mode !== 'cn' && (
+          <div className={`flex gap-2 ${mode === 'split' ? 'md:w-1/2 md:border-l md:pl-4 border-current border-opacity-10 mt-1 md:mt-0' : 'w-full'}`}>
+             {row.jp ? (
+                <>
                  <div 
-                   key={idx} 
-                   id={`line-${idx}`}
-                   className={`
-                     flex flex-col md:flex-row md:gap-4 py-1 border-b border-transparent transition-colors group
-                     ${isFocused 
-                        ? (theme === 'dark' ? 'bg-blue-900/30 ring-1 ring-blue-500/50' : 'bg-yellow-50 ring-1 ring-yellow-400/50')
-                        : 'hover:border-current hover:border-opacity-10'}
-                   `}
-                 >
-                {mode !== 'jp' && (
-                      <div className={`flex gap-3 ${mode === 'split' ? 'md:w-1/2' : 'w-full'}`}>
-                        {isEditMode ? (
-                          <>
-                            {/* 编辑模式：始终显示名字和编辑框 */}
-                            <div className="w-16 md:w-20 text-right flex-shrink-0 text-xs font-bold pt-2 truncate opacity-60">
-                              {editedCnLines[idx]?.speaker || row.jp?.speaker || "旁白"}
-                            </div>
-                            <textarea
-                              className={`flex-1 p-2 rounded border focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-black'}`}
-                              value={editedCnLines[idx]?.text || ""}
-                              placeholder="在此输入翻译内容..."
-                              onChange={(e) => {
-                                const newLines = [...editedCnLines];
-                                newLines[idx] = { 
-                                  speaker: newLines[idx]?.speaker || row.jp?.speaker || "旁白", 
-                                  text: e.target.value,
-                                  isHeader: row.jp?.isHeader || row.cn?.isHeader 
-                                };
-                                setEditedCnLines(newLines);
-                              }}
-                              rows={Math.max(1, (editedCnLines[idx]?.text || "").split('\n').length)}
-                            />
-                          </>
-                        ) : row.cn ? (
-                          <>
-                            {/* 阅读模式：有中文时显示内容 */}
-                            <div 
-                              className={`w-16 md:w-20 text-right flex-shrink-0 text-xs font-bold pt-1 truncate px-1 rounded h-fit ${cnSpeakerMatch ? "ring-2 ring-yellow-400" : ""}`}
-                              style={{ 
-                                color: SPEAKER_COLOR_MAP[row.cn.speaker] || SPEAKER_COLOR_MAP[row.jp?.speaker || ''] || '',
-                                backgroundColor: (SPEAKER_COLOR_MAP[row.cn.speaker] || SPEAKER_COLOR_MAP[row.jp?.speaker || '']) ? 'transparent' : '' 
-                              }}
-                            >
-                              {row.cn.speaker}
-                            </div>
-                            <div className="flex-1 whitespace-pre-wrap pt-0.5">
-                              {renderStyledText(row.cn.text, !!cnSpeakerMatch)}
-                            </div>
-                          </>
-                        ) : (
-                          /* 阅读模式：无中文时显示占位 */
-                          <div className="flex-1 text-xs opacity-20 italic py-1 border-b border-dashed border-black/5">等待翻译...</div>
-                        )}
-                      </div>
-                    )}
-                    
-                    {mode !== 'cn' && (
-                      <div className={`flex gap-2 ${mode === 'split' ? 'md:w-1/2 md:border-l md:pl-4 border-current border-opacity-10 mt-1 md:mt-0' : 'w-full'}`}>
-                         {row.jp ? (
-                            <>
-                              <div 
-                                className={`w-16 md:w-20 text-right flex-shrink-0 text-xs font-bold pt-1 truncate px-1 rounded h-fit ${jpSpeakerMatch ? "ring-2 ring-yellow-400" : "opacity-50"}`}
-                                style={{ 
-                                  color: SPEAKER_COLOR_MAP[row.jp.speaker] || '',
-                                }}
-                              >
-                                {row.jp.speaker}
-                              </div>
-                              <div className="flex-1 whitespace-pre-wrap opacity-70 font-sans text-sm">
-                                {renderStyledText(row.jp.text, !!jpSpeakerMatch)}
-                              </div>
-                            </>
-                         ) : (
-                            <div className="flex-1 text-xs opacity-20 italic py-1">...</div>
-                         )}
-                      </div>
-                    )}
-                 </div>
-              )
-            })}
+                  className={`w-20 md:w-24 text-right flex-shrink-0 text-[11px] leading-tight font-bold pt-1 break-words px-1 rounded h-fit ${jpSpeakerMatch ? "ring-2 ring-yellow-400" : "opacity-50"}`}
+                  style={{ 
+                    color: SPEAKER_COLOR_MAP[row.jp.speaker] 
+                      ? SPEAKER_COLOR_MAP[row.jp.speaker] 
+                      : SPEAKER_COLOR_MAP[row.jp.speaker.replace(/\s+/g, '')] || undefined,
+                  }}
+                >
+                  {row.jp.speaker}
+                </div>
+                  <div className="flex-1 whitespace-pre-wrap opacity-70 font-sans text-sm">
+                    {renderStyledText(row.jp.text, !!jpSpeakerMatch)}
+                  </div>
+                </>
+             ) : (
+                <div className="flex-1 text-xs opacity-20 italic py-1">...</div>
+             )}
+          </div>
+        )}
+     </div>
+  )
+})}
           </div>
         </div>
 

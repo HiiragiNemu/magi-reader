@@ -158,12 +158,23 @@ export default function Home() {
   const { theme, setTheme, lastCategory, setLastCategory } = useGlobal();
   const [searchMode, setSearchMode] = useState<'all' | 'title' | 'content'>('all');
 
-  useEffect(() => {
-    fetch('/story_index.json').then(res => res.json()).then(data => {
+// app/page.tsx 的 useEffect 部分
+useEffect(() => {
+  fetch('/story_index.json')
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
         setStories(data);
         setLoading(false);
+    })
+    .catch(e => {
+      console.error("Fetch error:", e);
+      // 防止一直 loading
+      setLoading(false); 
     });
-  }, []);
+}, []);
 
 useEffect(() => {
     // 只要有搜索词且模式涉及内容，就去加载索引

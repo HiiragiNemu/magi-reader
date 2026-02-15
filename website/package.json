@@ -9,7 +9,7 @@
     "preview": "npm run build && opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy:worker": "npm run build && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "deploy:pages": "npm run build && opennextjs-cloudflare build && node scripts/prepare-pages.js && wrangler pages deploy"
-},
+  },
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.7",
     "autoprefixer": "^10.4.20",
@@ -24,8 +24,8 @@
     "@opennextjs/cloudflare": "^1.16.4",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^20.19.33",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "typescript": "^5.9.3",

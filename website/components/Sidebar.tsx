@@ -161,8 +161,16 @@ const themeClass = theme === 'dark' ? 'bg-gray-900/70 glass-morphism border-gray
                           else folderColorClass = "text-gray-500";
                       }
 
-                      const folderDisplay = folderName.replace(/^\d+ - /, '').replace(/^Event_\d+/, 'Event');
-
+// 🟢 修改开始：针对角色和服装，保留原始文件夹名（带编号）；其他分类保持简化
+let folderDisplay = folderName;
+// 如果是 角色(character_story) 或 服装(costume_story)，直接显示文件夹原名 (如 "1001 - 环彩羽")
+if (cat === 'character_story' || cat === 'costume_story') {
+  folderDisplay = folderName; 
+} else {
+  // 其他分类（如主线），去掉前面的数字前缀，保持简洁
+  folderDisplay = folderName.replace(/^\d+ - /, '').replace(/^Event_\d+/, 'Event');
+}
+// 🔴 修改结束
                       return (
                         <div key={folderName}>
                           <button 
