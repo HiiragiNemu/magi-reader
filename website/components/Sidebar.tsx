@@ -15,6 +15,8 @@ export type Story = {
   filename_jp?: string;
   path_cn?: string;
   path_jp?: string;
+  title?: string;
+  sections?: string[]; // 新增：章节列表
 };
 
 export const CATEGORY_CONFIG: Record<string, { label: string; icon: any }> = {
@@ -37,13 +39,16 @@ type SidebarProps = {
   className?: string;
 };
 
-// 辅助：绝对不缩减名字，只去后缀
 const getDisplayLabel = (story: Story) => {
-  // 优先中文名，其次日文名
-  const name = story.filename_cn || story.filename_jp || story.id;
-  // 只移除 .txt 后缀 (不移除 _cn / _jp 因为这是内部后缀，脚本里生成的)
-  // 如果脚本生成的是 xxx_cn.txt，我们要展示 xxx
-  return name.replace(/(_cn|_jp)?\.txt$/i, '');
+  // 获取纯净的文件名 ID (去掉 .txt 后缀)
+  const rawId = story.filename_cn || story.filename_jp || story.id;
+  const cleanId = rawId.replace(/(_cn|_jp)?\.txt$/i, '');
+
+  // ★ 核心修改：如果有标题，拼接成 "ID : 标题" 的格式
+  if (story.title) {
+    return `${cleanId} : ${story.title}`;
+  }
+  return cleanId;
 };
 
 export default function Sidebar({ stories, currentId, isOpen, onClose, className }: SidebarProps) {
@@ -161,37 +166,122 @@ const themeClass = theme === 'dark' ? 'bg-gray-900/70 glass-morphism border-gray
                           else folderColorClass = "text-gray-500";
                       }
 
-// 🟢 修改开始：针对角色和服装，保留原始文件夹名（带编号）；其他分类保持简化
-let folderDisplay = folderName;
-// 如果是 角色(character_story) 或 服装(costume_story)，直接显示文件夹原名 (如 "1001 - 环彩羽")
-if (cat === 'character_story' || cat === 'costume_story') {
-  folderDisplay = folderName; 
-} else {
-  // 其他分类（如主线），去掉前面的数字前缀，保持简洁
-  folderDisplay = folderName.replace(/^\d+ - /, '').replace(/^Event_\d+/, 'Event');
-}
-// 🔴 修改结束
+                    // 🟢 修改开始：针对角色和服装，保留原始文件夹名（带编号）；其他分类保持简化
+                    let folderDisplay = folderName;
+                    // 如果是 角色(character_story) 或 服装(costume_story)，直接显示文件夹原名 (如 "1001 - 环彩羽")
+                    if (cat === 'character_story' || cat === 'costume_story') {
+                      folderDisplay = folderName; 
+                    } else {
+                      // 其他分类（如主线），去掉前面的数字前缀，保持简洁
+                      folderDisplay = folderName.replace(/^\d+ - /, '').replace(/^Event_\d+/, 'Event');
+                    }
                       return (
-                        <div key={folderName}>
+                      <div key={folderName}>
                           <button 
-                            onClick={() => toggleFolder(folderName)}
-                            className={`w-full flex items-center justify-between text-left px-2 py-2 rounded text-xs transition-colors ${hoverClass}`}
-                          >
-                          <span 
-                            className={`whitespace-normal break-words leading-tight mr-1 ${folderColorClass}`}
-                            style={{ color: SPEAKER_COLOR_MAP[folderDisplay] || '' }}
-                          >
-                            {folderDisplay}
-                          </span>                            <span className="text-[10px] opacity-50 bg-black/5 px-1 rounded shrink-0">{items.length}</span>
-                          </button>
+                          onClick={() => toggleFolder(folderName)}
+                              className={`w-full flex items-center justify-between text-left px-2 py-2 rounded text-xs transition-colors ${hoverClass}`}
+                                >
+                                    <span 
+                                    className={`whitespace-normal break-words leading-tight mr-1 ${folderColorClass}`}
+                                        style={{ color: SPEAKER_COLOR_MAP[folderDisplay] || '' }}
+                                          >
+                                            {folderDisplay}
+                                            </span>                            
+                                            <span className="text-[10px] opacity-50 bg-black/5 px-1 rounded shrink-0">{items.length}</span>
+                                          </button>
 
-                          {isFolderOpen && (
-                            <div className="ml-2 space-y-0.5 mt-0.5">
-                              {items.map(story => {
-                                 const label = getDisplayLabel(story);
-                                 const isActive = story.id === currentId;
-                                 const p = story.percent || (story.has_cn ? 100 : 0);
-                                 
+                                          {isFolderOpen && (
+                                        <div className="ml-2 space-y-0.5 mt-0.5">
+                                    {items.map(story => {
+                                        const label = getDisplayLabel(story);
+                                    const isActive = story.id === currentId;
+                                  const p = story.percent || (story.has_cn ? 100 : 0);
+                                    const getSectionId = (rawText: string) => {
+  // 1. 强力提取 Section 数字 (忽略前后的文件名和中文)
+  const secMatch = rawText.match(/Section\s*(\d+)/i);
+  const secNum = secMatch ? secMatch[1] : '';
+  
+  // 2. 提取 Branch 数字 (如果有)
+  const branchMatch = rawText.match(/(?:Branch|分支|group)\s*[_]?\s*(\d+)/i);
+  const branchNum = branchMatch ? branchMatch[1] : '';
+
+  // 3. 组合成标准 ID (必须与 ReaderPage.tsx 的逻辑完全一致)
+  if (secNum && branchNum) {
+    return `sec-${secNum}-branch-${branchNum}`;
+  } else if (secNum) {
+    return `sec-${secNum}`;
+  }
+  
+  // 兜底：如果完全没匹配到数字，才使用旧逻辑
+  return rawText.replace(/\s+/g, '-').toLowerCase();
+};
+
+                    return (
+                      <div key={story.id} className="mb-1">
+                        {/* 主标题链接 */}
+                        <Link
+                          id={`nav-item-${story.id}`}
+                          href={`/reader/${story.id}?cn=${encodeURIComponent(story.path_cn||'')}&jp=${encodeURIComponent(story.path_jp||'')}`}
+                          onClick={onClose}
+                          className={`
+                            block px-2 py-1.5 rounded-sm text-xs font-mono transition-all truncate border-l-2
+                            ${isActive
+                              ? (theme === 'green' ? 'bg-[#2E7D32] text-white border-[#1B5E20]' : theme === 'dark' ? 'bg-blue-900/30 text-blue-300 border-blue-500' : 'bg-blue-50 text-blue-700 border-blue-500')
+                              : (p > 0
+                                ? (theme === 'dark' ? 'bg-emerald-900/30 text-emerald-400 border-emerald-500/50 hover:bg-emerald-900/40' : 'bg-emerald-50 text-emerald-700 border-emerald-500/50 hover:bg-emerald-100')
+                                : (theme === 'dark' ? 'bg-gray-800 text-gray-500 border-gray-700 hover:bg-gray-700' : 'bg-white text-gray-400 border-gray-200 hover:bg-gray-50')
+                              )
+                            }
+                          `}
+                          title={getDisplayLabel(story)}
+                        >
+                          <span className="mr-2">{getDisplayLabel(story)}</span>
+                          {p < 100 && !isActive && <span className="text-[9px] opacity-60 scale-90 inline-block">{p}%</span>}
+                        </Link>
+
+                        {/* ★ 新增：如果当前 Story 被选中，且有 Sections 数据，则展开显示章节 */}
+                        {isActive && story.sections && story.sections.length > 0 && (
+                          <div className="ml-3 mt-1 border-l border-current border-opacity-10 space-y-0.5">
+                            {story.sections.map((sec, idx) => {
+                              const secDisplay = sec.replace(/\s*-\s*Branch\s*/i, ' ⇄ 分支 ');
+                              const anchorId = getSectionId(sec);
+                              let displayLabel = sec
+                              .replace(/Section\s*\d+\s*/i, '') // 删掉 Section X
+                              .replace(/\s*-\s*Branch\s*/i, ' ⇄ 分支 ') // 美化分支显示
+                              .trim();
+                              return (
+                                <button
+                                  key={idx}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onClose();
+                                      if (window.innerWidth < 768) onClose(); 
+
+                          // ★ 修复跳转：直接查找 DOM 元素并滚动，比 hash 更可靠
+                          const el = document.getElementById(anchorId);
+                          if (el) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            // 可选：给目标添加临时高亮特效，确认跳转成功
+                            el.classList.add('ring-4', 'ring-amber-400', 'transition-all', 'duration-500');
+                            setTimeout(() => el.classList.remove('ring-4', 'ring-amber-400'), 1500);
+                          } else {
+                            console.warn('未找到目标元素:', anchorId);
+                          }
+                        }}
+                        className={`
+                          block w-full text-left px-2 py-1 text-[10px] truncate transition-all
+                          ${theme === 'dark' ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-black hover:bg-black/5'}
+                        `}
+                        title={sec} // 鼠标悬停时显示完整原始信息
+                      >
+                        └ {displayLabel}
+                      </button>
+                    );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
                                  // === 颜色逻辑：照抄主页 ===
                                  let btnClass = "";
                                  

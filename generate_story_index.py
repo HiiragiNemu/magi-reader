@@ -9,14 +9,21 @@ DIR_JP = "magireco-source-master/Scenarios_full"
 DIR_CN = "magireco-translate-data-master/Scenarios_full"
 TARGET_PUBLIC_DIR = "website/public"
 TARGET_DATA_DIR = os.path.join(TARGET_PUBLIC_DIR, "data")
+TITLES_PATH = "titles.json" # 确保此文件在脚本同级目录
 
 story_map = {}
+TITLES = {}
+
+# ★ 修复1: 加载标题库
+if os.path.exists(TITLES_PATH):
+    with open(TITLES_PATH, 'r', encoding='utf-8') as f:
+        TITLES = json.load(f)
+    print(f"✅ 已加载标题库: {len(TITLES)} 条")
 
 def sanitize_path(p):
     return p.replace("\\", "/")
 
 def get_category(path):
-    
     if "main_story" in path: return "main_story"
     if "event_story" in path: return "event_story"
     if "character_story" in path: return "character_story"
@@ -27,17 +34,47 @@ def get_category(path):
         if "支线" in path or "sub" in path.lower(): return "scene0_sub"
         return "scene0_main"
     return "Unclassified"
-def count_sections(filepath):
-    """核心算法：计算文件中包含的 [Section] 数量"""
-    if not os.path.exists(filepath): return 0
-    count = 0
+
+def extract_sections(filepath):
+    """
+    ★ 终极修复版: 构造形如 "505901-1 Section 1 : 序" 的完整展示字符串
+    """
+    headers = []
+    if not os.path.exists(filepath): return headers
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             for line in f:
+                # 匹配标准头: --- [Section 1] (Source: 505901-1.json) ---
+                # 或分支头: --- [Section 1 - Branch 2] (Source: 505901-1.json) ---
                 if line.startswith("---") and "[Section" in line:
-                    count += 1
-        return count
-    except: return 0
+                    
+                    # 1. 提取文件名 (用于显示 505901-1)
+                    # 从 (Source: xxxxx.json) 中提取
+                    source_match = re.search(r'Source:\s*([\w\d\-\.]+)', line)
+                    file_id = ""
+                    if source_match:
+                        # 去掉 .json 后缀
+                        file_id = source_match.group(1).replace('.json', '')
+
+                    # 2. 提取 Section 核心部分 (用于显示 Section 1 - Branch 2)
+                    # 去掉 "--- [" 和 "] (Source..."
+                    base_sec = re.sub(r'--- \[|\] \(Source.*', '', line).strip()
+                    
+                    # 3. 查找中文标题 (用于显示 序/叶月1)
+                    title_part = ""
+                    # 只有当 file_id 存在且在 titles.json 里有定义时才显示
+                    if file_id and file_id in TITLES:
+                        title_part = f" : {TITLES[file_id]}"
+                    
+                    # 4. 组合最终字符串
+                    # 格式: "505901-1 Section 1 : 序"
+                    # 如果是分支，可能是 "505901-1 Section 1 - Branch 2 : 序"
+                    full_display = f"{file_id} {base_sec}{title_part}".strip()
+                    
+                    headers.append(full_display)
+    except: pass
+    return headers
+
 def scan_directory(base_dir, lang_key):
     print(f"--- 扫描 [{lang_key}] ---")
     for root, dirs, files in os.walk(base_dir):
@@ -46,60 +83,69 @@ def scan_directory(base_dir, lang_key):
         for file in files:
             if not file.endswith(".txt"): continue
             
-            # 提取 ID (兼容所有格式)
-            # 101101_1-7.txt -> 101101
-            # 511901-09... -> 511901-09
-            # 9051_main.txt -> 9051
-            raw_id = file.split('_')[0]
-            if not raw_id: continue # 防止空ID
+            # ★ 修复3: 更智能的 ID 提取
+            # 优先使用文件名（去后缀）作为 Key 来匹配标题
+            file_stem = file.replace("_cn.txt", "").replace("_jp.txt", "").replace(".txt", "")
+            
+            # ID用于分组，还是保持原样取第一部分，避免同一章节的不同分卷被拆散
+            raw_id = file.split('_')[0] 
+            if not raw_id: continue
 
             rel_path = os.path.relpath(root, base_dir)
-            path_parts = rel_path.split(os.sep)
             
-            # 获取分类和文件夹名
             category = get_category(rel_path)
             folder_name = os.path.basename(root)
             
-            # 复制目标
+            # 复制文件操作 (保持不变)
             dest_rel = os.path.join(category, folder_name)
             dest_full = os.path.join(TARGET_DATA_DIR, dest_rel)
             os.makedirs(dest_full, exist_ok=True)
             
-            # 复制并加上后缀，避免冲突
             if file.endswith(f"_{lang_key}.txt"):
                 dest_filename = file
             else:
                 base_name = file.replace(".txt", "")
                 dest_filename = f"{base_name}_{lang_key}.txt"
 
-            shutil.copy2(os.path.join(root, file), os.path.join(dest_full, dest_filename))
+            full_src_path = os.path.join(root, file)
+            shutil.copy2(full_src_path, os.path.join(dest_full, dest_filename))
             
- # 注册/初始化
+            # 初始化数据结构
             if raw_id not in story_map:
+                # ★ 修复4: 在此处匹配标题
+                # 尝试匹配: 1. 完整文件名(310011_1-4) 2. 原始ID(505901-1)
+                mapped_title = TITLES.get(file_stem) or TITLES.get(raw_id) or ""
+                
                 story_map[raw_id] = {
                     "id": raw_id,
                     "category": category,
                     "folder": folder_name,
                     "cn_path": "", "jp_path": "",
                     "has_cn": False, "has_jp": False,
-                    "cn_secs": 0, "jp_secs": 0, # 新增计数位
+                    "sections": [], # ★ 新增: 存储章节列表
+                    "title": mapped_title, # ★ 新增: 存储中文标题
                     "filename_cn": "", "filename_jp": "" 
                 }
             
             web_path = f"/data/{sanitize_path(dest_rel)}/{dest_filename}"
-            # 计算当前文件的 Section 数量
-            current_secs = count_sections(os.path.join(root, file))
+            
+            # ★ 修复5: 提取章节列表 (优先使用中文文件的章节结构)
+            current_sections = extract_sections(full_src_path)
             
             if lang_key == "cn":
                 story_map[raw_id]["cn_path"] = web_path
                 story_map[raw_id]["has_cn"] = True
-                story_map[raw_id]["cn_secs"] = current_secs # 记录中文段落数
-                story_map[raw_id]["filename_cn"] = file 
+                story_map[raw_id]["filename_cn"] = file
+                # 如果有中文，优先用中文的章节结构（可能更准确或有翻译）
+                if current_sections:
+                    story_map[raw_id]["sections"] = current_sections
             else:
                 story_map[raw_id]["jp_path"] = web_path
                 story_map[raw_id]["has_jp"] = True
-                story_map[raw_id]["jp_secs"] = current_secs # 记录日文段落数
                 story_map[raw_id]["filename_jp"] = file
+                # 如果还没有章节信息（即没有中文版），才用日文的
+                if not story_map[raw_id]["sections"] and current_sections:
+                    story_map[raw_id]["sections"] = current_sections
 
 # === 执行 ===
 if os.path.exists(TARGET_DATA_DIR): shutil.rmtree(TARGET_DATA_DIR)
@@ -110,18 +156,9 @@ scan_directory(DIR_CN, "cn")
 
 final_list = []
 for k, v in story_map.items():
-    # 简单汉化率：有中文就是100，无中文就是0
-    # 如果你需要之前的行数计算，可以把那个 count_sections 函数加回来
-# 精确汉化率计算
-    p = 0
-    if v["jp_secs"] > 0:
-        # 如果中文段落数大于等于日文，视为100%，否则按比例计算
-        if v["cn_secs"] >= v["jp_secs"]: p = 100
-        else: p = round((v["cn_secs"] / v["jp_secs"]) * 100)
-    elif v["cn_secs"] > 0:
-        # 如果没有日文参考但有中文，视为100%
-        p = 100
-                
+    # 简单的进度计算
+    p = 100 if v["has_cn"] else 0
+            
     final_list.append({
         "id": v["id"],
         "category": v["category"],
@@ -131,13 +168,14 @@ for k, v in story_map.items():
         "has_jp": v["has_jp"],
         "path_cn": v["cn_path"],
         "path_jp": v["jp_path"],
+        "title": v["title"],       # 传递标题
+        "sections": v["sections"], # 传递章节
         "filename_cn": v["filename_cn"],
         "filename_jp": v["filename_jp"]
     })
 
-    final_list = natsort.natsorted(final_list, key=lambda x: x["id"])
-
+final_list = natsort.natsorted(final_list, key=lambda x: x["id"])
 with open(os.path.join(TARGET_PUBLIC_DIR, "story_index.json"), "w", encoding="utf-8") as f:
     json.dump(final_list, f, ensure_ascii=False, indent=2)
 
-print("Index Generated.")
+print("Index Generated with Titles & Sections.")

@@ -53,6 +53,18 @@ def extract_branch_info(data, json_filename):
     }
 
 
+import json
+import os
+import re
+
+# 假设这些是全局/外部定义（从原代码继承）
+GLOBAL_ID_MAP = {}  # ID 到名字的映射
+BRANCH_REPORT = {}  # 分支报告
+
+def extract_branch_info(data, fname):
+    # 原代码占位符：如果有具体逻辑，替换这里
+    return None
+
 def build_txt_from_json(json_path):
     try:
         with open(json_path, 'r', encoding='utf-8-sig') as f:
@@ -76,32 +88,41 @@ def build_txt_from_json(json_path):
         
         for group_name in all_groups:
             group = story[group_name]
-            if not isinstance(group, list):
-                continue
+            if not isinstance(group, list): continue
             
-            # ★ 先收集这个 group 的所有文本行
             group_lines = []
-            
             pos_to_id = {'Left': None, 'Right': None, 'Center': None}
+            
+            # ★ 关键修复：用两层名字追踪
+            explicit_name_for_pos = {'Left': None, 'Right': None, 'Center': None}
             sticky_narration_name = "旁白"
             
             for item in group:
-                if not isinstance(item, dict):
-                    continue
+                if not isinstance(item, dict): continue
                 
+                # 1. 更新位置 ID（检测角色切换）
                 if 'chara' in item:
                     for c in item['chara']:
                         c_id = c.get('id')
                         if c_id and 'pos' in c:
                             p_val = c['pos']
                             p_key = 'Left' if p_val == 0 else 'Center' if p_val == 1 else 'Right'
+                            old_id = pos_to_id[p_key]
                             pos_to_id[p_key] = str(c_id)
+                            
+                            # ★ 如果该位置的角色 ID 变了，清除旧名字
+                            if old_id and old_id != str(c_id):
+                                explicit_name_for_pos[p_key] = None
                 
+                # 2. 显式名字更新
                 for pos in ['Left', 'Right', 'Center']:
                     n_key = f'name{pos}'
-                    if n_key in item and pos_to_id[pos]:
-                        GLOBAL_ID_MAP[pos_to_id[pos]] = item[n_key]
+                    if n_key in item:
+                        explicit_name_for_pos[pos] = item[n_key]
+                        if pos_to_id[pos]:
+                            GLOBAL_ID_MAP[pos_to_id[pos]] = item[n_key]
                 
+                # 3. 选项/旁白/对话提取
                 target_speaker = None
                 raw_text = None
                 
@@ -124,9 +145,18 @@ def build_txt_from_json(json_path):
                         av_t_key = f'textAv{pos}'
                         if t_key in item or av_t_key in item:
                             raw_text = item.get(t_key) or item.get(av_t_key)
+                            
+                            # ★ 名字解析优先级：
+                            # 1. 当前 item 显式指定
+                            # 2. 该位置上次显式指定的名字
+                            # 3. 全局 ID 缓存
+                            # 4. 旁白
                             speaker_name = item.get(f'name{pos}')
+                            if not speaker_name:
+                                speaker_name = explicit_name_for_pos[pos]
                             if not speaker_name and pos_to_id[pos]:
                                 speaker_name = GLOBAL_ID_MAP.get(pos_to_id[pos])
+                            
                             target_speaker = speaker_name or "旁白"
                             sticky_narration_name = "旁白"
                             break
@@ -136,11 +166,9 @@ def build_txt_from_json(json_path):
                     if cleaned:
                         group_lines.append(f"{target_speaker}: {cleaned}\n")
             
-            # ★ 只有当 group 有实际文本内容时才输出 header 和内容
-            if not group_lines:
-                continue  # 跳过空分支
+            if not group_lines: continue
             
-            # 生成 header
+            # 生成 header（补全省略部分）
             if group_name == 'group_1':
                 res_lines.append(f"\n--- [Section {sec_num}] (Source: {fname}) ---\n")
             else:
@@ -153,7 +181,6 @@ def build_txt_from_json(json_path):
     except Exception as e:
         print(f"  ❌ Error in {json_path}: {e}")
         return ""
-    
 def find_target_jsons(root, txt_filename):
     """
     ★ 完全重写的 JSON 匹配逻辑

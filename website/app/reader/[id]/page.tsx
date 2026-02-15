@@ -28,24 +28,35 @@ const parseText = (raw: string): StoryLine[] => {
     // --- header 行 ---
     if (line.startsWith('---')) {
       const headerText = line.replace(/---/g, '').trim();
-      // 生成锚点 ID: "[Section 5 - Branch 2]" → "sec-5-branch-2"
-      const headerId = headerText
-        .replace(/[\[\]()]/g, '')
-        .replace(/Source:.*/, '')
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, '-')
-        .replace(/[^a-z0-9-]/g, '');
+      
+      // ★★★ 修复：强制生成标准 ID (sec-1) 以匹配 Sidebar ★★★
+      let headerId = '';
+      const secMatch = headerText.match(/Section\s*(\d+)/i);
+      const secNum = secMatch ? secMatch[1] : '';
+      const branchMatch = headerText.match(/(?:Branch|group_)\s*(\d+)/i);
+      const branchNum = branchMatch ? branchMatch[1] : '';
+
+      if (secNum && branchNum) {
+        headerId = `sec-${secNum}-branch-${branchNum}`;
+      } else if (secNum) {
+        headerId = `sec-${secNum}`;
+      } else {
+        // 兜底：如果没有数字，才使用旧的字符串替换法
+        headerId = headerText
+          .replace(/[\[\]()]/g, '')
+          .replace(/Source:.*/, '')
+          .trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      }
+      // ★★★ 结束 ★★★
       
       parsed.push({ 
         speaker: '', 
         text: line, 
         isHeader: true, 
-        headerId: headerId || `header-${i}` 
+        headerId: headerId // 现在的 ID 是标准的 sec-1 了
       });
       continue;
     }
-
     // --- 选项行 ---
     const choiceMatch = line.match(/^选项:\s*【(.+?)】→\s*(\S+)/);
     if (choiceMatch) {
@@ -614,9 +625,18 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
                   </Link>
                   <span>|</span>
                   <button 
-                    onClick={() => alert("感谢您的阅读！\n本站旨在保存魔法纪录的剧情。")}
-                    className="hover:text-pink-500 hover:underline transition-colors"
-                  >
+                    onClick={() => {
+                    const staffMsg = 
+                      "(圆环攻略组)贡献清单\n" +
+                      "角色：树里、七夕八千代、常暗十七夜、小圆前辈、圆彩、冲浪沙耶香\n" +
+                      "活动：万圣城、御影特训、AngelsRoad、XmasString、超越梦、巧匠(复)、AI Memory、DepBlue、决战、假面、那由他、梶叶、激海、Dreamers、Halloween、修行、贝法娜、灰革、传承、SPA、恋△、MVD\n" +"主线II：序章、第2-9章\n" +
+                      "支线II：第1-11章\n" +
+                      "其他：登录6168、镜层十七夜\n\n" +
+                      "※ 以上50项引用自圆环记录攻略组，目前剩余剧情文本将由水银h2oag提供，Staff表会保持更新，本站现由MadeInMagius维护，旨在剧情存档。";
+                    alert(staffMsg);
+                  }}
+                  className="hover:text-pink-500 hover:underline transition-colors"
+                >
                     ❤️ 关于我们
                   </button>
                 </div>
@@ -639,7 +659,7 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
     return (
       <div 
         key={idx} 
-        id={`line-${idx}`}
+         id={headerLine.headerId}
         className={`mt-6 mb-4 pt-4 border-t-2 text-center ${
           isBranch 
             ? 'border-amber-400/50 bg-amber-50/30 rounded-lg py-3' 
@@ -672,38 +692,59 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
   // === 选项渲染 ===
   const choiceLine = row.cn?.isChoice ? row.cn : row.jp?.isChoice ? row.jp : null;
   
-  if (choiceLine) {
-    return (
-      <div key={idx} id={`line-${idx}`} className="my-3 flex justify-center">
-        <button
-onClick={() => {
-  const branchNum = choiceLine.choiceTargetId;
-  if (!branchNum) return;
-  
-  // 从当前位置向下搜索匹配的 Branch header
-  for (let i = idx + 1; i < renderList.length; i++) {
-    const r = renderList[i];
-    const h = r.cn?.isHeader ? r.cn : r.jp?.isHeader ? r.jp : null;
-    if (h && h.text.includes(`Branch ${branchNum}`)) {
-      const el = document.getElementById(`line-${i}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.classList.add('ring-2', 'ring-amber-400', 'ring-offset-2');
-        setTimeout(() => el.classList.remove('ring-2', 'ring-amber-400', 'ring-offset-2'), 2000);
-      }
-      return;
-    }
-  }
-  // 如果向下没找到，从头搜索（兜底）
-  for (let i = 0; i < idx; i++) {
-    const r = renderList[i];
-    const h = r.cn?.isHeader ? r.cn : r.jp?.isHeader ? r.jp : null;
-    if (h && h.text.includes(`Branch ${branchNum}`)) {
-      document.getElementById(`line-${i}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-  }
-}}
+if (choiceLine) {
+  return (
+    <div key={idx} id={`line-${idx}`} className="my-3 flex justify-center">
+      <button
+        onClick={() => {
+          const branchNum = choiceLine.choiceTargetId; // 例如 "2"
+          if (!branchNum) return;
+
+          // 1. 找到当前选项所属的 Section
+          // 向上遍历 renderList 找到最近的一个 Header
+          let currentSectionNum = '';
+          for (let i = idx; i >= 0; i--) {
+            const row = renderList[i];
+            const h = row.cn?.isHeader ? row.cn : row.jp?.isHeader ? row.jp : null;
+            if (h && h.text) {
+              const match = h.text.match(/Section\s*(\d+)/i);
+              if (match) {
+                currentSectionNum = match[1];
+                break;
+              }
+            }
+          }
+
+          // 2. 构建目标 ID: sec-{当前节}-branch-{目标分支}
+          // 例如当前在 Section 22，要去 Branch 2 -> sec-22-branch-2
+          if (currentSectionNum) {
+            const targetId = `sec-${currentSectionNum}-branch-${branchNum}`;
+            const targetEl = document.getElementById(targetId);
+            
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              // 高亮特效
+              targetEl.classList.add('ring-4', 'ring-amber-400', 'transition-all', 'duration-500');
+              setTimeout(() => targetEl.classList.remove('ring-4', 'ring-amber-400'), 1500);
+              return; // 成功跳转，退出
+            } else {
+                console.warn(`未找到目标ID: ${targetId}，尝试模糊搜索...`);
+            }
+          }
+
+          // 3. 兜底方案 (如果跨 Section 跳转，或者 ID 没对上)
+          // 向下搜索包含 "Branch X" 的 Header
+          for (let i = idx + 1; i < renderList.length; i++) {
+            const r = renderList[i];
+            const h = r.cn?.isHeader ? r.cn : r.jp?.isHeader ? r.jp : null;
+            // 匹配 "Branch 2]" 或 "Branch 2)" 避免匹配到 20, 21
+            if (h && (h.text.includes(`Branch ${branchNum}]`) || h.text.includes(`Branch ${branchNum})`))) {
+               const el = document.getElementById(h.headerId || `line-${i}`); // 优先用 ID
+               el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+               return;
+            }
+          }
+        }}
           className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all 
             hover:scale-105 active:scale-95 cursor-pointer
             ${theme === 'dark' 

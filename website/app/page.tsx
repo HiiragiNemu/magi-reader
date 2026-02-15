@@ -17,6 +17,7 @@ type Story = {
   filename_cn?: string;
   filename_jp?: string; // 确保后端 JSON 包含此字段
   percent?: number;
+  title?: string;
 };
 
 type SearchEntry = {
@@ -44,12 +45,10 @@ const CATEGORY_CONFIG: Record<string, { label: string; icon: any }> = {
   "Unclassified": { label: "其他", icon: Folder },
 };
 
-// 辅助函数：文件名处理 (修复 #710024 显示不全问题)
 const getDisplayLabel = (story: Story) => {
-  // 优先使用中文文件名，如果没有则使用日文文件名，最后兜底 ID
-  const filename = story.filename_cn || story.filename_jp || story.id;
-  // 移除 .txt 后缀 (及可能的 _cn/_jp 后缀)
-  return filename.replace(/(_cn|_jp)?\.txt$/i, '');
+  // 优先使用 titles.json 里的中文标题，其次 filename，最后 ID
+  const label = story.title || story.filename_cn || story.filename_jp || story.id;
+  return label.replace(/(_cn|_jp)?\.txt$/i, '');
 };
 
 // FolderCard 组件
