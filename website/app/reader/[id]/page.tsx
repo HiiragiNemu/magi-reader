@@ -1,4 +1,4 @@
-"use client";
+use client";
 import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -17,7 +17,7 @@ type StoryLine = {
 };
 const parseText = (raw: string): StoryLine[] => {
   if (!raw) return [];
-  
+
   const lines = raw.split('\n');
   const parsed: StoryLine[] = [];
 
@@ -27,7 +27,7 @@ const parseText = (raw: string): StoryLine[] => {
 
 if (line.startsWith('---')) {
   const headerText = line.replace(/---/g, '').trim();
-  
+
   // 1. 提取 Source 文件名 (例如: "400008-1")
   const sourceMatch = headerText.match(/Source:\s*([\w\d\-]+)/i);
   const sourceId = sourceMatch ? sourceMatch[1] : '';
@@ -61,7 +61,7 @@ if (line.startsWith('---')) {
     if (choiceMatch) {
       const choiceLabel = choiceMatch[1];
       const targetGroup = choiceMatch[2]; // e.g., "group_2"
-      
+
       // 查找当前最近的 section 号，用于构建跳转目标
       let currentSection = '';
       for (let j = parsed.length - 1; j >= 0; j--) {
@@ -74,9 +74,9 @@ if (line.startsWith('---')) {
           }
         }
       }
-      
+
 const branchNum = targetGroup.replace('group_', '');
-      
+
       parsed.push({
         speaker: '选项',
         text: `【${choiceLabel}】`,
@@ -89,7 +89,7 @@ const branchNum = targetGroup.replace('group_', '');
 
     // --- 普通对话行 ---
     const separatorIdx = line.search(/[:：﹕︰︓]/);
-    
+
     if (separatorIdx > 0 && separatorIdx < 20 && !line.startsWith('[')) {
       const rawName = line.substring(0, separatorIdx).trim().replace(/\s+/g, '') || '旁白';
       const content = line.substring(separatorIdx + 1).trim().replace(/\\n/g, '\n');
@@ -102,17 +102,17 @@ const branchNum = targetGroup.replace('group_', '');
 
   // 第二步：同名说话人合并（选项行和 header 不参与合并）
   const result: StoryLine[] = [];
-  
+
   for (let i = 0; i < parsed.length; i++) {
     const current = parsed[i];
-    
+
     if (current.isHeader || current.isChoice) {
       result.push(current);
       continue;
     }
-    
+
     const last = result.length > 0 ? result[result.length - 1] : null;
-    
+
     if (last && !last.isHeader && !last.isChoice && last.speaker === current.speaker) {
       last.text += '\n' + current.text;
     } else {
@@ -126,11 +126,11 @@ const branchNum = targetGroup.replace('group_', '');
 // --- 增强版 alignSections：块数差大时 speaker 模糊匹配 ---
 const alignSections = (cn: StoryLine[], jp: StoryLine[]) => {
   const result: { cn?: StoryLine; jp?: StoryLine }[] = [];
-  
+
   const cnLen = cn.length;
   const jpLen = jp.length;
   const maxLen = Math.max(cnLen, jpLen);
-  
+
   if (Math.abs(cnLen - jpLen) > 10) {
     console.warn(`⚠️ 对齐警告: CN=${cnLen} 块, JP=${jpLen} 块 (差值=${Math.abs(cnLen - jpLen)})。尝试 speaker 匹配...`);
     // 🔴 简单模糊对齐：按 speaker 配对，剩余按索引填充
@@ -170,17 +170,17 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const [cnLines, setCnLines] = useState<StoryLine[]>([]);
   const [jpLines, setJpLines] = useState<StoryLine[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // 默认模式：如果都有则 split，否则 cn/jp
   const [mode, setMode] = useState<'cn' | 'split' | 'jp'>('cn');
-  
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  
+
   // 默认字号更小，行高更紧
   const [fontSize, setFontSize] = useState(15); 
   const [lineHeight, setLineHeight] = useState(1.1);
-  
+
   const [allStories, setAllStories] = useState<Story[]>([]);
   // --- 汉化协助系统 ---
   const [isEditMode, setIsEditMode] = useState(false);
@@ -238,7 +238,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   // 4. 提交到 Cloudflare D1
   const submitToCloud = async () => {
     if (editedCnLines.length === 0) return alert("内容为空，无法提交");
-    
+
     // 生成纯文本格式
     const contentText = editedCnLines.map(l => 
       l.isHeader ? l.text : `${l.speaker}: ${l.text}`
@@ -254,14 +254,14 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
           author: 'Anonymous', // 后续可以加登录功能
         })
       });
-      
+
       if (res.ok) alert("提交成功！感谢您的贡献，管理员审核后将更新。");
       else alert("提交失败，请稍后再试。");
     } catch (e) {
       alert("网络错误");
     }
   };
-  
+
   const currentStory = allStories.find(s => s.id === id);
 
   // --- 新增/修改搜索相关 State ---
@@ -281,12 +281,12 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
         const pJp = parseText(jpT);
         setCnLines(pCn);
         setJpLines(pJp);
-        
+
         // 自动判定模式
         if (pCn.length > 0 && pJp.length > 0) setMode('split');
         else if (pCn.length === 0) setMode('jp');
         else setMode('cn');
-        
+
       } finally { setLoading(false); }
     }
     load();
@@ -323,23 +323,23 @@ useEffect(() => {
   }
   const lowerQuery = searchQuery.toLowerCase();
   const indices: number[] = [];
-  
+
 renderList.forEach((row, idx) => {
   const cnText = row.cn?.text?.toLowerCase() || '';
   const cnSpeaker = row.cn?.speaker?.toLowerCase() || '';
   const jpText = row.jp?.text?.toLowerCase() || '';
   const jpSpeaker = row.jp?.speaker?.toLowerCase() || '';
-  
+
   // header 文本 + 中文别名
   const headerRaw = (row.cn?.isHeader ? row.cn.text : row.jp?.isHeader ? row.jp.text : '');
   let headerSearchable = headerRaw.toLowerCase();
-  
+
   // ★ 给 header 添加中文搜索别名
   const secNum = headerRaw.match(/Section\s*(\d+)/)?.[1];
   const brNum = headerRaw.match(/Branch\s*(\d+)/)?.[1];
   if (secNum) headerSearchable += ` 第${secNum}节 节${secNum}`;
   if (brNum) headerSearchable += ` 分支${brNum} 路线${brNum} 选项${brNum}`;
-  
+
   // 选项文本
   const choiceText = (row.cn?.choiceLabel || row.jp?.choiceLabel || '').toLowerCase();
   // ★ 选项也加 "选项" "分支" 关键词
@@ -351,10 +351,10 @@ renderList.forEach((row, idx) => {
     indices.push(idx);
   }
 });
-  
+
   setMatchedIndices(indices);
   setCurrentMatchIdx(indices.length > 0 ? 0 : -1);
-  
+
   if (indices.length > 0) {
      setTimeout(() => {
        document.getElementById(`line-${indices[0]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -375,7 +375,7 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
   // 1. 切分文本
   // 这里的 [\s\S] 非常重要，它能匹配包括换行符在内的任意字符
   const parts = text.split(/(<red>[\s\S]*?<\/red>|<blue>[\s\S]*?<\/blue>|\[textBlack:[\s\S]*?\])/g);
-  
+
   return parts.map((part, index) => {
     let isRedTag = false;
     let isBlueTag = false;
@@ -400,7 +400,7 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
     if (searchQuery && (content.toLowerCase().includes(searchQuery.toLowerCase()) || forceHighlight)) {
       const regex = new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
       const searchParts = content.split(regex);
-      
+
       // 注意：这里最外层的 span 不需要 block，因为父容器已经有 whitespace-pre-wrap
       return (
         <span 
@@ -440,7 +440,7 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
 
   return (
     <div className={`flex h-screen overflow-hidden ${themeStyles[theme]}`}>
-      
+
       <Sidebar 
         stories={allStories} 
         currentId={id} 
@@ -460,20 +460,58 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
               <div className="text-[10px] opacity-50 flex gap-1 whitespace-nowrap">
                 <span>{currentStory?.folder || "Loading..."}</span>
               </div>
-              <div className="font-bold text-sm truncate flex items-center gap-2">
-                <span className="font-mono text-emerald-600">{id}</span>
-                {cnPath && (
-                  <a href={cnPath} download className="flex items-center gap-1 opacity-50 hover:opacity-100 hover:text-green-600 border border-transparent hover:border-green-200 px-1 rounded transition-all">
-                    <Download size={14}/>
-                    <span className="text-[10px]">CN</span>
-                  </a>
-                )}
-                {jpPath && (
-                  <a href={jpPath} download className="flex items-center gap-1 opacity-50 hover:opacity-100 hover:text-blue-600 border border-transparent hover:border-blue-200 px-1 rounded transition-all">
-                    <Download size={14}/>
-                    <span className="text-[10px]">JP</span>
-                  </a>
-                )}
+                           <div className="font-bold text-sm flex items-center gap-2 flex-wrap min-w-0">
+                <span className="font-mono text-emerald-600 truncate">{id}</span>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {cnPath && (
+                    <button 
+                      onClick={async () => {
+                        try {
+                          const res = await fetch(cnPath);
+                          const text = await res.text();
+                          const BOM = '\uFEFF';
+                          const blob = new Blob([BOM + text], { type: 'text/plain;charset=utf-8' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `${id}_cn.txt`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        } catch (e) {
+                          console.error('下载失败:', e);
+                        }
+                      }}
+                      className="flex items-center gap-1 opacity-50 hover:opacity-100 hover:text-green-600 border border-transparent hover:border-green-200 px-1.5 py-0.5 rounded transition-all"
+                    >
+                      <Download size={14}/>
+                      <span className="text-[10px]">CN</span>
+                    </button>
+                  )}
+                  {jpPath && (
+                    <button 
+                      onClick={async () => {
+                        try {
+                          const res = await fetch(jpPath);
+                          const text = await res.text();
+                          const BOM = '\uFEFF';
+                          const blob = new Blob([BOM + text], { type: 'text/plain;charset=utf-8' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `${id}_jp.txt`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        } catch (e) {
+                          console.error('下载失败:', e);
+                        }
+                      }}
+                      className="flex items-center gap-1 opacity-50 hover:opacity-100 hover:text-blue-600 border border-transparent hover:border-blue-200 px-1.5 py-0.5 rounded transition-all"
+                    >
+                      <Download size={14}/>
+                      <span className="text-[10px]">JP</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -527,7 +565,7 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
                           </button>
                         ))}
                       </div>
-                      
+
                       {/* 设置按钮 - 独立 */}
                       <button onClick={()=>setShowSettings(true)} className="p-2 rounded hover:bg-black/5 text-gray-500">
                         <Settings size={18}/>
@@ -544,17 +582,17 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
   <div className="mb-6 p-4 rounded-xl bg-emerald-50/80 border border-emerald-200 shadow-sm backdrop-blur-sm">
     <div className="flex flex-wrap gap-3 items-center">
       <span className="text-xs font-bold text-emerald-800 opacity-70 mr-2">初始化:</span>
-      
+
       <button onClick={initEmptyWithNames} className="px-3 py-1.5 bg-white border border-emerald-300 text-emerald-700 rounded-lg text-xs font-bold hover:bg-emerald-50 active:scale-95 transition-all">
         1. 仅填入译名 (空文本)
       </button>
-      
+
       <button onClick={initWithJpContent} className="px-3 py-1.5 bg-white border border-emerald-300 text-emerald-700 rounded-lg text-xs font-bold hover:bg-emerald-50 active:scale-95 transition-all">
         2. 填入日文原文
       </button>
 
       <div className="h-4 w-px bg-emerald-300 mx-1"></div>
-      
+
       <label className="cursor-pointer px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-100 transition-all flex items-center gap-1">
         <span>📂 上传本地 TXT</span>
         <input type="file" accept=".txt" className="hidden" onChange={handleFileUpload} />
@@ -563,7 +601,7 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
       <button onClick={downloadTxt} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold shadow hover:bg-blue-700 active:scale-95 transition-all ml-auto">
         📥 下载当前进度
       </button>
-      
+
       <button onClick={submitToCloud} className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs font-bold shadow hover:bg-purple-700 active:scale-95 transition-all">
         🚀 提交审核
       </button>
@@ -648,13 +686,13 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
 {renderList.map((row, idx) => {
   // === HEADER 渲染 ===
   const headerLine = row.cn?.isHeader ? row.cn : row.jp?.isHeader ? row.jp : null;
-  
+
   if (headerLine) {
     const headerText = headerLine.text.replace(/---/g, '').trim();
     const isBranch = headerText.includes('Branch');
     const sectionMatch = headerText.match(/Section\s*(\d+)/);
     const branchMatch = headerText.match(/Branch\s*(\d+)/);
-    
+
     return (
       <div 
         key={idx} 
@@ -690,7 +728,7 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
 
   // === 选项渲染 ===
   const choiceLine = row.cn?.isChoice ? row.cn : row.jp?.isChoice ? row.jp : null;
-  
+
 if (choiceLine) {
   return (
     <div key={idx} id={`line-${idx}`} className="my-3 flex justify-center">
@@ -719,7 +757,7 @@ if (choiceLine) {
           if (currentSectionNum) {
             const targetId = `sec-${currentSectionNum}-branch-${branchNum}`;
             const targetEl = document.getElementById(targetId);
-            
+
             if (targetEl) {
               targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
               // 高亮特效
@@ -820,7 +858,7 @@ if (choiceLine) {
             )}
           </div>
         )}
-        
+
         {mode !== 'cn' && (
           <div className={`flex gap-2 ${mode === 'split' ? 'md:w-1/2 md:border-l md:pl-4 border-current border-opacity-10 mt-1 md:mt-0' : 'w-full'}`}>
              {row.jp ? (
@@ -858,7 +896,7 @@ if (choiceLine) {
                 <h3 className="font-bold">阅读设置</h3>
                 <button onClick={()=>setShowSettings(false)}><X size={18}/></button>
               </div>
-              
+
               <div className="space-y-4 text-sm">
                 {/* 移动端设置内备份搜索栏 */}
                 <div className="md:hidden">
