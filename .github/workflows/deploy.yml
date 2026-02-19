@@ -21,7 +21,7 @@ jobs:
       - name: Install
         run: npm install
 
-            - name: Deploy
+       - name: Deploy
         run: npx wrangler pages deploy .open-next/assets --project-name=magireader
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
