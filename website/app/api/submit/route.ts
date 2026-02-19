@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'edge';
+// 不要写 export const runtime = 'edge'; ← 这就是导致报错的原因
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,26 +10,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '内容为空' }, { status: 400 });
     }
 
-    // @opennextjs/cloudflare 通过 process.env 访问绑定
+    // 通过 process.env 访问 KV 绑定
     const kv = (process.env as any).NEXT_CACHE_WORKERS_KV;
 
-    if (!kv || typeof kv.put !== 'function') {
-      // KV 不可用，走备选方案
-      console.error('KV 绑定不可用，当前 env keys:', Object.keys(process.env).filter(k => k.includes('NEXT')));
-      return NextResponse.json({ error: 'KV 不可用' }, { status: 500 });
+    if (kv && typeof kv.put === 'function') {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const key = `submit_${story_id}_${timestamp}`;
+
+      await kv.put(key, JSON.stringify({
+        story_id,
+        content,
+        author: author || 'Anonymous',
+        submitted_at: new Date().toISOString(),
+      }));
+
+      return NextResponse.json({ success: true, key });
     }
 
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const key = `submit_${story_id}_${timestamp}`;
+    // KV 不可用时的备选：返回错误让前端走降级方案
+    console.error('KV 绑定不可用');
+    return NextResponse.json({ error: 'KV 不可用' }, { status: 500 });
 
-    await kv.put(key, JSON.stringify({
-      story_id,
-      content,
-      author: author || 'Anonymous',
-      submitted_at: new Date().toISOString(),
-    }));
-
-    return NextResponse.json({ success: true, key });
   } catch (e) {
     console.error('提交异常:', e);
     return NextResponse.json({ error: '服务器错误' }, { status: 500 });
