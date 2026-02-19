@@ -497,7 +497,7 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
                           a.download = `${id}_cn.txt`;
                           a.click();
                           URL.revokeObjectURL(url);
-                        } catch (e) {
+                    } catch (e: any) {       apiError = e?.message || '网络错误';       console.error('API 请求异常:', e);     }
                           console.error('下载失败:', e);
                         }
                       }}
