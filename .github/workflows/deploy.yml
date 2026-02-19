@@ -26,3 +26,12 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+
+run: |
+          # 1. 清理缓存 (对应本地的 rm -r -fo，Linux下为 rm -rf)
+          rm -rf .next .open-next
+          
+          # 2. 执行你本地成功的脚本
+          # 这将直接调用 package.json 中的 deploy:pages 命令
+          # 并传递必要的非交互参数以防止 CI 卡住 (如需指定项目名)
+          npm run deploy:pages -- --branch=main --project-name=magireader
