@@ -235,11 +235,9 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     reader.readAsText(file);
   };
 
-  // 4. 提交到 Cloudflare D1
   const submitToCloud = async () => {
     if (editedCnLines.length === 0) return alert("内容为空，无法提交");
 
-    // 生成纯文本格式
     const contentText = editedCnLines.map(l => 
       l.isHeader ? l.text : `${l.speaker}: ${l.text}`
     ).join('\n');
@@ -251,14 +249,35 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
         body: JSON.stringify({
           story_id: id,
           content: contentText,
-          author: 'Anonymous', // 后续可以加登录功能
+          author: 'Anonymous',
         })
       });
 
-      if (res.ok) alert("提交成功！感谢您的贡献，管理员审核后将更新。");
-      else alert("提交失败，请稍后再试。");
+      if (res.ok) {
+        alert("✅ 提交成功！感谢您的贡献，管理员审核后将更新。");
+        return;
+      }
     } catch (e) {
-      alert("网络错误");
+      // API 不可用
+    }
+
+    // 备选方案
+    try {
+      await navigator.clipboard.writeText(contentText);
+      alert(
+        "⚠️ 在线提交暂不可用，已复制到剪贴板！\n\n" +
+        "请发送到QQ群 928098518"
+      );
+    } catch {
+      const BOM = '\uFEFF';
+      const blob = new Blob([BOM + contentText], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${id}_submit.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+      alert("⚠️ 已下载TXT文件，请发送到QQ群 928098518");
     }
   };
 
