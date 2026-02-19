@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install
         run: npm install
@@ -25,7 +25,7 @@ jobs:
         run: npx @opennextjs/cloudflare build
 
       - name: Deploy
-        run: npx wrangler pages deploy .open-next --project-name=magi-reader
+        run: npx wrangler pages deploy .open-next --project-name=magireader
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
