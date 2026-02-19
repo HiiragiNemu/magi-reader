@@ -4,14 +4,19 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  // 修正 1: 在 Next.js 16 中，这个配置移到了最外层
   serverExternalPackages: ['@vercel/og', 'resvg', 'sharp'],
-  
+
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
 
-  // 修正 2: 强力屏蔽 Webpack 依赖
+  // 将环境变量注入到运行时
+  env: {
+    CF_API_TOKEN: process.env.CF_API_TOKEN || '',
+    CF_ACCOUNT_ID: process.env.CF_ACCOUNT_ID || '',
+    KV_NAMESPACE_ID: process.env.KV_NAMESPACE_ID || '',
+  },
+
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
