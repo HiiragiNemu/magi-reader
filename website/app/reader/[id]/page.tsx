@@ -257,10 +257,11 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
         alert("✅ 提交成功！感谢您的贡献，管理员审核后将更新。");
         return;
       }
-    } catch (e) {
-      // API 不可用
-    }
 
+} catch (e: any) {
+      apiError = e?.message || '网络错误';
+      console.error('API 请求异常:', e);
+    }
     // 备选方案
     try {
       await navigator.clipboard.writeText(contentText);
