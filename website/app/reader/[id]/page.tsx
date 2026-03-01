@@ -16,7 +16,13 @@ type StoryLine = {
   choiceLabel?: string;
   choiceTargetId?: string;
 };
-
+// 统一管理颜色映射，方便后期添加新颜色
+const COLOR_MAP: Record<string, string> = {
+  red: "text-red-500 font-bold",
+  blue: "text-blue-500 font-bold",
+  yellow: "text-yellow-500 font-bold",
+  black: "font-black text-gray-900 drop-shadow-sm"
+};
 const parseText = (raw: string): StoryLine[] => {
   if (!raw) return [];
   const lines = raw.split('\n');
@@ -323,41 +329,49 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     document.getElementById(`line-${matchedIndices[nextIdx]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
-  const renderStyledText = (text: string, forceHighlight: boolean = false) => {
-    const parts = text.split(/(<red>[\s\S]*?<\/red>|<blue>[\s\S]*?<\/blue>|\[textBlack:[\s\S]*?\])/g);
+const renderStyledText = (text: string, forceHighlight: boolean = false) => {
+    // 这个正则极度强大：它同时匹配 <color>内容</color> 以及旧版的 [textColor:内容]
+    const splitRegex = /(<(?:red|blue|yellow|black)>[\s\S]*?<\/(?:red|blue|yellow|black)>|\[text(?:Red|Blue|Yellow|Black):[\s\S]*?\])/gi;
+    const parts = text.split(splitRegex);
+
     return parts.map((part, index) => {
-      let isRedTag = false;
-      let isBlueTag = false;
-      let isBlackTag = false;
+      if (!part) return null;
+
+      let colorClass = "";
       let content = part;
 
-      if (part.startsWith('<red>') && part.endsWith('</red>')) {
-        content = part.replace(/<\/?red>/g, '');
-        isRedTag = true;
-      } else if (part.startsWith('<blue>') && part.endsWith('</blue>')) {
-        content = part.replace(/<\/?blue>/g, '');
-        isBlueTag = true;
-      } else if (part.startsWith('[textBlack:') && part.endsWith(']')) {
-        content = part.slice(11, -1);
-        isBlackTag = true;
+      // 1. 尝试解析新版 XML 标签 (例如 <yellow>キモチ</yellow>)
+      const xmlMatch = part.match(/^<([a-z]+)>([\s\S]*?)<\/\1>$/i);
+      if (xmlMatch && COLOR_MAP[xmlMatch[1].toLowerCase()]) {
+        colorClass = COLOR_MAP[xmlMatch[1].toLowerCase()];
+        content = xmlMatch[2];
+      } else {
+        // 2. 尝试解析旧版方括号标签 (例如 [textBlack:―取材記録―])，实现向下兼容
+        const bracketMatch = part.match(/^\[text([a-zA-Z]+):([\s\S]*?)\]$/i);
+        if (bracketMatch && COLOR_MAP[bracketMatch[1].toLowerCase()]) {
+          colorClass = COLOR_MAP[bracketMatch[1].toLowerCase()];
+          content = bracketMatch[2];
+        }
       }
 
+      // 处理搜索高亮
       if (searchQuery && (content.toLowerCase().includes(searchQuery.toLowerCase()) || forceHighlight)) {
         const regex = new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
         const searchParts = content.split(regex);
         return (
-          <span key={index} className={isRedTag ? "text-red-500 font-bold" : isBlueTag ? "text-blue-500 font-bold" : isBlackTag ? "font-black text-gray-900 drop-shadow-sm" : ""}>
+          <span key={index} className={colorClass}>
             {searchParts.map((sp, i) =>
               regex.test(sp)
-                ? <span key={i} className="bg-yellow-200 text-black outline outline-1 outline-yellow-400 rounded px-0.5 shadow-sm mx-0.5">{sp}</span>
+                ? <span key={`${index}-${i}`} className="bg-yellow-200 text-black outline outline-1 outline-yellow-400 rounded px-0.5 shadow-sm mx-0.5">{sp}</span>
                 : sp
             )}
           </span>
         );
       }
 
+      // 正常输出
       return (
-        <span key={index} className={isRedTag ? "text-red-500 font-bold" : isBlueTag ? "text-blue-500 font-bold" : isBlackTag ? "font-black text-gray-900 drop-shadow-sm" : ""}>
+        <span key={index} className={colorClass}>
           {content}
         </span>
       );
@@ -669,7 +683,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                     <div className={`flex gap-3 ${mode === 'split' ? 'md:w-1/2' : 'w-full'}`}>
                       {isEditMode ? (
                         <>
-                          <div className="w-16 md:w-20 text-right flex-shrink-0 text-xs font-bold pt-2 truncate opacity-60">
+                          <div className="w-20 md:w-24 text-right flex-shrink-0 text-[11px] leading-tight font-bold pt-1 break-words px-1 opacity-60">
                             {editedCnLines[idx]?.speaker || row.jp?.speaker || "旁白"}
                           </div>
                           <textarea

@@ -11,7 +11,7 @@ DATA_DIR = os.path.join(TARGET_PUBLIC_DIR, "data")
 TITLES = {}
 titles_path = "titles.json"  # 放在脚本同目录下，手动维护或从游戏数据提取
 if os.path.exists(titles_path):
-    with open(titles_path, 'r', encoding='utf-8') as f:
+    with open(titles_path, 'r', encoding='utf-8-sig') as f:
         TITLES = json.load(f)
     print(f"✅ 加载标题映射: {len(TITLES)} 条标题")
 
@@ -27,7 +27,7 @@ def main():
                 continue
             raw_id = file.replace("_cn.txt", "").replace("_jp.txt", "").split("_")[0]
             path = os.path.join(root, file)
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, "r", encoding="utf-8-sig") as f:
                 content = f.read()
                 # 1. 去掉 Section 头
                 content = re.sub(r'---.*?---', "", content)
