@@ -6,6 +6,7 @@ import { Search, Book, Layers, User, Calendar, Folder, FileText, ChevronRight, C
 import { useGlobal } from '@/app/providers';
 import { SPEAKER_COLOR_MAP } from '@/app/config/dictionary';
 import { Story } from '@/components/Sidebar';
+import AboutModal from '@/components/AboutModal';
 
 type SearchEntry = {
   id: string;
@@ -137,7 +138,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  
+  const[aboutOpen, setAboutOpen] = useState(false);
   // 新增：是否搜索日文文本
   const [searchJp, setSearchJp] = useState(false);
   
@@ -354,6 +355,7 @@ useEffect(() => {
                 <input type="checkbox" checked={searchJp} onChange={e => setSearchJp(e.target.checked)} className="accent-blue-500 w-3 h-3" />
                 <span className="text-xs font-bold whitespace-nowrap">JP</span>
               </label>
+              <button onClick={() => setAboutOpen(true)} className={`px-2.5 py-1 rounded cursor-pointer border text-xs font-bold whitespace-nowrap transition-all ${theme==='dark' ? 'bg-emerald-900/30 border-emerald-800 text-emerald-400 hover:bg-emerald-800' : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'}`}>关于我们</button>
             </div>
             
             <div className={`flex gap-1 p-1 rounded-full self-end md:self-auto ${theme==='dark'?'bg-black/20':'bg-black/5'}`}>
@@ -389,6 +391,7 @@ useEffect(() => {
           </div>
         </div>
       </main>
+      <AboutModal isOpen={aboutOpen} onClose={() => setAboutOpen(false)} theme={theme} />
     </div>
   );
 }

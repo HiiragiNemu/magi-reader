@@ -6,6 +6,7 @@ import { Menu, Settings, Download, ArrowLeft, Sun, Moon, BookOpen, Leaf, X, Sear
 import Sidebar, { Story } from '@/components/Sidebar';
 import { useGlobal } from '@/app/providers';
 import { SPEAKER_COLOR_MAP, NAME_TRANSLATE_MAP } from '@/app/config/dictionary';
+import AboutModal from '@/components/AboutModal';
 
 type StoryLine = {
   speaker: string;
@@ -139,6 +140,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const [searchQuery, setSearchQuery] = useState('');
   const [currentMatchIdx, setCurrentMatchIdx] = useState(-1);
   const [matchedIndices, setMatchedIndices] = useState<number[]>([]);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   const initEmptyWithNames = () => {
     if (!jpLines || jpLines.length === 0) return;
@@ -555,33 +557,14 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
               </div>
             </div>
 
-            {!isEditMode && (
-              <div className={`mb-0 p-4 rounded-lg border text-sm text-center transition-colors ${theme === 'dark' ? 'bg-white/5 border-white/10 text-gray-400' : 'bg-black/5 border-black/5 text-gray-600'}`}>
-                <div className="flex flex-wrap justify-center gap-3 text-xs font-bold">
-                  <a href="https://space.bilibili.com/625821?spm_id_from=333.33.0.0" target="_blank" rel="noreferrer" className="hover:text-blue-500 hover:underline transition-colors flex items-center gap-1">
-                    <span>🐧群928098518</span>
-                  </a>
-                  <span>|</span>
-                  <Link href="/" className="hover:text-emerald-500 hover:underline transition-colors">🏠 返回首页</Link>
-                  <span>|</span>
-                  <button
-                    onClick={() => {
-                      const staffMsg =
-                        "(圆环攻略组)贡献清单\n" +
-                        "角色：树里、七夕八千代、常暗十七夜、小圆前辈、圆彩、冲浪沙耶香\n" +
-                        "活动：万圣城、御影特训、AngelsRoad、XmasString、超越梦、巧匠(复)、AI Memory、DepBlue、决战、假面、那由他、梶叶、激海、Dreamers、Halloween、修行、贝法娜、灰革、传承、SPA、恋△、MVD\n" +
-                        "主线II：序章、第2-9章\n" +
-                        "支线II：第1-11章\n" +
-                        "其他：登录6168、镜层十七夜\n\n" +
-                        "※ 以上50项引用自圆环记录攻略组，目前剩余剧情文本将由水银h2oag提供，Staff表会保持更新，本站现由MadeInMagius维护，旨在剧情存档。";
-                      alert(staffMsg);
-                    }}
-                    className="hover:text-pink-500 hover:underline transition-colors"
-                  >
-                    ❤️ 关于我们
-                  </button>
+        {!isEditMode && (
+              <div className={`mb-0 p-4 rounded-xl border text-sm text-center transition-colors ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-black/[0.02] border-black/5'}`}>
+                <div className="flex flex-wrap justify-center items-center gap-2 text-xs font-bold">
+                  <Link href="/" className={`px-3 py-1.5 rounded-lg transition-all border ${theme === 'dark' ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-100'}`}>🏠返回首页</Link>
+                  <button onClick={() => setAboutOpen(true)} className={`px-3 py-1.5 rounded-lg transition-all border ${theme === 'dark' ? 'border-emerald-800 bg-emerald-900/20 text-emerald-400 hover:bg-emerald-900/40' : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}`}>🔗我的工具与动态</button>
+                  <button onClick={() => { alert("(圆环攻略组)贡献清单\n角色：树里、七夕八千代、常暗十七夜、小圆前辈、圆彩、冲浪沙耶香\n活动：万圣城、御影特训、AngelsRoad、XmasString、超越梦、巧匠(复)、AI Memory、DepBlue、决战、假面、那由他、梶叶、激海、Dreamers、Halloween、修行、贝法娜、灰革、传承、SPA、恋△、MVD\n主线II：序章、第2-9章\n支线II：第1-11章\n其他：登录6168、镜层十七夜\n\n※ 以上50项引用自圆环记录攻略组，剩余将由水银h2oag提供，本站由MadeInMagius建立以及维护和进行部分原始汉化文本提交。"); }} className={`px-3 py-1.5 rounded-lg transition-all border ${theme === 'dark' ? 'border-pink-800 bg-pink-900/20 text-pink-400 hover:bg-pink-900/40' : 'border-pink-200 bg-pink-50 text-pink-700 hover:bg-pink-100'}`}>贡献者</button>
                 </div>
-                <div className="mt-4 mx-auto w-12 h-1 rounded-full bg-current opacity-20" />
+                <div className="mt-3 mx-auto w-10 h-0.5 rounded-full bg-current opacity-15" />
               </div>
             )}
 
@@ -795,6 +778,7 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
           </div>
         )}
       </div>
+      <AboutModal isOpen={aboutOpen} onClose={() => setAboutOpen(false)} theme={theme} />
     </div>
   );
 }
