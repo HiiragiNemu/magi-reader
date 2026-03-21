@@ -291,14 +291,19 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       setCurrentMatchIdx(-1);
       return;
     }
-    const lowerQuery = searchQuery.toLowerCase();
-    const indices: number[] = [];
+const queryFlat = searchQuery.replace(/\s+/g, '').toLowerCase();
+    if (!queryFlat) {
+      setMatchedIndices([]);
+      setCurrentMatchIdx(-1);
+      return;
+    }
+    const indices: number[] =[];
 
     renderList.forEach((row, idx) => {
-    const cnText = (row.cn?.text || '').replace(/[\n\r]/g, '').toLowerCase();
-    const cnSpeaker = row.cn?.speaker?.toLowerCase() || '';
-    const jpText = (row.jp?.text || '').replace(/[\n\r]/g, '').toLowerCase();
-    const jpSpeaker = row.jp?.speaker?.toLowerCase() || '';
+      const cnText = (row.cn?.text || '').replace(/\s+/g, '').toLowerCase();
+      const cnSpeaker = (row.cn?.speaker || '').replace(/\s+/g, '').toLowerCase();
+      const jpText = (row.jp?.text || '').replace(/\s+/g, '').toLowerCase();
+      const jpSpeaker = (row.jp?.speaker || '').replace(/\s+/g, '').toLowerCase();
       const headerRaw = (row.cn?.isHeader ? row.cn.text : row.jp?.isHeader ? row.jp.text : '');
       let headerSearchable = headerRaw.toLowerCase();
       const secNum = headerRaw.match(/Section\s*(\d+)/)?.[1];
@@ -308,9 +313,9 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       const choiceText = (row.cn?.choiceLabel || row.jp?.choiceLabel || '').toLowerCase();
       const choiceSearchable = choiceText ? `${choiceText} 选项 分支` : '';
 
-      if (cnText.includes(lowerQuery) || cnSpeaker.includes(lowerQuery) ||
-          jpText.includes(lowerQuery) || jpSpeaker.includes(lowerQuery) ||
-          headerSearchable.includes(lowerQuery) || choiceSearchable.includes(lowerQuery)) {
+      if (cnText.includes(queryFlat) || cnSpeaker.includes(queryFlat) ||
+          jpText.includes(queryFlat) || jpSpeaker.includes(queryFlat) ||
+          headerSearchable.includes(queryFlat) || choiceSearchable.includes(queryFlat)) {
         indices.push(idx);
       }
     });
@@ -356,13 +361,16 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
         }
       }
 
-      // 处理搜索高亮
-     if (searchQuery && (content.replace(/[\n\r]/g, '').toLowerCase().includes(searchQuery.toLowerCase()) || forceHighlight)) {
-      // 将搜索词逐字安全转义，并在字符间插入可选的换行符正则
-    const chars = Array.from(searchQuery);
-    const flexPattern = chars.map(c => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('[\\n\\r]*');
-    const regex = new RegExp(`(${flexPattern})`, 'gi');
-    const searchParts = content.split(regex);
+        // 处理搜索高亮
+      const searchClean = searchQuery.replace(/\s+/g, '');
+      const contentClean = content.replace(/\s+/g, '').toLowerCase();
+      
+      if (searchClean && (contentClean.includes(searchClean.toLowerCase()) || forceHighlight)) {
+        // 将搜索词逐字安全转义，并在字符间插入 \s* 允许跨越任何空格和换行
+        const chars = Array.from(searchClean);
+        const flexPattern = chars.map(c => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s*');
+        const regex = new RegExp(`(${flexPattern})`, 'gi');
+        const searchParts = content.split(regex);
         return (
           <span key={index} className={colorClass}>
             {searchParts.map((sp, i) =>

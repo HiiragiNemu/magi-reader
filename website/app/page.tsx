@@ -12,6 +12,7 @@ type SearchEntry = {
   id: string;
   c: string; // content
   l: 'cn' | 'jp'; // lang
+  _n?: string; 
 };
 
 type StoryGroup = {
@@ -184,7 +185,13 @@ useEffect(() => {
           // 如果本地文件加载失败（比如被 gitignore 删了），兜底加载 R2
           return fetch('https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev/search_content.json').then(r => r.json());
         })
-        .then(data => setSearchIndex(data))
+        .then(data => {
+  // 预先计算去除所有空白的文本，避免搜索时 40MB 数据卡死浏览器
+  setSearchIndex(data.map((e: any) => ({
+    ...e,
+    _n: e.c.replace(/\s+/g, '').toLowerCase()
+  })));
+})
         .catch(err => console.error("搜索索引加载失败:", err))
         .finally(() => setSearchLoading(false));
     }
@@ -199,16 +206,28 @@ useEffect(() => {
     const textMatches: Record<string, string> = {}; 
     const enableContentSearch = (searchMode === 'all' || searchMode === 'content') && lowerSearch && searchIndex.length > 0;
     
-    if (enableContentSearch) {
-      searchIndex.forEach(entry => {
-      const contentFlat = entry.c.replace(/[\n\r]/g, '');
-      const idx = contentFlat.toLowerCase().indexOf(lowerSearch);
-      if (idx !== -1) {
-        const start = Math.max(0, idx - 10);
-        const end = Math.min(contentFlat.length, idx + lowerSearch.length + 20);
-        textMatches[entry.id] = "..." + contentFlat.substring(start, end) + "...";
+  if (enableContentSearch) {
+      // 搜索词去除所有空白
+      const searchFlat = lowerSearch.replace(/\s+/g, '');
+      if (searchFlat) {
+        searchIndex.forEach(entry => {
+          // 极速匹配：使用预计算好的无空白字符串
+          const flatContent = entry._n || entry.c.replace(/\s+/g, '').toLowerCase();
+          const idx = flatContent.indexOf(searchFlat);
+          
+          if (idx !== -1) {
+            // 完美摘要：反向映射回原始内容，保留原有的空格排版，仅将换行替换为空格
+            let origIdx = 0, flatCount = 0;
+            while (flatCount < idx && origIdx < entry.c.length) {
+              if (!/\s/.test(entry.c[origIdx])) flatCount++;
+              origIdx++;
+            }
+            const start = Math.max(0, origIdx - 10);
+            const end = Math.min(entry.c.length, origIdx + searchFlat.length + 30);
+            textMatches[entry.id] = "..." + entry.c.substring(start, end).replace(/[\n\r]/g, ' ') + "...";
+          }
+        });
       }
-      });
     }
 
     // 2. 遍历所有故事进行过滤
