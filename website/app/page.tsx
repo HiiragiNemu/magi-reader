@@ -12,7 +12,8 @@ type SearchEntry = {
   id: string;
   c: string; // content
   l: 'cn' | 'jp'; // lang
-  _n?: string; 
+  _p?: string; // 预计算：剥离了说话人的纯对话文本（带空格，用于生成完美摘要）
+  _n?: string; // 预计算：剥离了说话人且无空白的文本（用于极速匹配）
 };
 
 type StoryGroup = {
@@ -185,13 +186,22 @@ useEffect(() => {
           // 如果本地文件加载失败（比如被 gitignore 删了），兜底加载 R2
           return fetch('https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev/search_content.json').then(r => r.json());
         })
-        .then(data => {
-  // 预先计算去除所有空白的文本，避免搜索时 40MB 数据卡死浏览器
-  setSearchIndex(data.map((e: any) => ({
-    ...e,
-    _n: e.c.replace(/\s+/g, '').toLowerCase()
-  })));
-})
+.then(data => {
+        setSearchIndex(data.map((e: any) => {
+          // 1. 将游戏数据中的特殊换行符 @ 和 \n 统一替换为空格
+          let text = e.c.replace(/[@\n\r]/g, ' ');
+          
+          // 2. 剥离说话人前缀（如 "彩羽: "、"御魂: "），只保留对话本身
+          // 正则含义：匹配开头或空格，接着是非冒号/空格的字符，接着是冒号和空格
+          let pureText = text.replace(/(^|\s)[^:：\s]+[:：]\s*/g, ' ');
+
+          return {
+            ...e,
+            _p: pureText, // 存入纯对话文本
+            _n: pureText.replace(/\s+/g, '').toLowerCase() // 去除所有空白，供极速搜索
+          };
+        }));
+      })
         .catch(err => console.error("搜索索引加载失败:", err))
         .finally(() => setSearchLoading(false));
     }
@@ -206,25 +216,28 @@ useEffect(() => {
     const textMatches: Record<string, string> = {}; 
     const enableContentSearch = (searchMode === 'all' || searchMode === 'content') && lowerSearch && searchIndex.length > 0;
     
-  if (enableContentSearch) {
+if (enableContentSearch) {
       // 搜索词去除所有空白
       const searchFlat = lowerSearch.replace(/\s+/g, '');
       if (searchFlat) {
         searchIndex.forEach(entry => {
-          // 极速匹配：使用预计算好的无空白字符串
-          const flatContent = entry._n || entry.c.replace(/\s+/g, '').toLowerCase();
+          // 极速匹配：使用剥离了说话人和空白的文本
+          const flatContent = entry._n || '';
           const idx = flatContent.indexOf(searchFlat);
           
-          if (idx !== -1) {
-            // 完美摘要：反向映射回原始内容，保留原有的空格排版，仅将换行替换为空格
+          if (idx !== -1 && entry._p) {
+            // 完美摘要：反向映射回 _p（保留了空格和标点的纯对话文本）
             let origIdx = 0, flatCount = 0;
-            while (flatCount < idx && origIdx < entry.c.length) {
-              if (!/\s/.test(entry.c[origIdx])) flatCount++;
+            // 通过跳过空白字符，精准定位原本在带空格文本中的位置
+            while (flatCount < idx && origIdx < entry._p.length) {
+              if (!/\s/.test(entry._p[origIdx])) flatCount++;
               origIdx++;
             }
+            
+            // 截取人类可读的摘要片段
             const start = Math.max(0, origIdx - 10);
-            const end = Math.min(entry.c.length, origIdx + searchFlat.length + 30);
-            textMatches[entry.id] = "..." + entry.c.substring(start, end).replace(/[\n\r]/g, ' ') + "...";
+            const end = Math.min(entry._p.length, origIdx + searchFlat.length + 30);
+            textMatches[entry.id] = "..." + entry._p.substring(start, end).trim() + "...";
           }
         });
       }
