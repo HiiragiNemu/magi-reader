@@ -178,27 +178,23 @@ useEffect(() => {
         : 'https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev/search_content.json';
 
       fetch(SEARCH_INDEX_URL)
-        .then(res => {
-          if (!res.ok) throw new Error("File not found");
-          return res.json();
-        })
-        .catch(() => {
-          // 如果本地文件加载失败（比如被 gitignore 删了），兜底加载 R2
-          return fetch('https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev/search_content.json').then(r => r.json());
-        })
-.then(data => {
+       .then(res => res.json())
+       .then(data => {
         setSearchIndex(data.map((e: any) => {
-          // 1. 将游戏数据中的特殊换行符 @ 和 \n 统一替换为空格
-          let text = e.c.replace(/[@\n\r]/g, ' ');
-          
-          // 2. 剥离说话人前缀（如 "彩羽: "、"御魂: "），只保留对话本身
-          // 正则含义：匹配开头或空格，接着是非冒号/空格的字符，接着是冒号和空格
-          let pureText = text.replace(/(^|\s)[^:：\s]+[:：]\s*/g, ' ');
+          // 1. 核心修复：先消灭字面量的 "\n" 字符串，再消灭真正的换行和 @
+          let cleanRaw = e.c
+            .replace(/\\n/g, ' ')      // 处理字面量 \n
+            .replace(/[@\n\r]/g, ' '); // 处理真实换行
+
+          // 2. 剥离说话人前缀
+          let pureText = cleanRaw.replace(/(^|\s)[^:：\s]+[:：]\s*/g, ' ');
 
           return {
             ...e,
-            _p: pureText, // 存入纯对话文本
-            _n: pureText.replace(/\s+/g, '').toLowerCase() // 去除所有空白，供极速搜索
+            _p: pureText, 
+            // 3. 核心优化：匹配索引 (_n) 删掉所有非文字内容（标点、空格、特殊符号）
+            // 这样无论数据里有多少逗号或 \n，搜索时都不受影响
+            _n: pureText.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '').toLowerCase() 
           };
         }));
       })
@@ -217,25 +213,24 @@ useEffect(() => {
     const enableContentSearch = (searchMode === 'all' || searchMode === 'content') && lowerSearch && searchIndex.length > 0;
     
 if (enableContentSearch) {
-      // 搜索词去除所有空白
-      const searchFlat = lowerSearch.replace(/\s+/g, '');
+      // 搜索词也删掉所有标点符号和空格
+      const searchFlat = lowerSearch.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '');
+      
       if (searchFlat) {
         searchIndex.forEach(entry => {
-          // 极速匹配：使用剥离了说话人和空白的文本
           const flatContent = entry._n || '';
           const idx = flatContent.indexOf(searchFlat);
           
           if (idx !== -1 && entry._p) {
-            // 完美摘要：反向映射回 _p（保留了空格和标点的纯对话文本）
+            // 摘要定位：依然基于去标点后的位置映射
             let origIdx = 0, flatCount = 0;
-            // 通过跳过空白字符，精准定位原本在带空格文本中的位置
+            // 这里的判定逻辑也需要同步改为“非文字内容跳过”
             while (flatCount < idx && origIdx < entry._p.length) {
-              if (!/\s/.test(entry._p[origIdx])) flatCount++;
+              if (/[\u4e00-\u9fa5a-zA-Z0-9]/.test(entry._p[origIdx])) flatCount++;
               origIdx++;
             }
             
-            // 截取人类可读的摘要片段
-            const start = Math.max(0, origIdx - 10);
+            const start = Math.max(0, origIdx - 15);
             const end = Math.min(entry._p.length, origIdx + searchFlat.length + 30);
             textMatches[entry.id] = "..." + entry._p.substring(start, end).trim() + "...";
           }
