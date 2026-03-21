@@ -201,14 +201,13 @@ useEffect(() => {
     
     if (enableContentSearch) {
       searchIndex.forEach(entry => {
-        // 简单包含匹配
-        const idx = entry.c.toLowerCase().indexOf(lowerSearch);
-        if (idx !== -1) {
-          // 截取上下文
-          const start = Math.max(0, idx - 10);
-          const end = Math.min(entry.c.length, idx + lowerSearch.length + 20);
-          textMatches[entry.id] = "..." + entry.c.substring(start, end) + "...";
-        }
+      const contentFlat = entry.c.replace(/[\n\r]/g, '');
+      const idx = contentFlat.toLowerCase().indexOf(lowerSearch);
+      if (idx !== -1) {
+        const start = Math.max(0, idx - 10);
+        const end = Math.min(contentFlat.length, idx + lowerSearch.length + 20);
+        textMatches[entry.id] = "..." + contentFlat.substring(start, end) + "...";
+      }
       });
     }
 

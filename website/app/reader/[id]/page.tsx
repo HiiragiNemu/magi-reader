@@ -295,10 +295,10 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     const indices: number[] = [];
 
     renderList.forEach((row, idx) => {
-      const cnText = row.cn?.text?.toLowerCase() || '';
-      const cnSpeaker = row.cn?.speaker?.toLowerCase() || '';
-      const jpText = row.jp?.text?.toLowerCase() || '';
-      const jpSpeaker = row.jp?.speaker?.toLowerCase() || '';
+    const cnText = (row.cn?.text || '').replace(/[\n\r]/g, '').toLowerCase();
+    const cnSpeaker = row.cn?.speaker?.toLowerCase() || '';
+    const jpText = (row.jp?.text || '').replace(/[\n\r]/g, '').toLowerCase();
+    const jpSpeaker = row.jp?.speaker?.toLowerCase() || '';
       const headerRaw = (row.cn?.isHeader ? row.cn.text : row.jp?.isHeader ? row.jp.text : '');
       let headerSearchable = headerRaw.toLowerCase();
       const secNum = headerRaw.match(/Section\s*(\d+)/)?.[1];
@@ -357,9 +357,12 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
       }
 
       // 处理搜索高亮
-      if (searchQuery && (content.toLowerCase().includes(searchQuery.toLowerCase()) || forceHighlight)) {
-        const regex = new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-        const searchParts = content.split(regex);
+     if (searchQuery && (content.replace(/[\n\r]/g, '').toLowerCase().includes(searchQuery.toLowerCase()) || forceHighlight)) {
+      // 将搜索词逐字安全转义，并在字符间插入可选的换行符正则
+    const chars = Array.from(searchQuery);
+    const flexPattern = chars.map(c => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('[\\n\\r]*');
+    const regex = new RegExp(`(${flexPattern})`, 'gi');
+    const searchParts = content.split(regex);
         return (
           <span key={index} className={colorClass}>
             {searchParts.map((sp, i) =>
