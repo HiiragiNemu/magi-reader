@@ -1,0 +1,417 @@
+{
+  "story": {
+    "group_1": [
+      {
+        "autoTurnLast": 0.01,
+        "bg": "bg_adv_21188.jpg",
+        "bgm": "bgm01_battle07",
+        "item": [
+          {
+            "path": "resource/scenario/img/part2_chapter12/103304_mirror_witch_zoom.png",
+            "posX": 0,
+            "posY": 0,
+            "scale": 0.5,
+            "visible": "appear",
+            "zOrder": "charaBack"
+          },
+          {
+            "path": "resource/scenario/img/part2_chapter12/103304_mirror_spread.png",
+            "posX": 0,
+            "posY": 0,
+            "visible": "appear",
+            "zOrder": "charaFront"
+          }
+        ],
+        "turnChangeIn": "fadeIn"
+      },
+      {
+        "autoTurnLast": 3,
+        "turnChangeOut": "fadeOut"
+      },
+      {
+        "autoTurnLast": 1,
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_001.exp3.json",
+            "id": 100600,
+            "motion": 2,
+            "pos": 0
+          },
+          {
+            "cheek": 0,
+            "face": "mtn_ex_030.exp3.json",
+            "id": 101800,
+            "motion": 3,
+            "pos": 2
+          }
+        ],
+        "turnChangeIn": "fadeIn"
+      },
+      {
+        "chara": [
+          {
+            "id": 100600,
+            "motion": 101,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-1"
+          }
+        ],
+        "nameLeft": "美冬",
+        "textLeft": "那就是压制住我们的@魔力的真面目吗…",
+        "turnChangeOut": "fadeOut"
+      },
+      {
+        "chara": [
+          {
+            "id": 101800,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-2"
+          }
+        ],
+        "nameRight": "月夜",
+        "textRight": "我们正在被@看不见的玻璃片切割吗…"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_020.exp3.json",
+            "id": 101900,
+            "motion": 2,
+            "pos": 2,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-3"
+          }
+        ],
+        "nameRight": "月咲",
+        "textRight": "但是，既然现在已经看到它们了@就能战斗…！"
+      },
+      {
+        "autoTurnLast": 0.2,
+        "chara": [
+          {
+            "effect": "fadeout",
+            "id": 100600
+          },
+          {
+            "effect": "fadeout",
+            "id": 101900
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.1,
+        "bg": "bg_adv_21188.jpg",
+        "bgChangeEffect": "cameraPan"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_000.exp3.json",
+            "id": 101600,
+            "motion": 101,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-4"
+          },
+          {
+            "cheek": 0,
+            "face": "mtn_ex_020.exp3.json",
+            "id": 101000,
+            "motion": 3,
+            "pos": 2
+          }
+        ],
+        "nameLeft": "十七夜",
+        "textLeft": "那么，我们也和环君她们会合吧"
+      },
+      {
+        "chara": [
+          {
+            "id": 101000,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-5"
+          }
+        ],
+        "nameRight": "桃子",
+        "textRight": "啊啊，既然已经弄明白了小把戏@就没什么可怕的"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_010.exp3.json",
+            "id": 101700,
+            "motion": 3,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-6"
+          }
+        ],
+        "nameLeft": "御魂",
+        "textLeft": "好了，你们两个也一起来吧"
+      },
+      {
+        "autoTurnLast": 0.2,
+        "chara": [
+          {
+            "effect": "fadeout",
+            "id": 101700
+          },
+          {
+            "effect": "fadeout",
+            "id": 101000
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_020.exp3.json",
+            "id": 100900,
+            "motion": 101,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-7"
+          },
+          {
+            "cheek": 0,
+            "face": "mtn_ex_050.exp3.json",
+            "id": 101100,
+            "motion": 3,
+            "pos": 2
+          }
+        ],
+        "nameLeft": "玲奈",
+        "textLeft": "枫，拉住我的手@现在可没空啊呜啊呜地害怕了"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_030.exp3.json",
+            "id": 101100,
+            "motion": 401,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-8"
+          }
+        ],
+        "nameRight": "枫",
+        "textRight": "真的已经明白了吗？@就算是我们也能战斗吗？"
+      },
+      {
+        "chara": [
+          {
+            "id": 100900,
+            "motion": 203,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-9"
+          }
+        ],
+        "nameLeft": "玲奈",
+        "textLeft": "不是能不能战斗@而是只能去战斗吧"
+      },
+      {
+        "chara": [
+          {
+            "id": 100900,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-10"
+          }
+        ],
+        "nameLeft": "玲奈",
+        "textLeft": "一起下地狱的约定去哪儿了"
+      },
+      {
+        "chara": [
+          {
+            "id": 101100,
+            "motion": 2,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-11"
+          }
+        ],
+        "nameRight": "枫",
+        "textRight": "嗯，是啊…"
+      },
+      {
+        "autoTurnLast": 0.01,
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.01,
+        "item": [
+          {
+            "action": {
+              "moveTo": {
+                "duration": 0.6,
+                "posY": 0
+              }
+            },
+            "path": "resource/scenario/img/adv_roll_fade.png",
+            "posX": 0,
+            "posY": 2000,
+            "scale": 6,
+            "setVisible": 1,
+            "zOrder": "messageFront"
+          }
+        ]
+      },
+      {
+        "autoTurnLast": 0.01,
+        "bg": "bg_adv_21188.jpg",
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_010.exp3.json",
+            "id": 160100,
+            "motion": 0,
+            "pos": 1
+          },
+          {
+            "effect": "fadeout",
+            "id": 100900
+          },
+          {
+            "effect": "fadeout",
+            "id": 101100
+          }
+        ]
+      },
+      {
+        "autoTurnLast": 0.01,
+        "item": [
+          {
+            "action": {
+              "moveTo": {
+                "duration": 0.6,
+                "posY": -2000
+              }
+            },
+            "path": "resource/scenario/img/adv_roll_fade.png"
+          }
+        ]
+      },
+      {
+        "chara": [
+          {
+            "id": 160100,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-12"
+          }
+        ],
+        "nameCenter": "彩羽",
+        "textCenter": "这样就能赢了…@能击破敌人了…！",
+        "turnChangeOut": "fadeOut"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "eyeClose": 1,
+            "face": "mtn_ex_021.exp3.json",
+            "id": 160100,
+            "motion": 301,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-13"
+          }
+        ],
+        "nameNarration": "彩羽",
+        "narration": "「在此通告大家」",
+        "narrationBg": "",
+        "narrationEffect": "in",
+        "surround": "7202_telepathy",
+        "turnEffect": "ef_adv_02"
+      },
+      {
+        "chara": [
+          {
+            "id": 160100,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-14"
+          }
+        ],
+        "narration": "「我们已经让镜之魔女放出的看不见的攻击@可以被目视到了」"
+      },
+      {
+        "chara": [
+          {
+            "id": 160100,
+            "motion": 100,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-15"
+          }
+        ],
+        "narration": "「虽然看起来就像漂亮的玻璃片@但那是诅咒的结晶」"
+      },
+      {
+        "chara": [
+          {
+            "id": 160100,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-16"
+          }
+        ],
+        "narration": "「如果正面接下@在身体受伤的同时，心灵也会被伤害@似乎也无法通过闪避躲开」"
+      },
+      {
+        "chara": [
+          {
+            "id": 160100,
+            "motion": 1,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-17"
+          }
+        ],
+        "narration": "「所以，魔女放出玻璃片之后@请大家准确地消灭掉它们」"
+      },
+      {
+        "chara": [
+          {
+            "id": 160100,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-18"
+          }
+        ],
+        "narration": "「封住攻击的透明障壁@也用同样的诅咒和玻璃片连在一起@所以只要让冲击传过去，应该就能破坏了」"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "eyeClose": 0,
+            "face": "mtn_ex_010.exp3.json",
+            "id": 160100,
+            "motion": 102,
+            "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-19"
+          }
+        ],
+        "narration": "「将玻璃片的破坏作为我们的攻击和防御@一路前进到与本体的战斗吧！」"
+      },
+      {
+        "autoTurnLast": 0.2,
+        "chara": [
+          {
+            "effect": "fadeout",
+            "id": 160100
+          }
+        ],
+        "narrationEffect": "out",
+        "surround": "stop",
+        "textClear": 1,
+        "turnEffect": "stop"
+      },
+      {
+        "autoTurnLast": 2,
+        "item": [
+          {
+            "path": "resource/scenario/img/part2_chapter12/103304_mirror_witch_zoom.png",
+            "posX": 0,
+            "posY": 0,
+            "visible": "appear",
+            "zOrder": "charaBack"
+          }
+        ]
+      },
+      {
+        "nameNarration": "彩羽",
+        "narration": "「准备好之后，就开始吧」",
+        "narrationBg": "",
+        "narrationEffect": "in",
+        "voiceFullAuto": "fullvoice/section_103305/vo_full_103305-1-20"
+      },
+      {
+        "autoTurnLast": 2,
+        "turnChangeIn": "fadeIn"
+      }
+    ]
+  },
+  "version": 3
+}

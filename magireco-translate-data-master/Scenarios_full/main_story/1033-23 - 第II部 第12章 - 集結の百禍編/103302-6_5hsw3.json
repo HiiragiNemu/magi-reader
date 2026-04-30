@@ -1,0 +1,1180 @@
+{
+  "story": {
+    "group_1": [
+      {
+        "autoTurnLast": 0.01,
+        "bg": "bg_adv_18057.jpg",
+        "bgm": "bgm23_puella05",
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_010.exp3.json",
+            "id": 102200,
+            "motion": 0,
+            "pos": 0
+          },
+          {
+            "cheek": 0,
+            "face": "mtn_ex_011.exp3.json",
+            "id": 104100,
+            "motion": 0,
+            "pos": 2
+          }
+        ],
+        "turnChangeIn": "fadeIn"
+      },
+      {
+        "autoTurnLast": 1.8,
+        "chara": [
+          {
+            "id": 104100,
+            "voiceFull": "fullvoice/section_103302/vo_full_103302-6-1"
+          }
+        ],
+        "enableSkipAutoTurn": 1,
+        "nameRight": "莉薇娅",
+        "textRight": "小光的复制品@谢谢你为我们带路",
+        "turnChangeOut": "fadeOut"
+      },
+      {
+        "autoTurnLast": 1,
+        "chara": [
+          {
+            "id": 104100,
+            "motion": 100
+          },
+          {
+            "effect": "7001_attack02",
+            "id": 102200
+          }
+        ],
+        "surround": "1041A05"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_060.exp3.json",
+            "id": 102200,
+            "motion": 400,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-2",
+            "voiceFullStop": "fullvoice/section_103302/vo_full_103302-6-1"
+          }
+        ],
+        "enableSkipAutoTurn": 0,
+        "nameLeft": "光？",
+        "textLeft": "[surround:1041A07][chara:102200:effect_7003_damage02][bgEffect:shakeLarge]咕…！@你们对我也太粗暴了吧…！"
+      },
+      {
+        "autoTurnLast": 0.2,
+        "chara": [
+          {
+            "effect": "fadeout",
+            "id": 102200
+          }
+        ],
+        "item": [
+          {
+            "path": "resource/scenario/img/part2_chapter12/103302_jelly_human.png",
+            "posX": -220,
+            "posY": 0,
+            "visible": "appear",
+            "zOrder": "charaBack"
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.5,
+        "bgEffect": "shakeSmall",
+        "item": [
+          {
+            "action": {
+              "sequence": [
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": -210
+                  }
+                },
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": -230
+                  }
+                },
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": -210
+                  }
+                },
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": -230
+                  }
+                },
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": -210
+                  }
+                },
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": -230
+                  }
+                },
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": -210
+                  }
+                }
+              ]
+            },
+            "path": "resource/scenario/img/part2_chapter12/103302_jelly_human.png"
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.5,
+        "item": [
+          {
+            "path": "resource/scenario/img/part2_chapter12/103302_jelly_human.png",
+            "visible": "hide"
+          }
+        ],
+        "se": "3102_enemy_dead",
+        "textClear": 1
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_040.exp3.json",
+            "id": 104100,
+            "motion": 1,
+            "pos": 1,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-3"
+          }
+        ],
+        "nameCenter": "莉薇娅",
+        "textCenter": "…好了"
+      },
+      {
+        "chara": [
+          {
+            "id": 104100,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-4"
+          }
+        ],
+        "nameCenter": "莉薇娅",
+        "textCenter": "倒是追着运输能量的轨迹过来了@不过…"
+      },
+      {
+        "autoTurnLast": 0.1,
+        "chara": [
+          {
+            "effect": "fadeout",
+            "id": 104100
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.1,
+        "bg": "bg_adv_18057.jpg",
+        "bgChangeEffect": "cameraPan"
+      },
+      {
+        "autoTurnLast": 2,
+        "chara": [
+          {
+            "id": 7211,
+            "name": "sprite_0",
+            "pos": 0
+          },
+          {
+            "id": 7102,
+            "name": "sprite_1",
+            "pos": 2
+          }
+        ]
+      },
+      {
+        "autoTurnLast": 0.1,
+        "chara": [
+          {
+            "effect": "fadeout",
+            "id": 7211,
+            "name": "sprite_0"
+          },
+          {
+            "effect": "fadeout",
+            "id": 7102,
+            "name": "sprite_1"
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.1,
+        "bg": "bg_adv_18057.jpg",
+        "bgChangeEffect": "cameraPan"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_000.exp3.json",
+            "id": 103900,
+            "motion": 1,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-5"
+          },
+          {
+            "cheek": 0,
+            "face": "mtn_ex_000.exp3.json",
+            "id": 104000,
+            "motion": 0,
+            "pos": 2
+          }
+        ],
+        "nameLeft": "月出里",
+        "surround": "7202_telepathy",
+        "textLeft": "呐，夜鹤",
+        "turnEffect": "ef_adv_02"
+      },
+      {
+        "chara": [
+          {
+            "id": 103900,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-6"
+          }
+        ],
+        "nameLeft": "月出里",
+        "textLeft": "那些使魔拿着的@是坏掉的镜子的碎片吗？"
+      },
+      {
+        "chara": [
+          {
+            "id": 104000,
+            "motion": 1,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-7"
+          }
+        ],
+        "nameRight": "夜鹤",
+        "textRight": "是啊"
+      },
+      {
+        "chara": [
+          {
+            "id": 104000,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-8"
+          }
+        ],
+        "nameRight": "夜鹤",
+        "textRight": "它们正在回收那些碎片@将其转化为镜子的能量"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_030.exp3.json",
+            "id": 104100,
+            "motion": 1,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-9"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "surround": "stop",
+        "textLeft": "如果从丘比那里听来的话是真的",
+        "turnEffect": "stop"
+      },
+      {
+        "chara": [
+          {
+            "id": 104100,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-10"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "只要镜之魔女通过那面镜子"
+      },
+      {
+        "chara": [
+          {
+            "id": 104100,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-11"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "人类就不会诞生了吗…"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_050.exp3.json",
+            "id": 103900,
+            "lipSynch": 0,
+            "motion": 400,
+            "pos": 2,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-12"
+          }
+        ],
+        "nameRight": "月出里",
+        "textRight": "[chara:103900:effect_emotion_surprise_0][se:7226_shock]――!?"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_020.exp3.json",
+            "id": 103900,
+            "lipSynch": 0,
+            "motion": 200,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-13"
+          }
+        ],
+        "nameRight": "月出里",
+        "textRight": "呼姆姆！呼姆！"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_000.exp3.json",
+            "id": 104000,
+            "motion": 100,
+            "pos": 2,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-14"
+          }
+        ],
+        "nameRight": "夜鹤",
+        "textRight": "老师，月出里叫你看那边"
+      },
+      {
+        "autoTurnLast": 0.1,
+        "chara": [
+          {
+            "effect": "fadeout",
+            "id": 104100
+          },
+          {
+            "effect": "fadeout",
+            "id": 104000
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.01,
+        "bg": "bg_adv_18057.jpg",
+        "bgChangeEffect": "cameraPan"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_020.exp3.json",
+            "id": 104100,
+            "motion": 100,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-15"
+          },
+          {
+            "cheek": 0,
+            "face": "mtn_ex_000.exp3.json",
+            "id": 103300,
+            "motion": 0,
+            "pos": 2
+          }
+        ],
+        "nameLeft": "莉薇娅？",
+        "textLeft": "把你们运来的能量都送到这边！"
+      },
+      {
+        "chara": [
+          {
+            "id": 103300,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-16"
+          }
+        ],
+        "nameRight": "拉比？",
+        "textRight": "我还想补强镜子的一部分@所以带来了能量的人"
+      },
+      {
+        "chara": [
+          {
+            "id": 103300,
+            "motion": 200,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-17"
+          }
+        ],
+        "nameRight": "拉比？",
+        "textRight": "请运到我这里来"
+      },
+      {
+        "autoTurnLast": 0.1,
+        "chara": [
+          {
+            "effect": "fadeout",
+            "id": 104100
+          },
+          {
+            "effect": "fadeout",
+            "id": 103300
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.1,
+        "bg": "bg_adv_18057.jpg",
+        "bgChangeEffect": "cameraPan"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_051.exp3.json",
+            "id": 104000,
+            "motion": 400,
+            "pos": 2,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-18"
+          },
+          {
+            "cheek": 0,
+            "face": "mtn_ex_040.exp3.json",
+            "id": 104100,
+            "motion": 0,
+            "pos": 0
+          }
+        ],
+        "nameRight": "夜鹤",
+        "textRight": "真是相当精巧的复制品…"
+      },
+      {
+        "chara": [
+          {
+            "id": 104100,
+            "motion": 100,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-19"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "嗯——…"
+      },
+      {
+        "chara": [
+          {
+            "id": 104100,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-20"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "好像还有好几个人在指挥@而且，外表都很像各个组织的领袖"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_000.exp3.json",
+            "id": 104000,
+            "motion": 300,
+            "pos": 2,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-21"
+          }
+        ],
+        "nameRight": "夜鹤",
+        "textRight": "虽然逼问工蚁复制品@也没问出什么所以然"
+      },
+      {
+        "chara": [
+          {
+            "id": 104000,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-22"
+          }
+        ],
+        "nameRight": "夜鹤",
+        "textRight": "但如果能破坏指挥系统@应该就会露出破绽"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_030.exp3.json",
+            "id": 103900,
+            "motion": 300,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-23"
+          }
+        ],
+        "nameLeft": "月出里",
+        "textLeft": "呼姆…"
+      },
+      {
+        "chara": [
+          {
+            "id": 104000,
+            "motion": 1,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-24"
+          }
+        ],
+        "nameRight": "夜鹤",
+        "textRight": "现在可容不得我们说害怕，@月出里"
+      },
+      {
+        "autoTurnLast": 0.2,
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_020.exp3.json",
+            "id": 104100,
+            "motion": 0,
+            "pos": 0
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.8,
+        "chara": [
+          {
+            "cheek": 0,
+            "effect": "ef_adv_01",
+            "face": "mtn_ex_050.exp3.json",
+            "id": 104100
+          }
+        ],
+        "se": "7201_detect_magic"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_020.exp3.json",
+            "id": 104100,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-25"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "不好，它们注意到这边了"
+      },
+      {
+        "chara": [
+          {
+            "id": 104100,
+            "motion": 200,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-26"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "稍微撤退一下"
+      },
+      {
+        "autoTurnLast": 0.2,
+        "bg": "bg_adv_18044.jpg",
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_040.exp3.json",
+            "id": 104100,
+            "motion": 0,
+            "pos": 1
+          }
+        ],
+        "turnChangeIn": "rollInFast"
+      },
+      {
+        "chara": [
+          {
+            "id": 104100,
+            "motion": 300,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-27"
+          }
+        ],
+        "nameCenter": "莉薇娅",
+        "textCenter": "带来了能量的使魔这么多@到底要怎么处理…",
+        "turnChangeOut": "rollOutFast"
+      },
+      {
+        "autoTurnLast": 0.2,
+        "chara": [
+          {
+            "id": 104100,
+            "pos": 0
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_000.exp3.json",
+            "id": 103300,
+            "motion": 100,
+            "pos": 2,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-28"
+          }
+        ],
+        "nameRight": "拉比",
+        "textRight": "确实很值得思考"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_050.exp3.json",
+            "id": 103900,
+            "lipSynch": 0,
+            "motion": 400,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-29"
+          }
+        ],
+        "nameLeft": "月出里",
+        "textLeft": "姆！？"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_020.exp3.json",
+            "id": 104000,
+            "motion": 200,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-30"
+          }
+        ],
+        "nameLeft": "夜鹤",
+        "textLeft": "你是复制品吗…！？"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_020.exp3.json",
+            "id": 104100,
+            "motion": 100,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-31"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "很抱歉，但容我失礼了"
+      },
+      {
+        "autoTurnLast": 2,
+        "chara": [
+          {
+            "eyeClose": 1,
+            "id": 104100,
+            "lipSynch": 0,
+            "pos": 1,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-32"
+          }
+        ],
+        "nameCenter": "莉薇娅",
+        "textCenter": "…………[flashEffect:flashWhiteSlow2][se:7211_souljem_02]"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "eyeClose": 0,
+            "face": "mtn_ex_040.exp3.json",
+            "id": 104100,
+            "motion": 0,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-33"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "能看见灵魂宝石的内部…@嘛，这样的话肯定是真的吧…"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_030.exp3.json",
+            "id": 103300,
+            "motion": 300,
+            "pos": 2,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-34"
+          }
+        ],
+        "nameRight": "拉比",
+        "textRight": "抱歉引起你们的误会了…"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_000.exp3.json",
+            "id": 103300,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-35"
+          }
+        ],
+        "nameRight": "拉比",
+        "textRight": "我从远处看见你们撤退的样子"
+      },
+      {
+        "chara": [
+          {
+            "id": 103300,
+            "motion": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-36"
+          }
+        ],
+        "nameRight": "拉比",
+        "textRight": "就自然地靠近这里了"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_000.exp3.json",
+            "id": 104000,
+            "motion": 1,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-37"
+          }
+        ],
+        "nameLeft": "夜鹤",
+        "textLeft": "顺带一提，拉比大人@大概也已经理解了这边的状况"
+      },
+      {
+        "chara": [
+          {
+            "id": 104000,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-38"
+          }
+        ],
+        "nameLeft": "夜鹤",
+        "textLeft": "有没有什么接近那些领袖的手段呢"
+      },
+      {
+        "chara": [
+          {
+            "id": 104000,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-39"
+          }
+        ],
+        "nameLeft": "夜鹤",
+        "textLeft": "它们似乎在负责指挥@我想找个办法处理掉…"
+      },
+      {
+        "chara": [
+          {
+            "id": 103300,
+            "motion": 100,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-40"
+          }
+        ],
+        "nameRight": "拉比",
+        "textRight": "…我姑且，算是想到了一个"
+      },
+      {
+        "chara": [
+          {
+            "id": 104000,
+            "motion": 100,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-41"
+          }
+        ],
+        "nameLeft": "夜鹤",
+        "textLeft": "要怎么做？"
+      },
+      {
+        "chara": [
+          {
+            "id": 103300,
+            "motion": 1,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-42"
+          }
+        ],
+        "nameRight": "拉比",
+        "textRight": "猎人似乎会披着野兽皮狩猎"
+      },
+      {
+        "chara": [
+          {
+            "id": 103300,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-43"
+          }
+        ],
+        "nameRight": "拉比",
+        "textRight": "那是为了用野兽的同伴的气味@来隐藏自己的气味"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_050.exp3.json",
+            "id": 103900,
+            "lipSynch": 0,
+            "motion": 1,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-44"
+          }
+        ],
+        "nameLeft": "月出里",
+        "textLeft": "呼姆姆姆…？"
+      },
+      {
+        "autoTurnLast": 0.2,
+        "chara": [
+          {
+            "effect": "fadeout",
+            "id": 103300
+          },
+          {
+            "effect": "fadeout",
+            "id": 103900
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.1,
+        "bg": "bg_adv_18057.jpg",
+        "bgChangeEffect": "cameraPan"
+      },
+      {
+        "item": [
+          {
+            "path": "resource/scenario/img/part2_chapter12/103302_jelly_human.png",
+            "posX": 0,
+            "posY": 0,
+            "visible": "appear",
+            "zOrder": "charaBack"
+          }
+        ],
+        "nameNarration": "夜鹤",
+        "narration": "「你的意思难道是，@要把那个胶状使魔涂在身上吗…」",
+        "narrationEffect": "in",
+        "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-45"
+      },
+      {
+        "nameNarration": "拉比",
+        "narration": "「…这也是无奈之举」",
+        "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-46"
+      },
+      {
+        "autoTurnLast": 0.1,
+        "item": [
+          {
+            "path": "resource/scenario/img/part2_chapter12/103302_jelly_human.png",
+            "visible": "hide"
+          }
+        ],
+        "narrationEffect": "out",
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.1,
+        "bg": "bg_adv_18044.jpg",
+        "bgChangeEffect": "cameraPan"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_010.exp3.json",
+            "id": 104100,
+            "motion": 1,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-47"
+          },
+          {
+            "cheek": 0,
+            "face": "mtn_ex_030.exp3.json",
+            "id": 104000,
+            "motion": 1,
+            "pos": 2
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "不，没有必要那么做"
+      },
+      {
+        "chara": [
+          {
+            "id": 104100,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-48"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "我会掌握使魔的魔力样式@并照着调整自己"
+      },
+      {
+        "chara": [
+          {
+            "id": 104100,
+            "motion": 200,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-49"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "然后伪装起魔力样式@这样就可以了吧？"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_051.exp3.json",
+            "id": 104000,
+            "motion": 0,
+            "pos": 2,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-50"
+          }
+        ],
+        "nameRight": "夜鹤",
+        "textRight": "能办到那种事吗？"
+      },
+      {
+        "chara": [
+          {
+            "id": 104100,
+            "motion": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-51"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "嘛…"
+      },
+      {
+        "autoTurnLast": 0.5,
+        "bg": "bg_adv_18057.jpg",
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_060.exp3.json",
+            "id": 102200,
+            "motion": 0,
+            "pos": 1
+          }
+        ],
+        "turnChangeIn": "fadeIn",
+        "turnEffect": "blackFrame"
+      },
+      {
+        "chara": [
+          {
+            "id": 102200,
+            "motion": 400,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-52"
+          }
+        ],
+        "nameCenter": "光？",
+        "textCenter": "[surround:1041A07][chara:102200:effect_7003_damage02][bgEffect:shakeLarge]咕…！@你们对我也太粗暴了吧…！",
+        "turnChangeOut": "fadeOut"
+      },
+      {
+        "autoTurnLast": 0.2,
+        "chara": [
+          {
+            "effect": "fadeout",
+            "id": 102200
+          }
+        ],
+        "item": [
+          {
+            "path": "resource/scenario/img/part2_chapter12/103302_jelly_human.png",
+            "posX": 0,
+            "posY": 0,
+            "visible": "appear",
+            "zOrder": "charaBack"
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.5,
+        "bgEffect": "shakeSmall",
+        "item": [
+          {
+            "action": {
+              "sequence": [
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": 10
+                  }
+                },
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": -10
+                  }
+                },
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": 10
+                  }
+                },
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": -10
+                  }
+                },
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": 10
+                  }
+                },
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": -10
+                  }
+                },
+                {
+                  "moveTo": {
+                    "duration": 0.05,
+                    "posX": 10
+                  }
+                }
+              ]
+            },
+            "path": "resource/scenario/img/part2_chapter12/103302_jelly_human.png"
+          }
+        ],
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.5,
+        "item": [
+          {
+            "path": "resource/scenario/img/part2_chapter12/103302_jelly_human.png",
+            "visible": "hide"
+          }
+        ],
+        "se": "3102_enemy_dead",
+        "textClear": 1
+      },
+      {
+        "autoTurnLast": 0.5,
+        "bg": "bg_adv_18044.jpg",
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_011.exp3.json",
+            "id": 104100,
+            "motion": 0,
+            "pos": 0
+          },
+          {
+            "cheek": 0,
+            "face": "mtn_ex_000.exp3.json",
+            "id": 103300,
+            "motion": 0,
+            "pos": 2
+          }
+        ],
+        "turnChangeIn": "fadeIn",
+        "turnEffect": "stop"
+      },
+      {
+        "chara": [
+          {
+            "id": 104100,
+            "motion": 100,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-53"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "万事都要尝试@只要能有效活用就可以了",
+        "turnChangeOut": "fadeOut"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_010.exp3.json",
+            "id": 104100,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-54"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "然后，伪装好魔力之后@下一步要怎么做？"
+      },
+      {
+        "chara": [
+          {
+            "id": 103300,
+            "motion": 200,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-55"
+          }
+        ],
+        "nameRight": "拉比",
+        "textRight": "要把担任司令塔的领袖引出来@并问出情报"
+      },
+      {
+        "chara": [
+          {
+            "id": 103300,
+            "motion": 1,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-56"
+          }
+        ],
+        "nameRight": "拉比",
+        "textRight": "如果办不到就打倒它们，@引起部下的复制品的混乱"
+      },
+      {
+        "chara": [
+          {
+            "id": 103300,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-57"
+          }
+        ],
+        "nameRight": "拉比",
+        "textRight": "藉此来打破现状"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_030.exp3.json",
+            "id": 104100,
+            "motion": 300,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-58"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "结果，最终手段@还是只有强行突破吗"
+      },
+      {
+        "chara": [
+          {
+            "cheek": 0,
+            "face": "mtn_ex_010.exp3.json",
+            "id": 104100,
+            "pos": 0,
+            "voiceFullAuto": "fullvoice/section_103302/vo_full_103302-6-59"
+          }
+        ],
+        "nameLeft": "莉薇娅",
+        "textLeft": "但是，这也没办法@我们就这样行动吧"
+      },
+      {
+        "autoTurnLast": 2,
+        "turnChangeIn": "fadeIn"
+      }
+    ]
+  },
+  "version": 3
+}
