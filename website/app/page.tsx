@@ -175,7 +175,7 @@ useEffect(() => {
       // 否则加载 R2 上的远程文件
       const SEARCH_INDEX_URL = process.env.NODE_ENV === 'development' 
         ? '/search_content.json' 
-        : 'https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev/search_content.json';
+        : 'https://github.com/HiiragiNemu/magi-reader/releases/download/latest/search_content.json';
 
       fetch(SEARCH_INDEX_URL)
        .then(res => res.json())
