@@ -4,9 +4,9 @@ import shutil
 
 def main():
     # 定义目录路径
-    src_dir = r"A:\scenario"
-    scan_dir = r"A:\magi-reader\magireco-source-master"        # 仅扫描，不修改，用于获取目录结构
-    build_dir = r"A:\magi-reader\magireco-translate-data-master" # 构建目标目录，用于转移文件
+    src_dir = r"D:\subtitles\替换json\存档"
+    scan_dir = r"D:\subtitles\magi-reader\magireco-source-master"        # 仅扫描，不修改，用于获取目录结构
+    build_dir = r"D:\subtitles\magi-reader\magireco-translate-data-master" # 构建目标目录，用于转移文件
     
     # 正则表达式：匹配 _v1 以及 _v1 (1) 等，并保留 .json 扩展名
     pattern = re.compile(r'_v1(?:\s*\(\d+\))?(\.json)$', re.IGNORECASE)
