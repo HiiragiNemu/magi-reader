@@ -174,7 +174,25 @@ for k, v in story_map.items():
         "filename_jp": v["filename_jp"]
     })
 
-final_list = natsort.natsorted(final_list, key=lambda x: x["id"])
+# 具体规则：5170 和 51701 的优先级比较
+def custom_sort_key(item):
+    id_val = item["id"]
+    
+    # 提取第一个数字段（如 517001 或 5170100）
+    match = re.match(r'^(\d+)', id_val)
+    if match:
+        num = int(match.group(1))
+    else:
+        num = 0
+    
+    # 51701 开头的数字（如 5170100, 5170110）比 5170 开头的大
+    # 给 51701 开头的加上一个大的偏移量，让它们排到后面
+    if id_val.startswith('51701'):
+        return (num + 100000, id_val)  # 加 10 万，强制排到后面
+    else:
+        return (num, id_val)
+
+final_list = natsort.natsorted(final_list, key=custom_sort_key)
 with open(os.path.join(TARGET_PUBLIC_DIR, "story_index.json"), "w", encoding="utf-8") as f:
     json.dump(final_list, f, ensure_ascii=False, indent=2)
 

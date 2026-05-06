@@ -210,14 +210,27 @@ def main():
             groups = defaultdict(list)
             for jf in json_files:
                 match = re.match(r'^(\d+)', jf)
-                if not match: continue
+                if not match:
+                    continue
                 fid = match.group(1)
-                
+
+                # 处理 7 位数字的文件（如 5170100-30_pVeLS.json）
+                if fid.startswith('51701') and len(fid) >= 7:
+                    # 提取后面的数字（如 5170100 中的 '00'）
+                    suffix = fid[5:]  # 取第6位开始：'00', '01', '02'...
+                    if suffix:
+                        # 按十位数分组：00-09 一组，10-19 一组，20-29 一组...
+                        group_num = int(suffix) // 10
+                        group_key = f"51701_{group_num}"
+                    else:
+                        group_key = fid[:5]
+
                 # 活动剧情 (5开头且>=6位) 激进合并
-                if len(fid) >= 6 and fid.startswith('5'):
+                elif len(fid) >= 6 and fid.startswith('5'):
                     group_key = fid[:5]
                 else:
                     group_key = fid
+
                 groups[group_key].append(jf)
 
             # 3. 处理每一组
