@@ -32,7 +32,6 @@ jobs:
 
       # ==========================================
       # 2. 检出目标仓库（magireco-cn-patch）
-      #    必须在 setup-node 之前，以便 cache-dependency-path 能解析
       # ==========================================
       - name: 📦 检出目标仓库
         uses: actions/checkout@v4
@@ -43,17 +42,30 @@ jobs:
           fetch-depth: 0
 
       # ==========================================
-      # 3. 设置 Node.js（此时 target-repo 已存在，cache 路径可解析）
+      # 3. 设置 Node.js（不使用 cache 参数，避免
+      #    package-lock.json 不存在时路径解析失败）
       # ==========================================
       - name: 🌐 设置 Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
-          cache-dependency-path: './target-repo/website/package-lock.json'
 
       # ==========================================
-      # 4. 设置 Python 并配置 Git
+      # 4. 缓存 node_modules（手动管理，更可靠）
+      # ==========================================
+      - name: 💾 缓存 node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: ./target-repo/website/node_modules
+          # 用 package.json 的 hash 作为 key；
+          # 若 package-lock.json 存在则优先用它
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('target-repo/website/package-lock.json', 'target-repo/website/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      # ==========================================
+      # 5. 设置 Python 并配置 Git
       # ==========================================
       - name: 🐍 设置 Python
         uses: actions/setup-python@v5
@@ -66,9 +78,8 @@ jobs:
           git config --global user.email "actions@github.com"
 
       # ==========================================
-      # 5. 运行 replace_scenario.py
-      #    在 source-repo 中读取翻译数据，
-      #    直接写入 target-repo 对应目录
+      # 6. 运行资源替换脚本
+      #    直接将翻译数据写入 target-repo 对应目录
       # ==========================================
       - name: 🔄 运行资源替换脚本
         working-directory: ./source-repo
@@ -94,23 +105,21 @@ jobs:
 
           def main():
               src_dir = os.getenv("SOURCE_DIR", "magireco-translate-data-master/Scenarios_full")
-              # target_dir 指向 target-repo 中的资源目录（相对于 source-repo 的上级）
               target_resource = os.getenv("TARGET_SOURCE_DIR", "madomagi/resource")
+              # working-directory 是 ./source-repo，target-repo 在其上级的平行目录
               target_dir = os.path.join("..", "target-repo", target_resource)
 
               print(f"源目录:   {src_dir}")
-              print(f"目标目录: {target_dir}", flush=True)
+              print(f"目标目录: {os.path.abspath(target_dir)}", flush=True)
 
-              # 检查源目录
               if not os.path.exists(src_dir):
                   print(f"❌ 错误：源目录 '{src_dir}' 不存在！")
                   print(f"当前工作目录: {os.getcwd()}")
                   sys.exit(1)
 
-              # 检查目标目录
               if not os.path.exists(target_dir):
-                  print(f"❌ 错误：目标目录 '{target_dir}' 不存在！")
-                  print(f"请确认 target-repo 已正确检出且目录结构正确。")
+                  print(f"❌ 错误：目标目录 '{os.path.abspath(target_dir)}' 不存在！")
+                  print("请确认 target-repo 已正确检出且目录结构正确。")
                   sys.exit(1)
 
               # 匹配 Windows 自动加的后缀（_v1、(1) 等）
@@ -211,8 +220,7 @@ jobs:
           EOF
 
       # ==========================================
-      # 6. 提交到目标仓库
-      #    Python 脚本已直接写入 target-repo，此处只需 git add & push
+      # 7. 提交到目标仓库
       # ==========================================
       - name: 📝 提交到目标仓库
         working-directory: ./target-repo
@@ -227,12 +235,17 @@ jobs:
           fi
 
       # ==========================================
-      # 7. 安装依赖并部署到 Cloudflare Pages
+      # 8. 安装依赖（命中缓存则跳过）
       # ==========================================
       - name: 📦 安装依赖
         working-directory: ./target-repo/website
+        # 仅在缓存未命中时执行完整安装
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
 
+      # ==========================================
+      # 9. 创建环境文件并部署
+      # ==========================================
       - name: 🔧 创建环境文件
         working-directory: ./target-repo/website
         run: |
@@ -252,7 +265,7 @@ jobs:
           npm run deploy:pages -- --project-name=magireader
 
       # ==========================================
-      # 8. 生成运行摘要
+      # 10. 生成运行摘要
       # ==========================================
       - name: 📊 生成摘要
         if: always()
