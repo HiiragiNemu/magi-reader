@@ -1,44 +1,44 @@
-name: 🔄 更新资源并提交到CN-Patch仓库 + 部署Cloudflare
+name: 🔄 更新资源并提交到 CN-Patch 仓库 + 部署 Cloudflare
 
 on:
   push:
     paths:
-      - 'Scenarios_full/**'  # 源仓库的资源变动
-      - 'website/**'         # 网站代码变动
+      - 'magireco-translate-data-master/Scenarios_full/**'  # 正确路径
+      - 'website/**'
     branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: read  # 源仓库只需要读权限
+  contents: read  # 源仓库仅需读权限
 
 jobs:
   update-and-deploy:
     runs-on: ubuntu-latest
     env:
-      PYTHONUNBUFFERED: 1  # 修复Python输出卡顿
-      SOURCE_DIR: "Scenarios_full"          # 源仓库的资源目录
+      PYTHONUNBUFFERED: 1  # 修复 Python 输出卡顿
+      SOURCE_DIR: "magireco-translate-data-master/Scenarios_full"  # ✅ 正确路径
       TARGET_REPO: "HiiragiNemu/magireco-cn-patch"  # 目标仓库
-      TARGET_RESOURCE_DIR: "madomagi/resource"         # 目标仓库的资源目录
+      TARGET_RESOURCE_DIR: "madomagi/resource"  # 目标仓库的资源目录
 
     steps:
       # ==========================================
       # 1. 检出源仓库（magi-reader）
       # ==========================================
-      - name: 📦 检出源仓库代码
+      - name: 📦 检出源仓库（magi-reader）
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # 用默认Token读当前仓库
+          token: ${{ secrets.GITHUB_TOKEN }}  # 默认 Token，读源仓库
           path: source-repo
 
       # ==========================================
-      # 2. 运行replace_scenario.py生成产物
+      # 2. 运行 replace_scenario.py 生成产物
       # ==========================================
-      - name: 🐍 设置Python
+      - name: 🐍 设置 Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: 🔧 配置Git
+      - name: 🔧 配置 Git
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
@@ -46,7 +46,9 @@ jobs:
       - name: 🔄 运行资源替换脚本
         working-directory: ./source-repo
         run: |
-          echo "开始运行replace_scenario.py..."
+          echo "开始运行 replace_scenario.py..."
+          
+          # 创建目标目录（若不存在）
           mkdir -p ${TARGET_RESOURCE_DIR}
           
           python3 << 'EOF'
@@ -65,16 +67,21 @@ jobs:
               def end_group(): print("::endgroup::")
 
           def main():
-              src_dir = os.getenv("SOURCE_DIR", "Scenarios_full")
-              target_dir = os.getenv("TARGET_RESOURCE_DIR", "madomagi/resource")
+              src_dir = os.getenv("SOURCE_DIR")  # 从环境变量读取路径
+              target_dir = os.getenv("TARGET_RESOURCE_DIR")
               
+              if not os.path.exists(src_dir):
+                  print(f"❌ 错误：源目录 '{src_dir}' 不存在！")
+                  print(f"当前工作目录：{os.getcwd()}")
+                  sys.exit(1)
+              if not os.path.exists(target_dir):
+                  print(f"❌ 错误：目标目录 '{target_dir}' 不存在！")
+                  sys.exit(1)
+
+              # 匹配 Windows 自动加的后缀（_v1、(1) 等）
               pattern = re.compile(r'_v1(?:\s*\(\d+\))?(\.json)$', re.IGNORECASE)
               
               ActionGroup.start_group("📂 扫描源资源")
-              if not os.path.exists(src_dir):
-                  print(f"错误：源目录{src_dir}不存在！")
-                  sys.exit(1)
-              
               src_files = []
               for root, _, files in os.walk(src_dir):
                   for f in files:
@@ -84,22 +91,22 @@ jobs:
                               "full_path": os.path.join(root, f),
                               "rel_path": os.path.relpath(os.path.join(root, f), src_dir)
                           })
-              print(f"共找到{len(src_files)}个源文件")
+              print(f"共找到 {len(src_files)} 个源 JSON 文件")
               ActionGroup.end_group()
-              
-              # 去后缀+匹配目标文件（逻辑同之前）
+
+              # 去后缀 + 匹配目标文件
               stripped_map = {}
               for item in src_files:
                   stripped = pattern.sub(r'\1', item["filename"])
                   stripped_map.setdefault(stripped, []).append(item)
-              
+
               ActionGroup.start_group("🔍 匹配目标文件")
               target_files = {}
               for root, _, files in os.walk(target_dir):
                   for f in files:
                       if f.lower().endswith(".json"):
                           target_files[f] = os.path.join(root, f)
-              
+
               matched = []
               unmatched = []
               for stripped, sources in stripped_map.items():
@@ -111,24 +118,24 @@ jobs:
                           })
                   else:
                       unmatched.extend([s["rel_path"] for s in sources])
-              
-              print(f"匹配成功：{len(matched)}个 | 未匹配：{len(unmatched)}个")
+
+              print(f"匹配成功：{len(matched)} 个 | 未匹配：{len(unmatched)} 个")
               if unmatched:
                   print("未匹配文件：")
                   for f in unmatched: print(f"  - {f}")
               ActionGroup.end_group()
-              
+
               # 执行替换
               ActionGroup.start_group("🔄 执行替换")
               replaced = 0
               for item in matched:
                   try:
                       shutil.copy2(item["src"], item["dst"])
-                      print(f"替换成功：{item['src']} → {item['dst']}")
+                      print(f"✅ 替换成功：{item['src']} → {item['dst']}")
                       replaced += 1
                   except Exception as e:
-                      print(f"替换失败：{e}")
-              print(f"共替换{replaced}个文件")
+                      print(f"❌ 替换失败：{e}")
+              print(f"共替换 {replaced} 个文件")
               ActionGroup.end_group()
 
           if __name__ == "__main__":
@@ -138,11 +145,11 @@ jobs:
       # ==========================================
       # 3. 检出目标仓库（magireco-cn-patch）
       # ==========================================
-      - name: 📦 检出目标仓库
+      - name: 📦 检出目标仓库（CN-Patch）
         uses: actions/checkout@v4
         with:
           repository: ${{ env.TARGET_REPO }}
-          token: ${{ secrets.TARGET_REPO_TOKEN }}  # 用你的PAT跨仓库提交
+          token: ${{ secrets.TARGET_REPO_TOKEN }}  # ✅ 你的 PAT（跨仓库提交用）
           path: target-repo
           fetch-depth: 0
 
@@ -164,9 +171,9 @@ jobs:
           fi
 
       # ==========================================
-      # 5. 部署到Cloudflare Pages（在目标仓库运行）
+      # 5. 部署到 Cloudflare Pages
       # ==========================================
-      - name: 🌐 设置Node.js
+      - name: 🌐 设置 Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -186,7 +193,7 @@ jobs:
           KV_NAMESPACE_ID=${{ secrets.KV_NAMESPACE_ID }}
           EOF
 
-      - name: 🚀 部署到Cloudflare Pages
+      - name: 🚀 构建并部署到 Cloudflare Pages
         working-directory: ./target-repo/website
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
