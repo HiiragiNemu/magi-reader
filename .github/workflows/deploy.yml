@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read  # 源仓库只需读权限
+  contents: read  # 源仓库仅需读权限
 
 jobs:
   update-and-deploy:
@@ -18,7 +18,7 @@ jobs:
       PYTHONUNBUFFERED: 1  # 修复 Python 输出卡顿
       SOURCE_DIR: "magireco-translate-data-master/Scenarios_full"
       TARGET_REPO: "HiiragiNemu/magireco-cn-patch"
-      TARGET_RESOURCE_DIR: "madomagi/resource"
+      TARGET_SOURCE_DIR: "madomagi/resource"
 
     steps:
       # ==========================================
@@ -49,7 +49,7 @@ jobs:
           echo "开始运行 replace_scenario.py..."
           
           # 确保目标目录存在
-          mkdir -p ${TARGET_RESOURCE_DIR}
+          mkdir -p ${TARGET_SOURCE_DIR}
           
           python3 << 'EOF'
           import os
@@ -68,13 +68,14 @@ jobs:
 
           def main():
               src_dir = os.getenv("SOURCE_DIR", "magireco-translate-data-master/Scenarios_full")
-              target_dir = os.getenv("TARGET_RESOURCE_DIR", "madomagi/resource")
+              target_dir = os.getenv("TARGET_SOURCE_DIR", "madomagi/resource")
               
               print(f"源目录: {src_dir}")
               print(f"目标目录: {target_dir}")
               
               if not os.path.exists(src_dir):
                   print(f"❌ 错误：源目录 '{src_dir}' 不存在！")
+                  print(f"当前工作目录: {os.getcwd()}")
                   sys.exit(1)
               
               # 列出源目录内容以便调试
@@ -87,7 +88,7 @@ jobs:
                   for f in files:
                       print(f"{sub_indent}{f}")
               
-              # 匹配模式
+              # 匹配 Windows 自动加的后缀（_v1、(1) 等）
               pattern = re.compile(r'_v1(?:\s*\(\d+\))?(\.json)$', re.IGNORECASE)
               
               ActionGroup.start_group("📂 扫描源资源")
@@ -172,6 +173,12 @@ jobs:
                   print("✅ 核对通过：替换数量与源文件数量一致。")
               else:
                   print(f"⚠️ 核对提示：替换数量({replaced})与源文件数量({len(src_files)})不一致。")
+                  if unmatched:
+                      print(f"    原因1: 有 {len(unmatched)} 个源文件在目标目录中不存在。")
+                  if has_duplicates:
+                      print("    原因2: 源目录内部有重复文件名导致多对一覆盖。")
+                  if replaced > len(src_files) and not unmatched:
+                      print("    原因3: 目标目录多个子目录存在同名文件，全部被同步替换。")
               ActionGroup.end_group()
 
           if __name__ == "__main__":
@@ -185,7 +192,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ env.TARGET_REPO }}
-          token: ${{ secrets.TARGET_REPO_TOKEN }}  # 使用你的 PAT
+          token: ${{ secrets.TARGET_REPO_TOKEN }}  # 使用你的 PAT 进行跨仓库提交
           path: target-repo
           fetch-depth: 0
 
@@ -196,19 +203,19 @@ jobs:
         working-directory: ./target-repo
         run: |
           # 确保目标目录存在
-          mkdir -p ${TARGET_RESOURCE_DIR}
+          mkdir -p ${TARGET_SOURCE_DIR}
           
           # 检查源目录是否存在并且有文件
-          SOURCE_PATH="../source-repo/${TARGET_RESOURCE_DIR}"
+          SOURCE_PATH="../source-repo/${TARGET_SOURCE_DIR}"
           if [ -d "$SOURCE_PATH" ] && [ "$(ls -A $SOURCE_PATH 2>/dev/null)" ]; then
             echo "从 $SOURCE_PATH 复制资源文件..."
-            cp -r $SOURCE_PATH/* ${TARGET_RESOURCE_DIR}/
+            cp -r $SOURCE_PATH/* ${TARGET_SOURCE_DIR}/
             echo "✅ 资源文件已复制到目标仓库"
           else
             echo "⚠️ 源目录 $SOURCE_PATH 不存在或为空，跳过复制。"
           fi
           
-          git add ${TARGET_RESOURCE_DIR}/
+          git add ${TARGET_SOURCE_DIR}/
           if git diff --cached --quiet; then
             echo "无资源变动，跳过提交"
           else
