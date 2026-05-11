@@ -1,28 +1,250 @@
-
-name: Deploy to Cloudflare Pages
+name: 🔄 更新资源并部署到 Cloudflare Pages
 
 on:
+  # 监听 madomagi/resource 目录的变动
   push:
-    branches: [main]
+    paths:
+      - 'madomagi/resource/**'
+      - 'Scenarios_full/**'
+      - 'website/**'  # 网站代码变动也触发
+    branches:
+      - main
+      - master
+  
+  # 允许手动触发
+  workflow_dispatch:
+
+permissions:
+  contents: write  # 需要写权限来提交更改
 
 jobs:
-  deploy:
+  update-and-deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./website
-
+    env:
+      PYTHONUNBUFFERED: 1  # 强制 Python 无缓冲输出
+      
     steps:
-      - uses: actions/checkout@v4
+      - name: 📦 检出代码
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - name: 🐍 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 🔧 配置 Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+      - name: 🔄 运行 replace_scenario.py
+        run: |
+          echo "开始运行 replace_scenario.py..."
+          
+          # 创建必要的目录（如果不存在）
+          mkdir -p madomagi/resource
+          mkdir -p Scenarios_full
+          
+          python3 << 'EOF'
+          import os
+          import re
+          import shutil
+          import sys
+
+          # 强制无缓冲输出
+          sys.stdout.reconfigure(line_buffering=True)
+          sys.stderr.reconfigure(line_buffering=True)
+
+          # ==========================================
+          # GitHub Actions 分组日志工具
+          # ==========================================
+          class ActionGroup:
+              @staticmethod
+              def start_group(title):
+                  print(f"::group::{title}")
+              @staticmethod
+              def end_group():
+                  print("::endgroup::")
+
+          def main():
+              # 修改为 GitHub Actions 环境的路径
+              src_dir = "Scenarios_full"
+              target_dir = "madomagi/resource"
+              
+              # 匹配 _v1 / _v1(1) / _v1 (2) 等后缀，保留 .json
+              pattern = re.compile(r'_v1(?:\s*\(\d+\))?(\.json)$', re.IGNORECASE)
+              
+              ActionGroup.start_group("📂 扫描源目录")
+              print(f"正在读取源目录(递归): {src_dir} ...")
+              if not os.path.exists(src_dir):
+                  print("错误: 源目录不存在！")
+                  return
+              if not os.path.exists(target_dir):
+                  print("错误: 目标目录不存在！")
+                  return
+
+              # 1) 递归扫描源目录所有 json 文件
+              src_files_info = []
+              for root, _, files in os.walk(src_dir):
+                  for filename in files:
+                      if filename.lower().endswith(".json"):
+                          full_path = os.path.join(root, filename)
+                          rel_path = os.path.relpath(full_path, src_dir)
+                          src_files_info.append({
+                              "filename": filename,
+                              "full_path": full_path,
+                              "rel_path": rel_path,
+                          })
+
+              total_src_count = len(src_files_info)
+              print(f"共找到 {total_src_count} 个 JSON 文件")
+              ActionGroup.end_group()
+              
+              # 2) 去后缀并检查源目录内部重复（按去后缀后的文件名）
+              ActionGroup.start_group("🔍 检查内部重复文件")
+              stripped_to_sources = {}
+              for item in src_files_info:
+                  stripped_name = pattern.sub(r'\1', item["filename"])
+                  stripped_to_sources.setdefault(stripped_name, []).append(item)
+              
+              has_internal_duplicates = False
+              for stripped_name, sources in stripped_to_sources.items():
+                  if len(sources) > 1:
+                      has_internal_duplicates = True
+                      print(f"[警告] 发现内部重复！处理后文件名 '{stripped_name}' 对应多个源文件:")
+                      for s in sources:
+                          print(f"       - {s['rel_path']}")
+              if not has_internal_duplicates:
+                  print("未发现去除后缀后产生冲突的内部重复文件，状态良好。")
+              ActionGroup.end_group()
+              
+              # 3) 递归扫描目标目录所有 json 文件，建立文件名 -> 路径列表 映射
+              ActionGroup.start_group("📂 扫描目标目录")
+              print("正在扫描目标嵌套目录寻找匹配文件...")
+              target_files_map = {}
+              for root, _, files in os.walk(target_dir):
+                  for filename in files:
+                      if filename.lower().endswith(".json"):
+                          target_files_map.setdefault(filename, []).append(os.path.join(root, filename))
+              print(f"目标目录中找到 {len(target_files_map)} 个不同的文件名")
+              ActionGroup.end_group()
+              
+              # 4) 匹配
+              ActionGroup.start_group("🔗 匹配文件")
+              matched_files = []
+              unmatched_files = []
+              
+              for stripped_name, sources in stripped_to_sources.items():
+                  if stripped_name in target_files_map:
+                      for src_item in sources:
+                          for t_path in target_files_map[stripped_name]:
+                              matched_files.append({
+                                  "source_rel": src_item["rel_path"],
+                                  "src_path": src_item["full_path"],
+                                  "target_path": t_path,
+                              })
+                  else:
+                      for src_item in sources:
+                          unmatched_files.append({
+                              "source_rel": src_item["rel_path"],
+                              "expected_name": stripped_name,
+                          })
+              
+              print(f"共匹配到可替换的目标文件数量: {len(matched_files)} 个")
+              print(f"存在于源目录但没有找到匹配: {len(unmatched_files)} 个")
+              
+              if unmatched_files:
+                  print("\n--- 以下是没有在目标目录中找到匹配的文件 ---")
+                  for uf in unmatched_files:
+                      print(f"  - [未匹配] {uf['source_rel']} (试图寻找: {uf['expected_name']})")
+              ActionGroup.end_group()
+              
+              # 5) 执行替换（在 CI 环境中自动执行）
+              ActionGroup.start_group("🔄 执行替换")
+              replaced_count = 0
+              for item in matched_files:
+                  try:
+                      # copy2 覆盖并尽量保留元数据
+                      shutil.copy2(item["src_path"], item["target_path"])
+                      print(f"[替换成功] {item['source_rel']}  -->  {item['target_path']}")
+                      replaced_count += 1
+                  except Exception as e:
+                      print(f"[替换失败] {item['source_rel']}  -->  {item['target_path']} | 错误原因: {e}")
+              
+              print(f"\n实际成功发生替换的动作次数: {replaced_count}")
+              ActionGroup.end_group()
+              
+              # 6) 最终核对
+              ActionGroup.start_group("✅ 最终核对")
+              print(f"源目录原始总文件数量(含子目录): {total_src_count}")
+              
+              if replaced_count == total_src_count:
+                  print("\n>>> 核对通过: 替换动作数与源文件总数一致。")
+              else:
+                  print("\n>>> 核对提示: 替换成功数与源文件总数不一致。")
+                  
+                  if unmatched_files:
+                      print(f"    原因1: 有 {len(unmatched_files)} 个源文件在目标目录中不存在。")
+                      
+                      print("\n--- 未匹配文件清单（完整）---")
+                      for i, uf in enumerate(unmatched_files, 1):
+                          print(f"{i:04d}. {uf['source_rel']} (查找目标名: {uf['expected_name']})")
+                      
+                      report_path = "unmatched_files.txt"
+                      with open(report_path, "w", encoding="utf-8") as f:
+                          f.write("未匹配文件清单\n")
+                          f.write("=" * 40 + "\n")
+                          for i, uf in enumerate(unmatched_files, 1):
+                              f.write(f"{i:04d}. {uf['source_rel']} (查找目标名: {uf['expected_name']})\n")
+                      
+                      print(f"\n未匹配清单已保存到: {report_path}")
+                  
+                  if has_internal_duplicates:
+                      print("    原因2: 源目录内部有重复文件名(去后缀后)导致多对一覆盖。")
+                  
+                  if replaced_count > total_src_count and not unmatched_files:
+                      print("    原因3: 目标目录多个子目录存在同名文件，全部被同步替换。")
+              
+              print("\n✅ 替换操作完成！")
+              ActionGroup.end_group()
+
+          if __name__ == "__main__":
+              main()
+          EOF
+
+      - name: 📝 提交资源更改
+        run: |
+          git add madomagi/resource/
+          
+          # 检查是否有更改需要提交
+          if git diff --cached --quiet; then
+            echo "无资源更改需要提交"
+          else
+            git commit -m "Auto: 更新资源文件 $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push origin main
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ==========================================
+      # 以下为部署到 Cloudflare Pages 的逻辑
+      # ==========================================
+      - name: 🌐 设置 Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'npm'
+          cache-dependency-path: './website/package-lock.json'
 
-      - name: Install
+      - name: 📦 安装依赖
+        working-directory: ./website
         run: npm install
 
-      - name: Create env file
+      - name: 🔧 创建环境文件
+        working-directory: ./website
         run: |
           cat > .env.production << EOF
           CF_API_TOKEN=${{ secrets.CF_API_TOKEN }}
@@ -30,7 +252,8 @@ jobs:
           KV_NAMESPACE_ID=${{ secrets.KV_NAMESPACE_ID }}
           EOF
 
-      - name: Build and Deploy
+      - name: 🚀 构建并部署到 Cloudflare Pages
+        working-directory: ./website
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
@@ -38,5 +261,24 @@ jobs:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           KV_NAMESPACE_ID: ${{ secrets.KV_NAMESPACE_ID }}
         run: |
+          echo "清理旧构建文件..."
           rm -rf .next .open-next
+          
+          echo "开始部署到 Cloudflare Pages..."
           npm run deploy:pages -- --project-name=magireader
+          echo "✅ 部署完成！"
+
+      - name: 📊 生成运行摘要
+        if: always()
+        run: |
+          echo "## 🔄 更新资源并部署完成" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**仓库**: ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+          echo "**分支**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**提交**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**触发原因**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🚀 部署信息" >> $GITHUB_STEP_SUMMARY
+          echo "- **平台**: Cloudflare Pages" >> $GITHUB_STEP_SUMMARY
+          echo "- **项目名**: magireader" >> $GITHUB_STEP_SUMMARY
+          echo "- **时间**: $(date -u +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
