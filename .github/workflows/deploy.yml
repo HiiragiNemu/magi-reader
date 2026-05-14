@@ -1,28 +1,253 @@
-
-name: Deploy to Cloudflare Pages
+name: 🔄 更新资源并提交到 CN-Patch 仓库 + 部署 Cloudflare
 
 on:
   push:
+    paths:
+      - 'magireco-translate-data-master/Scenarios_full/**'
+      - 'website/**'
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  deploy:
+  update-and-deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./website
+    env:
+      PYTHONUNBUFFERED: 1
+      SOURCE_DIR: "magireco-translate-data-master/Scenarios_full"
+      TARGET_REPO: "HiiragiNemu/magireco-cn-patch"
+      TARGET_SOURCE_DIR: "madomagi/resource"
 
     steps:
-      - uses: actions/checkout@v4
+      # ==========================================
+      # 1. 检出源仓库（magi-reader）
+      # ==========================================
+      - name: 📦 检出源仓库代码
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: source-repo
 
-      - uses: actions/setup-node@v4
+      # ==========================================
+      # 2. 检出目标仓库（magireco-cn-patch）
+      # ==========================================
+      - name: 📦 检出目标仓库
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TARGET_REPO }}
+          token: ${{ secrets.TARGET_REPO_TOKEN }}
+          path: target-repo
+          fetch-depth: 0
+
+      # ==========================================
+      # 3. 设置 Node.js（不使用 cache 参数，避免
+      #    package-lock.json 不存在时路径解析失败）
+      # ==========================================
+      - name: 🌐 设置 Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Install
+      # ==========================================
+      # 4. 缓存 node_modules（手动管理，更可靠）
+      # ==========================================
+      - name: 💾 缓存 node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: ./target-repo/website/node_modules
+          # 用 package.json 的 hash 作为 key；
+          # 若 package-lock.json 存在则优先用它
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('target-repo/website/package-lock.json', 'target-repo/website/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      # ==========================================
+      # 5. 设置 Python 并配置 Git
+      # ==========================================
+      - name: 🐍 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 🔧 配置 Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+      # ==========================================
+      # 6. 运行资源替换脚本
+      #    直接将翻译数据写入 target-repo 对应目录
+      # ==========================================
+      - name: 🔄 运行资源替换脚本
+        working-directory: ./source-repo
+        run: |
+          echo "开始运行资源替换脚本..."
+
+          python3 << 'EOF'
+          import os
+          import re
+          import shutil
+          import sys
+
+          sys.stdout.reconfigure(line_buffering=True)
+          sys.stderr.reconfigure(line_buffering=True)
+
+          class ActionGroup:
+              @staticmethod
+              def start_group(title):
+                  print(f"::group::{title}", flush=True)
+              @staticmethod
+              def end_group():
+                  print("::endgroup::", flush=True)
+
+          def main():
+              src_dir = os.getenv("SOURCE_DIR", "magireco-translate-data-master/Scenarios_full")
+              target_resource = os.getenv("TARGET_SOURCE_DIR", "madomagi/resource")
+              # working-directory 是 ./source-repo，target-repo 在其上级的平行目录
+              target_dir = os.path.join("..", "target-repo", target_resource)
+
+              print(f"源目录:   {src_dir}")
+              print(f"目标目录: {os.path.abspath(target_dir)}", flush=True)
+
+              if not os.path.exists(src_dir):
+                  print(f"❌ 错误：源目录 '{src_dir}' 不存在！")
+                  print(f"当前工作目录: {os.getcwd()}")
+                  sys.exit(1)
+
+              if not os.path.exists(target_dir):
+                  print(f"❌ 错误：目标目录 '{os.path.abspath(target_dir)}' 不存在！")
+                  print("请确认 target-repo 已正确检出且目录结构正确。")
+                  sys.exit(1)
+
+              # 匹配 Windows 自动加的后缀（_v1、(1) 等）
+              pattern = re.compile(r'_v1(?:\s*\(\d+\))?(\.json)$', re.IGNORECASE)
+
+              ActionGroup.start_group("📂 扫描源资源")
+              src_files = []
+              for root, _, files in os.walk(src_dir):
+                  for f in files:
+                      if f.lower().endswith(".json"):
+                          src_files.append({
+                              "filename": f,
+                              "full_path": os.path.join(root, f),
+                              "rel_path": os.path.relpath(os.path.join(root, f), src_dir)
+                          })
+              print(f"共找到 {len(src_files)} 个源 JSON 文件")
+              ActionGroup.end_group()
+
+              # 去后缀 + 检查重复
+              stripped_map = {}
+              for item in src_files:
+                  stripped = pattern.sub(r'\1', item["filename"])
+                  stripped_map.setdefault(stripped, []).append(item)
+
+              ActionGroup.start_group("🔍 检查重复文件")
+              has_duplicates = False
+              for stripped, sources in stripped_map.items():
+                  if len(sources) > 1:
+                      has_duplicates = True
+                      print(f"[警告] 发现重复！'{stripped}' 对应多个源文件:")
+                      for s in sources:
+                          print(f"       - {s['rel_path']}")
+              if not has_duplicates:
+                  print("未发现重复文件，状态良好。")
+              ActionGroup.end_group()
+
+              # 扫描目标目录
+              ActionGroup.start_group("📂 扫描目标目录")
+              target_files = {}
+              for root, _, files in os.walk(target_dir):
+                  for f in files:
+                      if f.lower().endswith(".json"):
+                          target_files[f] = os.path.join(root, f)
+              print(f"目标目录中找到 {len(target_files)} 个 JSON 文件")
+              ActionGroup.end_group()
+
+              # 匹配文件
+              ActionGroup.start_group("🔗 匹配文件")
+              matched = []
+              unmatched = []
+
+              for stripped, sources in stripped_map.items():
+                  if stripped in target_files:
+                      for src in sources:
+                          matched.append({
+                              "src": src["full_path"],
+                              "dst": target_files[stripped]
+                          })
+                  else:
+                      unmatched.extend([s["rel_path"] for s in sources])
+
+              print(f"匹配成功: {len(matched)} 个 | 未匹配: {len(unmatched)} 个")
+              if unmatched:
+                  print("未匹配文件:")
+                  for f in unmatched:
+                      print(f"  - {f}")
+              ActionGroup.end_group()
+
+              # 执行替换
+              ActionGroup.start_group("🔄 执行替换")
+              replaced = 0
+              for item in matched:
+                  try:
+                      shutil.copy2(item["src"], item["dst"])
+                      print(f"✅ 替换成功: {item['src']} → {item['dst']}")
+                      replaced += 1
+                  except Exception as e:
+                      print(f"❌ 替换失败: {e}")
+              print(f"共替换 {replaced} 个文件")
+              ActionGroup.end_group()
+
+              # 验证结果
+              ActionGroup.start_group("✅ 验证结果")
+              if replaced == len(src_files):
+                  print("✅ 核对通过：替换数量与源文件数量一致。")
+              else:
+                  print(f"⚠️ 核对提示：替换数量({replaced})与源文件数量({len(src_files)})不一致。")
+                  if unmatched:
+                      print(f"    原因1: 有 {len(unmatched)} 个源文件在目标目录中不存在。")
+                  if has_duplicates:
+                      print("    原因2: 源目录内部有重复文件名导致多对一覆盖。")
+                  if replaced > len(src_files) and not unmatched:
+                      print("    原因3: 目标目录多个子目录存在同名文件，全部被同步替换。")
+              ActionGroup.end_group()
+
+          if __name__ == "__main__":
+              main()
+          EOF
+
+      # ==========================================
+      # 7. 提交到目标仓库
+      # ==========================================
+      - name: 📝 提交到目标仓库
+        working-directory: ./target-repo
+        run: |
+          git add ${TARGET_SOURCE_DIR}/
+          if git diff --cached --quiet; then
+            echo "无资源变动，跳过提交"
+          else
+            git commit -m "Auto: 同步资源 $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push origin main
+            echo "✅ 资源已成功推送到目标仓库"
+          fi
+
+      # ==========================================
+      # 8. 安装依赖（命中缓存则跳过）
+      # ==========================================
+      - name: 📦 安装依赖
+        working-directory: ./target-repo/website
+        # 仅在缓存未命中时执行完整安装
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
 
-      - name: Create env file
+      # ==========================================
+      # 9. 创建环境文件并部署
+      # ==========================================
+      - name: 🔧 创建环境文件
+        working-directory: ./target-repo/website
         run: |
           cat > .env.production << EOF
           CF_API_TOKEN=${{ secrets.CF_API_TOKEN }}
@@ -30,13 +255,24 @@ jobs:
           KV_NAMESPACE_ID=${{ secrets.KV_NAMESPACE_ID }}
           EOF
 
-      - name: Build and Deploy
+      - name: 🚀 部署到 Cloudflare Pages
+        working-directory: ./target-repo/website
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          KV_NAMESPACE_ID: ${{ secrets.KV_NAMESPACE_ID }}
         run: |
           rm -rf .next .open-next
           npm run deploy:pages -- --project-name=magireader
+
+      # ==========================================
+      # 10. 生成运行摘要
+      # ==========================================
+      - name: 📊 生成摘要
+        if: always()
+        run: |
+          echo "## 🔄 跨仓库更新完成" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**源仓库**: HiiragiNemu/magi-reader" >> $GITHUB_STEP_SUMMARY
+          echo "**目标仓库**: ${{ env.TARGET_REPO }}" >> $GITHUB_STEP_SUMMARY
+          echo "**触发原因**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**时间**: $(date -u +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
