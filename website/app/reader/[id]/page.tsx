@@ -11,6 +11,10 @@ import AboutModal from '@/components/AboutModal';
 type StoryLine = {
   speaker: string;
   text: string;
+  kind?: 'dialogue' | 'narration' | 'fnarration';
+  position?: 'left' | 'center' | 'right';
+  sourceCommand?: string;
+  isScene0?: boolean;
   isHeader?: boolean;
   headerId?: string;
   isChoice?: boolean;
@@ -27,6 +31,52 @@ const COLOR_MAP: Record<string, string> = {
 // 搜索用：剥离所有非文字字符（保留中日文汉字、平假名、片假名、字母、数字）
 const SEARCH_STRIP_RE = /[^\u3040-\u309f\u30a0-\u30ff\u4e00-\u9fffa-zA-Z0-9]/g;
 const normalize = (s: string) => s.replace(/\\n/g, '').replace(SEARCH_STRIP_RE, '').toLowerCase();
+const S0_LINE_PREFIX = '@S0\t';
+
+const normalizeScene0Position = (pos: unknown): StoryLine['position'] => {
+  if (pos === 'left' || pos === 'center' || pos === 'right') return pos;
+  if (pos === 'Left') return 'left';
+  if (pos === 'Center') return 'center';
+  if (pos === 'Right') return 'right';
+  return undefined;
+};
+
+const parseScene0Line = (line: string): StoryLine | null => {
+  if (!line.startsWith(S0_LINE_PREFIX)) return null;
+  try {
+    const payload = JSON.parse(line.slice(S0_LINE_PREFIX.length));
+    const speaker = String(payload.speaker || '旁白').trim() || '旁白';
+    const text = String(payload.text || '').trim().replace(/\\n/g, '\n');
+    if (!text) return null;
+    return {
+      speaker,
+      text,
+      kind: payload.kind === 'fnarration' ? 'fnarration' : payload.kind === 'narration' ? 'narration' : 'dialogue',
+      position: normalizeScene0Position(payload.position),
+      sourceCommand: payload.command ? String(payload.command) : undefined,
+      isScene0: true,
+    };
+  } catch (e) {
+    console.warn('Scene0 行解析失败:', line, e);
+    return null;
+  }
+};
+
+const serializeLine = (line: StoryLine): string => {
+  if (line.isHeader) return line.text;
+  if (line.isChoice) return `选项: 【${line.choiceLabel || line.text}】→ ${line.choiceTargetId ? `group_${line.choiceTargetId}` : ''}`;
+  if (line.isScene0 && line.sourceCommand) {
+    return S0_LINE_PREFIX + JSON.stringify({
+      kind: line.kind || 'dialogue',
+      speaker: line.speaker || '旁白',
+      text: line.text || '',
+      command: line.sourceCommand,
+      ...(line.position ? { position: line.position } : {}),
+    });
+  }
+  return `${line.speaker || '旁白'}: ${line.text || ''}`;
+};
+
 const parseText = (raw: string): StoryLine[] => {
   if (!raw) return [];
   const lines = raw.split('\n');
@@ -71,6 +121,12 @@ const parseText = (raw: string): StoryLine[] => {
       continue;
     }
 
+    const scene0Line = parseScene0Line(line);
+    if (scene0Line) {
+      parsed.push(scene0Line);
+      continue;
+    }
+
     const separatorIdx = line.search(/[:：﹕︰︓]/);
     if (separatorIdx > 0 && separatorIdx < 20 && !line.startsWith('[')) {
       const rawName = line.substring(0, separatorIdx).trim().replace(/\s+/g, '') || '旁白';
@@ -90,7 +146,7 @@ const parseText = (raw: string): StoryLine[] => {
       continue;
     }
     const last = result.length > 0 ? result[result.length - 1] : null;
-    if (last && !last.isHeader && !last.isChoice && last.speaker === current.speaker) {
+    if (last && !last.isHeader && !last.isChoice && !last.isScene0 && !current.isScene0 && last.speaker === current.speaker) {
       last.text += '\n' + current.text;
     } else {
       result.push({ ...current });
@@ -169,9 +225,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
 
   const downloadTxt = () => {
     const linesToExport = editedCnLines.length > 0 ? editedCnLines : cnLines;
-    const content = linesToExport.map(l =>
-      l.isHeader ? l.text : `${l.speaker}: ${l.text}`
-    ).join('\n');
+    const content = linesToExport.map(serializeLine).join('\n');
     const blob = new Blob(["\ufeff" + content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -193,9 +247,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const submitToCloud = async () => {
     if (editedCnLines.length === 0) return alert("内容为空，无法提交\n\n请先点击「仅填入译名」或「填入日文原文」初始化内容");
 
-    const contentText = editedCnLines.map(l =>
-      l.isHeader ? l.text : `${l.speaker}: ${l.text}`
-    ).join('\n');
+    const contentText = editedCnLines.map(serializeLine).join('\n');
 
     if (contentText.trim().length < 10) {
       return alert("内容过短，请先编辑翻译内容后再提交");
@@ -393,6 +445,18 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
         </span>
       );
     });
+  };
+
+  const getLineTextAlignClass = (line?: StoryLine) => {
+    if (line?.position === 'right') return 'text-right';
+    if (line?.position === 'center') return 'text-center';
+    return 'text-left';
+  };
+
+  const getLineKindClass = (line?: StoryLine) => {
+    if (line?.kind === 'fnarration') return 'italic opacity-80';
+    if (line?.kind === 'narration') return 'opacity-90';
+    return '';
   };
 
   if (loading) return <div className="flex h-screen items-center justify-center opacity-50">Loading...</div>;
@@ -692,6 +756,7 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
                             onChange={(e) => {
                               const newLines = [...editedCnLines];
                               newLines[idx] = {
+                                ...(newLines[idx] || row.cn || row.jp || {}),
                                 speaker: newLines[idx]?.speaker || row.jp?.speaker || "旁白",
                                 text: e.target.value,
                                 isHeader: row.jp?.isHeader || row.cn?.isHeader
@@ -712,7 +777,7 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
                           >
                             {row.cn.speaker}
                           </div>
-                          <div className="flex-1 whitespace-pre-wrap pt-0.5">
+                          <div className={`flex-1 whitespace-pre-wrap pt-0.5 ${getLineTextAlignClass(row.cn)} ${getLineKindClass(row.cn)}`}>
                             {renderStyledText(row.cn.text, !!cnSpeakerMatch)}
                           </div>
                         </>
@@ -734,7 +799,7 @@ const renderStyledText = (text: string, forceHighlight: boolean = false) => {
                           >
                             {row.jp.speaker}
                           </div>
-                          <div className="flex-1 whitespace-pre-wrap opacity-70 font-sans text-sm">
+                          <div className={`flex-1 whitespace-pre-wrap opacity-70 font-sans text-sm ${getLineTextAlignClass(row.jp)} ${getLineKindClass(row.jp)}`}>
                             {renderStyledText(row.jp.text, !!jpSpeakerMatch)}
                           </div>
                         </>

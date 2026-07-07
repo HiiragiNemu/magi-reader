@@ -1,13 +1,22 @@
 
----[Section 010] (Source: 903101-010_homura.json) ---
-ほむら: はっ！
-ほむら: 伝えなきゃ…
-ほむら: みんなキュゥべえに騙されてる！
+--- [Section 010] (Source: 903101-010_homura.json) ---
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"はっ！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(日付は…)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(元に戻ってる！)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(やった…私、魔法で\\n時間を戻せたんだ！)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(ううん、でも…\\n喜んでる場合じゃない)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"伝えなきゃ…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"みんなキュゥべえに騙されてる！","command":"textAvCenter","position":"center"}
 
----[Section 030] (Source: 903101-030_homura.json) ---
-谷渡: 検査、お疲れ様
-ほむら: は、はい
-谷渡: 結果を持ってくるから\n少し待っててくださいね
-ほむら: よし
-旁白: カチッ
-ほむら: 時間を止めて\n検査の数値を書き換える
+--- [Section 030] (Source: 903101-030_homura.json) ---
+@S0	{"kind":"dialogue","speaker":"医師","text":"検査、お疲れ様","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"は、はい","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"医師","text":"結果を持ってくるから\\n少し待っててくださいね","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"よし","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(今の私は魔法少女で、心臓の\\n病気の症状が消えている)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(でも、急に健康体になると\\n体の異常を疑われる)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(少しでも早く\\n退院するためには…)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(検査の結果は、ほどほどに\\n悪くなければならない)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(だから私は…)","command":"progressFnarration"}
+@S0	{"kind":"narration","speaker":"旁白","text":"カチッ","command":"narration"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"時間を止めて\\n検査の数値を書き換える","command":"textAvCenter","position":"center"}

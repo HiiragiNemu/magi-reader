@@ -1,22 +1,26 @@
 
----[Section 010] (Source: 904101-010.json) ---
-旁白: 砂時計が回って
-旁白: 鹿目まどかのその願いは
-旁白: 時を縛る呪いのように響く
-旁白: ジリリリリリ！
-旁白: ――――っ!!
-旁白: …暁美さん
-旁白: あなたは…\n鹿目さんを、救うために…
-旁白: …………
-旁白: ガサ…
-まばゆ: よし、グリーフシードも\n元通りですね
-まばゆ: こうしては、いられません
-まばゆ: 私が今からやるべきことは…
+--- [Section 010] (Source: 904101-010.json) ---
+@S0	{"kind":"narration","speaker":"旁白","text":"砂時計が回って","command":"narration"}
+@S0	{"kind":"narration","speaker":"旁白","text":"鹿目まどかのその願いは","command":"narration"}
+@S0	{"kind":"narration","speaker":"旁白","text":"時を縛る呪いのように響く","command":"narration"}
+@S0	{"kind":"narration","speaker":"旁白","text":"ジリリリリリ！","command":"narration"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"――――っ!!","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"…暁美さん","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"あなたは…\\n鹿目さんを、救うために…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"…………","command":"textAvCenter","position":"center"}
+@S0	{"kind":"narration","speaker":"旁白","text":"ガサ…","command":"narration"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"よし、グリーフシードも\\n元通りですね","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"こうしては、いられません","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"私が今からやるべきことは…","command":"textAvCenter","position":"center"}
 
----[Section 030] (Source: 904101-030.json) ---
-まどか＆さやかの声: ほら、ケーキ屋さんの前に\nネコがいるじゃない？
-まどか: あ…うん、エイミーだよね
-仁美: エイミー？
-まどか: そう、ものすごーくグルメでね
-まどか: チキン味のカリカリしか\n食べないんだよ
-旁白: お、チャンス！
+--- [Section 030] (Source: 904101-030.json) ---
+@S0	{"kind":"dialogue","speaker":"さやか","text":"ほら、ケーキ屋さんの前に\\nネコがいるじゃない？","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"まどか","text":"あ…うん、エイミーだよね","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"仁美","text":"エイミー？","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"まどか","text":"そう、ものすごーくグルメでね","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"まどか","text":"チキン味のカリカリしか\\n食べないんだよ","command":"textAvLeft","position":"left"}
+@S0	{"kind":"fnarration","speaker":"まばゆ","text":"(やっぱり暁美さん\\n学校には来ていない)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"まばゆ","text":"(この日付だと\\nまだ病院にいるはずです)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"お、チャンス！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"まばゆ","text":"(職員室で書類を探して\\n今の彼女の入院先を見つけて…)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"まばゆ","text":"(暁美さんに会わなきゃ！)","command":"progressFnarration"}

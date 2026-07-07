@@ -1,13 +1,22 @@
 
----[Section 010] (Source: 903101-010_homura.json) ---
-焰: 哈！
-焰: 必须得告诉她们…
-焰: 大家都被丘比骗了！
+--- [Section 010] (Source: 903101-010_homura.json) ---
+@S0	{"kind":"dialogue","speaker":"焰","text":"哈！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"焰","text":"（日期是…）","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"焰","text":"（变回来了！）","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"焰","text":"（太好了…我用魔法\\n成功回溯时间了！）","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"焰","text":"（不，但是…\\n现在可不是该开心的时候）","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"必须得告诉她们…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"大家都被丘比骗了！","command":"textAvCenter","position":"center"}
 
----[Section 030] (Source: 903101-030_homura.json) ---
-旁白: 辛苦你检查了
-焰: 嗯、嗯
-旁白: 我马上去取结果\n你稍微等一下
-焰: 很好
-旁白: 咔嚓
-焰: 停止时间\n改写检查的数据
+--- [Section 030] (Source: 903101-030_homura.json) ---
+@S0	{"kind":"dialogue","speaker":"医生","text":"辛苦你检查了","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"嗯、嗯","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"医生","text":"我马上去取结果\\n你稍微等一下","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"很好","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"焰","text":"（现在的我是魔法少女\\n心脏病的症状也已经消失了）","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"焰","text":"（但是，如果突然变健康\\n也会被人怀疑身体的异常）","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"焰","text":"（为了能尽快出院…）","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"焰","text":"（必须把检查的结果\\n适当修改得差一点才行）","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"焰","text":"（所以，我要…）","command":"progressFnarration"}
+@S0	{"kind":"narration","speaker":"旁白","text":"咔嚓","command":"narration"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"停止时间\\n改写检查的数据","command":"textAvCenter","position":"center"}

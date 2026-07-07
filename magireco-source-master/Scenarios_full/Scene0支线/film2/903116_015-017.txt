@@ -1,24 +1,29 @@
 
----[Section 015] (Source: 903116-015_sayaka.json) ---
-恭介: 動かないんだ
-恭介: もう痛みさえ感じない\nこんな手なんて…
-まどか＆さやかの声: 大丈夫だよ\nきっと何とかなるよ
-まどか＆さやかの声: 諦めなければきっといつか…
-恭介: 諦めろって言われたのさ
-恭介: もう演奏は諦めろってさ\n先生から直々に言われたよ
-恭介: 今の医学じゃ無理だって
-恭介: 僕の手はもう二度と動かない
-恭介: 奇跡か魔法でもない限り\n治らない…
-まどか＆さやかの声: あるよ！
-恭介: え？
-まどか＆さやかの声: 奇跡も魔法もあるんだよ
-キュゥべえ: …………
+--- [Section 015] (Source: 903116-015_sayaka.json) ---
+@S0	{"kind":"dialogue","speaker":"恭介","text":"動かないんだ","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"恭介","text":"もう痛みさえ感じない\\nこんな手なんて…","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"さやか","text":"大丈夫だよ\\nきっと何とかなるよ","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"さやか","text":"諦めなければきっといつか…","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"恭介","text":"諦めろって言われたのさ","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"恭介","text":"もう演奏は諦めろってさ\\n先生から直々に言われたよ","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"恭介","text":"今の医学じゃ無理だって","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"恭介","text":"僕の手はもう二度と動かない","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"恭介","text":"奇跡か魔法でもない限り\\n治らない…","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"さやか","text":"あるよ！","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"恭介","text":"え？","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"さやか","text":"奇跡も魔法もあるんだよ","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"キュゥべえ","text":"…………","command":"textAvCenter","position":"center"}
 
----[Section 017] (Source: 903116-017_sayaka.json) ---
-キュゥべえ: 気が変わったのかい？
-まどか＆さやかの声: …そんなの、あんたに\n何の関係があるの？
-まどか＆さやかの声: いいから早く、契約して
-まどか＆さやかの声: お願い
-キュゥべえ: わかったよ、契約は成立だ
-キュゥべえ: さあ受け取るといい
-キュゥべえ: それがキミの運命だ
+--- [Section 017] (Source: 903116-017_sayaka.json) ---
+@S0	{"kind":"dialogue","speaker":"キュゥべえ","text":"気が変わったのかい？","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"さやか","text":"…そんなの、あんたに\\n何の関係があるの？","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"さやか","text":"いいから早く、契約して","command":"textAvLeft","position":"left"}
+@S0	{"kind":"fnarration","speaker":"さやか","text":"(もう、悩むのはやめた)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"さやか","text":"(目の前で、奇跡を必要と\\nしている人がいて…)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"さやか","text":"(あたしには\\nその奇跡を起こす力がある)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"さやか","text":"(だったら…)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"さやか","text":"お願い","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"キュゥべえ","text":"わかったよ、契約は成立だ","command":"textAvRight","position":"right"}
+@S0	{"kind":"fnarration","speaker":"さやか","text":"「ああっ！」","command":"Fnarration"}
+@S0	{"kind":"dialogue","speaker":"キュゥべえ","text":"さあ受け取るといい","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"キュゥべえ","text":"それがキミの運命だ","command":"textAvRight","position":"right"}

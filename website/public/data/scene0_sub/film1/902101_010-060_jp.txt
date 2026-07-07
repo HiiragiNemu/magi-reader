@@ -1,37 +1,57 @@
 
----[Section 010] (Source: 902101-010_homura.json) ---
-ほむら: う…
-ほむら: ここは…
-ほむら: 私まだ…退院してない？
-ほむら: ！
-ほむら: 夢じゃ…ない！
-ほむら: 私…魔法少女になったの…？
+--- [Section 010] (Source: 902101-010_homura.json) ---
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"う…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"ここは…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(病室…なんで？)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(あ…カレンダーの日付\\n元に、戻ってる)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"私まだ…退院してない？","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(まさか…今まで\\n見てたのは夢？)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(これ…ソウルジェム！)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"夢じゃ…ない！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(まさか…もしかして…)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(キュゥべえとの契約で\\n時間が巻き戻った…？)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"私…魔法少女になったの…？","command":"textAvCenter","position":"center"}
 
----[Section 020] (Source: 902101-020_homura.json) ---
-旁白: 暁美さん
-ほむら: あ…は、はいっ！
-谷渡: 大変申し訳ないんだが\n一緒に来てもらえるかな？
-谷渡: もう一度だけ\n診察をやり直したくてね
-ほむら: え…
-ほむら: 私、なにか悪いところが\nありましたか？
-谷渡: いや…そうじゃない\nというか、むしろ逆で…
-谷渡: 君の体に、悪い場所が\n全く見当たらないんだ
+--- [Section 020] (Source: 902101-020_homura.json) ---
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(時間が巻き戻ったってことは\\nワルプルギスの夜も来てない)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(だから、鹿目さんも\\nまだ生きてるはず…！)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(早く退院して\\n会いに行かないと…！)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"医師の声","text":"暁美さん","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"あ…は、はいっ！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"医師","text":"大変申し訳ないんだが\\n一緒に来てもらえるかな？","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"医師","text":"もう一度だけ\\n診察をやり直したくてね","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"え…","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"私、なにか悪いところが\\nありましたか？","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"医師","text":"いや…そうじゃない\\nというか、むしろ逆で…","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"医師","text":"君の体に、悪い場所が\\n全く見当たらないんだ","command":"textAvRight","position":"right"}
 
----[Section 060] (Source: 902101-060_homura.json) ---
-ほむら: はぁ…
-ほむら: ごめんね、鹿目さん\n私まだ…会いに行けそうにないよ
-ほむら: 「全くの健康体です」
-ほむら: ええと…
-ほむら: わ…すごい…
-ほむら: ホントに私\n魔法少女になってる！
-ほむら: …よし
-ほむら: やってみよう
-ほむら: …………
-ほむら: はっ！
-旁白: カチッ
-ほむら: …………
-ほむら: あれ？
-ほむら: 何にも、起きない…!?
-ほむら: …ううん
-ほむら: もしかして、これって…
-ほむら: 時間が、止まってる…？
+--- [Section 060] (Source: 902101-060_homura.json) ---
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"はぁ…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"ごめんね、鹿目さん\\n私まだ…会いに行けそうにないよ","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(色んな検査を受けて\\n結局出た結論が…)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"「全くの健康体です」","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(原因がわからなすぎて\\n退院が延期だなんて)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(もちろん、原因は私が\\n魔法少女になったことだけど)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(でも、そんなこと\\n説明できるわけないし…)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(というか)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(私、ホントに魔法少女…\\nなんだよね？)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"ええと…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(確かこの、ソウルジェム？\\nを使って…)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"わ…すごい…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"ホントに私\\n魔法少女になってる！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(でも…)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(魔法少女になったら、魔女と\\n戦わなきゃならないんだよね)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(鹿目さんは、魔法の弓矢で\\n巴さんは、魔法の銃)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"ほむら","text":"(それじゃあ\\n私の魔法って、一体…？)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"…よし","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"やってみよう","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"…………","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"はっ！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"narration","speaker":"旁白","text":"カチッ","command":"narration"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"…………","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"あれ？","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"何にも、起きない…!?","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"…ううん","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"もしかして、これって…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"ほむら","text":"時間が、止まってる…？","command":"textAvCenter","position":"center"}

@@ -34,7 +34,91 @@ const CATEGORY_CONFIG: Record<string, { label: string; icon: any }> = {
   "scene0_sub": { label: "S0支线", icon: User },
   "Unclassified": { label: "其他", icon: Folder },
 };
+const SEARCH_INDEX_LOCAL_URL = '/search_content.json';
 
+const SEARCH_INDEX_CLOUDFLARE_URL =
+  'https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev/search_content.json';
+
+const SEARCH_INDEX_GITHUB_URL =
+  'https://github.com/HiiragiNemu/magi-reader/releases/download/latest/search_content.json';
+
+const SEARCH_INDEX_SOURCE_KEY = 'magi-reader-search-index-source-v1';
+
+const getSearchIndexSources = () => {
+  // 本地开发：先用 website/public/search_content.json
+  if (
+  process.env.NODE_ENV === 'development' ||
+  (
+    typeof window !== 'undefined' &&
+    ['localhost', '127.0.0.1'].includes(window.location.hostname)
+  )
+) {
+    return [
+      SEARCH_INDEX_LOCAL_URL,
+      SEARCH_INDEX_CLOUDFLARE_URL,
+      SEARCH_INDEX_GITHUB_URL,
+    ];
+  }
+
+  // 线上：默认 R2 优先，GitHub 备用
+  const defaultSources = [
+    SEARCH_INDEX_CLOUDFLARE_URL,
+    SEARCH_INDEX_GITHUB_URL,
+  ];
+
+  // 浏览器里记录上次成功的源，下次优先用它
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem(SEARCH_INDEX_SOURCE_KEY);
+    if (saved && defaultSources.includes(saved)) {
+      return [
+        saved,
+        ...defaultSources.filter(url => url !== saved),
+      ];
+    }
+  }
+
+  return defaultSources;
+};
+
+const fetchSearchIndexWithFallback = async () => {
+  const sources = getSearchIndexSources();
+  let lastError: unknown = null;
+
+  for (const url of sources) {
+    try {
+      console.info('尝试加载搜索索引:', url);
+
+      const res = await fetch(url, {
+        cache: 'force-cache',
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${url}`);
+      }
+
+      const data = await res.json();
+
+      if (!Array.isArray(data)) {
+        throw new Error(`搜索索引格式错误: ${url}`);
+      }
+
+      if (
+        typeof window !== 'undefined' &&
+        url !== SEARCH_INDEX_LOCAL_URL
+      ) {
+        localStorage.setItem(SEARCH_INDEX_SOURCE_KEY, url);
+      }
+
+      console.info('搜索索引加载成功:', url);
+      return data;
+    } catch (err) {
+      console.warn('搜索索引加载失败，尝试下一个源:', url, err);
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error('所有搜索索引源均加载失败');
+};
 const getDisplayLabel = (story: Story) => {
   // 优先使用 titles.json 里的中文标题，其次 filename，最后 ID
   const label = story.title || story.filename_cn || story.filename_jp || story.id;
@@ -170,16 +254,8 @@ useEffect(() => {
     if (searchTerm.length > 0 && searchIndex.length === 0 && !searchLoading && (searchMode === 'all' || searchMode === 'content')) {
       setSearchLoading(true);
       
-      // 智能加载逻辑：
-      // 如果是在本地开发环境 (localhost)，尝试加载本地文件（如果存在）
-      // 否则加载 R2 上的远程文件
-      const SEARCH_INDEX_URL = process.env.NODE_ENV === 'development' 
-        ? '/search_content.json' 
-        : 'https://github.com/HiiragiNemu/magi-reader/releases/download/latest/search_content.json';
-
-      fetch(SEARCH_INDEX_URL)
-       .then(res => res.json())
-       .then(data => {
+fetchSearchIndexWithFallback()
+ .then(data => {
         setSearchIndex(data.map((e: any) => {
           // 1. 核心修复：先消灭字面量的 "\n" 字符串，再消灭真正的换行和 @
           let cleanRaw = e.c
@@ -217,8 +293,10 @@ if (enableContentSearch) {
       const searchFlat = lowerSearch.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, '');
       
       if (searchFlat) {
-        searchIndex.forEach(entry => {
-          const flatContent = entry._n || '';
+      searchIndex.forEach(entry => {
+        if (!searchJp && entry.l === 'jp') return;
+
+        const flatContent = entry._n || '';
           const idx = flatContent.indexOf(searchFlat);
           
           if (idx !== -1 && entry._p) {
@@ -297,7 +375,7 @@ if (enableContentSearch) {
     });
 
     return { categories: Array.from(cats).sort(), displayedGroups: sortedGroups };
-  }, [stories, lastCategory, searchTerm, searchIndex, searchMode]); // 依赖项必须包含 searchMode
+  }, [stories, lastCategory, searchTerm, searchIndex, searchMode, searchJp]); // 依赖项必须包含 searchMode
 
   const CategoryNav = ({ mobile = false }) => (
     <nav className={mobile ? "flex overflow-x-auto p-2 gap-2 no-scrollbar bg-inherit border-b border-black/5" : "flex-1 overflow-y-auto p-2 space-y-1"}>

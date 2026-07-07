@@ -1,45 +1,64 @@
 
----[Section 010] (Source: 902106-010_mami.json) ---
-谷渡: いいかみんな！10分後に\nこの場所に集合だからな
-谷渡: トイレなんかはちゃんと\n済ませておくように！
-旁白: …………
-旁白: あ…あれ？
-旁白: なんか…\n向こうから、気配が…
-旁白: 何かが…
-マミ: えいっ！
-旁白: きゃあああっ!!
+--- [Section 010] (Source: 902106-010_mami.json) ---
+@S0	{"kind":"dialogue","speaker":"先生","text":"いいかみんな！10分後に\\nこの場所に集合だからな","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"先生","text":"トイレなんかはちゃんと\\n済ませておくように！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"マミ","text":"(ん…)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"マミ","text":"(妙ね、この感覚は\\nもしかして…)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"…………","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"マミ","text":"(!!)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"マミ","text":"(だめ…彼女、結界の方に…)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"あ…あれ？","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"なんか…\\n向こうから、気配が…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"何かが…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"マミ","text":"(仕方ないわ)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"マミ","text":"(本当は、こんなことをしている\\n場合じゃないのだけれど…)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"マミ","text":"(リボンを使って…)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"マミ","text":"えいっ！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"まばゆ","text":"きゃあああっ!!","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"マミ","text":"(ちょっとだけ、外で\\n待っていてちょうだい)","command":"progressFnarration"}
 
----[Section 020] (Source: 902106-020_kyoko.json) ---
-杏子: ん…？
-まどか＆さやかの声: しっかし、毎年自動車工場\n見学なんて、飽きるよねえ
-まどか: そうかな、わたしは面白くて\n毎回じーっと見ちゃうけど
-まどか＆さやかの声: はぁ…まどかはほんと\nイイコだねぇ…
+--- [Section 020] (Source: 902106-020_kyoko.json) ---
+@S0	{"kind":"fnarration","speaker":"杏子","text":"(さて、と…)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"杏子","text":"(そろそろ収穫の時期…か)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"ん…？","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"杏子","text":"(あそこにいるのは…)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"さやか","text":"しっかし、毎年自動車工場\\n見学なんて、飽きるよねえ","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"まどか","text":"そうかな、わたしは面白くて\\n毎回じーっと見ちゃうけど","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"さやか","text":"はぁ…まどかはほんと\\nイイコだねぇ…","command":"textAvRight","position":"right"}
+@S0	{"kind":"fnarration","speaker":"杏子","text":"(あいつら確か、去年もここで\\n見かけなかったっけ…？)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"杏子","text":"(まあいいや、あたしが\\nやることは変わんない)","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"杏子","text":"(おかしな横槍が入る前に\\nさっさと収穫させてもらうか)","command":"progressFnarration"}
 
----[Section 030] (Source: 902106-030_madoka.json) ---
-まどか: 新しい魔女…！
-まどか: マミさん！
-まどか: わたし今、魔女の結界にいて…
-まどか: お願いしま…
-まどか: きゃっ！
-旁白: せいっ!!
-まどか: えっ
-杏子: あんた、新入りかい？
-杏子: だったら、肝に銘じておくんだね
-杏子: 縄張りを荒らす泥棒猫は\n殺されたって文句は言えない
-まどか: ぁ…
-杏子: ここはあたしの縄張りで…
-杏子: こいつはあたしの獲物なのさ！
+--- [Section 030] (Source: 902106-030_madoka.json) ---
+@S0	{"kind":"dialogue","speaker":"まどか","text":"新しい魔女…！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"まどか","text":"マミさん！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"マミ","text":"ええ、聞こえるわ","command":"Fnarration"}
+@S0	{"kind":"dialogue","speaker":"まどか","text":"わたし今、魔女の結界にいて…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"マミ","text":"ごめんなさい！","command":"Fnarration"}
+@S0	{"kind":"fnarration","speaker":"マミ","text":"少し待っていて\\nすぐに向かうから！","command":"Fnarration"}
+@S0	{"kind":"dialogue","speaker":"まどか","text":"お願いしま…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"まどか","text":"きゃっ！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"まどか","text":"(だめだ、マミさんが来るまで\\nもたないかも…)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"？？？の声","text":"せいっ!!","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"まどか","text":"えっ","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"あんた、新入りかい？","command":"textAvRight","position":"right"}
+@S0	{"kind":"fnarration","speaker":"まどか","text":"(この人は…魔法少女？)","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"だったら、肝に銘じておくんだね","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"縄張りを荒らす泥棒猫は\\n殺されたって文句は言えない","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"まどか","text":"ぁ…","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"ここはあたしの縄張りで…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"こいつはあたしの獲物なのさ！","command":"textAvCenter","position":"center"}
 
----[Section 040] (Source: 902106-040_kyoko.json) ---
-マミ: 鹿目さんっ！
-まどか: マミさん…！
-マミ: 大丈夫だった？\nどこにもケガはない？
-まどか: はいっ、この人が\n助けてくれたおかげで…
-杏子: 助けたわけじゃない
-杏子: グリーフシードの横取りを\n阻止しただけさ
-マミ: 佐倉さん…！
-杏子: その新入り、あんたの\n仲間なんだろう？
-杏子: あたしが来なきゃ\n魔女にやられてた
-杏子: ちょっと見ないうちに\n腕が鈍っちまったんじゃねーの？
-マミ: …………！
-杏子: お友だちごっこも\nほどほどにしておくこった
+--- [Section 040] (Source: 902106-040_kyoko.json) ---
+@S0	{"kind":"dialogue","speaker":"マミ","text":"鹿目さんっ！","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"まどか","text":"マミさん…！","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"マミ","text":"大丈夫だった？\\nどこにもケガはない？","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"まどか","text":"はいっ、この人が\\n助けてくれたおかげで…","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"助けたわけじゃない","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"グリーフシードの横取りを\\n阻止しただけさ","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"マミ","text":"佐倉さん…！","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"その新入り、あんたの\\n仲間なんだろう？","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"あたしが来なきゃ\\n魔女にやられてた","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"ちょっと見ないうちに\\n腕が鈍っちまったんじゃねーの？","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"マミ","text":"…………！","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"お友だちごっこも\\nほどほどにしておくこった","command":"textAvLeft","position":"left"}
