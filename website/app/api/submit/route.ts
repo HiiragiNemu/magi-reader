@@ -1,127 +1,341 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
+import {
+  getAdminAccessConfiguration,
+  getRateLimitIdentity,
+} from '@/lib/submission-security';
 
-const CF_API_TOKEN = process.env.CF_API_TOKEN || '';
-const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID || '';
-const KV_NAMESPACE_ID = process.env.KV_NAMESPACE_ID || '';
+const SUBMISSION_PREFIX = 'submit_';
+const RATE_LIMIT_PREFIX = 'ratelimit_submit_';
+const RATE_LIMIT_WINDOW_SECONDS = 10 * 60;
+const RATE_LIMIT_MAX_SUBMISSIONS = 5;
+const MAX_REQUEST_BYTES = 2 * 1024 * 1024;
+const MAX_STORY_ID_LENGTH = 256;
+const MAX_CONTENT_LENGTH = 500_000;
+const MAX_AUTHOR_LENGTH = 80;
+const MIN_CONTENT_LENGTH = 10;
+const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' };
 
-const KV_BASE = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/storage/kv/namespaces/${KV_NAMESPACE_ID}`;
+type ValidSubmission = {
+  storyId: string;
+  content: string;
+  author: string;
+};
 
-async function kvPut(key: string, value: string) {
-  const formData = new FormData();
-  formData.append('value', value);
-  formData.append('metadata', JSON.stringify({}));
+type ValidationResult =
+  | { ok: true; submission: ValidSubmission }
+  | { ok: false; error: string };
 
-  const res = await fetch(`${KV_BASE}/values/${encodeURIComponent(key)}`, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `Bearer ${CF_API_TOKEN}`,
+type BodyResult =
+  | { ok: true; value: unknown }
+  | { ok: false; status: 400 | 413; error: string };
+
+function errorResponse(error: string, status: number, headers?: HeadersInit) {
+  return NextResponse.json(
+    { error },
+    {
+      status,
+      headers: {
+        ...NO_STORE_HEADERS,
+        ...headers,
+      },
     },
-    body: formData,
-  });
-
-  return res.ok;
+  );
 }
 
-async function kvList(prefix: string) {
-  const res = await fetch(`${KV_BASE}/keys?prefix=${encodeURIComponent(prefix)}&limit=100`, {
-    headers: {
-      'Authorization': `Bearer ${CF_API_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.result || [];
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-async function kvGet(key: string) {
-  const res = await fetch(`${KV_BASE}/values/${encodeURIComponent(key)}`, {
-    headers: {
-      'Authorization': `Bearer ${CF_API_TOKEN}`,
-    },
-  });
+async function readBoundedJson(request: NextRequest): Promise<BodyResult> {
+  const declaredLength = request.headers.get('content-length');
+  if (declaredLength) {
+    const parsedLength = Number(declaredLength);
+    if (Number.isFinite(parsedLength) && parsedLength > MAX_REQUEST_BYTES) {
+      return { ok: false, status: 413, error: '提交内容过大' };
+    }
+  }
 
-  if (!res.ok) return null;
-  return await res.text();
+  if (!request.body) {
+    return { ok: false, status: 400, error: '请求内容为空' };
+  }
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    totalBytes += value.byteLength;
+    if (totalBytes > MAX_REQUEST_BYTES) {
+      await reader.cancel();
+      return { ok: false, status: 413, error: '提交内容过大' };
+    }
+    chunks.push(value);
+  }
+
+  const bodyBytes = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bodyBytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  try {
+    const text = new TextDecoder('utf-8', { fatal: true }).decode(bodyBytes);
+    return { ok: true, value: JSON.parse(text) as unknown };
+  } catch {
+    return { ok: false, status: 400, error: '请求必须是有效的 JSON' };
+  }
+}
+
+function validateSubmission(value: unknown): ValidationResult {
+  if (!isRecord(value)) {
+    return { ok: false, error: '请求内容格式错误' };
+  }
+
+  const allowedFields = new Set(['story_id', 'content', 'author']);
+  if (Object.keys(value).some((key) => !allowedFields.has(key))) {
+    return { ok: false, error: '请求包含不支持的字段' };
+  }
+
+  if (typeof value.story_id !== 'string' || typeof value.content !== 'string') {
+    return { ok: false, error: 'story_id 和 content 必须是字符串' };
+  }
+  if (value.author !== undefined && typeof value.author !== 'string') {
+    return { ok: false, error: 'author 必须是字符串' };
+  }
+
+  const storyId = value.story_id.trim();
+  const content = value.content;
+  const author = value.author?.trim() || 'Anonymous';
+
+  if (
+    storyId.length === 0 ||
+    storyId.length > MAX_STORY_ID_LENGTH ||
+    /[\u0000-\u001f\u007f]/u.test(storyId)
+  ) {
+    return { ok: false, error: 'story_id 长度或格式不合法' };
+  }
+  if (
+    author.length > MAX_AUTHOR_LENGTH ||
+    /[\u0000-\u001f\u007f]/u.test(author)
+  ) {
+    return { ok: false, error: 'author 长度或格式不合法' };
+  }
+  if (
+    content.length > MAX_CONTENT_LENGTH ||
+    content.trim().length < MIN_CONTENT_LENGTH ||
+    content.includes('\u0000')
+  ) {
+    return { ok: false, error: 'content 长度或格式不合法' };
+  }
+
+  return {
+    ok: true,
+    submission: {
+      storyId,
+      content,
+      author,
+    },
+  };
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(value),
+  );
+  return Array.from(new Uint8Array(digest), (byte) =>
+    byte.toString(16).padStart(2, '0'),
+  ).join('');
+}
+
+async function consumeRateLimit(
+  kv: SubmissionKvNamespace,
+  request: NextRequest,
+): Promise<{ allowed: true } | { allowed: false; retryAfter: number }> {
+  const now = Math.floor(Date.now() / 1000);
+  const windowStart =
+    Math.floor(now / RATE_LIMIT_WINDOW_SECONDS) * RATE_LIMIT_WINDOW_SECONDS;
+  const clientIdentity = getRateLimitIdentity(request.headers);
+  const clientHash = (await sha256Hex(clientIdentity)).slice(0, 32);
+  const key = `${RATE_LIMIT_PREFIX}${clientHash}_${windowStart}`;
+  const storedCount = Number.parseInt((await kv.get(key)) || '0', 10);
+  const count = Number.isFinite(storedCount) ? storedCount : 0;
+
+  if (count >= RATE_LIMIT_MAX_SUBMISSIONS) {
+    return {
+      allowed: false,
+      retryAfter: Math.max(
+        1,
+        windowStart + RATE_LIMIT_WINDOW_SECONDS - now,
+      ),
+    };
+  }
+
+  await kv.put(key, String(count + 1), {
+    expirationTtl: RATE_LIMIT_WINDOW_SECONDS * 2,
+  });
+  return { allowed: true };
+}
+
+async function secureTokenEquals(
+  providedToken: string,
+  expectedToken: string,
+): Promise<boolean> {
+  const [providedHash, expectedHash] = await Promise.all([
+    crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(providedToken),
+    ),
+    crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(expectedToken),
+    ),
+  ]);
+  const providedBytes = new Uint8Array(providedHash);
+  const expectedBytes = new Uint8Array(expectedHash);
+  let difference = providedBytes.length ^ expectedBytes.length;
+
+  for (let index = 0; index < providedBytes.length; index += 1) {
+    difference |= providedBytes[index] ^ (expectedBytes[index] ?? 0);
+  }
+  return difference === 0;
+}
+
+async function getRuntimeEnv(): Promise<CloudflareEnv> {
+  const { env } = await getCloudflareContext({ async: true });
+  return env;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { story_id, content, author } = await request.json();
-
-    if (!story_id || !content) {
-      return NextResponse.json({ error: '内容为空' }, { status: 400 });
+    const contentType = request.headers
+      .get('content-type')
+      ?.split(';', 1)[0]
+      .trim()
+      .toLowerCase();
+    if (contentType !== 'application/json') {
+      return errorResponse('Content-Type 必须是 application/json', 415);
     }
 
-    if (!CF_API_TOKEN || !CF_ACCOUNT_ID || !KV_NAMESPACE_ID) {
-      return NextResponse.json({ 
-        error: '服务端配置缺失',
-        debug: {
-          hasToken: !!CF_API_TOKEN,
-          hasAccount: !!CF_ACCOUNT_ID,
-          hasKV: !!KV_NAMESPACE_ID,
-        }
-      }, { status: 500 });
+    const env = await getRuntimeEnv();
+    const kv = env.SUBMISSIONS_KV;
+    if (!kv) {
+      return errorResponse('投稿服务暂不可用', 503);
     }
 
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const key = `submit_${story_id}_${timestamp}`;
-
-    const data = JSON.stringify({
-      story_id,
-      content,
-      author: author || 'Anonymous',
-      submitted_at: new Date().toISOString(),
-    });
-
-    const success = await kvPut(key, data);
-
-    if (success) {
-      return NextResponse.json({ success: true, key });
-    } else {
-      return NextResponse.json({ error: 'KV 写入失败' }, { status: 500 });
+    const bodyResult = await readBoundedJson(request);
+    if (!bodyResult.ok) {
+      return errorResponse(bodyResult.error, bodyResult.status);
     }
-  } catch (e: any) {
-    return NextResponse.json({ 
-      error: '服务器错误', 
-      message: e?.message 
-    }, { status: 500 });
+
+    const validation = validateSubmission(bodyResult.value);
+    if (!validation.ok) {
+      return errorResponse(validation.error, 400);
+    }
+
+    // Only a structurally valid submission consumes the user's quota. This
+    // prevents malformed requests from locking out other users behind a
+    // shared IP address.
+    const rateLimit = await consumeRateLimit(kv, request);
+    if (!rateLimit.allowed) {
+      return errorResponse('提交过于频繁，请稍后再试', 429, {
+        'Retry-After': String(rateLimit.retryAfter),
+      });
+    }
+
+    const submittedAt = new Date().toISOString();
+    const key = `${SUBMISSION_PREFIX}${Date.now()}_${crypto.randomUUID()}`;
+    await kv.put(
+      key,
+      JSON.stringify({
+        story_id: validation.submission.storyId,
+        content: validation.submission.content,
+        author: validation.submission.author,
+        submitted_at: submittedAt,
+      }),
+    );
+
+    return NextResponse.json(
+      { success: true, key },
+      { headers: NO_STORE_HEADERS },
+    );
+  } catch (error: unknown) {
+    console.error('Failed to store submission', error);
+    return errorResponse('服务器暂时无法处理提交', 500);
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    if (!CF_API_TOKEN || !CF_ACCOUNT_ID || !KV_NAMESPACE_ID) {
-      return NextResponse.json({ 
-        error: '配置缺失',
-        debug: {
-          hasToken: !!CF_API_TOKEN,
-          hasAccount: !!CF_ACCOUNT_ID,
-          hasKV: !!KV_NAMESPACE_ID,
-        }
-      }, { status: 500 });
+    const env = await getRuntimeEnv();
+    const kv = env.SUBMISSIONS_KV;
+    const adminConfiguration = getAdminAccessConfiguration(
+      Boolean(kv),
+      env.SUBMISSIONS_ADMIN_TOKEN,
+    );
+    if (!adminConfiguration.ok) {
+      return errorResponse('管理员接口不可用', adminConfiguration.status);
+    }
+    if (!kv) return errorResponse('管理员接口不可用', 503);
+    const adminToken = adminConfiguration.token;
+
+    const authorization = request.headers.get('authorization');
+    const bearerMatch = authorization?.match(/^Bearer\s+(.+)$/iu);
+    const providedToken = bearerMatch?.[1]?.trim();
+    if (
+      !providedToken ||
+      !(await secureTokenEquals(providedToken, adminToken))
+    ) {
+      return errorResponse('未授权', 401, {
+        'WWW-Authenticate': 'Bearer realm="submissions-admin"',
+      });
     }
 
-    const keys = await kvList('submit_');
-    const submissions = [];
+    const url = new URL(request.url);
+    const requestedLimit = Number.parseInt(url.searchParams.get('limit') || '50', 10);
+    const limit = Number.isFinite(requestedLimit)
+      ? Math.min(100, Math.max(1, requestedLimit))
+      : 50;
+    const cursor = url.searchParams.get('cursor') || undefined;
+    const listed = await kv.list({
+      prefix: SUBMISSION_PREFIX,
+      limit,
+      cursor,
+    });
 
-    for (const keyObj of keys) {
-      const value = await kvGet(keyObj.name);
-      if (value) {
+    const submissions = await Promise.all(
+      listed.keys.map(async ({ name }) => {
+        const value = await kv.get(name);
+        if (!value) return null;
+
         try {
-          submissions.push({ key: keyObj.name, ...JSON.parse(value) });
+          const parsed = JSON.parse(value) as unknown;
+          return isRecord(parsed)
+            ? { ...parsed, key: name }
+            : { key: name, invalid: true };
         } catch {
-          submissions.push({ key: keyObj.name, raw: value });
+          return { key: name, invalid: true };
         }
-      }
-    }
+      }),
+    );
 
-    return NextResponse.json(submissions);
-  } catch (e: any) {
-    return NextResponse.json({ 
-      error: '查询失败', 
-      message: e?.message 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        submissions: submissions.filter(
+          (submission) => submission !== null,
+        ),
+        cursor: listed.list_complete ? null : listed.cursor,
+        list_complete: listed.list_complete,
+      },
+      { headers: NO_STORE_HEADERS },
+    );
+  } catch (error: unknown) {
+    console.error('Failed to list submissions', error);
+    return errorResponse('服务器暂时无法处理查询', 500);
   }
 }

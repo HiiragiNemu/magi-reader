@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useSyncExternalStore } from "react";
 
-type Theme = 'light' | 'dark' | 'paper' | 'green';
+export type Theme = 'light' | 'dark' | 'paper' | 'green';
 
 interface GlobalState {
   theme: Theme;
@@ -13,36 +13,92 @@ interface GlobalState {
 
 const GlobalContext = createContext<GlobalState | undefined>(undefined);
 
-export function GlobalProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('paper');
-  const [lastCategory, setLastCategory] = useState('main_story');
-  const [mounted, setMounted] = useState(false);
+const THEME_KEY = 'magi_theme';
+const CATEGORY_KEY = 'magi_cat';
+const THEME_EVENT = 'magi-reader-theme-change';
+const CATEGORY_EVENT = 'magi-reader-category-change';
+const VALID_THEMES = new Set<Theme>(['light', 'dark', 'paper', 'green']);
+let volatileTheme: Theme = 'paper';
+let volatileCategory = 'main_story';
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('magi_theme') as Theme;
-    const savedCat = localStorage.getItem('magi_cat');
-    if (savedTheme) setThemeState(savedTheme);
-    if (savedCat) setLastCategory(savedCat);
-    setMounted(true);
-  }, []);
+const subscribeToSetting = (
+  storageKey: string,
+  eventName: string,
+  callback: () => void,
+): (() => void) => {
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === storageKey) callback();
+  };
+  window.addEventListener('storage', onStorage);
+  window.addEventListener(eventName, callback);
+  return () => {
+    window.removeEventListener('storage', onStorage);
+    window.removeEventListener(eventName, callback);
+  };
+};
+
+const readTheme = (): Theme => {
+  try {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored && VALID_THEMES.has(stored as Theme)) return stored as Theme;
+  } catch {
+    // The in-memory value still keeps the interface usable when storage is blocked.
+  }
+  return volatileTheme;
+};
+
+const readCategory = (): string => {
+  try {
+    return localStorage.getItem(CATEGORY_KEY)?.trim() || volatileCategory;
+  } catch {
+    return volatileCategory;
+  }
+};
+
+const subscribeTheme = (callback: () => void) =>
+  subscribeToSetting(THEME_KEY, THEME_EVENT, callback);
+const subscribeCategory = (callback: () => void) =>
+  subscribeToSetting(CATEGORY_KEY, CATEGORY_EVENT, callback);
+const serverTheme = (): Theme => 'paper';
+const serverCategory = (): string => 'main_story';
+
+export function GlobalProvider({ children }: { children: React.ReactNode }) {
+  const theme = useSyncExternalStore(
+    subscribeTheme,
+    readTheme,
+    serverTheme,
+  );
+  const lastCategory = useSyncExternalStore(
+    subscribeCategory,
+    readCategory,
+    serverCategory,
+  );
 
   const setTheme = (t: Theme) => {
-    setThemeState(t);
-    localStorage.setItem('magi_theme', t);
-    
-    const root = document.documentElement;
-    root.classList.remove('dark');
-    if (t === 'dark') root.classList.add('dark');
-  };
-  
-  const setLastCategoryWrapper = (c: string) => {
-    setLastCategory(c);
-    localStorage.setItem('magi_cat', c);
+    if (!VALID_THEMES.has(t)) return;
+    volatileTheme = t;
+    try {
+      localStorage.setItem(THEME_KEY, t);
+    } catch {
+      // Fall back to the in-memory value above.
+    }
+    window.dispatchEvent(new Event(THEME_EVENT));
   };
 
-  if (!mounted) {
-    return <div className="min-h-screen bg-[#f3eacb]"></div>;
-  }
+  const setLastCategoryWrapper = (c: string) => {
+    const category = c.trim() || 'main_story';
+    volatileCategory = category;
+    try {
+      localStorage.setItem(CATEGORY_KEY, category);
+    } catch {
+      // Fall back to the in-memory value above.
+    }
+    window.dispatchEvent(new Event(CATEGORY_EVENT));
+  };
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
 
   return (
     <GlobalContext.Provider value={{ theme, setTheme, lastCategory, setLastCategory: setLastCategoryWrapper }}>

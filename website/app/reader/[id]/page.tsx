@@ -1,865 +1,1059 @@
 "use client";
-import { useEffect, useState, use } from 'react';
+
+import { use, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Menu, Settings, Download, ArrowLeft, Sun, Moon, BookOpen, Leaf, X, Search } from 'lucide-react';
-import Sidebar, { Story } from '@/components/Sidebar';
-import { useGlobal } from '@/app/providers';
-import { SPEAKER_COLOR_MAP, NAME_TRANSLATE_MAP } from '@/app/config/dictionary';
+import {
+  BookOpen,
+  Download,
+  Leaf,
+  Menu,
+  Moon,
+  Search,
+  Settings,
+  Sun,
+  X,
+} from 'lucide-react';
+
 import AboutModal from '@/components/AboutModal';
+import Sidebar, { type Story } from '@/components/Sidebar';
+import StoryText from '@/components/StoryText';
+import {
+  speakerColorFor,
+  translateSpeakerName,
+} from '@/app/config/dictionary';
+import { useGlobal } from '@/app/providers';
+import { readLocalStoryPayload, readScenarioFile } from '@/lib/local-story';
+import { normalizeSearchText } from '@/lib/search';
+import { loadStoryIndex } from '@/lib/story-index';
+import { useDialog } from '@/lib/use-dialog';
+import {
+  alignStoryLines,
+  makeSectionAnchorId,
+  parseStoryContent,
+  serializeStoryLine,
+  type AlignedStoryLine,
+  type StoryFormat,
+  type StoryLine,
+} from '@/lib/story-parser';
 
-type StoryLine = {
-  speaker: string;
-  text: string;
-  kind?: 'dialogue' | 'narration' | 'fnarration';
-  position?: 'left' | 'center' | 'right';
-  sourceCommand?: string;
-  isScene0?: boolean;
-  isHeader?: boolean;
-  headerId?: string;
-  isChoice?: boolean;
-  choiceLabel?: string;
-  choiceTargetId?: string;
-};
-// 统一管理颜色映射，方便后期添加新颜色
-const COLOR_MAP: Record<string, string> = {
-  red: "text-red-500 font-bold",
-  blue: "text-blue-500 font-bold",
-  yellow: "text-yellow-500 font-bold",
-  black: "font-black text-gray-900 drop-shadow-sm"
-};
-// 搜索用：剥离所有非文字字符（保留中日文汉字、平假名、片假名、字母、数字）
-const SEARCH_STRIP_RE = /[^\u3040-\u309f\u30a0-\u30ff\u4e00-\u9fffa-zA-Z0-9]/g;
-const normalize = (s: string) => s.replace(/\\n/g, '').replace(SEARCH_STRIP_RE, '').toLowerCase();
-const S0_LINE_PREFIX = '@S0\t';
+type ReaderMode = 'cn' | 'split' | 'jp';
+type EditSeed = 'empty' | 'jp' | 'current';
 
-const normalizeScene0Position = (pos: unknown): StoryLine['position'] => {
-  if (pos === 'left' || pos === 'center' || pos === 'right') return pos;
-  if (pos === 'Left') return 'left';
-  if (pos === 'Center') return 'center';
-  if (pos === 'Right') return 'right';
-  return undefined;
+type LoadedSource = {
+  name: string;
+  raw: string;
+  format: StoryFormat;
 };
 
-const parseScene0Line = (line: string): StoryLine | null => {
-  if (!line.startsWith(S0_LINE_PREFIX)) return null;
+const THEME_STYLES: Record<string, string> = {
+  light: 'bg-transparent text-gray-900',
+  dark: 'bg-transparent text-gray-200',
+  paper: 'bg-transparent text-[#4a4036]',
+  green: 'bg-transparent text-[#003300]',
+};
+
+const HEADER_STYLES: Record<string, string> = {
+  light: 'border-gray-200 bg-white/80 backdrop-blur-md',
+  dark: 'border-gray-800 bg-[#0f172a]/80 backdrop-blur-md',
+  paper: 'border-[#e6dfc5] bg-[#f0e6d2]/60 backdrop-blur-md',
+  green: 'border-[#A8D8B9] bg-[#C7EDCC]/80 backdrop-blur-md',
+};
+
+const FORMAT_LABELS: Record<StoryFormat, string> = {
+  'plain-text': 'TXT',
+  'scene0-text': 'Scene0 TXT',
+  'magireco-json': 'Magia Record JSON',
+  'exedra-json': 'Magia Exedra JSON',
+  'generic-json': '通用 JSON',
+};
+
+const safeDownloadName = (value: string): string =>
+  value.replace(/[<>:"/\\|?*\u0000-\u001F]/g, '-').replace(/\s+/g, ' ').trim() || 'story';
+
+const filenameFromPath = (path: string, fallback: string): string => {
   try {
-    const payload = JSON.parse(line.slice(S0_LINE_PREFIX.length));
-    const speaker = String(payload.speaker || '旁白').trim() || '旁白';
-    const text = String(payload.text || '').trim().replace(/\\n/g, '\n');
-    if (!text) return null;
-    return {
-      speaker,
+    const pathname = new URL(path, window.location.origin).pathname;
+    return decodeURIComponent(pathname.split('/').filter(Boolean).at(-1) || fallback);
+  } catch {
+    return fallback;
+  }
+};
+
+const downloadContent = (content: string, filename: string, addBom = false) => {
+  const blob = new Blob([addBom ? `\uFEFF${content}` : content], {
+    type: filename.toLowerCase().endsWith('.json')
+      ? 'application/json;charset=utf-8'
+      : 'text/plain;charset=utf-8',
+  });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = safeDownloadName(filename);
+  anchor.style.display = 'none';
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 100);
+};
+
+const sourceDownloadName = (id: string, language: 'cn' | 'jp', source: LoadedSource): string => {
+  const extension = source.name.toLowerCase().endsWith('.json') ? 'json' : 'txt';
+  return `${id}_${language}.${extension}`;
+};
+
+const translatedSpeaker = (speaker: string): string =>
+  translateSpeakerName(speaker);
+
+const seedEditableLines = (
+  cnLines: StoryLine[],
+  jpLines: StoryLine[],
+  seed: EditSeed,
+): StoryLine[] => {
+  const rows = alignStoryLines(cnLines, jpLines);
+  return rows.flatMap(({ cn, jp }) => {
+    const basis = cn ?? jp;
+    if (!basis) return [];
+
+    if (seed === 'current' && cn) return [{ ...cn }];
+
+    const structural = Boolean(basis.isHeader || basis.isChoice);
+    const text =
+      structural
+        ? basis.text
+        : seed === 'jp'
+          ? (jp ?? basis).text
+          : seed === 'current' && cn
+            ? cn.text
+            : '';
+
+    return [{
+      ...basis,
+      speaker: cn?.speaker || translatedSpeaker((jp ?? basis).speaker),
       text,
-      kind: payload.kind === 'fnarration' ? 'fnarration' : payload.kind === 'narration' ? 'narration' : 'dialogue',
-      position: normalizeScene0Position(payload.position),
-      sourceCommand: payload.command ? String(payload.command) : undefined,
-      isScene0: true,
-    };
-  } catch (e) {
-    console.warn('Scene0 行解析失败:', line, e);
-    return null;
-  }
+    }];
+  });
 };
 
-const serializeLine = (line: StoryLine): string => {
-  if (line.isHeader) return line.text;
-  if (line.isChoice) return `选项: 【${line.choiceLabel || line.text}】→ ${line.choiceTargetId ? `group_${line.choiceTargetId}` : ''}`;
-  if (line.isScene0 && line.sourceCommand) {
-    return S0_LINE_PREFIX + JSON.stringify({
-      kind: line.kind || 'dialogue',
-      speaker: line.speaker || '旁白',
-      text: line.text || '',
-      command: line.sourceCommand,
-      ...(line.position ? { position: line.position } : {}),
-    });
-  }
-  return `${line.speaker || '旁白'}: ${line.text || ''}`;
+const lineTextAlignClass = (line?: StoryLine): string => {
+  if (line?.position === 'right') return 'text-right';
+  if (line?.position === 'center') return 'text-center';
+  return 'text-left';
 };
 
-const parseText = (raw: string): StoryLine[] => {
-  if (!raw) return [];
-  const lines = raw.split('\n');
-  const parsed: StoryLine[] = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].replace(/^\uFEFF/, '').trim();
-    if (!line) continue;
-
-    if (line.startsWith('---')) {
-      const headerText = line.replace(/---/g, '').trim();
-      const sourceMatch = headerText.match(/Source:\s*([\w\d\-]+)/i);
-      const sourceId = sourceMatch ? sourceMatch[1] : '';
-      const secMatch = headerText.match(/Section\s*(\d+)/i);
-      const secNum = secMatch ? secMatch[1] : '';
-      const branchMatch = headerText.match(/(?:Branch|group_)\s*(\d+)/i);
-      const branchNum = branchMatch ? branchMatch[1] : '';
-
-      let headerId = '';
-      if (sourceId && secNum) {
-        headerId = `sec-${sourceId}-${secNum}${branchNum ? `-branch-${branchNum}` : ''}`;
-      } else {
-        headerId = headerText.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-      }
-
-      parsed.push({ speaker: '', text: line, isHeader: true, headerId });
-      continue;
-    }
-
-    const choiceMatch = line.match(/^选项:\s*【(.+?)】→\s*(\S+)/);
-    if (choiceMatch) {
-      const choiceLabel = choiceMatch[1];
-      const targetGroup = choiceMatch[2];
-      const branchNum = targetGroup.replace('group_', '');
-      parsed.push({
-        speaker: '选项',
-        text: `【${choiceLabel}】`,
-        isChoice: true,
-        choiceLabel,
-        choiceTargetId: branchNum,
-      });
-      continue;
-    }
-
-    const scene0Line = parseScene0Line(line);
-    if (scene0Line) {
-      parsed.push(scene0Line);
-      continue;
-    }
-
-    const separatorIdx = line.search(/[:：﹕︰︓]/);
-    if (separatorIdx > 0 && separatorIdx < 20 && !line.startsWith('[')) {
-      const rawName = line.substring(0, separatorIdx).trim().replace(/\s+/g, '') || '旁白';
-      const content = line.substring(separatorIdx + 1).trim().replace(/\\n/g, '\n');
-      parsed.push({ speaker: rawName, text: content });
-    } else {
-      const content = line.trim().replace(/\\n/g, '\n');
-      parsed.push({ speaker: '旁白', text: content });
-    }
-  }
-
-  const result: StoryLine[] = [];
-  for (let i = 0; i < parsed.length; i++) {
-    const current = parsed[i];
-    if (current.isHeader || current.isChoice) {
-      result.push(current);
-      continue;
-    }
-    const last = result.length > 0 ? result[result.length - 1] : null;
-    if (last && !last.isHeader && !last.isChoice && !last.isScene0 && !current.isScene0 && last.speaker === current.speaker) {
-      last.text += '\n' + current.text;
-    } else {
-      result.push({ ...current });
-    }
-  }
-  return result;
+const lineKindClass = (line?: StoryLine): string => {
+  if (line?.kind === 'fnarration') return 'italic opacity-80';
+  if (line?.kind === 'narration') return 'opacity-90';
+  return '';
 };
 
-const alignSections = (cn: StoryLine[], jp: StoryLine[]) => {
-  const result: { cn?: StoryLine; jp?: StoryLine }[] = [];
-  const cnLen = cn.length;
-  const jpLen = jp.length;
-  const maxLen = Math.max(cnLen, jpLen);
+const speakerColor = (speaker: string): string | undefined =>
+  speakerColorFor(speaker);
 
-  if (Math.abs(cnLen - jpLen) > 10) {
-    const minLen = Math.min(cnLen, jpLen);
-    for (let i = 0; i < minLen; i++) {
-      result.push({ cn: cn[i], jp: jp[i] });
-    }
-    for (let i = minLen; i < maxLen; i++) {
-      if (i < cnLen) result.push({ cn: cn[i] });
-      if (i < jpLen) result.push({ jp: jp[i] });
-    }
-  } else {
-    for (let i = 0; i < maxLen; i++) {
-      result.push({ cn: cn[i], jp: jp[i] });
-    }
-  }
-  return result;
+const parseLoadedSource = (name: string, raw: string): {
+  source: LoadedSource;
+  lines: StoryLine[];
+  title?: string;
+  warnings: string[];
+} => {
+  const parsed = parseStoryContent(raw, {
+    filename: name,
+    mergeConsecutiveTextLines: true,
+  });
+  return {
+    source: { name, raw, format: parsed.format },
+    lines: parsed.lines,
+    title: parsed.title,
+    warnings: parsed.warnings,
+  };
 };
 
 export default function ReaderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const searchParams = useSearchParams();
-  const cnPath = searchParams.get('cn') || '';
-  const jpPath = searchParams.get('jp') || '';
-
+  const isLocal = searchParams.get('local') === '1';
   const { theme, setTheme } = useGlobal();
+
   const [cnLines, setCnLines] = useState<StoryLine[]>([]);
   const [jpLines, setJpLines] = useState<StoryLine[]>([]);
+  const [cnSource, setCnSource] = useState<LoadedSource | null>(null);
+  const [jpSource, setJpSource] = useState<LoadedSource | null>(null);
+  const [storyTitle, setStoryTitle] = useState('');
+  const [loadError, setLoadError] = useState('');
+  const [parseWarnings, setParseWarnings] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [mode, setMode] = useState<'cn' | 'split' | 'jp'>('cn');
+  const [mode, setMode] = useState<ReaderMode>('cn');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [fontSize, setFontSize] = useState(15);
   const [lineHeight, setLineHeight] = useState(1.1);
   const [allStories, setAllStories] = useState<Story[]>([]);
+  const [storyIndexReady, setStoryIndexReady] = useState(false);
+  const [storyIndexError, setStoryIndexError] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedCnLines, setEditedCnLines] = useState<StoryLine[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentMatchIdx, setCurrentMatchIdx] = useState(-1);
-  const [matchedIndices, setMatchedIndices] = useState<number[]>([]);
+  const [currentMatchIndex, setCurrentMatchIndex] = useState(-1);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [editMessage, setEditMessage] = useState('');
+  const settingsDialogRef = useDialog<HTMLElement>(
+    showSettings,
+    () => setShowSettings(false),
+  );
 
-  const initEmptyWithNames = () => {
-    if (!jpLines || jpLines.length === 0) return;
-    const empty = jpLines.map(line => ({
-      ...line,
-      speaker: NAME_TRANSLATE_MAP[line.speaker] || line.speaker,
-      text: ""
-    }));
-    setEditedCnLines(empty);
-    setMode('split');
-  };
+  useEffect(() => {
+    const controller = new AbortController();
+    loadStoryIndex(controller.signal)
+      .then(({ stories }) => {
+        setAllStories(stories);
+      })
+      .catch(error => {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        console.error('剧情索引加载失败：', error);
+        setStoryIndexError('剧情目录读取失败。');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setStoryIndexReady(true);
+      });
+    return () => controller.abort();
+  }, []);
 
-  const initWithJpContent = () => {
-    if (!jpLines || jpLines.length === 0) return;
-    const cloned = jpLines.map(line => ({
-      ...line,
-      speaker: NAME_TRANSLATE_MAP[line.speaker] || line.speaker,
-      text: line.text
-    }));
-    setEditedCnLines(cloned);
-    setMode('split');
-  };
+  useEffect(() => {
+    if (!isLocal && !storyIndexReady) return;
 
-  const downloadTxt = () => {
-    const linesToExport = editedCnLines.length > 0 ? editedCnLines : cnLines;
-    const content = linesToExport.map(serializeLine).join('\n');
-    const blob = new Blob(["\ufeff" + content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `${id}_translated.txt`; a.click();
-    URL.revokeObjectURL(url);
-  };
+    const controller = new AbortController();
+    let active = true;
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      setEditedCnLines(parseText(text));
+    setLoading(true);
+    setLoadError('');
+    setParseWarnings([]);
+    setCnLines([]);
+    setJpLines([]);
+    setCnSource(null);
+    setJpSource(null);
+    setStoryTitle('');
+    setEditedCnLines([]);
+    setIsEditMode(false);
+    setEditMessage('');
+    setSearchQuery('');
+    setCurrentMatchIndex(-1);
+
+    const fetchSource = async (
+      path: string,
+      fallbackName: string,
+    ): Promise<ReturnType<typeof parseLoadedSource> | null> => {
+      if (!path) return null;
+      const response = await fetch(path, { signal: controller.signal });
+      if (!response.ok) {
+        throw new Error(`${fallbackName}读取失败（HTTP ${response.status}）`);
+      }
+      const raw = await response.text();
+      return parseLoadedSource(filenameFromPath(path, fallbackName), raw);
     };
-    reader.readAsText(file);
+
+    const load = async () => {
+      try {
+        let parsedCn: ReturnType<typeof parseLoadedSource> | null = null;
+        let parsedJp: ReturnType<typeof parseLoadedSource> | null = null;
+        let localTitle = '';
+
+        if (isLocal) {
+          const payload = readLocalStoryPayload();
+          if (!payload || payload.id !== id) {
+            throw new Error('本地剧情已失效，请返回首页重新选择文件。');
+          }
+          localTitle = payload.title;
+          if (payload.cn) parsedCn = parseLoadedSource(payload.cn.name, payload.cn.raw);
+          if (payload.jp) parsedJp = parseLoadedSource(payload.jp.name, payload.jp.raw);
+        } else {
+          if (storyIndexError) throw new Error(storyIndexError);
+          const manifestStory = allStories.find(story => story.id === id);
+          if (!manifestStory) {
+            throw new Error('剧情编号不存在，或剧情目录尚未包含该文件。');
+          }
+          [parsedCn, parsedJp] = await Promise.all([
+            fetchSource(manifestStory.path_cn || '', `${id}_cn.txt`),
+            fetchSource(manifestStory.path_jp || '', `${id}_jp.txt`),
+          ]);
+        }
+
+        if (!active) return;
+        const nextCnLines = parsedCn?.lines ?? [];
+        const nextJpLines = parsedJp?.lines ?? [];
+        if (nextCnLines.length === 0 && nextJpLines.length === 0) {
+          throw new Error('文件中没有找到可显示的剧情文本。');
+        }
+
+        setCnLines(nextCnLines);
+        setJpLines(nextJpLines);
+        setCnSource(parsedCn?.source ?? null);
+        setJpSource(parsedJp?.source ?? null);
+        setParseWarnings([...(parsedCn?.warnings ?? []), ...(parsedJp?.warnings ?? [])]);
+        setStoryTitle(localTitle || parsedCn?.title || parsedJp?.title || '');
+        setMode(
+          nextCnLines.length > 0 && nextJpLines.length > 0
+            ? 'split'
+            : nextCnLines.length > 0
+              ? 'cn'
+              : 'jp',
+        );
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        if (!active) return;
+        setLoadError(error instanceof Error ? error.message : '剧情加载失败。');
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    void load();
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [allStories, id, isLocal, storyIndexError, storyIndexReady]);
+
+  const currentStory = useMemo(
+    () => allStories.find(story => story.id === id),
+    [allStories, id],
+  );
+
+  const displayedCnLines =
+    isEditMode && editedCnLines.length > 0 ? editedCnLines : cnLines;
+  const renderList = useMemo(
+    () => alignStoryLines(displayedCnLines, jpLines),
+    [displayedCnLines, jpLines],
+  );
+  const editedLineIndices = useMemo(
+    () => new Map(editedCnLines.map((line, index) => [line, index])),
+    [editedCnLines],
+  );
+
+  const normalizedQuery = useMemo(
+    () => normalizeSearchText(searchQuery),
+    [searchQuery],
+  );
+
+  const matchedIndices = useMemo(() => {
+    if (!normalizedQuery) return [];
+    const matches: number[] = [];
+    renderList.forEach((row, index) => {
+      const header = row.cn?.isHeader ? row.cn : row.jp?.isHeader ? row.jp : undefined;
+      const choice = row.cn?.isChoice ? row.cn : row.jp?.isChoice ? row.jp : undefined;
+      const searchable = [
+        row.cn?.speaker,
+        row.cn?.text,
+        row.jp?.speaker,
+        row.jp?.text,
+        header?.headerSection ? `第${header.headerSection}节 节${header.headerSection}` : '',
+        header?.headerBranch ? `分支${header.headerBranch} 路线${header.headerBranch}` : '',
+        choice?.choiceLabel ? `${choice.choiceLabel} 选项 分支` : '',
+      ].filter(Boolean).join(' ');
+      if (normalizeSearchText(searchable).includes(normalizedQuery)) matches.push(index);
+    });
+    return matches;
+  }, [normalizedQuery, renderList]);
+
+  const jumpToNextMatch = useCallback(() => {
+    if (matchedIndices.length === 0) return;
+    const next = currentMatchIndex < 0
+      ? 0
+      : (currentMatchIndex + 1) % matchedIndices.length;
+    setCurrentMatchIndex(next);
+    document.getElementById(`line-${matchedIndices[next]}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [currentMatchIndex, matchedIndices]);
+
+  const changeSearch = (value: string) => {
+    setSearchQuery(value);
+    setCurrentMatchIndex(-1);
+  };
+
+  const initializeEditing = (seed: EditSeed) => {
+    const next = seedEditableLines(cnLines, jpLines, seed);
+    if (next.length === 0) {
+      setEditMessage('当前剧情没有可编辑的文本。');
+      return;
+    }
+    setEditedCnLines(next);
+    setMode(jpLines.length > 0 ? 'split' : 'cn');
+    setEditMessage('');
+  };
+
+  const toggleEditMode = () => {
+    if (isEditMode) {
+      setIsEditMode(false);
+      return;
+    }
+    if (editedCnLines.length === 0) initializeEditing('current');
+    setIsEditMode(true);
+  };
+
+  const downloadTranslation = () => {
+    const lines = editedCnLines.length > 0 ? editedCnLines : cnLines;
+    if (lines.length === 0) {
+      setEditMessage('当前没有可下载的中文内容。');
+      return;
+    }
+    downloadContent(
+      lines.map(serializeStoryLine).join('\n'),
+      `${id}_translated.txt`,
+      true,
+    );
+  };
+
+  const uploadTranslation = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    try {
+      const source = await readScenarioFile(file);
+      const parsed = parseStoryContent(source.raw, {
+        filename: source.name,
+        mergeConsecutiveTextLines: true,
+      });
+      if (parsed.lines.length === 0) throw new Error('文件中没有可编辑的剧情文本。');
+      const normalized = seedEditableLines(parsed.lines, jpLines, 'current');
+      setEditedCnLines(normalized.length > 0 ? normalized : parsed.lines);
+      setParseWarnings(previous => [...previous, ...parsed.warnings]);
+      setEditMessage(`已载入 ${file.name}（${FORMAT_LABELS[parsed.format]}）。`);
+    } catch (error) {
+      setEditMessage(error instanceof Error ? error.message : '文件读取失败。');
+    }
   };
 
   const submitToCloud = async () => {
-    if (editedCnLines.length === 0) return alert("内容为空，无法提交\n\n请先点击「仅填入译名」或「填入日文原文」初始化内容");
-
-    const contentText = editedCnLines.map(serializeLine).join('\n');
-
-    if (contentText.trim().length < 10) {
-      return alert("内容过短，请先编辑翻译内容后再提交");
+    if (editedCnLines.length === 0) {
+      setEditMessage('请先初始化或上传翻译内容。');
+      return;
+    }
+    const content = editedCnLines.map(serializeStoryLine).join('\n');
+    if (content.trim().length < 10) {
+      setEditMessage('内容过短，请编辑后再提交。');
+      return;
     }
 
-    let apiError = '';
     try {
-      const res = await fetch('/api/submit', {
+      const response = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          story_id: id,
-          content: contentText,
-          author: 'Anonymous',
-        })
+        body: JSON.stringify({ story_id: id, content, author: 'Anonymous' }),
       });
-
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        alert("✅ 提交成功！感谢您的贡献，管理员审核后将更新。\n\nKey: " + (data.key || ''));
-        return;
-      }
-
-      apiError = `HTTP ${res.status}: ${JSON.stringify(data)}`;
-    } catch (e: any) {
-      apiError = e?.message || '网络错误';
-      console.error('API 请求异常:', e);
-    }
-
-    console.error('提交失败:', apiError);
-
-    const choice = confirm(
-      `⚠️ 在线提交失败\n\n错误详情: ${apiError}\n\n点击「确定」→ 下载TXT文件\n点击「取消」→ 复制到剪贴板`
-    );
-
-    if (choice) {
-      const BOM = '\uFEFF';
-      const blob = new Blob([BOM + contentText], { type: 'text/plain;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${id}_submit.txt`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } else {
+      const responseText = await response.text();
+      let data: { success?: boolean; key?: string; error?: string } = {};
       try {
-        await navigator.clipboard.writeText(contentText);
-        alert("✅ 已复制到剪贴板！请发送到QQ群 928098518");
+        data = JSON.parse(responseText) as typeof data;
       } catch {
-        alert("复制失败，请手动复制");
+        // The generic message below intentionally avoids exposing server internals.
       }
-    }
-  };
-
-  const currentStory = allStories.find(s => s.id === id);
-
-  useEffect(() => {
-    fetch('/story_index.json').then(r => r.json()).then(setAllStories);
-    async function load() {
-      try {
-        const [cnT, jpT] = await Promise.all([
-          cnPath ? fetch(cnPath).then(r => r.ok ? r.text() : '') : '',
-          jpPath ? fetch(jpPath).then(r => r.ok ? r.text() : '') : ''
-        ]);
-        const pCn = parseText(cnT);
-        const pJp = parseText(jpT);
-        setCnLines(pCn);
-        setJpLines(pJp);
-        if (pCn.length > 0 && pJp.length > 0) setMode('split');
-        else if (pCn.length === 0) setMode('jp');
-        else setMode('cn');
-      } finally { setLoading(false); }
-    }
-    load();
-  }, [cnPath, jpPath]);
-
-  const themeStyles = {
-    light: "bg-transparent text-gray-900",
-    dark: "bg-transparent text-gray-200",
-    paper: "bg-transparent text-[#4a4036]",
-    green: "bg-transparent text-[#003300]",
-  };
-  const headerStyles = {
-    light: "border-gray-200 bg-white/80 backdrop-blur-md",
-    dark: "border-gray-800 bg-[#0f172a]/80 backdrop-blur-md",
-    paper: "border-[#e6dfc5] bg-[#f0e6d2]/60 backdrop-blur-md",
-    green: "border-[#A8D8B9] bg-[#C7EDCC]/80 backdrop-blur-md",
-  };
-
-  const renderList = alignSections(cnLines, jpLines);
-
-  useEffect(() => {
-    if (!searchQuery) {
-      setMatchedIndices([]);
-      setCurrentMatchIdx(-1);
-      return;
-    }
-const queryFlat = normalize(searchQuery);
-    if (!queryFlat) {
-      setMatchedIndices([]);
-      setCurrentMatchIdx(-1);
-      return;
-    }
-    const indices: number[] =[];
-
-    renderList.forEach((row, idx) => {
-      const cnText = normalize(row.cn?.text || '');
-      const cnSpeaker = normalize(row.cn?.speaker || '');
-      const jpText = normalize(row.jp?.text || '');
-      const jpSpeaker = normalize(row.jp?.speaker || '');
-      const headerRaw = (row.cn?.isHeader ? row.cn.text : row.jp?.isHeader ? row.jp.text : '');
-      let headerSearchable = normalize(headerRaw);
-      const secNum = headerRaw.match(/Section\s*(\d+)/)?.[1];
-      const brNum = headerRaw.match(/Branch\s*(\d+)/)?.[1];
-      if (secNum) headerSearchable += ` 第${secNum}节 节${secNum}`;
-      if (brNum) headerSearchable += ` 分支${brNum} 路线${brNum} 选项${brNum}`;
-      const choiceText = (row.cn?.choiceLabel || row.jp?.choiceLabel || '').toLowerCase();
-      const choiceSearchable = choiceText ? `${choiceText} 选项 分支` : '';
-
-      if (cnText.includes(queryFlat) || cnSpeaker.includes(queryFlat) ||
-          jpText.includes(queryFlat) || jpSpeaker.includes(queryFlat) ||
-          headerSearchable.includes(queryFlat) || choiceSearchable.includes(queryFlat)) {
-        indices.push(idx);
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || `提交服务暂不可用（HTTP ${response.status}）`);
       }
-    });
-
-    setMatchedIndices(indices);
-    setCurrentMatchIdx(indices.length > 0 ? 0 : -1);
-    if (indices.length > 0) {
-      setTimeout(() => {
-        document.getElementById(`line-${indices[0]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
-    }
-  }, [searchQuery, renderList.length]);
-
-  const jumpToNextMatch = () => {
-    if (matchedIndices.length === 0) return;
-    const nextIdx = (currentMatchIdx + 1) % matchedIndices.length;
-    setCurrentMatchIdx(nextIdx);
-    document.getElementById(`line-${matchedIndices[nextIdx]}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  };
-
-const renderStyledText = (text: string, forceHighlight: boolean = false) => {
-    // 这个正则极度强大：它同时匹配 <color>内容</color> 以及旧版的 [textColor:内容]
-    const splitRegex = /(<(?:red|blue|yellow|black)>[\s\S]*?<\/(?:red|blue|yellow|black)>|\[text(?:Red|Blue|Yellow|Black):[\s\S]*?\])/gi;
-    const parts = text.split(splitRegex);
-
-    return parts.map((part, index) => {
-      if (!part) return null;
-
-      let colorClass = "";
-      let content = part;
-
-      // 1. 尝试解析新版 XML 标签 (例如 <yellow>キモチ</yellow>)
-      const xmlMatch = part.match(/^<([a-z]+)>([\s\S]*?)<\/\1>$/i);
-      if (xmlMatch && COLOR_MAP[xmlMatch[1].toLowerCase()]) {
-        colorClass = COLOR_MAP[xmlMatch[1].toLowerCase()];
-        content = xmlMatch[2];
-      } else {
-        // 2. 尝试解析旧版方括号标签 (例如 [textBlack:―取材記録―])，实现向下兼容
-        const bracketMatch = part.match(/^\[text([a-zA-Z]+):([\s\S]*?)\]$/i);
-        if (bracketMatch && COLOR_MAP[bracketMatch[1].toLowerCase()]) {
-          colorClass = COLOR_MAP[bracketMatch[1].toLowerCase()];
-          content = bracketMatch[2];
-        }
-      }
-
-        // 处理搜索高亮
-      const searchClean = normalize(searchQuery);
-      const contentClean = normalize(content);
-      
-      if (searchClean && (contentClean.includes(searchClean) || forceHighlight)) {
-        // 每个字符之间允许出现任意数量的非文字字符（标点、空格、换行、\n等）
-        const chars = Array.from(searchClean);
-        const SEP = '[^\\u3040-\\u309f\\u30a0-\\u30ff\\u4e00-\\u9fffa-zA-Z0-9]*';
-        const flexPattern = chars.map(c => c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join(SEP);
-        const regex = new RegExp(`(${flexPattern})`, 'gi');
-        const searchParts = content.split(regex);
-        return (
-          <span key={index} className={colorClass}>
-            {searchParts.map((sp, i) =>
-              regex.test(sp)
-                ? <span key={`${index}-${i}`} className="bg-yellow-200 text-black outline outline-1 outline-yellow-400 rounded px-0.5 shadow-sm mx-0.5">{sp}</span>
-                : sp
-            )}
-          </span>
-        );
-      }
-
-      // 正常输出
-      return (
-        <span key={index} className={colorClass}>
-          {content}
-        </span>
+      setEditMessage(`提交成功，审核编号：${data.key || '已接收'}`);
+    } catch (error) {
+      setEditMessage(
+        `${error instanceof Error ? error.message : '在线提交失败'}；已自动下载备份文件。`,
       );
-    });
+      downloadContent(content, `${id}_submit.txt`, true);
+    }
   };
 
-  const getLineTextAlignClass = (line?: StoryLine) => {
-    if (line?.position === 'right') return 'text-right';
-    if (line?.position === 'center') return 'text-center';
-    return 'text-left';
+  const jumpToChoice = (rowIndex: number, choice: StoryLine) => {
+    if (!choice.choiceTargetId) return;
+    let source = choice.headerSourceId || '';
+    let section = choice.headerSection || '';
+    for (let index = rowIndex; index >= 0 && (!source || !section); index--) {
+      const row = renderList[index];
+      const header = row.cn?.isHeader ? row.cn : row.jp?.isHeader ? row.jp : undefined;
+      source ||= header?.headerSourceId || '';
+      section ||= header?.headerSection || '';
+    }
+
+    const exactId =
+      source && section
+        ? makeSectionAnchorId(source, section, choice.choiceTargetId)
+        : '';
+    let target = exactId ? document.getElementById(exactId) : null;
+    if (!target) {
+      const fallback = renderList.slice(rowIndex + 1).find(row => {
+        const header = row.cn?.isHeader ? row.cn : row.jp?.isHeader ? row.jp : undefined;
+        return header?.headerBranch === choice.choiceTargetId;
+      });
+      const header = fallback?.cn?.isHeader ? fallback.cn : fallback?.jp;
+      target = header?.headerId ? document.getElementById(header.headerId) : null;
+    }
+    if (!target) return;
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    target.classList.add('ring-4', 'ring-amber-400');
+    window.setTimeout(() => target?.classList.remove('ring-4', 'ring-amber-400'), 1500);
   };
 
-  const getLineKindClass = (line?: StoryLine) => {
-    if (line?.kind === 'fnarration') return 'italic opacity-80';
-    if (line?.kind === 'narration') return 'opacity-90';
-    return '';
-  };
-
-  if (loading) return <div className="flex h-screen items-center justify-center opacity-50">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex h-screen h-[100dvh] items-center justify-center opacity-60">
+        正在读取剧情…
+      </div>
+    );
+  }
 
   return (
-    <div className={`flex h-screen overflow-hidden ${themeStyles[theme]}`}>
+    <div className={`flex h-screen h-[100dvh] overflow-hidden ${THEME_STYLES[theme]}`}>
       <Sidebar
         stories={allStories}
         currentId={id}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        className={sidebarOpen ? "" : "hidden md:flex"}
+        className={sidebarOpen ? '' : 'hidden md:flex'}
       />
 
-      <div className="flex-1 flex flex-col min-w-0 relative">
-        <header className={`flex items-center justify-between px-4 py-2 border-b z-20 shrink-0 ${headerStyles[theme]}`}>
-          <div className="flex items-center gap-3 min-w-0">
-            <button onClick={() => setSidebarOpen(true)} className="md:hidden p-2 -ml-2 rounded hover:bg-black/5">
+      <div className="relative flex min-w-0 flex-1 flex-col">
+        <header className={`z-20 flex shrink-0 items-center justify-between border-b px-4 py-2 ${HEADER_STYLES[theme]}`}>
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              aria-label="打开剧情目录"
+              onClick={() => setSidebarOpen(true)}
+              className="rounded p-2 -ml-2 hover:bg-black/5 md:hidden"
+            >
               <Menu size={20} />
             </button>
-            <div className="flex flex-col min-w-0">
-              <div className="text-[10px] opacity-50 flex gap-1 whitespace-nowrap">
-                <span>{currentStory?.folder || "Loading..."}</span>
-              </div>
-              <div className="font-bold text-sm flex items-center gap-2 flex-wrap min-w-0">
-                <span className="font-mono text-emerald-600 truncate">{id}</span>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  {cnPath && (
-                    <button
-                      onClick={async () => {
-                        try {
-                          const res = await fetch(cnPath);
-                          const text = await res.text();
-                          const BOM = '\uFEFF';
-                          const blob = new Blob([BOM + text], { type: 'text/plain;charset=utf-8' });
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = `${id}_cn.txt`;
-                          a.click();
-                          URL.revokeObjectURL(url);
-                        } catch (e) {
-                          console.error('下载失败:', e);
-                        }
-                      }}
-                      className="flex items-center gap-1 opacity-50 hover:opacity-100 hover:text-green-600 border border-transparent hover:border-green-200 px-1.5 py-0.5 rounded transition-all"
-                    >
-                      <Download size={14} />
-                      <span className="text-[10px]">CN</span>
-                    </button>
-                  )}
-                  {jpPath && (
-                    <button
-                      onClick={async () => {
-                        try {
-                          const res = await fetch(jpPath);
-                          const text = await res.text();
-                          const BOM = '\uFEFF';
-                          const blob = new Blob([BOM + text], { type: 'text/plain;charset=utf-8' });
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = `${id}_jp.txt`;
-                          a.click();
-                          URL.revokeObjectURL(url);
-                        } catch (e) {
-                          console.error('下载失败:', e);
-                        }
-                      }}
-                      className="flex items-center gap-1 opacity-50 hover:opacity-100 hover:text-blue-600 border border-transparent hover:border-blue-200 px-1.5 py-0.5 rounded transition-all"
-                    >
-                      <Download size={14} />
-                      <span className="text-[10px]">JP</span>
-                    </button>
-                  )}
-                </div>
+            <div className="flex min-w-0 flex-col">
+              <span className="truncate text-[10px] opacity-50">
+                {isLocal ? '本地文件' : currentStory?.folder || '剧情阅读器'}
+                {storyTitle ? ` · ${storyTitle}` : ''}
+              </span>
+              <div className="flex min-w-0 flex-wrap items-center gap-2 text-sm font-bold">
+                <span className="truncate font-mono text-emerald-600">{id}</span>
+                {cnSource && (
+                  <button
+                    type="button"
+                    title={`下载原始文件（${FORMAT_LABELS[cnSource.format]}）`}
+                    onClick={() => downloadContent(
+                      cnSource.raw,
+                      sourceDownloadName(id, 'cn', cnSource),
+                      !cnSource.name.toLowerCase().endsWith('.json'),
+                    )}
+                    className="flex items-center gap-1 rounded px-1.5 py-0.5 opacity-50 transition hover:text-green-600 hover:opacity-100"
+                  >
+                    <Download size={14} /><span className="text-[10px]">CN</span>
+                  </button>
+                )}
+                {jpSource && (
+                  <button
+                    type="button"
+                    title={`下载原始文件（${FORMAT_LABELS[jpSource.format]}）`}
+                    onClick={() => downloadContent(
+                      jpSource.raw,
+                      sourceDownloadName(id, 'jp', jpSource),
+                      !jpSource.name.toLowerCase().endsWith('.json'),
+                    )}
+                    className="flex items-center gap-1 rounded px-1.5 py-0.5 opacity-50 transition hover:text-blue-600 hover:opacity-100"
+                  >
+                    <Download size={14} /><span className="text-[10px]">JP</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
 
-          <div className="hidden md:flex flex-1 max-w-md mx-4 relative group">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={14} className="text-gray-400 group-focus-within:text-blue-500" />
-            </div>
+          <div className="group relative mx-4 hidden max-w-md flex-1 md:flex">
+            <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
-              type="text"
-              placeholder="页内搜索 (Enter跳转)"
+              type="search"
+              aria-label="在当前剧情中搜索"
+              placeholder="页内搜索（Enter 跳转）"
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && jumpToNextMatch()}
-              className={`w-full pl-9 pr-12 py-1.5 text-sm rounded-full border transition-all outline-none
-                ${theme === 'dark'
-                  ? 'bg-gray-800 border-gray-700 text-gray-200 focus:border-blue-500'
-                  : 'bg-gray-100 border-transparent focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100'
-                }`}
+              onChange={event => changeSearch(event.target.value)}
+              onKeyDown={event => {
+                if (event.key === 'Enter') jumpToNextMatch();
+              }}
+              className={`w-full rounded-full border py-1.5 pl-9 pr-14 text-sm outline-none transition ${
+                theme === 'dark'
+                  ? 'border-gray-700 bg-gray-800 text-gray-200 focus:border-blue-500'
+                  : 'border-transparent bg-gray-100 focus:border-blue-400 focus:bg-white'
+              }`}
             />
             {searchQuery && (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-mono">
-                {matchedIndices.length > 0 ? `${currentMatchIdx + 1}/${matchedIndices.length}` : '0'}
-              </div>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-xs text-gray-400">
+                {matchedIndices.length
+                  ? `${currentMatchIndex >= 0 ? currentMatchIndex + 1 : 0}/${matchedIndices.length}`
+                  : '0'}
+              </span>
             )}
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex shrink-0 items-center gap-2">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsEditMode(!isEditMode);
-                if (!isEditMode && editedCnLines.length === 0) {
-                  setEditedCnLines(cnLines.length > 0 ? [...cnLines] : renderList.map(r => ({ speaker: r.jp?.speaker || "", text: "" })));
-                }
-              }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all z-30 ${isEditMode ? 'bg-emerald-600 text-white shadow-lg' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'}`}
+              type="button"
+              aria-pressed={isEditMode}
+              onClick={toggleEditMode}
+              className={`z-30 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition ${
+                isEditMode
+                  ? 'bg-emerald-600 text-white shadow-lg'
+                  : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+              }`}
             >
               <Leaf size={14} />
-              <span className="hidden sm:inline">{isEditMode ? "返回阅读" : "协助汉化"}</span>
+              <span className="hidden sm:inline">{isEditMode ? '返回阅读' : '协助汉化'}</span>
             </button>
-
             <div className={`flex rounded p-0.5 text-[10px] font-bold ${theme === 'dark' ? 'bg-white/10' : 'bg-black/5'}`}>
-              {['cn', 'split', 'jp'].map(m => (
-                <button key={m} onClick={() => setMode(m as any)} className={`px-2 py-1 rounded ${mode === m ? (theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white shadow') : 'opacity-40'}`}>
-                  {m === 'cn' ? '中' : m === 'jp' ? '日' : '双'}
+              {(['cn', 'split', 'jp'] as const).map(nextMode => (
+                <button
+                  type="button"
+                  key={nextMode}
+                  aria-label={
+                    nextMode === 'cn'
+                      ? '只显示中文'
+                      : nextMode === 'jp'
+                        ? '只显示日文'
+                        : '显示中日双语'
+                  }
+                  aria-pressed={mode === nextMode}
+                  onClick={() => setMode(nextMode)}
+                  className={`rounded px-2 py-1 ${
+                    mode === nextMode
+                      ? theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white shadow'
+                      : 'opacity-40'
+                  }`}
+                >
+                  {nextMode === 'cn' ? '中' : nextMode === 'jp' ? '日' : '双'}
                 </button>
               ))}
             </div>
-
-            <button onClick={() => setShowSettings(true)} className="p-2 rounded hover:bg-black/5 text-gray-500">
+            <button
+              type="button"
+              aria-label="打开阅读设置"
+              onClick={() => setShowSettings(true)}
+              className="rounded p-2 text-gray-500 hover:bg-black/5"
+            >
               <Settings size={18} />
             </button>
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto scroll-smooth p-2 md:p-6 z-10" style={{ fontSize: `${fontSize}px`, lineHeight }}>
-          <div className={`max-w-3xl mx-auto pb-32 min-h-screen transition-all duration-500 ease-in-out ${(theme === 'paper' || theme === 'green') ? 'md:bg-white/40 md:shadow-sm md:backdrop-blur-[2px] md:px-12 md:py-8 rounded-lg' : ''}`}>
-
-            {isEditMode && (
-              <div className="mb-6 p-4 rounded-xl bg-emerald-50/80 border border-emerald-200 shadow-sm backdrop-blur-sm">
-                <div className="flex flex-wrap gap-3 items-center">
-                  <span className="text-xs font-bold text-emerald-800 opacity-70 mr-2">初始化:</span>
-                  <button onClick={initEmptyWithNames} className="px-3 py-1.5 bg-white border border-emerald-300 text-emerald-700 rounded-lg text-xs font-bold hover:bg-emerald-50 active:scale-95 transition-all">1. 仅填入译名 (空文本)</button>
-                  <button onClick={initWithJpContent} className="px-3 py-1.5 bg-white border border-emerald-300 text-emerald-700 rounded-lg text-xs font-bold hover:bg-emerald-50 active:scale-95 transition-all">2. 填入日文原文</button>
-                  <div className="h-4 w-px bg-emerald-300 mx-1"></div>
-                  <label className="cursor-pointer px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-100 transition-all flex items-center gap-1">
-                    <span>📂 上传本地 TXT</span>
-                    <input type="file" accept=".txt" className="hidden" onChange={handleFileUpload} />
-                  </label>
-                  <button onClick={downloadTxt} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold shadow hover:bg-blue-700 active:scale-95 transition-all ml-auto">📥 下载当前进度</button>
-                  <button onClick={submitToCloud} className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs font-bold shadow hover:bg-purple-700 active:scale-95 transition-all">🚀 提交审核</button>
-                </div>
-                <div className="mt-2 text-[10px] text-emerald-600/60 pl-1">* 提示：提交审核后，管理员通过后才会更新到网站。请优先下载 TXT 本地保存。</div>
+        <main
+          className="z-10 flex-1 overflow-y-auto scroll-smooth p-2 md:p-6"
+          style={{ fontSize: `${fontSize}px`, lineHeight }}
+        >
+          <div className={`mx-auto min-h-screen max-w-3xl rounded-lg pb-32 transition ${
+            theme === 'paper' || theme === 'green'
+              ? 'md:bg-white/40 md:px-12 md:py-8 md:shadow-sm'
+              : ''
+          }`}>
+            {loadError && (
+              <div role="alert" className="mb-4 rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-800">
+                <p className="font-bold">无法打开这段剧情</p>
+                <p className="mt-1">{loadError}</p>
+                <Link href="/" className="mt-3 inline-block underline">返回首页重新选择</Link>
               </div>
             )}
 
-            <div className="md:hidden mb-4 px-1">
-              <div className="relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="搜索角色或对话..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && jumpToNextMatch()}
-                  className={`w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm outline-none shadow-sm
-                    ${theme === 'dark'
-                      ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-600'
-                      : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-                    }`}
-                />
-                {searchQuery && (
-                  <button
-                    onClick={jumpToNextMatch}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white text-xs px-2 py-1 rounded-md active:scale-95"
-                  >
-                    {matchedIndices.length > 0 ? `${currentMatchIdx + 1}/${matchedIndices.length} ↓` : '0'}
+            {parseWarnings.length > 0 && !loadError && (
+              <details className="mb-4 rounded-lg border border-amber-200 bg-amber-50/80 p-3 text-xs text-amber-900">
+                <summary className="cursor-pointer font-bold">
+                  已读取，但有 {parseWarnings.length} 条格式提示
+                </summary>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  {parseWarnings.slice(0, 20).map((warning, index) => (
+                    <li key={`${warning}-${index}`}>{warning}</li>
+                  ))}
+                </ul>
+              </details>
+            )}
+
+            {isEditMode && !loadError && (
+              <section className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50/80 p-4 shadow-sm">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="mr-1 text-xs font-bold text-emerald-800 opacity-70">初始化：</span>
+                  <button type="button" onClick={() => initializeEditing('empty')} className="rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-50">
+                    仅填入译名
                   </button>
+                  <button type="button" onClick={() => initializeEditing('jp')} className="rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-50">
+                    填入日文原文
+                  </button>
+                  <label className="flex cursor-pointer items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-100">
+                    上传 JSON / TXT
+                    <input type="file" accept=".json,.txt" className="hidden" onChange={uploadTranslation} />
+                  </label>
+                  <button type="button" onClick={downloadTranslation} className="ml-auto rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow hover:bg-blue-700">
+                    下载当前进度
+                  </button>
+                  <button type="button" onClick={() => void submitToCloud()} className="rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-bold text-white shadow hover:bg-purple-700">
+                    提交审核
+                  </button>
+                </div>
+                <p className="mt-2 text-[10px] text-emerald-700/70">
+                  标题、分支、位置与动作信息会在初始化时保留。请定期下载 TXT 备份。
+                </p>
+                {editMessage && (
+                  <p role="status" className="mt-2 rounded bg-white/70 px-2 py-1 text-xs text-emerald-900">
+                    {editMessage}
+                  </p>
                 )}
-              </div>
+              </section>
+            )}
+
+            <div className="relative mb-4 px-1 md:hidden">
+              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="search"
+                aria-label="在当前剧情中搜索"
+                placeholder="搜索角色或对话…"
+                value={searchQuery}
+                onChange={event => changeSearch(event.target.value)}
+                onKeyDown={event => {
+                  if (event.key === 'Enter') jumpToNextMatch();
+                }}
+                className={`w-full rounded-lg border py-2.5 pl-10 pr-16 text-sm shadow-sm outline-none ${
+                  theme === 'dark'
+                    ? 'border-gray-700 bg-gray-800 text-gray-100'
+                    : 'border-gray-200 bg-white text-gray-900'
+                }`}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={jumpToNextMatch}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-blue-500 px-2 py-1 text-xs text-white"
+                >
+                  {matchedIndices.length
+                    ? `${currentMatchIndex >= 0 ? currentMatchIndex + 1 : 0}/${matchedIndices.length} ↓`
+                    : '0'}
+                </button>
+              )}
             </div>
 
-        {!isEditMode && (
-              <div className={`mb-0 p-4 rounded-xl border text-sm text-center transition-colors ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-black/[0.02] border-black/5'}`}>
-                <div className="flex flex-wrap justify-center items-center gap-2 text-xs font-bold">
-                  <Link href="/" className={`px-3 py-1.5 rounded-lg transition-all border ${theme === 'dark' ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-200 text-gray-600 hover:bg-gray-100'}`}>🏠返回首页</Link>
-                  <button onClick={() => setAboutOpen(true)} className={`px-3 py-1.5 rounded-lg transition-all border ${theme === 'dark' ? 'border-emerald-800 bg-emerald-900/20 text-emerald-400 hover:bg-emerald-900/40' : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}`}>🔗我的工具与动态</button>
-                  <button onClick={() => { alert("(圆环攻略组)贡献清单\n角色：树里、七夕八千代、常暗十七夜、小圆前辈、圆彩、冲浪沙耶香\n活动：万圣城、御影特训、AngelsRoad、XmasString、超越梦、巧匠(复)、AI Memory、DepBlue、决战、假面、那由他、梶叶、激海、Dreamers、Halloween、修行、贝法娜、灰革、传承、SPA、恋△、MVD\n主线II：序章、第2-9章\n支线II：第1-11章\n其他：登录6168、镜层十七夜\n\n※ 以上50项引用自圆环记录攻略组，剩余将由水银h2oag提供，本站由MadeInMagius建立以及维护和进行部分原始汉化文本提交。"); }} className={`px-3 py-1.5 rounded-lg transition-all border ${theme === 'dark' ? 'border-pink-800 bg-pink-900/20 text-pink-400 hover:bg-pink-900/40' : 'border-pink-200 bg-pink-50 text-pink-700 hover:bg-pink-100'}`}>贡献者</button>
+            {!isEditMode && !loadError && (
+              <div className={`mb-4 rounded-xl border p-4 text-center text-sm ${
+                theme === 'dark' ? 'border-white/10 bg-white/5' : 'border-black/5 bg-black/[0.02]'
+              }`}>
+                <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-bold">
+                  <Link href="/" className="rounded-lg border border-current px-3 py-1.5 opacity-70 hover:opacity-100">
+                    🏠 返回首页
+                  </Link>
+                  <button type="button" onClick={() => setAboutOpen(true)} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-700">
+                    🔗 我的工具与动态
+                  </button>
                 </div>
-                <div className="mt-3 mx-auto w-10 h-0.5 rounded-full bg-current opacity-15" />
               </div>
             )}
 
-            {renderList.map((row, idx) => {
-              const headerLine = row.cn?.isHeader ? row.cn : row.jp?.isHeader ? row.jp : null;
-
-              if (headerLine) {
-                const headerText = headerLine.text.replace(/---/g, '').trim();
-                const isBranch = headerText.includes('Branch');
-                const sectionMatch = headerText.match(/Section\s*(\d+)/);
-                const branchMatch = headerText.match(/Branch\s*(\d+)/);
-
-                return (
-                  <div
-                    key={idx}
-                    id={headerLine.headerId}
-                    className={`mt-6 mb-4 pt-4 border-t-2 text-center ${isBranch ? 'border-amber-400/50 bg-amber-50/30 rounded-lg py-3' : 'border-dashed border-current opacity-30'}`}
-                  >
-                    {isBranch ? (
-                      <div className="flex flex-col items-center gap-1">
-                        <span className={`text-xs px-3 py-1.5 rounded-full font-bold ${theme === 'dark' ? 'bg-amber-900/40 text-amber-300 border border-amber-700' : 'bg-amber-100 text-amber-800 border border-amber-300'}`}>
-                          🔀 {sectionMatch ? `第${sectionMatch[1]}节 ` : ''}选项路线 {branchMatch ? branchMatch[1] : ''}
-                        </span>
-                        <span className="text-[10px] opacity-40 font-mono">{headerText.match(/Source:\s*(.+?)\)/)?.[1] || ''}</span>
-                      </div>
-                    ) : (
-                      <span className="text-xs px-3 py-1 rounded-full border border-current opacity-70 font-mono">{headerText}</span>
-                    )}
-                  </div>
-                );
-              }
-
-              const choiceLine = row.cn?.isChoice ? row.cn : row.jp?.isChoice ? row.jp : null;
-
-              if (choiceLine) {
-                return (
-                  <div key={idx} id={`line-${idx}`} className="my-3 flex justify-center">
-                    <button
-                      onClick={() => {
-                        const branchNum = choiceLine.choiceTargetId;
-                        if (!branchNum) return;
-                        let currentSectionNum = '';
-                        for (let i = idx; i >= 0; i--) {
-                          const r = renderList[i];
-                          const h = r.cn?.isHeader ? r.cn : r.jp?.isHeader ? r.jp : null;
-                          if (h && h.text) {
-                            const match = h.text.match(/Section\s*(\d+)/i);
-                            if (match) { currentSectionNum = match[1]; break; }
-                          }
-                        }
-                        if (currentSectionNum) {
-                          const targetId = `sec-${currentSectionNum}-branch-${branchNum}`;
-                          const targetEl = document.getElementById(targetId);
-                          if (targetEl) {
-                            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            targetEl.classList.add('ring-4', 'ring-amber-400', 'transition-all', 'duration-500');
-                            setTimeout(() => targetEl.classList.remove('ring-4', 'ring-amber-400'), 1500);
-                            return;
-                          }
-                        }
-                        for (let i = idx + 1; i < renderList.length; i++) {
-                          const r = renderList[i];
-                          const h = r.cn?.isHeader ? r.cn : r.jp?.isHeader ? r.jp : null;
-                          if (h && (h.text.includes(`Branch ${branchNum}]`) || h.text.includes(`Branch ${branchNum})`))) {
-                            const el = document.getElementById(h.headerId || `line-${i}`);
-                            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            return;
-                          }
-                        }
-                      }}
-                      className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer
-                        ${theme === 'dark'
-                          ? 'bg-gradient-to-r from-amber-900/60 to-orange-900/60 text-amber-200 border border-amber-700 hover:border-amber-500'
-                          : 'bg-gradient-to-r from-amber-50 to-orange-50 text-amber-800 border-2 border-amber-300 hover:border-amber-500 shadow-sm hover:shadow-md'
-                        }`}
-                    >
-                      <span className="mr-1">👆</span>
-                      {choiceLine.choiceLabel || choiceLine.text}
-                      <span className="ml-2 text-[10px] opacity-50">↓ 点击跳转</span>
-                    </button>
-                  </div>
-                );
-              }
-
-              const isFocused = matchedIndices[currentMatchIdx] === idx;
-              const _nq = normalize(searchQuery);
-              const cnSpeakerMatch = _nq && normalize(row.cn?.speaker || '').includes(_nq);
-              const jpSpeakerMatch = _nq && normalize(row.jp?.speaker || '').includes(_nq);
-
-              return (
-                <div
-                  key={idx}
-                  id={`line-${idx}`}
-                  className={`flex flex-col md:flex-row md:gap-4 py-1 border-b border-transparent transition-colors group
-                    ${isFocused
-                      ? (theme === 'dark' ? 'bg-blue-900/30 ring-1 ring-blue-500/50' : 'bg-yellow-50 ring-1 ring-yellow-400/50')
-                      : 'hover:border-current hover:border-opacity-10'}`}
-                >
-                  {mode !== 'jp' && (
-                    <div className={`flex gap-3 ${mode === 'split' ? 'md:w-1/2' : 'w-full'}`}>
-                      {isEditMode ? (
-                        <>
-                          <div className="w-20 md:w-24 text-right flex-shrink-0 text-[11px] leading-tight font-bold pt-1 break-words px-1 opacity-60">
-                            {editedCnLines[idx]?.speaker || row.jp?.speaker || "旁白"}
-                          </div>
-                          <textarea
-                            className={`flex-1 p-2 rounded border focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm ${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-black'}`}
-                            value={editedCnLines[idx]?.text || ""}
-                            placeholder="在此输入翻译内容..."
-                            onChange={(e) => {
-                              const newLines = [...editedCnLines];
-                              newLines[idx] = {
-                                ...(newLines[idx] || row.cn || row.jp || {}),
-                                speaker: newLines[idx]?.speaker || row.jp?.speaker || "旁白",
-                                text: e.target.value,
-                                isHeader: row.jp?.isHeader || row.cn?.isHeader
-                              };
-                              setEditedCnLines(newLines);
-                            }}
-                            rows={Math.max(1, (editedCnLines[idx]?.text || "").split('\n').length)}
-                          />
-                        </>
-                      ) : row.cn ? (
-                        <>
-                          <div
-                            className={`w-20 md:w-24 text-right flex-shrink-0 text-[11px] leading-tight font-bold pt-1 break-words px-1 rounded h-fit ${cnSpeakerMatch ? "ring-2 ring-yellow-400" : ""}`}
-                            style={{
-                              color: SPEAKER_COLOR_MAP[row.cn.speaker] ? SPEAKER_COLOR_MAP[row.cn.speaker] : SPEAKER_COLOR_MAP[row.cn.speaker.replace(/\s+/g, '')] || undefined,
-                              backgroundColor: (SPEAKER_COLOR_MAP[row.cn.speaker] || SPEAKER_COLOR_MAP[row.cn.speaker.replace(/\s+/g, '')]) ? 'transparent' : ''
-                            }}
-                          >
-                            {row.cn.speaker}
-                          </div>
-                          <div className={`flex-1 whitespace-pre-wrap pt-0.5 ${getLineTextAlignClass(row.cn)} ${getLineKindClass(row.cn)}`}>
-                            {renderStyledText(row.cn.text, !!cnSpeakerMatch)}
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex-1 text-xs opacity-20 italic py-1 border-b border-dashed border-black/5">等待翻译...</div>
-                      )}
-                    </div>
-                  )}
-
-                  {mode !== 'cn' && (
-                    <div className={`flex gap-2 ${mode === 'split' ? 'md:w-1/2 md:border-l md:pl-4 border-current border-opacity-10 mt-1 md:mt-0' : 'w-full'}`}>
-                      {row.jp ? (
-                        <>
-                          <div
-                            className={`w-20 md:w-24 text-right flex-shrink-0 text-[11px] leading-tight font-bold pt-1 break-words px-1 rounded h-fit ${jpSpeakerMatch ? "ring-2 ring-yellow-400" : "opacity-50"}`}
-                            style={{
-                              color: SPEAKER_COLOR_MAP[row.jp.speaker] ? SPEAKER_COLOR_MAP[row.jp.speaker] : SPEAKER_COLOR_MAP[row.jp.speaker.replace(/\s+/g, '')] || undefined,
-                            }}
-                          >
-                            {row.jp.speaker}
-                          </div>
-                          <div className={`flex-1 whitespace-pre-wrap opacity-70 font-sans text-sm ${getLineTextAlignClass(row.jp)} ${getLineKindClass(row.jp)}`}>
-                            {renderStyledText(row.jp.text, !!jpSpeakerMatch)}
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex-1 text-xs opacity-20 italic py-1">...</div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {!loadError && renderList.map((row, index) => (
+              <StoryRow
+                key={index}
+                row={row}
+                index={index}
+                editIndex={row.cn ? (editedLineIndices.get(row.cn) ?? index) : index}
+                mode={mode}
+                theme={theme}
+                isEditMode={isEditMode}
+                editedLines={editedCnLines}
+                setEditedLines={setEditedCnLines}
+                query={searchQuery}
+                normalizedQuery={normalizedQuery}
+                focused={currentMatchIndex >= 0 && matchedIndices[currentMatchIndex] === index}
+                onChoice={jumpToChoice}
+              />
+            ))}
           </div>
-        </div>
+        </main>
 
         {showSettings && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowSettings(false)}>
-            <div className={`w-full max-w-xs p-5 rounded-xl shadow-2xl ${theme === 'dark' ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`} onClick={e => e.stopPropagation()}>
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold">阅读设置</h3>
-                <button onClick={() => setShowSettings(false)}><X size={18} /></button>
+          <div
+            role="presentation"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            onMouseDown={() => setShowSettings(false)}
+          >
+            <section
+              ref={settingsDialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="reader-settings-title"
+              tabIndex={-1}
+              className={`w-full max-w-xs rounded-xl p-5 shadow-2xl ${
+                theme === 'dark' ? 'border border-gray-700 bg-gray-800' : 'bg-white'
+              }`}
+              onMouseDown={event => event.stopPropagation()}
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <h2 id="reader-settings-title" className="font-bold">阅读设置</h2>
+                <button type="button" aria-label="关闭阅读设置" onClick={() => setShowSettings(false)}>
+                  <X size={18} />
+                </button>
               </div>
               <div className="space-y-4 text-sm">
-                <div className="md:hidden">
-                  <div className="mb-2 opacity-70">搜索</div>
-                  <input
-                    type="text"
-                    placeholder="按 Enter 键搜索并跳转..."
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && jumpToNextMatch()}
-                    className={`w-full p-2 rounded border text-sm outline-none ${theme === 'dark' ? 'bg-black/20 border-gray-600' : 'bg-gray-100 border-gray-200'}`}
-                  />
-                </div>
                 <div>
-                  <div className="mb-2 opacity-70">主题</div>
-                  <div className="flex gap-2 justify-center">
-                    {[
-                      { k: 'light', i: Sun, l: '亮色' }, { k: 'paper', i: BookOpen, l: '护眼' }, { k: 'dark', i: Moon, l: '暗黑' }, { k: 'green', i: Leaf, l: '绿色' }
-                    ].map(o => (
-                      <button key={o.k} onClick={() => setTheme(o.k as any)} className={`flex-1 py-2 rounded border flex flex-col items-center gap-1 ${theme === o.k ? 'border-blue-500 bg-blue-500/10 text-blue-500' : 'border-transparent bg-black/5'}`}>
-                        <o.i size={16} />
-                        <span className="text-[10px]">{o.l}</span>
+                  <p className="mb-2 opacity-70">主题</p>
+                  <div className="flex justify-center gap-2">
+                    {([
+                      { key: 'light', icon: Sun, label: '亮色' },
+                      { key: 'paper', icon: BookOpen, label: '护眼' },
+                      { key: 'dark', icon: Moon, label: '暗黑' },
+                      { key: 'green', icon: Leaf, label: '绿色' },
+                    ] as const).map(option => (
+                      <button
+                        type="button"
+                        key={option.key}
+                        aria-pressed={theme === option.key}
+                        onClick={() => setTheme(option.key)}
+                        className={`flex flex-1 flex-col items-center gap-1 rounded border py-2 ${
+                          theme === option.key
+                            ? 'border-blue-500 bg-blue-500/10 text-blue-500'
+                            : 'border-transparent bg-black/5'
+                        }`}
+                      >
+                        <option.icon size={16} />
+                        <span className="text-[10px]">{option.label}</span>
                       </button>
                     ))}
                   </div>
                 </div>
-                <div>
-                  <div className="mb-1 opacity-70">字号 ({fontSize}px)</div>
-                  <input type="range" min="12" max="22" value={fontSize} onChange={e => setFontSize(Number(e.target.value))} className="w-full" />
-                </div>
-                <div>
-                  <div className="mb-1 opacity-70">行高 ({lineHeight})</div>
-                  <input type="range" min="1.1" max="2.0" step="0.1" value={lineHeight} onChange={e => setLineHeight(Number(e.target.value))} className="w-full" />
-                </div>
+                <label className="block">
+                  <span className="mb-1 block opacity-70">字号（{fontSize}px）</span>
+                  <input type="range" min="12" max="22" value={fontSize} onChange={event => setFontSize(Number(event.target.value))} className="w-full" />
+                </label>
+                <label className="block">
+                  <span className="mb-1 block opacity-70">行高（{lineHeight}）</span>
+                  <input type="range" min="1.1" max="2" step="0.1" value={lineHeight} onChange={event => setLineHeight(Number(event.target.value))} className="w-full" />
+                </label>
               </div>
-            </div>
+            </section>
           </div>
         )}
       </div>
+
       <AboutModal isOpen={aboutOpen} onClose={() => setAboutOpen(false)} theme={theme} />
+    </div>
+  );
+}
+
+type StoryRowProps = {
+  row: AlignedStoryLine;
+  index: number;
+  editIndex: number;
+  mode: ReaderMode;
+  theme: string;
+  isEditMode: boolean;
+  editedLines: StoryLine[];
+  setEditedLines: React.Dispatch<React.SetStateAction<StoryLine[]>>;
+  query: string;
+  normalizedQuery: string;
+  focused: boolean;
+  onChoice: (index: number, choice: StoryLine) => void;
+};
+
+function StoryRow({
+  row,
+  index,
+  editIndex,
+  mode,
+  theme,
+  isEditMode,
+  editedLines,
+  setEditedLines,
+  query,
+  normalizedQuery,
+  focused,
+  onChoice,
+}: StoryRowProps) {
+  const header = row.cn?.isHeader ? row.cn : row.jp?.isHeader ? row.jp : undefined;
+  if (header) {
+    const headerText = header.text.replace(/---/g, '').trim();
+    const isBranch = Boolean(header.headerBranch);
+    return (
+      <div
+        id={header.headerId}
+        className={`mb-4 mt-6 border-t-2 pt-4 text-center ${
+          isBranch
+            ? 'rounded-lg border-amber-400/50 bg-amber-50/30 py-3'
+            : 'border-dashed border-current opacity-50'
+        }`}
+      >
+        {isBranch ? (
+          <div className="flex flex-col items-center gap-1">
+            <span className={`rounded-full border px-3 py-1.5 text-xs font-bold ${
+              theme === 'dark'
+                ? 'border-amber-700 bg-amber-900/40 text-amber-300'
+                : 'border-amber-300 bg-amber-100 text-amber-800'
+            }`}>
+              🔀 {header.headerSection ? `第${header.headerSection}节 ` : ''}
+              选项路线 {header.headerBranch}
+            </span>
+            {header.headerSourceId && (
+              <span className="font-mono text-[10px] opacity-50">{header.headerSourceId}</span>
+            )}
+          </div>
+        ) : (
+          <span className="rounded-full border border-current px-3 py-1 font-mono text-xs opacity-70">
+            {headerText}
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  const choice = row.cn?.isChoice ? row.cn : row.jp?.isChoice ? row.jp : undefined;
+  if (choice) {
+    const editableChoice = editedLines[editIndex];
+    return (
+      <div id={`line-${index}`} className="my-3 flex justify-center">
+        {isEditMode ? (
+          <label className="flex w-full max-w-xl items-center gap-2 rounded-xl border-2 border-amber-300 bg-amber-50 p-2 text-xs font-bold text-amber-900">
+            选项
+            <input
+              aria-label={`第 ${index + 1} 行选项文本`}
+              className="min-w-0 flex-1 rounded border border-amber-200 bg-white px-2 py-1.5 font-normal text-black outline-none focus:ring-2 focus:ring-amber-400"
+              value={editableChoice?.choiceLabel || editableChoice?.text || ''}
+              onChange={event => {
+                const value = event.target.value;
+                setEditedLines(previous => {
+                  const next = [...previous];
+                  const basis = next[editIndex] || choice;
+                  next[editIndex] = { ...basis, choiceLabel: value, text: `【${value}】` };
+                  return next;
+                });
+              }}
+            />
+          </label>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onChoice(index, choice)}
+            className={`cursor-pointer rounded-xl border-2 px-5 py-2.5 text-sm font-bold transition hover:scale-105 active:scale-95 ${
+              theme === 'dark'
+                ? 'border-amber-700 bg-gradient-to-r from-amber-900/60 to-orange-900/60 text-amber-200'
+                : 'border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-800 shadow-sm'
+            }`}
+          >
+            👆 {choice.choiceLabel || choice.text}
+            <span className="ml-2 text-[10px] opacity-50">↓ 点击跳转</span>
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  const cnSpeakerMatches =
+    Boolean(normalizedQuery) &&
+    normalizeSearchText(row.cn?.speaker || '').includes(normalizedQuery);
+  const jpSpeakerMatches =
+    Boolean(normalizedQuery) &&
+    normalizeSearchText(row.jp?.speaker || '').includes(normalizedQuery);
+
+  return (
+    <div
+      id={`line-${index}`}
+      className={`group flex flex-col border-b border-transparent py-1 transition-colors md:flex-row md:gap-4 ${
+        focused
+          ? theme === 'dark'
+            ? 'bg-blue-900/30 ring-1 ring-blue-500/50'
+            : 'bg-yellow-50 ring-1 ring-yellow-400/50'
+          : 'hover:border-current hover:border-opacity-10'
+      }`}
+    >
+      {mode !== 'jp' && (
+        <div className={`flex gap-3 ${mode === 'split' ? 'md:w-1/2' : 'w-full'}`}>
+          {isEditMode ? (
+            <>
+              <input
+                aria-label={`第 ${index + 1} 行角色名`}
+                className={`w-20 flex-shrink-0 rounded border px-1 py-1 text-right text-[11px] font-bold leading-tight outline-none focus:ring-2 focus:ring-emerald-500 md:w-24 ${
+                  theme === 'dark'
+                    ? 'border-gray-700 bg-gray-800 text-white'
+                    : 'border-gray-200 bg-white text-black'
+                }`}
+                value={editedLines[editIndex]?.speaker || row.jp?.speaker || '旁白'}
+                onChange={event => {
+                  const value = event.target.value;
+                  setEditedLines(previous => {
+                    const next = [...previous];
+                    const basis = next[editIndex] || row.cn || row.jp || {
+                      speaker: '旁白',
+                      text: '',
+                    };
+                    next[editIndex] = { ...basis, speaker: value };
+                    return next;
+                  });
+                }}
+              />
+              <textarea
+                aria-label={`第 ${index + 1} 行翻译`}
+                className={`flex-1 rounded border p-2 text-sm outline-none transition focus:ring-2 focus:ring-emerald-500 ${
+                  theme === 'dark'
+                    ? 'border-gray-700 bg-gray-800 text-white'
+                    : 'border-gray-200 bg-white text-black'
+                }`}
+                value={editedLines[editIndex]?.text || ''}
+                placeholder="在此输入翻译内容…"
+                onChange={event => {
+                  const value = event.target.value;
+                  setEditedLines(previous => {
+                    const next = [...previous];
+                    const basis = next[editIndex] || row.cn || row.jp || {
+                      speaker: '旁白',
+                      text: '',
+                    };
+                    next[editIndex] = { ...basis, text: value };
+                    return next;
+                  });
+                }}
+                rows={Math.max(1, (editedLines[editIndex]?.text || '').split('\n').length)}
+              />
+            </>
+          ) : row.cn ? (
+            <>
+              <SpeakerLabel line={row.cn} highlighted={cnSpeakerMatches} />
+              <div className={`flex-1 whitespace-pre-wrap pt-0.5 ${lineTextAlignClass(row.cn)} ${lineKindClass(row.cn)}`}>
+                <StoryText text={row.cn.text} query={query} theme={theme} />
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 border-b border-dashed border-black/5 py-1 text-xs italic opacity-20">
+              等待翻译…
+            </div>
+          )}
+        </div>
+      )}
+
+      {mode !== 'cn' && (
+        <div className={`flex gap-2 ${
+          mode === 'split'
+            ? 'mt-1 border-current border-opacity-10 md:mt-0 md:w-1/2 md:border-l md:pl-4'
+            : 'w-full'
+        }`}>
+          {row.jp ? (
+            <>
+              <SpeakerLabel line={row.jp} highlighted={jpSpeakerMatches} faded />
+              <div className={`flex-1 whitespace-pre-wrap font-sans text-sm opacity-70 ${lineTextAlignClass(row.jp)} ${lineKindClass(row.jp)}`}>
+                <StoryText text={row.jp.text} query={query} theme={theme} />
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 py-1 text-xs italic opacity-20">…</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SpeakerLabel({
+  line,
+  highlighted,
+  faded = false,
+}: {
+  line: StoryLine;
+  highlighted: boolean;
+  faded?: boolean;
+}) {
+  return (
+    <div
+      className={`h-fit w-20 flex-shrink-0 break-words rounded px-1 pt-1 text-right text-[11px] font-bold leading-tight md:w-24 ${
+        highlighted ? 'ring-2 ring-yellow-400' : faded ? 'opacity-50' : ''
+      }`}
+      style={{ color: speakerColor(line.speaker) }}
+    >
+      {line.speaker}
     </div>
   );
 }

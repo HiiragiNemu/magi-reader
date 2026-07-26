@@ -368,3 +368,80 @@ export const NAME_TRANSLATE_MAP: Record<string, string> = {
   "userName": "userName", "？？？": "？？？", "？？？の声": "？？？的声音", "みんな": "大家",
   "カミハ☆マギカ": "神滨☆魔法少女", "魔法☆神滨": "魔法☆神滨",
 };
+
+/**
+ * Scenario sources occasionally contain trailing carriage returns or visually
+ * equivalent spacing in speaker names. Keep the displayed spelling intact,
+ * while removing control characters that can never be part of a visible name.
+ */
+export const normalizeSpeakerName = (speaker: string): string =>
+  speaker
+    .normalize('NFC')
+    .replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060\ufeff]+/g, ' ')
+    .trim();
+
+const compactSpeakerLookupKey = (speaker: string): string =>
+  normalizeSpeakerName(speaker).replace(/[ \t\u3000]+/g, '');
+
+const buildUnambiguousLookup = (
+  entries: Record<string, string>,
+): ReadonlyMap<string, string> => {
+  const values = new Map<string, string>();
+  const ambiguous = new Set<string>();
+
+  for (const [speaker, value] of Object.entries(entries)) {
+    const key = compactSpeakerLookupKey(speaker);
+    if (!key || ambiguous.has(key)) continue;
+    const previous = values.get(key);
+    if (previous !== undefined && previous !== value) {
+      values.delete(key);
+      ambiguous.add(key);
+      continue;
+    }
+    values.set(key, value);
+  }
+
+  return values;
+};
+
+const NORMALIZED_NAME_TRANSLATE_MAP = buildUnambiguousLookup(NAME_TRANSLATE_MAP);
+const NORMALIZED_SPEAKER_COLOR_MAP = buildUnambiguousLookup(SPEAKER_COLOR_MAP);
+
+const exactDictionaryValue = (
+  entries: Record<string, string>,
+  key: string,
+): string | undefined =>
+  Object.prototype.hasOwnProperty.call(entries, key) ? entries[key] : undefined;
+
+/**
+ * Translate only exact or unambiguous whitespace variants. Unknown Exedra
+ * names are deliberately returned unchanged instead of receiving guessed
+ * translations.
+ */
+export const translateSpeakerName = (speaker: string): string => {
+  const normalized = normalizeSpeakerName(speaker);
+  return (
+    exactDictionaryValue(NAME_TRANSLATE_MAP, normalized) ??
+    NORMALIZED_NAME_TRANSLATE_MAP.get(compactSpeakerLookupKey(normalized)) ??
+    normalized
+  );
+};
+
+/**
+ * Reuse an established color through either the original name or its existing
+ * dictionary translation. This never invents a color for an unknown speaker.
+ */
+export const speakerColorFor = (speaker: string): string | undefined => {
+  const normalized = normalizeSpeakerName(speaker);
+  const key = compactSpeakerLookupKey(normalized);
+  const direct =
+    exactDictionaryValue(SPEAKER_COLOR_MAP, normalized) ??
+    NORMALIZED_SPEAKER_COLOR_MAP.get(key);
+  if (direct) return direct;
+
+  const translated = translateSpeakerName(normalized);
+  return (
+    exactDictionaryValue(SPEAKER_COLOR_MAP, translated) ??
+    NORMALIZED_SPEAKER_COLOR_MAP.get(compactSpeakerLookupKey(translated))
+  );
+};
