@@ -7,6 +7,7 @@ import test from 'node:test';
 
 const configVerifier = path.resolve('scripts/verify-cloudflare-config.mjs');
 const outputVerifier = path.resolve('scripts/verify-cloudflare-output.mjs');
+const deploymentWorkflow = path.resolve('..', '.github', 'workflows', 'deploy.yml');
 const placeholder = '00000000000000000000000000000000';
 const realNamespaceId = '0123456789abcdef0123456789abcdef';
 
@@ -121,4 +122,33 @@ test('Cloudflare output requires a valid manifest and excludes the large payload
     assert.notEqual(invalid.status, 0);
     assert.match(invalid.stderr, /不能打包/u);
   });
+});
+
+test('production workflow uploads the verified search object before Worker deploy', () => {
+  const workflow = readFileSync(deploymentWorkflow, 'utf8');
+  assert.match(workflow, /branches:\s*\[main\]/u);
+  assert.doesNotMatch(workflow, /deploy:pages/u);
+  assert.doesNotMatch(workflow, /secrets\.KV_NAMESPACE_ID/u);
+  assert.match(workflow, /secrets\.SUBMISSIONS_KV_NAMESPACE_ID/u);
+  assert.match(workflow, /npm ci/u);
+  assert.match(workflow, /npm run build:worker/u);
+  assert.match(
+    workflow,
+    /- name: Test data pipeline\s+working-directory: \.\s+run: python -m unittest discover -s tests -p "test_\*\.py"/u,
+  );
+  assert.doesNotMatch(workflow, /--manifest\s+public\//u);
+  assert.match(
+    workflow,
+    /verify-cloudflare-config\.mjs --output \.wrangler-deploy\.jsonc/u,
+  );
+  assert.match(workflow, /wrangler r2 object put/u);
+  assert.match(workflow, /magi-assets\/\$\{\{ steps\.search\.outputs\.object_key \}\}/u);
+  assert.match(
+    workflow,
+    /opennextjs-cloudflare deploy --config \.wrangler-deploy\.jsonc/u,
+  );
+  assert.ok(
+    workflow.indexOf('wrangler r2 object put')
+      < workflow.indexOf('opennextjs-cloudflare deploy'),
+  );
 });
