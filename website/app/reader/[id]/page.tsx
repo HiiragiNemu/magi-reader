@@ -25,7 +25,13 @@ import {
 import { useGlobal } from '@/app/providers';
 import { readLocalStoryPayload, readScenarioFile } from '@/lib/local-story';
 import { normalizeSearchText } from '@/lib/search';
-import { loadStoryIndex } from '@/lib/story-index';
+import {
+  findStoryByRouteId,
+  loadStoryIndex,
+  readBoundedResponseBody,
+  resolveDirectStorySources,
+  verifyExedraStoryId,
+} from '@/lib/story-index';
 import { useDialog } from '@/lib/use-dialog';
 import {
   alignStoryLines,
@@ -45,6 +51,8 @@ type LoadedSource = {
   raw: string;
   format: StoryFormat;
 };
+
+const MAX_STORY_SOURCE_BYTES = 8 * 1024 * 1024;
 
 const THEME_STYLES: Record<string, string> = {
   light: 'bg-transparent text-gray-900',
@@ -172,6 +180,8 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const { id } = use(params);
   const searchParams = useSearchParams();
   const isLocal = searchParams.get('local') === '1';
+  const queryCnPath = searchParams.get('cn');
+  const queryJpPath = searchParams.get('jp');
   const { theme, setTheme } = useGlobal();
 
   const [cnLines, setCnLines] = useState<StoryLine[]>([]);
@@ -201,7 +211,26 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     () => setShowSettings(false),
   );
 
+  const directSourceResolution = useMemo(() => {
+    try {
+      return {
+        error: '',
+        sources: resolveDirectStorySources(id, queryCnPath, queryJpPath),
+      };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : '剧情链接中的文件路径无效。',
+        sources: null,
+      };
+    }
+  }, [id, queryCnPath, queryJpPath]);
+  const deferStoryIndexUntilContent =
+    isLocal || directSourceResolution.sources !== null;
+
   useEffect(() => {
+    if (deferStoryIndexUntilContent && loading) {
+      return;
+    }
     const controller = new AbortController();
     loadStoryIndex(controller.signal)
       .then(({ stories }) => {
@@ -216,10 +245,49 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
         if (!controller.signal.aborted) setStoryIndexReady(true);
       });
     return () => controller.abort();
-  }, []);
+  }, [deferStoryIndexUntilContent, loading]);
+
+  const currentStory = useMemo(
+    () => findStoryByRouteId(allStories, id),
+    [allStories, id],
+  );
+  const sourceReady =
+    isLocal ||
+    Boolean(directSourceResolution.error) ||
+    directSourceResolution.sources !== null ||
+    storyIndexReady;
+  const sourceError =
+    directSourceResolution.error ||
+    (
+      !isLocal &&
+      storyIndexReady
+        ? directSourceResolution.sources === null
+          ? storyIndexError ||
+            (currentStory ? '' : '剧情编号不存在，或剧情目录尚未包含该文件。')
+          : !storyIndexError && !currentStory
+            ? '剧情编号不存在，或剧情目录尚未包含该文件。'
+            : ''
+        : ''
+    );
+  const useManifestSources =
+    storyIndexReady &&
+    currentStory !== undefined &&
+    directSourceResolution.sources?.kind === 'query';
+  const sourcePathCn =
+    useManifestSources
+      ? currentStory.path_cn ?? ''
+      : directSourceResolution.sources?.pathCn ?? currentStory?.path_cn ?? '';
+  const sourcePathJp =
+    useManifestSources
+      ? currentStory.path_jp ?? ''
+      : directSourceResolution.sources?.pathJp ?? currentStory?.path_jp ?? '';
+  const sourceCnOptional =
+    useManifestSources
+      ? false
+      : directSourceResolution.sources?.optionalCn ?? false;
 
   useEffect(() => {
-    if (!isLocal && !storyIndexReady) return;
+    if (!sourceReady) return;
 
     const controller = new AbortController();
     let active = true;
@@ -241,13 +309,33 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     const fetchSource = async (
       path: string,
       fallbackName: string,
+      optional = false,
     ): Promise<ReturnType<typeof parseLoadedSource> | null> => {
       if (!path) return null;
       const response = await fetch(path, { signal: controller.signal });
       if (!response.ok) {
+        if (optional && response.status === 404) return null;
         throw new Error(`${fallbackName}读取失败（HTTP ${response.status}）`);
       }
-      const raw = await response.text();
+      const declaredLength = Number(response.headers.get('content-length'));
+      if (
+        Number.isFinite(declaredLength) &&
+        declaredLength > MAX_STORY_SOURCE_BYTES
+      ) {
+        await response.body?.cancel('剧情文件超过大小限制');
+        throw new Error(`${fallbackName}超过 8 MB 大小限制。`);
+      }
+      const payload = await readBoundedResponseBody(
+        response,
+        MAX_STORY_SOURCE_BYTES,
+        fallbackName,
+      );
+      let raw: string;
+      try {
+        raw = new TextDecoder('utf-8', { fatal: true }).decode(payload);
+      } catch {
+        throw new Error(`${fallbackName}不是有效的 UTF-8 文本。`);
+      }
       return parseLoadedSource(filenameFromPath(path, fallbackName), raw);
     };
 
@@ -266,14 +354,16 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
           if (payload.cn) parsedCn = parseLoadedSource(payload.cn.name, payload.cn.raw);
           if (payload.jp) parsedJp = parseLoadedSource(payload.jp.name, payload.jp.raw);
         } else {
-          if (storyIndexError) throw new Error(storyIndexError);
-          const manifestStory = allStories.find(story => story.id === id);
-          if (!manifestStory) {
-            throw new Error('剧情编号不存在，或剧情目录尚未包含该文件。');
+          if (sourceError) throw new Error(sourceError);
+          if (
+            directSourceResolution.sources?.kind === 'exedra-derived' &&
+            !(await verifyExedraStoryId(id))
+          ) {
+            throw new Error('Exedra 剧情编号校验失败。');
           }
           [parsedCn, parsedJp] = await Promise.all([
-            fetchSource(manifestStory.path_cn || '', `${id}_cn.txt`),
-            fetchSource(manifestStory.path_jp || '', `${id}_jp.txt`),
+            fetchSource(sourcePathCn, `${id}_cn.txt`, sourceCnOptional),
+            fetchSource(sourcePathJp, `${id}_jp.txt`),
           ]);
         }
 
@@ -311,12 +401,16 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       active = false;
       controller.abort();
     };
-  }, [allStories, id, isLocal, storyIndexError, storyIndexReady]);
-
-  const currentStory = useMemo(
-    () => allStories.find(story => story.id === id),
-    [allStories, id],
-  );
+  }, [
+    id,
+    isLocal,
+    directSourceResolution.sources?.kind,
+    sourceCnOptional,
+    sourceError,
+    sourcePathCn,
+    sourcePathJp,
+    sourceReady,
+  ]);
 
   const displayedCnLines =
     isEditMode && editedCnLines.length > 0 ? editedCnLines : cnLines;
@@ -423,6 +517,10 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   };
 
   const submitToCloud = async () => {
+    if (!currentStory) {
+      setEditMessage('剧情目录尚未确认当前编号，暂不能在线提交。');
+      return;
+    }
     if (editedCnLines.length === 0) {
       setEditMessage('请先初始化或上传翻译内容。');
       return;
@@ -437,7 +535,11 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       const response = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ story_id: id, content, author: 'Anonymous' }),
+        body: JSON.stringify({
+          story_id: currentStory.id,
+          content,
+          author: 'Anonymous',
+        }),
       });
       const responseText = await response.text();
       let data: { success?: boolean; key?: string; error?: string } = {};
@@ -454,7 +556,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       setEditMessage(
         `${error instanceof Error ? error.message : '在线提交失败'}；已自动下载备份文件。`,
       );
-      downloadContent(content, `${id}_submit.txt`, true);
+      downloadContent(content, `${currentStory.id}_submit.txt`, true);
     }
   };
 
@@ -500,7 +602,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     <div className={`flex h-screen h-[100dvh] overflow-hidden ${THEME_STYLES[theme]}`}>
       <Sidebar
         stories={allStories}
-        currentId={id}
+        currentId={currentStory?.id ?? id}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         className={sidebarOpen ? '' : 'hidden md:flex'}
@@ -635,9 +737,9 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
           className="z-10 flex-1 overflow-y-auto scroll-smooth p-2 md:p-6"
           style={{ fontSize: `${fontSize}px`, lineHeight }}
         >
-          <div className={`mx-auto min-h-screen max-w-3xl rounded-lg pb-32 transition ${
+          <div className={`mx-auto min-h-screen max-w-3xl rounded-lg pb-32 transition-all duration-500 ease-in-out ${
             theme === 'paper' || theme === 'green'
-              ? 'md:bg-white/40 md:px-12 md:py-8 md:shadow-sm'
+              ? 'md:bg-white/40 md:px-12 md:py-8 md:shadow-sm md:backdrop-blur-[2px]'
               : ''
           }`}>
             {loadError && (

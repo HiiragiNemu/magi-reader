@@ -12,6 +12,7 @@ export type StoryIndexEntry = {
   title?: string;
   sections?: string[];
   game?: string;
+  legacy_ids?: string[];
 };
 
 export type LoadedStoryIndex = {
@@ -21,13 +22,46 @@ export type LoadedStoryIndex = {
 
 const MAX_STORY_INDEX_BYTES = 32 * 1024 * 1024;
 const MAX_STORY_INDEX_ENTRIES = 100_000;
+const MAX_LEGACY_IDS_PER_STORY = 16;
+const MAX_LEGACY_ROUTE_ALIASES = 10_000;
 const SAFE_IDENTIFIER_RE = /^[A-Za-z0-9_.:-]+$/;
-const ENCODED_PATH_CONTROL_RE = /%(?:2e|2f|5c)/i;
+const ENCODED_PATH_CONTROL_RE = /%(?:25|2e|2f|5c)/i;
+const EXEDRA_ROUTE_CATEGORIES = [
+  'exedra_main',
+  'exedra_sub',
+  'exedra_character',
+  'exedra_portrait',
+  'exedra_reaction',
+  'exedra_namae',
+  'exedra_dungeon',
+  'exedra_battle',
+] as const;
+type ExedraRouteCategory = (typeof EXEDRA_ROUTE_CATEGORIES)[number];
+const EXEDRA_RAW_CATEGORIES: Record<ExedraRouteCategory, string> = {
+  exedra_main: '1_Main',
+  exedra_sub: '2_Sub',
+  exedra_character: '3_Character',
+  exedra_portrait: '4_Portrait',
+  exedra_reaction: '6_Reaction',
+  exedra_namae: '7_Namae',
+  exedra_dungeon: '8_Dungeon',
+  exedra_battle: '10_Battle',
+};
+const EXEDRA_GROUP_KEY_RE = /^[A-Za-z0-9_.-]{1,96}$/;
+const EXEDRA_ROUTE_HASH_RE = /^(.+)_([a-f0-9]{10})$/;
+const STORY_SOURCE_EXTENSION_RE = /\.(?:json|txt)$/i;
+
+export type DirectStorySources = {
+  pathCn: string;
+  pathJp: string;
+  optionalCn: boolean;
+  kind: 'exedra-derived' | 'query';
+};
 
 const isOptionalString = (value: unknown): value is string | undefined =>
   value === undefined || typeof value === 'string';
 
-const isSafeDataPath = (value: string): boolean => {
+export const isSafeDataPath = (value: string): boolean => {
   if (
     value.length === 0 ||
     value.length > 4096 ||
@@ -40,15 +74,23 @@ const isSafeDataPath = (value: string): boolean => {
     return false;
   }
 
-  let decoded: string;
+  let decoded = value;
   try {
-    decoded = decodeURIComponent(value);
+    for (let iteration = 0; iteration < 4; iteration += 1) {
+      if (ENCODED_PATH_CONTROL_RE.test(decoded)) return false;
+      const next = decodeURIComponent(decoded);
+      if (next === decoded) break;
+      decoded = next;
+    }
   } catch {
     return false;
   }
   if (
     !decoded.startsWith('/data/') ||
     decoded.includes('\\') ||
+    decoded.includes('?') ||
+    decoded.includes('#') ||
+    ENCODED_PATH_CONTROL_RE.test(decoded) ||
     /[\u0000-\u001f\u007f]/.test(decoded)
   ) {
     return false;
@@ -59,7 +101,7 @@ const isSafeDataPath = (value: string): boolean => {
   }
 
   try {
-    const parsed = new URL(value, 'https://magi-reader.invalid');
+    const parsed = new URL(decoded, 'https://magi-reader.invalid');
     return (
       parsed.origin === 'https://magi-reader.invalid' &&
       parsed.pathname.startsWith('/data/') &&
@@ -69,6 +111,99 @@ const isSafeDataPath = (value: string): boolean => {
   } catch {
     return false;
   }
+};
+
+const parseExedraRoute = (
+  id: string,
+): {
+  category: ExedraRouteCategory;
+  groupKey: string;
+  routeHash: string;
+} | null => {
+  for (const category of EXEDRA_ROUTE_CATEGORIES) {
+    const prefix = `${category}_`;
+    if (!id.startsWith(prefix)) continue;
+    const match = id.slice(prefix.length).match(EXEDRA_ROUTE_HASH_RE);
+    const groupKey = match?.[1] ?? '';
+    if (!EXEDRA_GROUP_KEY_RE.test(groupKey)) {
+      throw new Error('Exedra 剧情编号格式无效。');
+    }
+    return { category, groupKey, routeHash: match?.[2] ?? '' };
+  }
+  return null;
+};
+
+export const verifyExedraStoryId = async (id: string): Promise<boolean> => {
+  const route = parseExedraRoute(id);
+  if (!route) return true;
+  const rawCategory = EXEDRA_RAW_CATEGORIES[route.category];
+  const relativeSource =
+    `${rawCategory}/${route.groupKey}/${route.groupKey}_jp.txt`;
+  const identity = `exedra/${route.category}/${relativeSource}`;
+  const digest = await crypto.subtle.digest(
+    'SHA-1',
+    new TextEncoder().encode(identity),
+  );
+  return toHex(digest).slice(0, 10) === route.routeHash;
+};
+
+export const resolveDirectStorySources = (
+  id: string,
+  queryCn: string | null,
+  queryJp: string | null,
+): DirectStorySources | null => {
+  if (
+    id.length === 0 ||
+    id.length > 256 ||
+    !SAFE_IDENTIFIER_RE.test(id)
+  ) {
+    throw new Error('剧情编号格式无效。');
+  }
+
+  const exedraRoute = parseExedraRoute(id);
+  if (exedraRoute) {
+    const { category, groupKey } = exedraRoute;
+    const basePath = `/data/${category}/${groupKey}/${groupKey}`;
+    const pathCn = `${basePath}_cn.txt`;
+    const pathJp = `${basePath}_jp.txt`;
+    if (!isSafeDataPath(pathCn) || !isSafeDataPath(pathJp)) {
+      throw new Error('Exedra 剧情编号无法生成安全路径。');
+    }
+    return {
+      pathCn,
+      pathJp,
+      optionalCn: true,
+      kind: 'exedra-derived',
+    };
+  }
+
+  const hasQueryPaths = queryCn !== null || queryJp !== null;
+  if (hasQueryPaths) {
+    const pathCn = queryCn ?? '';
+    const pathJp = queryJp ?? '';
+    if (
+      (pathCn && (
+        !isSafeDataPath(pathCn) ||
+        !STORY_SOURCE_EXTENSION_RE.test(pathCn)
+      )) ||
+      (pathJp && (
+        !isSafeDataPath(pathJp) ||
+        !STORY_SOURCE_EXTENSION_RE.test(pathJp)
+      ))
+    ) {
+      throw new Error('剧情链接包含不安全的文件路径。');
+    }
+    if (pathCn || pathJp) {
+      return {
+        pathCn,
+        pathJp,
+        optionalCn: false,
+        kind: 'query',
+      };
+    }
+  }
+
+  return null;
 };
 
 const parseStory = (value: unknown, index: number): StoryIndexEntry => {
@@ -139,6 +274,24 @@ const parseStory = (value: unknown, index: number): StoryIndexEntry => {
   ) {
     throw new Error(`${story.id}: sections 无效`);
   }
+  if (
+    story.legacy_ids !== undefined &&
+    (
+      story.game !== 'magireco' ||
+      !Array.isArray(story.legacy_ids) ||
+      story.legacy_ids.length === 0 ||
+      story.legacy_ids.length > MAX_LEGACY_IDS_PER_STORY ||
+      story.legacy_ids.some(
+        (legacyId) =>
+          typeof legacyId !== 'string' ||
+          legacyId.length === 0 ||
+          legacyId.length > 256 ||
+          !SAFE_IDENTIFIER_RE.test(legacyId),
+      )
+    )
+  ) {
+    throw new Error(`${story.id}: legacy_ids 无效`);
+  }
 
   const hasCn = story.has_cn;
   const hasJp = story.has_jp === true;
@@ -163,29 +316,69 @@ export const parseStoryIndex = (value: unknown): StoryIndexEntry[] => {
     throw new Error('剧情目录格式或条目数无效');
   }
   const stories = value.map(parseStory);
-  const seen = new Set<string>();
+  const routeOwners = new Map<string, string>();
   for (const story of stories) {
-    const key = story.id.toLocaleLowerCase();
-    if (seen.has(key)) throw new Error(`剧情目录 id 重复: ${story.id}`);
-    seen.add(key);
+    const key = story.id.toLowerCase();
+    const previous = routeOwners.get(key);
+    if (previous) {
+      throw new Error(`剧情目录 id 重复: ${previous}, ${story.id}`);
+    }
+    routeOwners.set(key, story.id);
+  }
+  let legacyAliasCount = 0;
+  for (const story of stories) {
+    for (const legacyId of story.legacy_ids ?? []) {
+      const key = legacyId.toLowerCase();
+      const previous = routeOwners.get(key);
+      if (previous) {
+        throw new Error(`旧剧情编号冲突: ${legacyId}: ${previous}`);
+      }
+      routeOwners.set(key, story.id);
+      legacyAliasCount += 1;
+      if (legacyAliasCount > MAX_LEGACY_ROUTE_ALIASES) {
+        throw new Error('旧剧情编号总数超过安全限制');
+      }
+    }
   }
   return stories;
 };
 
-const readBoundedBody = async (response: Response): Promise<Uint8Array> => {
+export const findStoryByRouteId = (
+  stories: readonly StoryIndexEntry[],
+  routeId: string,
+): StoryIndexEntry | undefined => {
+  const key = routeId.toLowerCase();
+  return stories.find(
+    (story) =>
+      story.id.toLowerCase() === key ||
+      story.legacy_ids?.some(
+        (legacyId) => legacyId.toLowerCase() === key,
+      ),
+  );
+};
+
+export const readBoundedResponseBody = async (
+  response: Response,
+  maxBytes: number,
+  label: string,
+): Promise<Uint8Array> => {
+  if (!Number.isSafeInteger(maxBytes) || maxBytes <= 0) {
+    throw new Error(`${label}大小限制无效`);
+  }
+  const tooLargeMessage = `${label}超过大小限制`;
   const declaredLengthRaw = response.headers.get('content-length');
   if (declaredLengthRaw !== null) {
     const declaredLength = Number(declaredLengthRaw);
     if (
       Number.isSafeInteger(declaredLength) &&
-      declaredLength > MAX_STORY_INDEX_BYTES
+      declaredLength > maxBytes
     ) {
-      await response.body?.cancel('剧情目录超过大小限制');
-      throw new Error('剧情目录超过大小限制');
+      await response.body?.cancel(tooLargeMessage);
+      throw new Error(tooLargeMessage);
     }
   }
   const reader = response.body?.getReader();
-  if (!reader) throw new Error('剧情目录响应无法安全读取');
+  if (!reader) throw new Error(`${label}响应无法安全读取`);
 
   const chunks: Uint8Array[] = [];
   let total = 0;
@@ -194,9 +387,9 @@ const readBoundedBody = async (response: Response): Promise<Uint8Array> => {
       const { done, value } = await reader.read();
       if (done) break;
       total += value.byteLength;
-      if (total > MAX_STORY_INDEX_BYTES) {
-        await reader.cancel('剧情目录超过大小限制');
-        throw new Error('剧情目录超过大小限制');
+      if (total > maxBytes) {
+        await reader.cancel(tooLargeMessage);
+        throw new Error(tooLargeMessage);
       }
       chunks.push(value);
     }
@@ -219,16 +412,20 @@ const toHex = (buffer: ArrayBuffer): string =>
     (byte) => byte.toString(16).padStart(2, '0'),
   ).join('');
 
-export const loadStoryIndex = async (
-  signal: AbortSignal,
-): Promise<LoadedStoryIndex> => {
+let cachedStoryIndex: LoadedStoryIndex | null = null;
+let pendingStoryIndex: Promise<LoadedStoryIndex> | null = null;
+
+const fetchStoryIndex = async (): Promise<LoadedStoryIndex> => {
   const response = await fetch('/story_index.json', {
     cache: 'no-store',
     credentials: 'same-origin',
-    signal,
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const payload = await readBoundedBody(response);
+  const payload = await readBoundedResponseBody(
+    response,
+    MAX_STORY_INDEX_BYTES,
+    '剧情目录',
+  );
   const sha256 = toHex(
     await crypto.subtle.digest('SHA-256', payload.buffer as ArrayBuffer),
   );
@@ -243,4 +440,45 @@ export const loadStoryIndex = async (
     );
   }
   return { stories: parseStoryIndex(raw), sha256 };
+};
+
+const waitWithAbort = <T>(promise: Promise<T>, signal: AbortSignal): Promise<T> =>
+  new Promise((resolve, reject) => {
+    if (signal.aborted) {
+      reject(new DOMException('The operation was aborted.', 'AbortError'));
+      return;
+    }
+    const onAbort = () => {
+      reject(new DOMException('The operation was aborted.', 'AbortError'));
+    };
+    signal.addEventListener('abort', onAbort, { once: true });
+    promise.then(
+      value => {
+        signal.removeEventListener('abort', onAbort);
+        resolve(value);
+      },
+      error => {
+        signal.removeEventListener('abort', onAbort);
+        reject(error);
+      },
+    );
+  });
+
+export const loadStoryIndex = (
+  signal: AbortSignal,
+): Promise<LoadedStoryIndex> => {
+  if (cachedStoryIndex) {
+    return waitWithAbort(Promise.resolve(cachedStoryIndex), signal);
+  }
+  if (!pendingStoryIndex) {
+    pendingStoryIndex = fetchStoryIndex()
+      .then(result => {
+        cachedStoryIndex = result;
+        return result;
+      })
+      .finally(() => {
+        pendingStoryIndex = null;
+      });
+  }
+  return waitWithAbort(pendingStoryIndex, signal);
 };

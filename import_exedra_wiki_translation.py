@@ -442,11 +442,25 @@ def _replace_wiki_links(value: str) -> str:
     return value
 
 
+def _strip_ignored_templates(value: str) -> str:
+    def replace(match: re.Match[str]) -> str:
+        body = match.group(0)[2:-2].strip()
+        name = body.split("|", 1)[0].strip().casefold().replace(" ", "")
+        return "" if name in IGNORED_TEMPLATE_NAMES else match.group(0)
+
+    previous = ""
+    while previous != value:
+        previous = value
+        value = TEMPLATE_RE.sub(replace, value)
+    return value
+
+
 def clean_wiki_text(value: str) -> str:
     """Convert supported inline MediaWiki markup to reader-visible text."""
 
     text = value.strip()
     text = re.sub(r"<!--[\s\S]*?-->", "", text)
+    text = _strip_ignored_templates(text)
     text = re.sub(r"<br\s*/?>", r"\\n", text, flags=re.IGNORECASE)
     text = re.sub(
         r"<rp\b[^>]*>[\s\S]*?</rp>",
@@ -522,8 +536,20 @@ def _known_non_story_line(line: str) -> bool:
     if _only_ignored_templates(line):
         return True
     if re.fullmatch(
-        r"(?:(?:记忆|記憶|心之器).{0,80}(?:解锁|解鎖|解放)"
-        r"|Unlocked\b.{0,160})",
+        r"(?:"
+        r"(?:记忆|記憶)\s*(?:(?:Lv\.?|等级|レベル)\s*)?\d+"
+        r"(?:\s*时)?\s*(?:解锁|解鎖|解放)"
+        r"|(?:(?:当|在|于)\s*)?(?:获取|获得)\s*(?:该)?角色(?:的)?"
+        r"(?:首个|第一个|第一份|第一张)"
+        r"(?:记忆|記憶)(?:时|后)\s*(?:解锁|解鎖|解放)"
+        r"|当\s*(?:该)?角色(?:的)?(?:首个|第一个|第一份|第一张)"
+        r"(?:记忆|記憶)被(?:获取|获得)时"
+        r"(?:\s*(?:解锁|解鎖|解放))?"
+        r"|(?:(?:当|在|于)\s*)?心之器(?:\s*等级)?(?:\s*达到)?"
+        r"\s*(?:Lvl?\.?\s*)?\d+\s*(?:级)?\s*时?"
+        r"\s*(?:解锁|解鎖|解放)"
+        r"|Unlocked\b.{0,160}"
+        r")",
         line,
         flags=re.IGNORECASE,
     ):
@@ -643,7 +669,9 @@ def parse_wikitext(raw: str) -> tuple[WikiEpisode, ...]:
 
         bold_match = FULL_BOLD_RE.fullmatch(line)
         if bold_match:
-            narration_lines.append((line_number, bold_match.group(1)))
+            narration = bold_match.group(1)
+            if narration.strip():
+                narration_lines.append((line_number, narration))
             continue
 
         flush_narration()

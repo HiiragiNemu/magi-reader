@@ -82,6 +82,29 @@ def exedra_json(
 
 
 class ExedraParserTests(unittest.TestCase):
+    def test_exedra_character_display_names_use_legacy_site_style(self) -> None:
+        names = generate.EXEDRA_CHARACTER_DISPLAY_NAMES
+        self.assertEqual(len(names), 61)
+        self.assertEqual(names["character_kush"], "入名库什（入名 クシュ）")
+        self.assertEqual(names["character_rena"], "水波玲奈（水波 レナ）")
+        self.assertEqual(names["character_iroha"], "环彩羽（環 いろは）")
+        self.assertEqual(names["character_nanaka"], "常盘七香（常盤 ななか）")
+        self.assertEqual(names["character_darc"], "塔鲁特（タルト）")
+        self.assertTrue(all(key.startswith("character_") for key in names))
+        self.assertEqual(len(names), len(set(names.values())))
+
+    def test_magireco_audited_pair_allowlist_has_unique_raw_ids(self) -> None:
+        pairs = generate.MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS
+        source_count = sum(
+            len(stems)
+            for _, _, stems in (
+                generate.MAGIRECO_AUDITED_CROSS_FOLDER_GROUPS
+            )
+        )
+        self.assertEqual(source_count, 33)
+        self.assertEqual(len(pairs), 33)
+        self.assertEqual(len(generate.MAGIRECO_LEGACY_ROUTE_IDENTITIES), 52)
+
     def test_dynamic_headers_onlytext_and_duplicate_sheet(self) -> None:
         data = exedra_json(
             [
@@ -503,6 +526,7 @@ class PipelineBuildTests(unittest.TestCase):
 
         self.assertEqual(len(stories), 6)
         self.assertEqual(stats["magireco_logical_stories"], 6)
+        self.assertEqual(stats["magireco_alias_content_mismatches"], 1)
         self.assertEqual(stats["magireco_legacy_id_collision_groups"], 2)
         self.assertEqual(stats["magireco_collision_stories"], 5)
         self.assertEqual(stats["input_source_files"], 8)
@@ -556,6 +580,479 @@ class PipelineBuildTests(unittest.TestCase):
 
         self.assertEqual(first, second)
         self.assertEqual(first_stats, second_stats)
+
+    def test_identical_repeated_section_alias_keeps_legacy_file_without_story(
+        self,
+    ) -> None:
+        folder = Path("main_story") / "1034-24 - Puella Historia篇"
+        write_text(
+            self.jp / folder / "103401_1.txt",
+            "---[Section 1] (Source: 103401-1.json) ---\n"
+            "旭: 同一段日文\n",
+        )
+        write_text(
+            self.jp / folder / "103401_1-1.txt",
+            "--- [Section 1] (Source: 103401-1.json) ---\r\n"
+            "旭: 同一段日文\r\n",
+        )
+        write_text(
+            self.cn / folder / "103401_1.txt",
+            "---[Section 1] (Source: 103401-1.json) ---\n"
+            "旭: 同一段中文\n",
+        )
+
+        stories, stats = generate.build_story_catalog(
+            staging_public_dir=self.stage,
+            jp_dir=self.jp,
+            cn_dir=self.cn,
+            exedra_jp_dir=None,
+            exedra_cn_dir=None,
+            titles_path=self.titles,
+        )
+
+        self.assertEqual(len(stories), 1)
+        story = stories[0]
+        self.assertEqual(story["id"], "103401")
+        self.assertTrue(story["has_cn"] and story["has_jp"])
+        self.assertTrue(story["path_jp"].endswith("/103401_1_jp.txt"))
+        self.assertTrue(story["path_cn"].endswith("/103401_1_cn.txt"))
+        compatibility_alias = (
+            self.stage
+            / "data"
+            / "main_story"
+            / "1034-24 - Puella Historia篇"
+            / "103401_1-1_jp.txt"
+        )
+        self.assertTrue(compatibility_alias.is_file())
+        self.assertIn(
+            "--- [Section 1]",
+            compatibility_alias.read_text(encoding="utf-8"),
+        )
+        self.assertEqual(stats["magireco_format_alias_sources"], 1)
+        self.assertEqual(stats["magireco_format_alias_records"], 1)
+        self.assertEqual(stats["magireco_format_alias_groups"], 1)
+        self.assertEqual(stats["magireco_compatibility_alias_files"], 1)
+        self.assertEqual(stats["input_source_files"], 3)
+        self.assertEqual(stats["manifest_source_files"], 3)
+        self.assertEqual(stats["orphan_sources"], 0)
+
+    def test_format_alias_never_hides_different_translation(self) -> None:
+        folder = Path("main_story") / "1029-19 - 第II部 第8章"
+        write_text(
+            self.jp / folder / "102901_1.txt",
+            "---[Section 1] (Source: 102901-1.json) ---\n"
+            "时女静香: 同一段日文\n",
+        )
+        write_text(
+            self.jp / folder / "102901_1-1.txt",
+            "--- [Section 1] (Source: 102901-1.json) ---\n"
+            "时女静香: 同一段日文\n",
+        )
+        write_text(
+            self.cn / folder / "102901_1.txt",
+            "---[Section 1] (Source: 102901-1.json) ---\n"
+            "静香: 中文版本甲\n",
+        )
+        write_text(
+            self.cn / folder / "102901_1-1.txt",
+            "--- [Section 1] (Source: 102901-1.json) ---\n"
+            "静香: 中文版本乙\n",
+        )
+
+        stories, stats = generate.build_story_catalog(
+            staging_public_dir=self.stage,
+            jp_dir=self.jp,
+            cn_dir=self.cn,
+            exedra_jp_dir=None,
+            exedra_cn_dir=None,
+            titles_path=self.titles,
+        )
+
+        self.assertEqual(len(stories), 2)
+        self.assertEqual(len({story["id"] for story in stories}), 2)
+        self.assertEqual(
+            sorted((story["has_cn"], story["has_jp"]) for story in stories),
+            [(True, False), (True, True)],
+        )
+        published_cn = {
+            (
+                self.stage
+                / story["path_cn"].lstrip("/").replace("/", os.sep)
+            ).read_text(encoding="utf-8")
+            for story in stories
+        }
+        self.assertTrue(any("中文版本甲" in text for text in published_cn))
+        self.assertTrue(any("中文版本乙" in text for text in published_cn))
+        self.assertEqual(stats["magireco_format_alias_sources"], 1)
+        self.assertEqual(stats["magireco_alias_content_mismatches"], 1)
+        self.assertEqual(stats["magireco_format_alias_records"], 0)
+        self.assertEqual(stats["input_source_files"], 4)
+        self.assertEqual(stats["manifest_source_files"], 4)
+        self.assertEqual(stats["orphan_sources"], 0)
+
+    def test_unique_range_variants_pair_without_realigning_or_renaming(self) -> None:
+        header = "---[Section 1] (Source: fixture.json) ---\n"
+        folder = Path("main_story") / "1015-05 - 第I部 第5章"
+        write_text(
+            self.jp / folder / "101507_1-7.txt",
+            f"{header}いろは: JP 一\nいろは: JP 二\n",
+        )
+        write_text(
+            self.cn / folder / "101507_1-6.txt",
+            f"{header}彩羽: CN 一\n",
+        )
+
+        stories, stats = generate.build_story_catalog(
+            staging_public_dir=self.stage,
+            jp_dir=self.jp,
+            cn_dir=self.cn,
+            exedra_jp_dir=None,
+            exedra_cn_dir=None,
+            titles_path=self.titles,
+        )
+
+        self.assertEqual(len(stories), 1)
+        story = stories[0]
+        self.assertEqual(story["id"], "101507")
+        self.assertTrue(story["has_cn"] and story["has_jp"])
+        self.assertEqual(
+            story["path_cn"],
+            "/data/main_story/1015-05 - 第I部 第5章/101507_1-6_cn.txt",
+        )
+        self.assertEqual(
+            story["path_jp"],
+            "/data/main_story/1015-05 - 第I部 第5章/101507_1-7_jp.txt",
+        )
+        self.assertEqual(stats["magireco_range_variant_pairs"], 1)
+        self.assertIn(
+            "JP 二",
+            (
+                self.stage
+                / story["path_jp"].lstrip("/").replace("/", os.sep)
+            ).read_text(encoding="utf-8"),
+        )
+        self.assertNotIn(
+            "JP 二",
+            (
+                self.stage
+                / story["path_cn"].lstrip("/").replace("/", os.sep)
+            ).read_text(encoding="utf-8"),
+        )
+
+    def test_audited_legacy_route_alias_requires_exact_identity(self) -> None:
+        expected_identity = generate.MAGIRECO_LEGACY_ROUTE_IDENTITIES["310031"]
+        exact = {
+            "raw_id": "310031",
+            "identity": expected_identity,
+        }
+        logical_sources = {"exact": exact}
+        stats: Counter[str] = Counter()
+
+        generate._attach_magireco_legacy_route_aliases(
+            logical_sources,
+            {"exact": "character_story_310031_fixture"},
+            stats,
+            require_all=False,
+        )
+
+        self.assertEqual(exact["legacy_ids"], ["310031"])
+        self.assertEqual(stats["magireco_legacy_route_aliases"], 1)
+
+        wrong = {
+            "raw_id": "310031",
+            "identity": "character_story/fixture/310031_1-4",
+        }
+        generate._attach_magireco_legacy_route_aliases(
+            {"wrong": wrong},
+            {"wrong": "character_story_310031_other"},
+            Counter(),
+            require_all=False,
+        )
+        self.assertNotIn("legacy_ids", wrong)
+
+    def test_audited_partial_pair_keeps_distinct_translation_variant(
+        self,
+    ) -> None:
+        cn_identity, jp_identity = generate.MAGIRECO_AUDITED_PARTIAL_PAIR
+        cn_parent = cn_identity.rsplit("/", 1)[0]
+        write_text(
+            self.cn / f"{cn_identity}.txt",
+            "---[Section 1] (Source: 618401-1-cn.json) ---\n"
+            "彩羽: 中文第一节\n"
+            "八千代: 中文回应\n",
+        )
+        write_text(
+            self.jp / f"{jp_identity}.txt",
+            "---[Section 1] (Source: 618401-1-jp.json) ---\n"
+            "いろは: 日文第一节\n"
+            "やちよ: 日文回应\n"
+            "---[Section 2] (Source: 618401-2-jp.json) ---\n"
+            "旁白: 日文第二节\n"
+            "---[Section 3] (Source: 618401-3-jp.json) ---\n"
+            "旁白: 日文第三节\n"
+            "---[Section 4] (Source: 618401-4-jp.json) ---\n"
+            "旁白: 日文第四节\n"
+            "---[Section 5] (Source: 618401-5-jp.json) ---\n"
+            "旁白: 日文第五节\n"
+            "---[Section 6] (Source: 618401-6-jp.json) ---\n"
+            "旁白: 日文第六节\n"
+            "---[Section 7] (Source: 618401-7-jp.json) ---\n"
+            "旁白: 日文第七节\n",
+        )
+        write_text(
+            self.cn / cn_parent / "618401_1-1.txt",
+            "---[Section 1] (Source: alternate.json) ---\n"
+            "彩羽: 不同译本\n",
+        )
+
+        stories, stats = generate.build_story_catalog(
+            staging_public_dir=self.stage,
+            jp_dir=self.jp,
+            cn_dir=self.cn,
+            exedra_jp_dir=None,
+            exedra_cn_dir=None,
+            titles_path=self.titles,
+        )
+
+        self.assertEqual(len(stories), 2)
+        paired = next(
+            story for story in stories if story.get("legacy_ids") == ["618401"]
+        )
+        alternate = next(story for story in stories if story is not paired)
+        self.assertTrue(paired["has_cn"] and paired["has_jp"])
+        self.assertEqual(paired["source_identity"], cn_identity)
+        self.assertTrue(alternate["has_cn"])
+        self.assertFalse(alternate["has_jp"])
+        self.assertEqual(stats["magireco_audited_partial_pairs"], 1)
+        self.assertEqual(stats["magireco_legacy_route_aliases"], 1)
+
+    def test_hyphenated_numeric_raw_id_range_variants_pair(self) -> None:
+        header = "---[Section 1] (Source: fixture.json) ---\n"
+        folder = Path("event_story") / "5146 - 复刻"
+        write_text(
+            self.jp / folder / "514601-06_0-11.txt",
+            f"{header}旁白: JP\n",
+        )
+        write_text(
+            self.cn / folder / "514601-06_0-10.txt",
+            f"{header}旁白: CN\n",
+        )
+
+        stories, stats = generate.build_story_catalog(
+            staging_public_dir=self.stage,
+            jp_dir=self.jp,
+            cn_dir=self.cn,
+            exedra_jp_dir=None,
+            exedra_cn_dir=None,
+            titles_path=self.titles,
+        )
+
+        self.assertEqual(len(stories), 1)
+        self.assertEqual(stories[0]["id"], "514601-06")
+        self.assertTrue(stories[0]["has_cn"] and stories[0]["has_jp"])
+        self.assertEqual(stats["magireco_range_variant_pairs"], 1)
+
+    def test_disjoint_range_variants_remain_separate(self) -> None:
+        header = "---[Section 1] (Source: fixture.json) ---\n"
+        folder = Path("main_story") / "9999 - 区间保护"
+        write_text(
+            self.jp / folder / "999901_1-2.txt",
+            f"{header}旁白: JP 前半\n",
+        )
+        write_text(
+            self.cn / folder / "999901_3-4.txt",
+            f"{header}旁白: CN 后半\n",
+        )
+
+        stories, stats = generate.build_story_catalog(
+            staging_public_dir=self.stage,
+            jp_dir=self.jp,
+            cn_dir=self.cn,
+            exedra_jp_dir=None,
+            exedra_cn_dir=None,
+            titles_path=self.titles,
+        )
+
+        self.assertEqual(len(stories), 2)
+        self.assertEqual(
+            sorted((story["has_cn"], story["has_jp"]) for story in stories),
+            [(False, True), (True, False)],
+        )
+        self.assertEqual(stats["magireco_range_variant_pairs"], 0)
+        self.assertEqual(stats["input_source_files"], 2)
+        self.assertEqual(stats["manifest_source_files"], 2)
+        self.assertEqual(stats["orphan_sources"], 0)
+
+    def test_audited_cross_folder_pair_preserves_both_public_paths(self) -> None:
+        cn_identity, jp_identity = (
+            generate.MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS["521610"]
+        )
+        write_text(
+            self.cn / f"{cn_identity}.txt",
+            "---[Section 1] (Source: cn-version.json) ---\n"
+            "彩羽: 中文一\n"
+            "八千代: 中文二\n"
+            "彩羽: 中文三\n",
+        )
+        write_text(
+            self.jp / f"{jp_identity}.txt",
+            "--- [Section 1] (Source: jp-version.json) ---\n"
+            "いろは: 日文一\n"
+            "やちよ: 日文二\n"
+            "いろは: 日文三\n",
+        )
+
+        stories, stats = generate.build_story_catalog(
+            staging_public_dir=self.stage,
+            jp_dir=self.jp,
+            cn_dir=self.cn,
+            exedra_jp_dir=None,
+            exedra_cn_dir=None,
+            titles_path=self.titles,
+        )
+
+        self.assertEqual(len(stories), 1)
+        story = stories[0]
+        self.assertEqual(story["id"], "521610")
+        self.assertEqual(story["folder"], "5216 - 海边的缎带")
+        self.assertEqual(story["source_identity"], cn_identity)
+        self.assertEqual(
+            story["path_cn"],
+            f"/data/{cn_identity}_cn.txt",
+        )
+        self.assertEqual(
+            story["path_jp"],
+            f"/data/{jp_identity}_jp.txt",
+        )
+        self.assertEqual(
+            stats["magireco_audited_cross_folder_pairs"],
+            1,
+        )
+        self.assertEqual(stats["input_source_files"], 2)
+        self.assertEqual(stats["manifest_source_files"], 2)
+        self.assertEqual(stats["orphan_sources"], 0)
+
+    def test_audited_cross_folder_pair_fails_closed_on_structure_change(
+        self,
+    ) -> None:
+        cn_identity, jp_identity = (
+            generate.MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS["521620"]
+        )
+        write_text(
+            self.cn / f"{cn_identity}.txt",
+            "---[Section 1] (Source: cn.json) ---\n"
+            "甲: 一\n"
+            "乙: 二\n"
+            "甲: 三\n",
+        )
+        write_text(
+            self.jp / f"{jp_identity}.txt",
+            "---[Section 1] (Source: jp.json) ---\n"
+            "A: 一\n"
+            "B: 二\n"
+            "B: 三\n",
+        )
+
+        with self.assertRaisesRegex(
+            generate.PipelineError,
+            "Section/说话轮次结构不一致",
+        ):
+            generate.build_story_catalog(
+                staging_public_dir=self.stage,
+                jp_dir=self.jp,
+                cn_dir=self.cn,
+                exedra_jp_dir=None,
+                exedra_cn_dir=None,
+                titles_path=self.titles,
+            )
+
+    def test_audited_cross_folder_pair_rejects_a_missing_side(self) -> None:
+        cn_identity, _ = (
+            generate.MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS["521610"]
+        )
+        write_text(
+            self.cn / f"{cn_identity}.txt",
+            "---[Section 1] (Source: cn.json) ---\n旁白: 中文\n",
+        )
+
+        with self.assertRaisesRegex(generate.PipelineError, "只出现一侧"):
+            generate.build_story_catalog(
+                staging_public_dir=self.stage,
+                jp_dir=self.jp,
+                cn_dir=self.cn,
+                exedra_jp_dir=None,
+                exedra_cn_dir=None,
+                titles_path=self.titles,
+            )
+
+    def test_unlisted_cross_folder_raw_id_remains_separate(self) -> None:
+        write_text(
+            self.cn / "event_story" / "中文目录" / "999901_1.txt",
+            "---[Section 1] (Source: cn.json) ---\n旁白: 中文\n",
+        )
+        write_text(
+            self.jp / "event_story" / "日文目录" / "999901_1.txt",
+            "---[Section 1] (Source: jp.json) ---\n旁白: 日文\n",
+        )
+
+        stories, stats = generate.build_story_catalog(
+            staging_public_dir=self.stage,
+            jp_dir=self.jp,
+            cn_dir=self.cn,
+            exedra_jp_dir=None,
+            exedra_cn_dir=None,
+            titles_path=self.titles,
+        )
+
+        self.assertEqual(len(stories), 2)
+        self.assertEqual(
+            sorted((story["has_cn"], story["has_jp"]) for story in stories),
+            [(False, True), (True, False)],
+        )
+        self.assertEqual(
+            stats["magireco_audited_cross_folder_pairs"],
+            0,
+        )
+
+    def test_format_aliases_are_removed_before_unique_range_pairing(self) -> None:
+        folder = Path("costume_story") / "3050 - 香春优奈"
+        write_text(
+            self.jp / folder / "730501_1-6.txt",
+            "---[Section 1] (Source: 730501-1.json) ---\n"
+            "香春ゆうな: JP\n",
+        )
+        write_text(
+            self.cn / folder / "730501_1.txt",
+            "---[Section 1] (Source: 730501-1.json) ---\n"
+            "香春优奈: CN\n",
+        )
+        write_text(
+            self.cn / folder / "730501_1-1.txt",
+            "--- [Section 1] (Source: 730501-1.json) ---\n"
+            "香春优奈: CN\n",
+        )
+
+        stories, stats = generate.build_story_catalog(
+            staging_public_dir=self.stage,
+            jp_dir=self.jp,
+            cn_dir=self.cn,
+            exedra_jp_dir=None,
+            exedra_cn_dir=None,
+            titles_path=self.titles,
+        )
+
+        self.assertEqual(len(stories), 1)
+        story = stories[0]
+        self.assertEqual(story["id"], "730501")
+        self.assertTrue(story["has_cn"] and story["has_jp"])
+        self.assertTrue(story["path_cn"].endswith("/730501_1_cn.txt"))
+        self.assertTrue(story["path_jp"].endswith("/730501_1-6_jp.txt"))
+        self.assertEqual(stats["magireco_format_alias_sources"], 1)
+        self.assertEqual(stats["magireco_format_alias_records"], 1)
+        self.assertEqual(stats["magireco_range_variant_pairs"], 1)
+        self.assertEqual(stats["input_source_files"], 3)
+        self.assertEqual(stats["manifest_source_files"], 3)
+        self.assertEqual(stats["orphan_sources"], 0)
 
     def test_duplicate_language_identity_fails_fast(self) -> None:
         relative = Path("main_story") / "demo" / "101001_1.txt"
@@ -627,6 +1124,76 @@ class PipelineBuildTests(unittest.TestCase):
         validation = generate.validate_catalog(stories, self.stage)
         self.assertEqual(validation["stories"], 4)
         self.assertEqual(validation["source_files"], 6)
+        self.assertEqual(validation["story_ids"], 4)
+
+    def test_catalog_validation_rejects_legacy_route_collisions(self) -> None:
+        self._make_sources()
+        stories, _ = generate.build_story_catalog(
+            staging_public_dir=self.stage,
+            jp_dir=self.jp,
+            cn_dir=self.cn,
+            exedra_jp_dir=self.exedra,
+            exedra_cn_dir=self.exedra_cn,
+            titles_path=self.titles,
+        )
+        magireco = next(
+            story for story in stories if story.get("game") == "magireco"
+        )
+        other = next(story for story in stories if story is not magireco)
+        magireco["legacy_ids"] = [other["id"].upper()]
+        with self.assertRaisesRegex(
+            generate.PipelineError,
+            "旧路由编号与现有路由冲突",
+        ):
+            generate.validate_catalog(stories, self.stage)
+        story_ids = json.loads(
+            (
+                self.stage
+                / "data"
+                / generate.STORY_IDS_FILENAME
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(story_ids, [story["id"] for story in stories])
+
+    def test_catalog_validation_can_require_audited_legacy_routes(
+        self,
+    ) -> None:
+        self._make_sources()
+        stories, _ = generate.build_story_catalog(
+            staging_public_dir=self.stage,
+            jp_dir=self.jp,
+            cn_dir=self.cn,
+            exedra_jp_dir=self.exedra,
+            exedra_cn_dir=self.exedra_cn,
+            titles_path=self.titles,
+        )
+        magireco = next(
+            story for story in stories if story.get("game") == "magireco"
+        )
+        legacy_id = "legacy-310011"
+        expected = {legacy_id: magireco["source_identity"]}
+        with mock.patch.object(
+            generate,
+            "MAGIRECO_LEGACY_ROUTE_IDENTITIES",
+            expected,
+        ):
+            with self.assertRaisesRegex(
+                generate.PipelineError,
+                "未保留安全旧路由",
+            ):
+                generate.validate_catalog(
+                    stories,
+                    self.stage,
+                    require_magireco_legacy_aliases=True,
+                )
+
+            magireco["legacy_ids"] = [legacy_id]
+            validation = generate.validate_catalog(
+                stories,
+                self.stage,
+                require_magireco_legacy_aliases=True,
+            )
+            self.assertEqual(validation["legacy_story_ids"], 1)
 
     def test_cn_turn_mismatch_is_rejected_without_realigning(self) -> None:
         self._make_sources()
@@ -1176,39 +1743,117 @@ class RealMagiaRecordAuditTests(unittest.TestCase):
                 exedra_jp_dir=None,
                 exedra_cn_dir=None,
                 titles_path=generate.DEFAULT_TITLES_PATH,
+                require_magireco_legacy_aliases=True,
             )
 
             source_count = sum(
                 1 for _ in generate.DEFAULT_DIR_JP.rglob("*.txt")
             ) + sum(1 for _ in generate.DEFAULT_DIR_CN.rglob("*.txt"))
             self.assertEqual(source_count, 4025)
-            self.assertEqual(len(regenerated), 2394)
-            self.assertEqual(stats["magireco_logical_stories"], 2394)
-            self.assertEqual(stats["magireco_legacy_id_collision_groups"], 283)
-            self.assertEqual(stats["magireco_collision_stories"], 570)
+            self.assertEqual(len(regenerated), 2126)
+            self.assertEqual(stats["magireco_logical_stories"], 2126)
+            self.assertEqual(stats["magireco_paired_stories"], 1602)
+            self.assertEqual(stats["magireco_format_alias_groups"], 205)
+            self.assertEqual(stats["magireco_format_alias_sources"], 297)
+            self.assertEqual(stats["magireco_format_alias_records"], 202)
+            self.assertEqual(stats["magireco_compatibility_alias_files"], 297)
+            self.assertEqual(stats["magireco_alias_content_mismatches"], 4)
+            self.assertEqual(stats["magireco_range_variant_pairs"], 32)
+            self.assertEqual(
+                stats["magireco_audited_cross_folder_pairs"],
+                33,
+            )
+            self.assertEqual(stats["magireco_audited_partial_pairs"], 1)
+            self.assertEqual(stats["magireco_legacy_id_collision_groups"], 19)
+            self.assertEqual(stats["magireco_collision_stories"], 38)
+            self.assertEqual(stats["magireco_legacy_route_aliases"], 19)
             self.assertEqual(stats["input_source_files"], source_count)
             self.assertEqual(stats["manifest_source_files"], source_count)
             self.assertEqual(stats["orphan_sources"], 0)
             self.assertEqual(stats["ownership_collisions"], 0)
 
-            manifest_slots = {
-                (story["source_identity"].casefold(), lang)
+            category_counts = Counter(
+                story["category"] for story in regenerated
+            )
+            self.assertEqual(category_counts["event_story"], 709)
+            self.assertEqual(category_counts["login_story"], 45)
+
+            route_owners = {
+                story["id"].casefold(): story["id"]
+                for story in regenerated
+            }
+            for story in regenerated:
+                for legacy_id in story.get("legacy_ids", []):
+                    self.assertNotIn(legacy_id.casefold(), route_owners)
+                    route_owners[legacy_id.casefold()] = story["id"]
+            self.assertEqual(
+                len(generate.MAGIRECO_LEGACY_ROUTE_IDENTITIES),
+                52,
+            )
+            for legacy_id, expected_identity in (
+                generate.MAGIRECO_LEGACY_ROUTE_IDENTITIES.items()
+            ):
+                targets = [
+                    story
+                    for story in regenerated
+                    if story["source_identity"].casefold()
+                    == expected_identity.casefold()
+                ]
+                self.assertEqual(
+                    len(targets),
+                    1,
+                    msg=f"{legacy_id}: {expected_identity}",
+                )
+                self.assertEqual(
+                    route_owners[legacy_id.casefold()],
+                    targets[0]["id"],
+                )
+
+            for raw_id, (cn_identity, jp_identity) in (
+                generate.MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS.items()
+            ):
+                targets = [
+                    story
+                    for story in regenerated
+                    if story["raw_id"] == raw_id
+                ]
+                self.assertEqual(len(targets), 1, msg=raw_id)
+                story = targets[0]
+                self.assertEqual(story["id"], raw_id)
+                self.assertTrue(story["has_cn"] and story["has_jp"])
+                self.assertEqual(story["source_identity"], cn_identity)
+                self.assertEqual(
+                    story["path_cn"],
+                    f"/data/{cn_identity}_cn.txt",
+                )
+                self.assertEqual(
+                    story["path_jp"],
+                    f"/data/{jp_identity}_jp.txt",
+                )
+                self.assertEqual(
+                    story["folder"],
+                    jp_identity.rsplit("/", 2)[-2],
+                )
+                self.assertEqual(
+                    generate._magireco_reader_structure_signature(
+                        generate.DEFAULT_DIR_CN / f"{cn_identity}.txt"
+                    ),
+                    generate._magireco_reader_structure_signature(
+                        generate.DEFAULT_DIR_JP / f"{jp_identity}.txt"
+                    ),
+                )
+
+            selected_source_slots = {
+                (story["id"].casefold(), lang)
                 for story in regenerated
                 for lang in ("cn", "jp")
                 if story[f"path_{lang}"]
             }
-            expected_slots: set[tuple[str, str]] = set()
-            for lang, root in (
-                ("jp", generate.DEFAULT_DIR_JP),
-                ("cn", generate.DEFAULT_DIR_CN),
-            ):
-                for source_path in root.rglob("*.txt"):
-                    identity, _, _ = generate.magireco_source_identity(
-                        root,
-                        source_path,
-                    )
-                    expected_slots.add((identity, lang))
-            self.assertEqual(manifest_slots, expected_slots)
+            self.assertEqual(
+                len(selected_source_slots)
+                + stats["magireco_format_alias_sources"],
+                source_count,
+            )
 
             identities_420131 = [
                 story
@@ -1216,10 +1861,21 @@ class RealMagiaRecordAuditTests(unittest.TestCase):
                 if story["category"] == "mirror_story"
                 and story["raw_id"] == "420131"
             ]
-            self.assertEqual(len(identities_420131), 3)
+            self.assertEqual(len(identities_420131), 2)
             self.assertEqual(
                 len({story["source_identity"] for story in identities_420131}),
-                3,
+                2,
+            )
+
+            main_1034 = [
+                story
+                for story in regenerated
+                if story["folder"]
+                == "1034-24 - Puella Historia篇 - 現代神浜編"
+            ]
+            self.assertEqual(len(main_1034), 7)
+            self.assertTrue(
+                all(story["has_cn"] and story["has_jp"] for story in main_1034)
             )
 
             identities_5170100 = [

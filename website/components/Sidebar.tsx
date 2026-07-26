@@ -14,8 +14,9 @@ import {
   X,
 } from 'lucide-react';
 
-import { speakerColorFor } from '@/app/config/dictionary';
+import { characterFolderColorFor } from '@/app/config/dictionary';
 import { useGlobal } from '@/app/providers';
+import { categoryOrder } from '@/lib/category-order';
 import { makeSectionAnchorId } from '@/lib/story-parser';
 import { useDialog } from '@/lib/use-dialog';
 
@@ -33,6 +34,7 @@ export type Story = {
   title?: string;
   sections?: string[];
   game?: string;
+  legacy_ids?: string[];
 };
 
 type CategoryConfig = {
@@ -74,11 +76,6 @@ const NATURAL_COLLATOR = new Intl.Collator(['zh-CN', 'ja-JP'], {
   numeric: true,
   sensitivity: 'base',
 });
-
-const categoryOrder = (category: string): number => {
-  const configuredOrder = Object.keys(CATEGORY_CONFIG).indexOf(category);
-  return configuredOrder < 0 ? Number.MAX_SAFE_INTEGER : configuredOrder;
-};
 
 type SidebarProps = {
   stories: Story[];
@@ -301,7 +298,9 @@ export default function Sidebar({
                           >
                             <span
                               className={`mr-1 break-words leading-tight ${folderClass}`}
-                              style={{ color: speakerColorFor(folderLabel) }}
+                              style={{
+                                color: characterFolderColorFor(category, folderLabel),
+                              }}
                             >
                               {folderLabel}
                             </span>

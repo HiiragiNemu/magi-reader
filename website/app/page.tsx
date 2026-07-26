@@ -26,12 +26,13 @@ import {
   Leaf,
 } from 'lucide-react';
 import { useGlobal } from '@/app/providers';
-import { speakerColorFor } from '@/app/config/dictionary';
+import { characterFolderColorFor } from '@/app/config/dictionary';
 import { type Story } from '@/components/Sidebar';
 import AboutModal from '@/components/AboutModal';
 import LocalStoryPicker from '@/components/LocalStoryPicker';
 import { normalizeSearchText } from '@/lib/search';
 import { loadStoryIndex } from '@/lib/story-index';
+import { categoryOrder } from '@/lib/category-order';
 
 type SearchMode = 'all' | 'title' | 'content';
 type StorySystem = 'magireco' | 'exedra';
@@ -113,11 +114,6 @@ const NATURAL_COLLATOR = new Intl.Collator(['zh-CN', 'ja-JP'], {
 
 const isExedraCategory = (category: string): boolean =>
   EXEDRA_CATEGORY_SET.has(category);
-
-const categoryOrder = (category: string): number => {
-  const configuredOrder = Object.keys(CATEGORY_CONFIG).indexOf(category);
-  return configuredOrder < 0 ? Number.MAX_SAFE_INTEGER : configuredOrder;
-};
 
 const SEARCH_INDEX_MANIFEST_URL = '/search_index_manifest.json';
 const SEARCH_INDEX_LOCAL_FALLBACK_URL = '/search_content.json';
@@ -256,7 +252,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
           )}
           <span
             className="font-bold text-sm whitespace-normal break-words leading-tight flex-1 mr-2"
-            style={{ color: speakerColorFor(displayTitle) }}
+            style={{ color: characterFolderColorFor(group.category, displayTitle) }}
           >
             {displayTitle}
           </span>

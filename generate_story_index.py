@@ -61,6 +61,245 @@ EXEDRA_CATEGORY_MAP = {
     "8_Dungeon": "exedra_dungeon",
     "10_Battle": "exedra_battle",
 }
+EXEDRA_CATEGORY_MAP_REVERSE = {
+    category: raw_category
+    for raw_category, category in EXEDRA_CATEGORY_MAP.items()
+}
+STORY_IDS_FILENAME = "story_ids.generated.json"
+EXEDRA_ROUTE_GROUP_RE = re.compile(r"^[A-Za-z0-9_.-]{1,96}$")
+STORY_ROUTE_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,256}$")
+MAX_LEGACY_IDS_PER_STORY = 16
+MAX_LEGACY_ROUTE_ALIASES = 10_000
+EXEDRA_CHARACTER_DISPLAY_NAMES = {
+    "character_arina": "阿莉娜·格雷（アリナ・グレイ）",
+    "character_ashley": "阿什莉·泰勒（アシュリー・テイラー）",
+    "character_asuka": "龙城明日香（竜城 明日香）",
+    "character_ayame": "三栗菖蒲（三栗 あやめ）",
+    "character_corbeau": "可鲁波（コルボー）",
+    "character_darc": "塔鲁特（タルト）",
+    "character_felicia": "深月菲莉希亚（深月 フェリシア）",
+    "character_fuka": "日暮风花（日暮 ふうか）",
+    "character_hanna": "更纱帆奈（更紗 帆奈）",
+    "character_hazuki": "游佐叶月（遊佐 葉月）",
+    "character_himika": "真尾日美香（眞尾 ひみか）",
+    "character_homura": "晓美焰（暁美 ほむら）",
+    "character_iroha": "环彩羽（環 いろは）",
+    "character_kaede": "秋野枫（秋野 かえで）",
+    "character_kako": "夏目佳子（夏目 かこ）",
+    "character_kanae": "雪野加奈惠（雪野 かなえ）",
+    "character_karin": "御园花凛（御園 かりん）",
+    "character_kirika": "吴纪里香（呉 キリカ）",
+    "character_koito": "浅古小糸（浅古 小糸）",
+    "character_kokoro": "粟根心（粟根 こころ）",
+    "character_konoha": "静海木叶（静海 このは）",
+    "character_kush": "入名库什（入名 クシュ）",
+    "character_kyoko": "佐仓杏子（佐倉 杏子）",
+    "character_liz": "莉兹（リズ）",
+    "character_mabayu": "爱生眩（愛生 まばゆ）",
+    "character_madoka": "鹿目圆（鹿目 まどか）",
+    "character_mami": "巴麻美（巴 マミ）",
+    "character_mannenzakura": "万年樱之谣（万年桜のウワサ）",
+    "character_masara": "加贺见真良（加賀見 まさら）",
+    "character_mayoi": "八九寺真宵（八九寺 真宵）",
+    "character_meiyui": "纯美雨（純 美雨）",
+    "character_melissa": "梅丽莎（メリッサ）",
+    "character_meru": "安名梅露（安名 メル）",
+    "character_mifuyu": "梓美冬（梓 みふゆ）",
+    "character_mitama": "八云御魂（八雲 みたま）",
+    "character_mito": "相野未都（相野 みと）",
+    "character_momoko": "十咎桃子（十咎 ももこ）",
+    "character_nagisa": "百江渚（百江 なぎさ）",
+    "character_nanaka": "常盘七香（常盤 ななか）",
+    "character_natsuki": "空穗夏希（空穂 夏希）",
+    "character_nemu": "柊音梦（柊 ねむ）",
+    "character_oriko": "美国织莉子（美国 織莉子）",
+    "character_reira": "伊吹丽良（伊吹 れいら）",
+    "character_ren": "五十铃怜（五十鈴 れん）",
+    "character_rena": "水波玲奈（水波 レナ）",
+    "character_rika": "绫野梨花（綾野 梨花）",
+    "character_riko": "千秋理子（千秋 理子）",
+    "character_sana": "二叶莎奈（二葉 さな）",
+    "character_sayaka": "美树沙耶香（美樹 さやか）",
+    "character_seika": "桑水清佳（桑水 せいか）",
+    "character_senpai": "小圆前辈（まどか先輩）",
+    "character_shinobu": "忍野忍（忍野 忍）",
+    "character_sumire": "夜明堇（夜明 すみれ）",
+    "character_touka": "里见灯花（里見 灯花）",
+    "character_tsukasa": "天音月咲（天音 月咲）",
+    "character_tsukuyo": "天音月夜（天音 月夜）",
+    "character_tsuruno": "由比鹤乃（由比 鶴乃）",
+    "character_ui": "环忧（環 うい）",
+    "character_yachiyo": "七海八千代（七海 やちよ）",
+    "character_yotsugi": "斧乃木余接（斧乃木 余接）",
+    "character_yuma": "千岁由麻（千歳 ゆま）",
+}
+
+# These are the only known Magia Record stories whose CN and JP parent folders
+# use different display translations while the reader-visible story structure
+# is identical.  Pairing remains an explicit allowlist: an unlisted
+# cross-folder match is never guessed from a short numeric ID.
+MAGIRECO_AUDITED_CROSS_FOLDER_GROUPS = (
+    (
+        (
+            "event_story",
+            "5101 - 常夜之国的叛乱者～魔法少女贞德～",
+        ),
+        (
+            "event_story",
+            "5101 - 常夜之国的叛乱者 ~魔法少女贞德~",
+        ),
+        (
+            "510101-09_0-6",
+            "510101_0-8",
+            "510102_1-9",
+            "510103_1-9",
+            "510104_1-4",
+            "510105_1-7",
+            "510106_1-4",
+            "510107_1-2",
+            "510108_1-5",
+            "510109_1-6",
+            "510110-12_1-10",
+            "510110_1-3",
+            "510111_1-2",
+            "510112_1-10",
+        ),
+    ),
+    (
+        (
+            "event_story",
+            "5175 - Dream Halloween Festa～阿莉娜前辈！做个好孩子！～",
+        ),
+        (
+            "event_story",
+            "5175 - Dream Halloween Festa～阿莉娜前辈！做要好孩子的说！～",
+        ),
+        (
+            "517501-09_0-33",
+            "517501_0-4",
+            "517502_5-7",
+            "517503_8-12",
+            "517504_13-16",
+            "517505_17-20",
+            "517506_21-22",
+            "517507_23-26",
+            "517508_27-28",
+            "517509_29-33",
+            "517510-15_34-50",
+            "517510_34-35",
+            "517511_36-38",
+            "517512_39-44",
+            "517513_45-46",
+            "517514_47-47",
+            "517515_48-50",
+        ),
+    ),
+    (
+        (
+            "event_story",
+            "5216 - 海岸边的缎带",
+        ),
+        (
+            "event_story",
+            "5216 - 海边的缎带",
+        ),
+        (
+            "521610_0-20",
+            "521620_1-23",
+        ),
+    ),
+)
+MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS = {
+    stem.split("_", 1)[0]: (
+        "/".join((*cn_parent, stem)),
+        "/".join((*jp_parent, stem)),
+    )
+    for cn_parent, jp_parent, stems in MAGIRECO_AUDITED_CROSS_FOLDER_GROUPS
+    for stem in stems
+}
+if (
+    sum(
+        len(stems)
+        for _, _, stems in MAGIRECO_AUDITED_CROSS_FOLDER_GROUPS
+    )
+    != 33
+    or len(MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS) != 33
+):
+    raise RuntimeError("Magia Record 审计配对白名单必须恰好包含 33 个唯一 ID")
+MAGIRECO_AUDITED_PARTIAL_PAIR = (
+    "login_story/6184 - 2021新年 各自的福袋梦/618401_1",
+    "login_story/6184 - 2021新年 各自的福袋梦/618401_1-7",
+)
+
+MAGIRECO_LEGACY_ROUTE_IDENTITIES = {
+    "310031": (
+        "character_story/1003 - 由比鹤乃（由比 鶴乃）/310031_1-4"
+    ),
+    "310061": "character_story/1006 - 梓美冬（梓 みふゆ）/310061_1-4",
+    "310112": "character_story/1011 - 秋野枫（秋野 かえで）/310112_1-4",
+    "310301": (
+        "character_story/1030 - 安积育梦（安積 はぐむ）/310301_1-4"
+    ),
+    "330023": (
+        "character_story/3002 - 空穗夏希（空穂 夏希）/330023_1-5"
+    ),
+    "330191": (
+        "character_story/3019 - 毬子亚弥华（毬子 あやか）/330191_1-4"
+    ),
+    "330311": (
+        "character_story/3031 - 绫野梨花（綾野 梨花）/330311_1-4"
+    ),
+    "330431": (
+        "character_story/3043 - 万年樱之谣（万年桜のウワサ）/"
+        "330431_1-4"
+    ),
+    "504203": (
+        "event_story/5042 - Whereabouts of the feather ～羽翼的去向～/"
+        "504203_1-4"
+    ),
+    "504502": (
+        "event_story/5045 - 阿莉娜进城来 ～白色圣诞狂想曲～/"
+        "504502_9-17"
+    ),
+    "510041": (
+        "event_story/51004 - 御魂的特训 杏子、菲莉希亚篇/510041_1-4"
+    ),
+    "511970": (
+        "event_story/5119 - Angels on the Road～驯鹿圣诞老人兴隆记～/"
+        "511970_20"
+    ),
+    "515170": (
+        "event_story/5151 - Angels on the Road～驯鹿圣诞老人兴隆记～/"
+        "515170_20"
+    ),
+    "102901": (
+        "main_story/1029-19 - 第II部 第8章 - 集結の百禍編/102901_1"
+    ),
+    "420131": (
+        "mirror_story/420131-1~4记忆博物馆-篠目夜鹤/420131_1-4"
+    ),
+    # These 33 routes become canonical again after the explicitly audited
+    # cross-folder CN/JP records are paired.
+    **{
+        raw_id: identities[0]
+        for raw_id, identities in MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS.items()
+    },
+    # These four raw IDs remain ambiguous, so the old route is attached only
+    # to the audited complete/bilingual record.
+    "5170100-09": (
+        "event_story/5170 - 七彩夏日绘～笔记中记录的日常～/"
+        "5170100-09_30-39"
+    ),
+    "5170110-17": (
+        "event_story/5170 - 七彩夏日绘～笔记中记录的日常～/"
+        "5170110-17_40-47"
+    ),
+    "618401": MAGIRECO_AUDITED_PARTIAL_PAIR[0],
+    "103001": (
+        "main_story/1030-20 - 第II部 第9章 - 集結の百禍編/"
+        "103001_1-10"
+    ),
+}
 EXEDRA_TEXT_ACTIONS = {"talk", "narration", "charactertalk", "onlytext"}
 EXEDRA_SECTION_RE = re.compile(
     r"^---\s*\[Section\s+(\d+)\]\s*"
@@ -624,6 +863,7 @@ def _collect_magireco_directory(
                 "category": category,
                 "folder": folder_name,
                 "sources": {},
+                "language_stems": {},
             }
             logical_sources[identity_key] = record
         else:
@@ -646,7 +886,519 @@ def _collect_magireco_directory(
                 f"{sources[lang_key]}, {source_path}"
             )
         sources[lang_key] = source_path
+        record["language_stems"][lang_key] = file_stem
         stats[f"magireco_{lang_key}_txt"] += 1
+
+
+MAGIRECO_ALIAS_SECTION_RE = re.compile(
+    r"^--- ?\[Section \d+(?: - Branch \d+)?\] "
+    r"\(Source: [^()\r\n]+\.json\) ---$",
+)
+
+
+def _normalized_magireco_alias_text(source_path: Path) -> str:
+    """Normalize only proven format-only legacy Section differences."""
+
+    try:
+        text = source_path.read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeDecodeError) as error:
+        raise PipelineError(
+            f"旧格式 TXT 无法按 UTF-8 读取: {source_path}: {error}"
+        ) from error
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    # Ignore only the presence of the one terminating newline. Additional
+    # blank lines remain significant.
+    if text.endswith("\n"):
+        text = text[:-1]
+    lines = text.split("\n")
+    normalized_lines: list[str] = []
+    for line in lines:
+        if MAGIRECO_ALIAS_SECTION_RE.fullmatch(line) is None:
+            normalized_lines.append(line)
+            continue
+        normalized_lines.append(
+            f"---{line[4:]}" if line.startswith("--- ") else line
+        )
+    return "\n".join(normalized_lines)
+
+
+def _magireco_redundant_alias_base(file_stem: str) -> str | None:
+    """Map ``story_N-N`` to ``story_N`` only when both N values match."""
+
+    match = re.fullmatch(
+        r"(?P<prefix>.+)_(?P<section>\d+)-(?P=section)",
+        file_stem,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return None
+    return f"{match.group('prefix')}_{match.group('section')}"
+
+
+def _deduplicate_magireco_format_aliases(
+    logical_sources: MutableMapping[str, dict[str, Any]],
+    stats: Counter[str],
+) -> None:
+    """Remove only byte-semantic duplicate ``N-N`` filename aliases.
+
+    Some old source folders contain both ``story_N.txt`` and
+    ``story_N-N.txt``.  They are aliases only when their decoded text is
+    identical after normalizing BOM/newlines/final newline and the known
+    ``--- [Section`` versus ``---[Section`` header-space variant.  Any dialogue,
+    speaker, punctuation, or other whitespace difference keeps both records.
+    Scene0 remains exact because its suffixes carry branch identity.
+    """
+
+    buckets: dict[
+        tuple[str, tuple[str, ...], str],
+        list[tuple[str, dict[str, Any]]],
+    ] = {}
+    for identity_key, record in logical_sources.items():
+        if str(record["category"]).startswith("scene0_"):
+            continue
+        bucket_key = (
+            str(record["category"]).casefold(),
+            tuple(str(part).casefold() for part in record["parent_parts"]),
+            str(record["raw_id"]).casefold(),
+        )
+        buckets.setdefault(bucket_key, []).append((identity_key, record))
+
+    for records in buckets.values():
+        if len(records) < 2:
+            continue
+        by_stem = {
+            str(record["file_stem"]).casefold(): (identity_key, record)
+            for identity_key, record in records
+        }
+        bucket_changed = False
+        for alias_key, alias_record in sorted(
+            records,
+            key=lambda item: str(item[1]["file_stem"]).casefold(),
+        ):
+            alias_stem = str(alias_record["file_stem"])
+            base_stem = _magireco_redundant_alias_base(alias_stem)
+            if base_stem is None:
+                continue
+            base_entry = by_stem.get(base_stem.casefold())
+            if base_entry is None:
+                continue
+            _, base_record = base_entry
+
+            for lang_key in ("jp", "cn"):
+                alias_source = alias_record["sources"].get(lang_key)
+                base_source = base_record["sources"].get(lang_key)
+                if alias_source is None or base_source is None:
+                    continue
+                if (
+                    _normalized_magireco_alias_text(alias_source)
+                    != _normalized_magireco_alias_text(base_source)
+                ):
+                    stats["magireco_alias_content_mismatches"] += 1
+                    continue
+
+                aliases = base_record.setdefault("all_sources", {}).setdefault(
+                    lang_key,
+                    [],
+                )
+                aliases.append(alias_source)
+                del alias_record["sources"][lang_key]
+                alias_record.get("language_stems", {}).pop(lang_key, None)
+                stats["magireco_format_alias_sources"] += 1
+                bucket_changed = True
+
+            if not alias_record["sources"]:
+                del logical_sources[alias_key]
+                stats["magireco_format_alias_records"] += 1
+
+        if bucket_changed:
+            stats["magireco_format_alias_groups"] += 1
+
+
+MAGIRECO_READER_SECTION_RE = re.compile(
+    r"^---\s*\[Section\s+(\d+)"
+    r"(?:\s+-\s+Branch\s+(\d+))?\]\s*"
+    r"\(Source:\s*[^()\r\n]+\.json\s*\)\s*---$",
+    flags=re.I,
+)
+MAGIRECO_READER_SPEAKER_SEPARATOR_RE = re.compile(r"[:：﹕︰︓]")
+MAGIRECO_READER_CHOICE_RE = re.compile(
+    r"^(?:选项|選択肢|Choice)\s*[:：]\s*"
+    r"【?(.+?)】?\s*(?:→|->)\s*(\S+)",
+    flags=re.I,
+)
+MAGIRECO_READER_CHAPTER_SPEAKER_RE = re.compile(
+    r"^(?:第\s*\d+\s*[话話章章节節回幕]|"
+    r"(?:chapter|episode)\s*\d+)$",
+    flags=re.I,
+)
+
+
+def _magireco_reader_structure_signature(
+    source_path: Path,
+) -> tuple[tuple[Any, ...], ...]:
+    """Return the reader-visible block/speaker recurrence structure.
+
+    The signature intentionally ignores translated speaker names, dialogue
+    text length, and JSON source suffixes.  It preserves Section positions,
+    narration/dialogue/choice kinds, consecutive-speaker block merging, and
+    the recurrence pattern of every distinct speaker.  That validates the
+    existing utterance-level alignment without ever attempting physical-line
+    alignment.
+    """
+
+    try:
+        text = source_path.read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeDecodeError) as error:
+        raise PipelineError(
+            f"审计配对 TXT 无法按 UTF-8 读取: {source_path}: {error}"
+        ) from error
+
+    speaker_classes: dict[str, int] = {}
+    signature: list[tuple[Any, ...]] = []
+    previous_merge_speaker: str | None = None
+    normalized = (
+        text.replace("\r\n", "\n")
+        .replace("\r", "\n")
+        .replace("\0", "")
+    )
+    for line_number, raw_line in enumerate(normalized.split("\n"), start=1):
+        line = raw_line.strip()
+        if not line:
+            continue
+        if line.startswith("@S0\t"):
+            raise PipelineError(
+                f"审计配对只允许普通 TXT，发现 Scene0 行: "
+                f"{source_path}:{line_number}"
+            )
+        if line.startswith("---"):
+            section = MAGIRECO_READER_SECTION_RE.fullmatch(line)
+            if section is None:
+                raise PipelineError(
+                    f"审计配对含阅读器无法严格识别的 Section: "
+                    f"{source_path}:{line_number}"
+                )
+            signature.append(
+                ("header", section.group(1), section.group(2) or "")
+            )
+            previous_merge_speaker = None
+            continue
+        if MAGIRECO_READER_CHOICE_RE.match(line):
+            signature.append(("choice",))
+            previous_merge_speaker = None
+            continue
+
+        separator = MAGIRECO_READER_SPEAKER_SEPARATOR_RE.search(line)
+        separator_index = separator.start() if separator is not None else -1
+        possible_speaker = (
+            line[:separator_index].strip() if separator_index > 0 else ""
+        )
+        is_speaker_line = (
+            separator_index > 0
+            and separator_index <= 64
+            and not line.startswith("[")
+            and re.fullmatch(
+                r"(?:https?|file|data)",
+                possible_speaker,
+                flags=re.I,
+            )
+            is None
+            and not possible_speaker.isdigit()
+            and MAGIRECO_READER_CHAPTER_SPEAKER_RE.fullmatch(
+                possible_speaker
+            )
+            is None
+            and re.search(r"[<>{}]", possible_speaker) is None
+        )
+        if is_speaker_line:
+            speaker = re.sub(r"\s+", "", possible_speaker) or "旁白"
+            is_narration = (
+                re.fullmatch(
+                    r"(?:Narration|ナレーション|旁白)",
+                    speaker,
+                    flags=re.I,
+                )
+                is not None
+            )
+            kind = "narration" if is_narration else "dialogue"
+            if is_narration:
+                speaker = "旁白"
+        else:
+            kind = "narration"
+            speaker = "旁白"
+
+        if previous_merge_speaker == speaker:
+            continue
+        previous_merge_speaker = speaker
+        if kind == "dialogue":
+            speaker_class = speaker_classes.setdefault(
+                speaker,
+                len(speaker_classes) + 1,
+            )
+            signature.append((kind, speaker_class))
+        else:
+            signature.append((kind,))
+
+    if not signature:
+        raise PipelineError(f"审计配对 TXT 没有可读内容: {source_path}")
+    return tuple(signature)
+
+
+def _merge_audited_magireco_pair(
+    logical_sources: MutableMapping[str, dict[str, Any]],
+    *,
+    cn_identity: str,
+    jp_identity: str,
+    stats: Counter[str],
+    partial_cn_prefix: bool,
+) -> bool:
+    """Merge one explicit CN/JP identity pair after structural validation."""
+
+    cn_key = _normalize_identity_text(cn_identity).casefold()
+    jp_key = _normalize_identity_text(jp_identity).casefold()
+    cn_record = logical_sources.get(cn_key)
+    jp_record = logical_sources.get(jp_key)
+    if cn_record is None and jp_record is None:
+        return False
+    if cn_record is None or jp_record is None:
+        missing = cn_identity if cn_record is None else jp_identity
+        raise PipelineError(f"审计配对只出现一侧，拒绝猜测合并: {missing}")
+    if cn_key == jp_key:
+        raise PipelineError(f"审计配对的中日来源身份相同: {cn_identity}")
+    if set(cn_record["sources"]) != {"cn"}:
+        raise PipelineError(f"审计配对中文来源方向异常: {cn_identity}")
+    if set(jp_record["sources"]) != {"jp"}:
+        raise PipelineError(f"审计配对日文来源方向异常: {jp_identity}")
+    if (
+        str(cn_record["identity"]).casefold() != cn_identity.casefold()
+        or str(jp_record["identity"]).casefold() != jp_identity.casefold()
+    ):
+        raise PipelineError(f"审计配对来源身份不一致: {cn_identity}")
+    if (
+        cn_record["raw_id"] != jp_record["raw_id"]
+        or cn_record["category"] != jp_record["category"]
+        or str(cn_record["category"]).startswith("scene0_")
+    ):
+        raise PipelineError(f"审计配对元数据不一致: {cn_identity}")
+
+    cn_signature = _magireco_reader_structure_signature(
+        cn_record["sources"]["cn"]
+    )
+    jp_signature = _magireco_reader_structure_signature(
+        jp_record["sources"]["jp"]
+    )
+    if partial_cn_prefix:
+        cn_headers = [
+            index
+            for index, token in enumerate(cn_signature)
+            if token[0] == "header"
+        ]
+        jp_next_header = next(
+            (
+                index
+                for index, token in enumerate(jp_signature[1:], start=1)
+                if token[0] == "header"
+            ),
+            len(jp_signature),
+        )
+        jp_headers = [
+            token for token in jp_signature if token[0] == "header"
+        ]
+        signatures_match = (
+            cn_headers == [0]
+            and jp_headers
+            == [
+                ("header", str(section), "")
+                for section in range(1, 8)
+            ]
+            and cn_signature == jp_signature[:jp_next_header]
+        )
+    else:
+        signatures_match = cn_signature == jp_signature
+    if not signatures_match:
+        raise PipelineError(
+            "审计配对的 Section/说话轮次结构不一致，拒绝合并: "
+            f"{cn_identity}, {jp_identity}"
+        )
+
+    merged = dict(cn_record)
+    # The old public catalogue displayed the JP-side folder label while each
+    # language retained its own physical parent path.  Preserve that UI
+    # contract even though the stable audited identity is the CN identity.
+    merged["parent_parts"] = tuple(
+        str(part) for part in jp_record["parent_parts"]
+    )
+    merged["folder"] = jp_record["folder"]
+    merged["sources"] = {
+        "cn": cn_record["sources"]["cn"],
+        "jp": jp_record["sources"]["jp"],
+    }
+    merged["language_stems"] = {
+        "cn": cn_record["language_stems"]["cn"],
+        "jp": jp_record["language_stems"]["jp"],
+    }
+    merged["language_parent_parts"] = {
+        "cn": tuple(str(part) for part in cn_record["parent_parts"]),
+        "jp": tuple(str(part) for part in jp_record["parent_parts"]),
+    }
+    all_sources: dict[str, list[Path]] = {}
+    for lang_key, source_record in (("cn", cn_record), ("jp", jp_record)):
+        aliases = list(
+            source_record.get("all_sources", {}).get(lang_key, ())
+        )
+        if aliases:
+            all_sources[lang_key] = aliases
+    if all_sources:
+        merged["all_sources"] = all_sources
+    else:
+        merged.pop("all_sources", None)
+
+    del logical_sources[jp_key]
+    logical_sources[cn_key] = merged
+    stats[
+        "magireco_audited_partial_pairs"
+        if partial_cn_prefix
+        else "magireco_audited_cross_folder_pairs"
+    ] += 1
+    return True
+
+
+def _pair_audited_magireco_sources(
+    logical_sources: MutableMapping[str, dict[str, Any]],
+    stats: Counter[str],
+    *,
+    require_all: bool,
+) -> None:
+    """Apply only the reviewed cross-folder and partial-story pairings."""
+
+    satisfied: set[str] = set()
+    for raw_id, (cn_identity, jp_identity) in (
+        MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS.items()
+    ):
+        if _merge_audited_magireco_pair(
+            logical_sources,
+            cn_identity=cn_identity,
+            jp_identity=jp_identity,
+            stats=stats,
+            partial_cn_prefix=False,
+        ):
+            satisfied.add(raw_id)
+
+    partial_id = "618401"
+    if _merge_audited_magireco_pair(
+        logical_sources,
+        cn_identity=MAGIRECO_AUDITED_PARTIAL_PAIR[0],
+        jp_identity=MAGIRECO_AUDITED_PARTIAL_PAIR[1],
+        stats=stats,
+        partial_cn_prefix=True,
+    ):
+        satisfied.add(partial_id)
+
+    if require_all:
+        expected = set(MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS) | {partial_id}
+        missing = sorted(expected - satisfied)
+        if missing:
+            raise PipelineError(
+                "完整 Magia Record 语料缺少审计配对目标: "
+                + ", ".join(missing)
+            )
+
+
+def _pair_unique_magireco_range_variants(
+    logical_sources: MutableMapping[str, dict[str, Any]],
+    stats: Counter[str],
+) -> None:
+    """Pair one JP-only and one CN-only numeric range without touching text."""
+
+    buckets: dict[
+        tuple[str, tuple[str, ...], str],
+        list[tuple[str, dict[str, Any]]],
+    ] = {}
+    for identity_key, record in logical_sources.items():
+        if str(record["category"]).startswith("scene0_"):
+            continue
+        bucket_key = (
+            str(record["category"]).casefold(),
+            tuple(str(part).casefold() for part in record["parent_parts"]),
+            str(record["raw_id"]).casefold(),
+        )
+        buckets.setdefault(bucket_key, []).append((identity_key, record))
+
+    for records in buckets.values():
+        if len(records) != 2:
+            continue
+        jp_only = [
+            item for item in records if set(item[1]["sources"]) == {"jp"}
+        ]
+        cn_only = [
+            item for item in records if set(item[1]["sources"]) == {"cn"}
+        ]
+        if len(jp_only) != 1 or len(cn_only) != 1:
+            continue
+
+        jp_key, jp_record = jp_only[0]
+        cn_key, cn_record = cn_only[0]
+        raw_id = str(jp_record["raw_id"])
+        range_stem_re = re.compile(
+            rf"^{re.escape(raw_id)}_(\d+)(?:-(\d+))?$",
+            flags=re.IGNORECASE,
+        )
+        jp_stem = str(jp_record["file_stem"])
+        cn_stem = str(cn_record["file_stem"])
+        jp_range = range_stem_re.fullmatch(jp_stem)
+        cn_range = range_stem_re.fullmatch(cn_stem)
+        if not re.fullmatch(r"\d+(?:-\d+)*", raw_id) or not jp_range or not cn_range:
+            continue
+        jp_start = int(jp_range.group(1))
+        jp_end = int(jp_range.group(2) or jp_range.group(1))
+        cn_start = int(cn_range.group(1))
+        cn_end = int(cn_range.group(2) or cn_range.group(1))
+        if (
+            jp_end < jp_start
+            or cn_end < cn_start
+            or max(jp_start, cn_start) > min(jp_end, cn_end)
+        ):
+            continue
+
+        parent_parts = tuple(str(part) for part in jp_record["parent_parts"])
+        identity = (
+            "/".join((*parent_parts, raw_id))
+            + f"[cn={cn_stem};jp={jp_stem}]"
+        )
+        merged_key = identity.casefold()
+        if merged_key in logical_sources and merged_key not in {jp_key, cn_key}:
+            raise PipelineError(f"区间变体配对后的来源身份冲突: {identity}")
+        merged = {
+            "identity": identity,
+            "parent_parts": parent_parts,
+            "file_stem": raw_id,
+            "raw_id": raw_id,
+            "category": jp_record["category"],
+            "folder": jp_record["folder"],
+            "sources": {
+                "jp": jp_record["sources"]["jp"],
+                "cn": cn_record["sources"]["cn"],
+            },
+            "language_stems": {
+                "jp": jp_stem,
+                "cn": cn_stem,
+            },
+        }
+        all_sources: dict[str, list[Path]] = {}
+        for lang_key, source_record in (
+            ("jp", jp_record),
+            ("cn", cn_record),
+        ):
+            aliases = list(
+                source_record.get("all_sources", {}).get(lang_key, ())
+            )
+            if aliases:
+                all_sources[lang_key] = aliases
+        if all_sources:
+            merged["all_sources"] = all_sources
+        del logical_sources[jp_key]
+        del logical_sources[cn_key]
+        logical_sources[merged_key] = merged
+        stats["magireco_range_variant_pairs"] += 1
 
 
 def _allocate_magireco_ids(
@@ -699,6 +1451,58 @@ def _allocate_magireco_ids(
     return allocated
 
 
+def _attach_magireco_legacy_route_aliases(
+    logical_sources: MutableMapping[str, dict[str, Any]],
+    allocated_ids: Mapping[str, str],
+    stats: Counter[str],
+    *,
+    require_all: bool,
+) -> None:
+    """Preserve only audited old routes that resolve to the exact same story."""
+
+    records_by_raw_id: dict[str, list[tuple[str, dict[str, Any]]]] = {}
+    for identity_key, record in logical_sources.items():
+        raw_id = str(record["raw_id"]).casefold()
+        records_by_raw_id.setdefault(raw_id, []).append(
+            (identity_key, record)
+        )
+
+    satisfied: set[str] = set()
+    for legacy_id, expected_identity in MAGIRECO_LEGACY_ROUTE_IDENTITIES.items():
+        records = records_by_raw_id.get(legacy_id.casefold(), [])
+        if not records:
+            continue
+        matches = [
+            (identity_key, record)
+            for identity_key, record in records
+            if str(record["identity"]).casefold()
+            == expected_identity.casefold()
+        ]
+        if not matches:
+            continue
+        if len(matches) != 1:
+            raise PipelineError(
+                "安全旧路由的来源身份不唯一: "
+                f"{legacy_id}: {expected_identity}"
+            )
+        identity_key, record = matches[0]
+        canonical_id = allocated_ids[identity_key]
+        satisfied.add(legacy_id)
+        if canonical_id.casefold() == legacy_id.casefold():
+            continue
+        record["legacy_ids"] = [legacy_id]
+        stats["magireco_legacy_route_aliases"] += 1
+    if require_all:
+        missing = sorted(
+            set(MAGIRECO_LEGACY_ROUTE_IDENTITIES) - satisfied
+        )
+        if missing:
+            raise PipelineError(
+                "完整 Magia Record 语料缺少安全旧路由目标: "
+                + ", ".join(missing)
+            )
+
+
 def scan_magireco_sources(
     *,
     jp_dir: Path,
@@ -708,6 +1512,7 @@ def scan_magireco_sources(
     titles: Mapping[str, str],
     stats: Counter[str],
     source_audit: SourceAudit,
+    require_legacy_route_aliases: bool,
 ) -> None:
     """Collect both languages first, then publish exact logical identities."""
 
@@ -726,7 +1531,20 @@ def scan_magireco_sources(
         source_audit=source_audit,
         stats=stats,
     )
+    _deduplicate_magireco_format_aliases(logical_sources, stats)
+    _pair_audited_magireco_sources(
+        logical_sources,
+        stats,
+        require_all=require_legacy_route_aliases,
+    )
+    _pair_unique_magireco_range_variants(logical_sources, stats)
     allocated_ids = _allocate_magireco_ids(logical_sources, stats)
+    _attach_magireco_legacy_route_aliases(
+        logical_sources,
+        allocated_ids,
+        stats,
+        require_all=require_legacy_route_aliases,
+    )
 
     for identity_key in sorted(logical_sources):
         record = logical_sources[identity_key]
@@ -737,31 +1555,60 @@ def scan_magireco_sources(
         raw_id = str(record["raw_id"])
         category = str(record["category"])
         parent_parts = tuple(str(part) for part in record["parent_parts"])
-        # Known source category roots are replaced by the normalized public
-        # category. Unknown roots (for example ``special``) are meaningful
-        # legacy folders and must remain in the published URL.
-        destination_tail = (
-            parent_parts[1:]
-            if parent_parts and get_category(parent_parts[0]) != "Unclassified"
-            else parent_parts
-        )
-        destination_rel = Path(category, *destination_tail)
         story = _new_story_record(
             story_id=story_id,
             raw_id=raw_id,
             file_stem=file_stem,
             category=category,
             folder=str(record["folder"]),
-            title=titles.get(file_stem) or titles.get(raw_id) or "",
+            title=(
+                titles.get(file_stem)
+                or titles.get(raw_id)
+                or titles.get(
+                    str(record.get("language_stems", {}).get("jp") or "")
+                )
+                or titles.get(
+                    str(record.get("language_stems", {}).get("cn") or "")
+                )
+                or ""
+            ),
         )
         story["game"] = "magireco"
         story["source_identity"] = str(record["identity"])
+        if record.get("legacy_ids"):
+            story["legacy_ids"] = list(record["legacy_ids"])
 
         for lang_key in ("jp", "cn"):
             source_path = record["sources"].get(lang_key)
             if source_path is None:
                 continue
-            destination_filename = f"{file_stem}_{lang_key}.txt"
+            language_parent_parts = tuple(
+                str(part)
+                for part in record.get("language_parent_parts", {}).get(
+                    lang_key,
+                    parent_parts,
+                )
+            )
+            # Known source category roots are replaced by the normalized
+            # public category. Unknown roots (for example ``special``) are
+            # meaningful legacy folders and must remain in the published URL.
+            # Audited cross-folder pairs retain each language's original
+            # parent, preserving every production URL.
+            destination_tail = (
+                language_parent_parts[1:]
+                if (
+                    language_parent_parts
+                    and get_category(language_parent_parts[0])
+                    != "Unclassified"
+                )
+                else language_parent_parts
+            )
+            destination_rel = Path(category, *destination_tail)
+            language_stem = str(
+                record.get("language_stems", {}).get(lang_key)
+                or file_stem
+            )
+            destination_filename = f"{language_stem}_{lang_key}.txt"
             destination_path = (
                 staging_data_dir / destination_rel / destination_filename
             )
@@ -783,6 +1630,31 @@ def scan_magireco_sources(
                 lang_key=lang_key,
                 web_path=web_path,
             )
+            for variant_source in record.get("all_sources", {}).get(
+                lang_key,
+                (),
+            ):
+                if variant_source == source_path:
+                    continue
+                variant_stem = _normalize_identity_text(
+                    strip_lang_suffix_filename(variant_source.name)
+                )
+                compatibility_filename = (
+                    f"{variant_stem}_{lang_key}.txt"
+                )
+                compatibility_path = (
+                    staging_data_dir
+                    / destination_rel
+                    / compatibility_filename
+                )
+                _copy_to_stage(variant_source, compatibility_path)
+                source_audit.claim(
+                    variant_source,
+                    story_id=story_id,
+                    lang_key=lang_key,
+                    web_path=web_path,
+                )
+                stats["magireco_compatibility_alias_files"] += 1
         story_map[story_id] = story
 
     stats["magireco_logical_stories"] = len(logical_sources)
@@ -1599,8 +2471,24 @@ def scan_exedra_sources(
 
     groups = load_exedra_manifest(jp_dir, stats=stats)
     cn_sources = _find_exedra_cn_sources(cn_dir, groups)
+    unnamed_characters = sorted(
+        group.group_key
+        for group in groups
+        if group.category == "exedra_character"
+        and group.group_key not in EXEDRA_CHARACTER_DISPLAY_NAMES
+    )
+    if unnamed_characters:
+        raise PipelineError(
+            "Exedra 角色缺少中文目录名映射: "
+            + ", ".join(unnamed_characters)
+        )
 
     for group in groups:
+        if not EXEDRA_ROUTE_GROUP_RE.fullmatch(group.group_key):
+            raise PipelineError(
+                "Exedra 逻辑组名无法由阅读器路由无损反推，拒绝发布: "
+                f"{group.manifest_id}"
+            )
         jp_path = jp_dir / group.text_file
         jp_alignment = _exedra_alignment_sections(jp_path)
         jp_section_sources = [
@@ -1630,7 +2518,11 @@ def scan_exedra_sources(
             raw_id=group.group_key,
             file_stem=group.group_key,
             category=group.category,
-            folder=group.group_key,
+            folder=(
+                EXEDRA_CHARACTER_DISPLAY_NAMES[group.group_key]
+                if group.category == "exedra_character"
+                else group.group_key
+            ),
             title=group.title,
         )
         story.update(
@@ -1774,6 +2666,7 @@ def finalize_story_list(
         }
         for extra_key in (
             "game",
+            "legacy_ids",
             "source_format",
             "source_path",
             "source_identity",
@@ -1810,21 +2703,125 @@ def validate_catalog(
     public_dir: Path,
     *,
     source_audit: SourceAudit | None = None,
+    require_magireco_legacy_aliases: bool = False,
 ) -> dict[str, int]:
     if not isinstance(stories, list) or not stories:
         raise PipelineError("story_index 为空或不是数组")
 
-    ids: set[str] = set()
+    route_owners: dict[str, str] = {}
+    for index, story in enumerate(stories):
+        story_id = str(story.get("id") or "")
+        if not STORY_ROUTE_ID_RE.fullmatch(story_id):
+            raise PipelineError(f"story_index[{index}] 的 id 无效")
+        folded_id = story_id.casefold()
+        previous = route_owners.get(folded_id)
+        if previous is not None:
+            raise PipelineError(f"重复 story id: {previous}, {story_id}")
+        route_owners[folded_id] = story_id
+
+    legacy_alias_count = 0
+    for story in stories:
+        story_id = str(story["id"])
+        legacy_ids = story.get("legacy_ids")
+        if legacy_ids is None:
+            continue
+        if (
+            story.get("game") != "magireco"
+            or not isinstance(legacy_ids, list)
+            or not legacy_ids
+            or len(legacy_ids) > MAX_LEGACY_IDS_PER_STORY
+        ):
+            raise PipelineError(f"{story_id}: legacy_ids 无效")
+        for legacy_id in legacy_ids:
+            if (
+                not isinstance(legacy_id, str)
+                or not STORY_ROUTE_ID_RE.fullmatch(legacy_id)
+            ):
+                raise PipelineError(f"{story_id}: legacy_ids 包含无效编号")
+            folded_id = legacy_id.casefold()
+            previous = route_owners.get(folded_id)
+            if previous is not None:
+                raise PipelineError(
+                    f"旧路由编号与现有路由冲突: {legacy_id}: {previous}"
+                )
+            route_owners[folded_id] = story_id
+            legacy_alias_count += 1
+            if legacy_alias_count > MAX_LEGACY_ROUTE_ALIASES:
+                raise PipelineError("旧路由编号总数超过安全限制")
+
+    if require_magireco_legacy_aliases:
+        stories_by_identity: dict[str, list[Mapping[str, Any]]] = {}
+        for story in stories:
+            if story.get("game") != "magireco":
+                continue
+            source_identity = str(story.get("source_identity") or "")
+            stories_by_identity.setdefault(
+                source_identity.casefold(),
+                [],
+            ).append(story)
+        for legacy_id, expected_identity in (
+            MAGIRECO_LEGACY_ROUTE_IDENTITIES.items()
+        ):
+            matches = stories_by_identity.get(
+                expected_identity.casefold(),
+                [],
+            )
+            if len(matches) != 1:
+                raise PipelineError(
+                    "已生成目录缺少唯一安全旧路由目标: "
+                    f"{legacy_id}: {expected_identity}"
+                )
+            target_id = str(matches[0]["id"])
+            if route_owners.get(legacy_id.casefold()) != target_id:
+                raise PipelineError(
+                    "已生成目录未保留安全旧路由: "
+                    f"{legacy_id} -> {target_id}"
+                )
+
     source_owners: dict[str, tuple[str, str]] = {}
     counts: Counter[str] = Counter()
     for index, story in enumerate(stories):
         story_id = str(story.get("id") or "")
-        if not story_id:
-            raise PipelineError(f"story_index[{index}] 缺少 id")
-        if story_id in ids:
-            raise PipelineError(f"重复 story id: {story_id}")
-        ids.add(story_id)
         counts[str(story.get("category") or "Unclassified")] += 1
+
+        if story.get("game") == "exedra":
+            category = str(story.get("category") or "")
+            group_key = str(story.get("raw_id") or "")
+            if not EXEDRA_ROUTE_GROUP_RE.fullmatch(group_key):
+                raise PipelineError(
+                    f"{story_id}: Exedra 组名不能由阅读器路由无损反推"
+                )
+            raw_category = EXEDRA_CATEGORY_MAP_REVERSE.get(category)
+            if raw_category is None:
+                raise PipelineError(
+                    f"{story_id}: 未知 Exedra 分类，无法验证阅读器路由"
+                )
+            relative_identity = (
+                f"{raw_category}/{group_key}/"
+                f"{group_key}_jp.txt"
+            )
+            expected_id = safe_exedra_story_id(
+                category,
+                relative_identity,
+                group_key,
+            )
+            if story_id != expected_id:
+                raise PipelineError(
+                    f"{story_id}: Exedra 路由编号与来源身份不一致"
+                )
+            expected_jp = (
+                f"/data/{category}/{group_key}/{group_key}_jp.txt"
+            )
+            expected_cn = (
+                f"/data/{category}/{group_key}/{group_key}_cn.txt"
+            )
+            if story.get("path_jp") != expected_jp or (
+                bool(story.get("has_cn"))
+                and story.get("path_cn") != expected_cn
+            ):
+                raise PipelineError(
+                    f"{story_id}: Exedra 路由反推路径与清单路径不一致"
+                )
 
         for lang in ("cn", "jp"):
             web_path = str(story.get(f"path_{lang}") or "")
@@ -1859,7 +2856,25 @@ def validate_catalog(
                     raise PipelineError(f"{story_id}: Exedra JSON 没有可读文本")
 
     counts["stories"] = len(stories)
+    counts["legacy_story_ids"] = legacy_alias_count
     counts["source_files"] = len(source_owners)
+    story_ids_path = public_dir / "data" / STORY_IDS_FILENAME
+    if (
+        not story_ids_path.is_file()
+        or _is_link_like(story_ids_path)
+    ):
+        raise PipelineError(f"缺少精确剧情编号清单: {story_ids_path}")
+    try:
+        with story_ids_path.open("r", encoding="utf-8-sig") as handle:
+            story_ids = json.load(handle)
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise PipelineError(
+            f"剧情编号清单不是有效 UTF-8 JSON: {story_ids_path}"
+        ) from exc
+    expected_story_ids = [str(story["id"]) for story in stories]
+    if story_ids != expected_story_ids:
+        raise PipelineError("剧情编号清单与 story_index 的精确顺序或内容不一致")
+    counts["story_ids"] = len(story_ids)
     if source_audit is not None:
         counts.update(source_audit.validate_manifest(stories))
     return dict(counts)
@@ -1874,6 +2889,7 @@ def build_story_catalog(
     exedra_cn_dir: Path | None,
     titles_path: Path,
     include_magireco: bool = True,
+    require_magireco_legacy_aliases: bool = False,
 ) -> tuple[list[dict[str, Any]], Counter[str]]:
     staging_data_dir = staging_public_dir / "data"
     staging_data_dir.mkdir(parents=True, exist_ok=False)
@@ -1892,6 +2908,7 @@ def build_story_catalog(
             titles=titles,
             stats=stats,
             source_audit=source_audit,
+            require_legacy_route_aliases=require_magireco_legacy_aliases,
         )
 
     if exedra_jp_dir is not None:
@@ -1905,6 +2922,15 @@ def build_story_catalog(
         )
 
     stories = finalize_story_list(story_map)
+    story_ids_path = staging_data_dir / STORY_IDS_FILENAME
+    with story_ids_path.open("w", encoding="utf-8", newline="\n") as handle:
+        json.dump(
+            [str(story["id"]) for story in stories],
+            handle,
+            ensure_ascii=True,
+            separators=(",", ":"),
+        )
+        handle.write("\n")
     index_path = staging_public_dir / "story_index.json"
     with index_path.open("w", encoding="utf-8", newline="\n") as handle:
         json.dump(stories, handle, ensure_ascii=False, indent=2)
@@ -1912,6 +2938,9 @@ def build_story_catalog(
         stories,
         staging_public_dir,
         source_audit=source_audit,
+        require_magireco_legacy_aliases=(
+            require_magireco_legacy_aliases
+        ),
     )
     for key in (
         "input_source_files",
@@ -2300,6 +3329,11 @@ def run_generation(args: argparse.Namespace) -> int:
     assert titles_path is not None
     assert jp_dir is not None
     assert cn_dir is not None
+    require_magireco_legacy_aliases = (
+        not args.skip_magireco
+        and jp_dir.resolve() == DEFAULT_DIR_JP.resolve()
+        and cn_dir.resolve() == DEFAULT_DIR_CN.resolve()
+    )
 
     if args.validate_only:
         index_path = public_dir / "story_index.json"
@@ -2307,7 +3341,13 @@ def run_generation(args: argparse.Namespace) -> int:
             raise PipelineError(f"story_index 不存在: {index_path}")
         with index_path.open("r", encoding="utf-8-sig") as handle:
             stories = json.load(handle)
-        validation = validate_catalog(stories, public_dir)
+        validation = validate_catalog(
+            stories,
+            public_dir,
+            require_magireco_legacy_aliases=(
+                require_magireco_legacy_aliases
+            ),
+        )
         _print_stats(Counter(), validation)
         return 0
 
@@ -2328,8 +3368,17 @@ def run_generation(args: argparse.Namespace) -> int:
                 exedra_cn_dir=exedra_cn_dir,
                 titles_path=titles_path,
                 include_magireco=not args.skip_magireco,
+                require_magireco_legacy_aliases=(
+                    require_magireco_legacy_aliases
+                ),
             )
-            validation = validate_catalog(stories, staging_public)
+            validation = validate_catalog(
+                stories,
+                staging_public,
+                require_magireco_legacy_aliases=(
+                    require_magireco_legacy_aliases
+                ),
+            )
             _print_stats(stats, validation)
         print("DRY-RUN：验证通过，未替换 website/public 数据。")
         return 0
@@ -2349,8 +3398,15 @@ def run_generation(args: argparse.Namespace) -> int:
             exedra_cn_dir=exedra_cn_dir,
             titles_path=titles_path,
             include_magireco=not args.skip_magireco,
+            require_magireco_legacy_aliases=require_magireco_legacy_aliases,
         )
-        validation = validate_catalog(stories, staging_public)
+        validation = validate_catalog(
+            stories,
+            staging_public,
+            require_magireco_legacy_aliases=(
+                require_magireco_legacy_aliases
+            ),
+        )
         backup_path = safe_replace_generated(staging_public, public_dir)
         _print_stats(stats, validation)
         if backup_path is not None:

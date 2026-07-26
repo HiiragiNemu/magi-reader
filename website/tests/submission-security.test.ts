@@ -68,8 +68,13 @@ test('invalid submissions are rejected before consuming shared-IP quota', () => 
   const quotaIndex = routeSource.indexOf(
     'const rateLimit = await consumeRateLimit(kv, request);',
   );
+  const membershipIndex = routeSource.indexOf(
+    'KNOWN_STORY_IDS.has(validation.submission.storyId)',
+  );
 
   assert.notEqual(validationIndex, -1);
+  assert.notEqual(membershipIndex, -1);
   assert.notEqual(quotaIndex, -1);
-  assert.ok(validationIndex < quotaIndex);
+  assert.ok(validationIndex < membershipIndex);
+  assert.ok(membershipIndex < quotaIndex);
 });

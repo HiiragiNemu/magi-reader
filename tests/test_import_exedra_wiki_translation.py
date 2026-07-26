@@ -174,6 +174,67 @@ class ExedraWikiTranslationImporterTests(unittest.TestCase):
         with self.assertRaises(importer.ImporterError):
             importer.clean_wiki_text("<unsupported>剧情</unsupported>")
 
+    def test_known_control_templates_can_follow_visible_text(self) -> None:
+        self.assertEqual(
+            importer.clean_wiki_text(
+                "（来吧，<ruby>重生<rt>Reborn</rt></ruby>！）"
+                "{{BackgroundImage|bg_adv_01_90015_03.png}}"
+            ),
+            "（来吧，重生！）",
+        )
+        with self.assertRaises(importer.ImporterError):
+            importer.clean_wiki_text("剧情{{UnknownTemplate|仍不可忽略}}")
+
+    def test_known_unlock_notices_are_ignored_without_dropping_story_text(
+        self,
+    ) -> None:
+        for notice in (
+            "记忆Lv.1解锁",
+            "获取角色第一个记忆时解锁",
+            "获取角色首个记忆时解锁",
+            "在获得角色的第一个记忆时解锁",
+            "在获得角色的第一份记忆时解锁",
+            "于获得角色的第一个记忆时解锁",
+            "获得角色的第一个记忆后解锁",
+            "当角色的第一个记忆被获取时解锁",
+            "当角色的第一个记忆被获得时",
+            "获得该角色的第一张记忆时解锁",
+            "当心之器等级达到Lvl. 2时解锁",
+            "在心之器等级2时解锁",
+            "于心之器等级2时解锁",
+            "心之器等级达到2级时解锁",
+            "記憶レベル1解放",
+        ):
+            parsed = importer.parse_wikitext(
+                "=== Episode 0 ===\n"
+                f"{notice}\n"
+                "{{Color Dialogue|水波玲奈|Rena Minami}}: 台词\n"
+            )
+            self.assertEqual(len(parsed), 1)
+            self.assertEqual(parsed[0].events[0].text, "台词")
+
+        with self.assertRaises(importer.ImporterError):
+            importer.parse_wikitext(
+                "=== Episode 0 ===\n"
+                "这是一句没有剧情标记的普通文本\n"
+                "{{Color Dialogue|水波玲奈|Rena Minami}}: 台词\n"
+            )
+        with self.assertRaises(importer.ImporterError):
+            importer.parse_wikitext(
+                "=== Episode 0 ===\n"
+                "那一瞬间，她尘封的记忆终于解锁\n"
+                "{{Color Dialogue|水波玲奈|Rena Minami}}: 台词\n"
+            )
+
+    def test_empty_bold_markup_is_ignored_as_formatting_artifact(self) -> None:
+        parsed = importer.parse_wikitext(
+            "=== Episode 0 ===\n"
+            "''''''\n"
+            "{{Color Dialogue|水波玲奈|Rena Minami}}: 台词\n"
+        )
+        self.assertEqual(len(parsed), 1)
+        self.assertEqual([event.text for event in parsed[0].events], ["台词"])
+
     def test_default_cli_dry_run_writes_nothing(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             output_root = Path(temporary) / "Scenarios_full"

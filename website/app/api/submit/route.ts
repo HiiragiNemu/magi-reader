@@ -4,6 +4,8 @@ import {
   getAdminAccessConfiguration,
   getRateLimitIdentity,
 } from '@/lib/submission-security';
+import { createKnownStoryIds } from '@/lib/story-id-membership';
+import storyIds from '../../../public/data/story_ids.generated.json';
 
 const SUBMISSION_PREFIX = 'submit_';
 const RATE_LIMIT_PREFIX = 'ratelimit_submit_';
@@ -12,9 +14,12 @@ const RATE_LIMIT_MAX_SUBMISSIONS = 5;
 const MAX_REQUEST_BYTES = 2 * 1024 * 1024;
 const MAX_STORY_ID_LENGTH = 256;
 const MAX_CONTENT_LENGTH = 500_000;
-const MAX_AUTHOR_LENGTH = 80;
 const MIN_CONTENT_LENGTH = 10;
+const DEFAULT_ADMIN_LIST_LIMIT = 10;
+const MAX_ADMIN_LIST_LIMIT = 10;
+const MAX_ADMIN_RESPONSE_BYTES = 8 * 1024 * 1024;
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' };
+const KNOWN_STORY_IDS = createKnownStoryIds(storyIds);
 
 type ValidSubmission = {
   storyId: string;
@@ -104,13 +109,19 @@ function validateSubmission(value: unknown): ValidationResult {
   if (typeof value.story_id !== 'string' || typeof value.content !== 'string') {
     return { ok: false, error: 'story_id 和 content 必须是字符串' };
   }
-  if (value.author !== undefined && typeof value.author !== 'string') {
-    return { ok: false, error: 'author 必须是字符串' };
+  if (
+    value.author !== undefined &&
+    (
+      typeof value.author !== 'string' ||
+      value.author.trim() !== 'Anonymous'
+    )
+  ) {
+    return { ok: false, error: '当前投稿仅支持匿名身份' };
   }
 
   const storyId = value.story_id.trim();
   const content = value.content;
-  const author = value.author?.trim() || 'Anonymous';
+  const author = 'Anonymous';
 
   if (
     storyId.length === 0 ||
@@ -118,12 +129,6 @@ function validateSubmission(value: unknown): ValidationResult {
     /[\u0000-\u001f\u007f]/u.test(storyId)
   ) {
     return { ok: false, error: 'story_id 长度或格式不合法' };
-  }
-  if (
-    author.length > MAX_AUTHOR_LENGTH ||
-    /[\u0000-\u001f\u007f]/u.test(author)
-  ) {
-    return { ok: false, error: 'author 长度或格式不合法' };
   }
   if (
     content.length > MAX_CONTENT_LENGTH ||
@@ -237,6 +242,9 @@ export async function POST(request: NextRequest) {
     if (!validation.ok) {
       return errorResponse(validation.error, 400);
     }
+    if (!KNOWN_STORY_IDS.has(validation.submission.storyId)) {
+      return errorResponse('story_id 不在当前剧情目录中', 400);
+    }
 
     // Only a structurally valid submission consumes the user's quota. This
     // prevents malformed requests from locking out other users behind a
@@ -297,10 +305,13 @@ export async function GET(request: NextRequest) {
     }
 
     const url = new URL(request.url);
-    const requestedLimit = Number.parseInt(url.searchParams.get('limit') || '50', 10);
+    const requestedLimit = Number.parseInt(
+      url.searchParams.get('limit') || String(DEFAULT_ADMIN_LIST_LIMIT),
+      10,
+    );
     const limit = Number.isFinite(requestedLimit)
-      ? Math.min(100, Math.max(1, requestedLimit))
-      : 50;
+      ? Math.min(MAX_ADMIN_LIST_LIMIT, Math.max(1, requestedLimit))
+      : DEFAULT_ADMIN_LIST_LIMIT;
     const cursor = url.searchParams.get('cursor') || undefined;
     const listed = await kv.list({
       prefix: SUBMISSION_PREFIX,
@@ -308,27 +319,31 @@ export async function GET(request: NextRequest) {
       cursor,
     });
 
-    const submissions = await Promise.all(
-      listed.keys.map(async ({ name }) => {
-        const value = await kv.get(name);
-        if (!value) return null;
+    const submissions: Record<string, unknown>[] = [];
+    let responseBytes = 0;
+    for (const { name } of listed.keys) {
+      const value = await kv.get(name);
+      if (!value) continue;
+      responseBytes += new TextEncoder().encode(value).byteLength;
+      if (responseBytes > MAX_ADMIN_RESPONSE_BYTES) {
+        return errorResponse('返回内容过大，请减小 limit 后重试', 413);
+      }
 
-        try {
-          const parsed = JSON.parse(value) as unknown;
-          return isRecord(parsed)
+      try {
+        const parsed = JSON.parse(value) as unknown;
+        submissions.push(
+          isRecord(parsed)
             ? { ...parsed, key: name }
-            : { key: name, invalid: true };
-        } catch {
-          return { key: name, invalid: true };
-        }
-      }),
-    );
+            : { key: name, invalid: true },
+        );
+      } catch {
+        submissions.push({ key: name, invalid: true });
+      }
+    }
 
     return NextResponse.json(
       {
-        submissions: submissions.filter(
-          (submission) => submission !== null,
-        ),
+        submissions,
         cursor: listed.list_complete ? null : listed.cursor,
         list_complete: listed.list_complete,
       },
