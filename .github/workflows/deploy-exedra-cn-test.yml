@@ -1,0 +1,222 @@
+name: Deploy Exedra CN Test Worker
+
+on:
+  pull_request:
+    branches:
+      - codex/exedra-cn-test-deploy-base
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-exedra-cn-test-worker
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event.pull_request.head.ref == 'codex/exedra-cn-test-deploy-run' &&
+      github.event.pull_request.base.ref == 'codex/exedra-cn-test-deploy-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      TEST_WORKER_NAME: magireader-exedra-cn-test
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/exedra-cn-integration
+          fetch-depth: 1
+          show-progress: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install website dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Generate complete deployable story data
+        run: python generate_story_index.py
+
+      - name: Verify representative generated Chinese TXT
+        id: story
+        shell: bash
+        run: |
+          set -euo pipefail
+          story_file="$(find website/public/data -type f -name '510101-09_0-6_cn.txt' -print -quit)"
+          login_file="$(find website/public/data -type f -name '618401_1-7_cn.txt' -print -quit)"
+          test -n "$story_file"
+          test -n "$login_file"
+          python - "$story_file" "$login_file" <<'PY'
+          from pathlib import Path
+          import sys
+
+          for raw_path in sys.argv[1:]:
+              path = Path(raw_path)
+              text = path.read_text(encoding="utf-8")
+              if len(text) < 100 or not any("\u4e00" <= char <= "\u9fff" for char in text):
+                  raise SystemExit(f"Generated CN TXT is not credible: {path}")
+              print(f"verified: {path} ({len(text)} chars)")
+          PY
+          relative_path="/${story_file#website/public/}"
+          encoded_path="$(python - "$relative_path" <<'PY'
+          import sys
+          from urllib.parse import quote
+          print(quote(sys.argv[1], safe="/"))
+          PY
+          )"
+          echo "encoded_path=$encoded_path" >> "$GITHUB_OUTPUT"
+
+      - name: Build and validate content-addressed search index
+        id: search
+        working-directory: website
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/magi-reader-search"
+          payload="$RUNNER_TEMP/magi-reader-search/search_content.json"
+          python ../build_search_index_v6.py --output "$payload"
+          python ../build_search_index_v6.py --output "$payload" --validate-only
+          object_key="$(node --input-type=module -e "import fs from 'node:fs'; const manifest = JSON.parse(fs.readFileSync('public/search_index_manifest.json', 'utf8')); if (!/^search\/[a-f0-9]{64}\.json$/.test(manifest.object_key)) process.exit(1); process.stdout.write(manifest.object_key);")"
+          echo "object_key=$object_key" >> "$GITHUB_OUTPUT"
+
+      - name: Build Cloudflare Worker output
+        working-directory: website
+        run: npm run build:worker
+
+      - name: Prepare isolated test Worker configurations
+        working-directory: website
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > .wrangler-exedra-cn-bootstrap.jsonc <<EOF
+          {
+            "name": "$TEST_WORKER_NAME",
+            "main": ".wrangler-exedra-cn-bootstrap.mjs",
+            "compatibility_date": "2026-02-14",
+            "workers_dev": true
+          }
+          EOF
+          cat > .wrangler-exedra-cn-bootstrap.mjs <<'EOF'
+          export default {
+            fetch() {
+              return new Response('Preparing MagiReader Exedra CN test deployment.');
+            },
+          };
+          EOF
+          cat > .wrangler-exedra-cn-test.jsonc <<EOF
+          {
+            "\$schema": "node_modules/wrangler/config-schema.json",
+            "name": "$TEST_WORKER_NAME",
+            "main": ".open-next/worker.js",
+            "compatibility_date": "2026-02-14",
+            "compatibility_flags": [
+              "nodejs_compat",
+              "global_fetch_strictly_public"
+            ],
+            "workers_dev": true,
+            "assets": {
+              "directory": ".open-next/assets",
+              "binding": "ASSETS"
+            },
+            "services": [
+              {
+                "binding": "WORKER_SELF_REFERENCE",
+                "service": "$TEST_WORKER_NAME"
+              }
+            ],
+            "kv_namespaces": [
+              {
+                "binding": "SUBMISSIONS_KV"
+              }
+            ]
+          }
+          EOF
+
+      - name: Upload immutable search index object
+        working-directory: website
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: >-
+          npx wrangler r2 object put
+          "magi-assets/${{ steps.search.outputs.object_key }}"
+          --file "$RUNNER_TEMP/magi-reader-search/search_content.json"
+          --content-type "application/json; charset=utf-8"
+          --cache-control "public, max-age=31536000, immutable"
+          --remote
+          --force
+
+      - name: Create isolated Worker service shell
+        working-directory: website
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: npx wrangler deploy --config .wrangler-exedra-cn-bootstrap.jsonc
+
+      - name: Deploy isolated Exedra CN test Worker
+        id: deploy
+        working-directory: website
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          log="$RUNNER_TEMP/exedra-cn-deploy.log"
+          npx opennextjs-cloudflare deploy \
+            --config .wrangler-exedra-cn-test.jsonc 2>&1 | tee "$log"
+          url="$(grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' "$log" | tail -n 1)"
+          if [ -z "$url" ]; then
+            echo "Unable to extract workers.dev URL from deployment output." >&2
+            exit 1
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "TEST_SITE_URL=$url"
+
+      - name: Smoke-test deployed site and generated Chinese TXT
+        shell: bash
+        env:
+          TEST_SITE_URL: ${{ steps.deploy.outputs.url }}
+          STORY_PATH: ${{ steps.story.outputs.encoded_path }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 18); do
+            if curl --fail --silent --show-error \
+              --retry 2 --retry-delay 2 \
+              "$TEST_SITE_URL/" -o "$RUNNER_TEMP/home.html"; then
+              break
+            fi
+            if [ "$attempt" -eq 18 ]; then
+              echo "Home page did not become ready." >&2
+              exit 1
+            fi
+            sleep 5
+          done
+          curl --fail --silent --show-error \
+            --retry 5 --retry-delay 3 \
+            "$TEST_SITE_URL$STORY_PATH" \
+            -o "$RUNNER_TEMP/story-cn.txt"
+          python - "$RUNNER_TEMP/home.html" "$RUNNER_TEMP/story-cn.txt" <<'PY'
+          from pathlib import Path
+          import sys
+
+          home = Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
+          story = Path(sys.argv[2]).read_text(encoding="utf-8")
+          if len(home) < 500:
+              raise SystemExit("Deployed homepage response is unexpectedly short")
+          if len(story) < 100 or not any("\u4e00" <= char <= "\u9fff" for char in story):
+              raise SystemExit("Deployed Chinese TXT is missing or not Chinese")
+          print(f"homepage bytes/chars: {len(home)}")
+          print(f"Chinese story chars: {len(story)}")
+          PY
+          echo "SMOKE_TEST_OK=$TEST_SITE_URL"
