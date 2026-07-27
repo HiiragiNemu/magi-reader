@@ -1,0 +1,83 @@
+name: Validate Community Proofreading Feature
+
+on:
+  pull_request:
+    branches:
+      - tooling/community-proofreading-validation-v2-base
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-community-proofreading-feature-v2
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/community-proofreading-validation-v2-run' &&
+      github.event.pull_request.base.ref == 'tooling/community-proofreading-validation-v2-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Fetch feature branch quietly
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init --quiet .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git -c protocol.version=2 fetch --quiet --depth=0 origin \
+            feature/community-proofreading-workflow \
+            codex/magireco-translation-test
+          git checkout --quiet FETCH_HEAD
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Run Python data and proofreading tests
+        run: python -m unittest discover -s tests -p "test_*.py"
+
+      - name: Rebuild and validate complete story catalogue
+        run: |
+          python generate_story_index.py --dry-run
+          python generate_machine_translation_manifest.py \
+            --translation-base 65f221f2aaa5a9fe161ed32e03e4dfbb93d4746d \
+            --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb \
+            --check
+
+      - name: Install website dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Lint
+        working-directory: website
+        run: npm run lint
+
+      - name: Type check
+        working-directory: website
+        run: npm run type-check
+
+      - name: Run website tests
+        working-directory: website
+        run: npm test
+
+      - name: Build and validate search index
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$RUNNER_TEMP/search_content.json"
+          python build_search_index_v6.py --output "$payload"
+          python build_search_index_v6.py --output "$payload" --validate-only
+
+      - name: Build Cloudflare Worker output
+        working-directory: website
+        run: npm run build:worker
