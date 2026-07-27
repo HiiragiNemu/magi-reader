@@ -37,6 +37,11 @@ OLD_DOCSTRING = '    """Apply only the reviewed cross-folder and partial-story p
 NEW_DOCSTRING = '    """Apply only the reviewed cross-folder pairings."""'
 OLD_EXPECTED = '        expected = set(MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS) | {partial_id}'
 NEW_EXPECTED = '        expected = set(MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS)'
+OLD_LEGACY_ROUTE = '    "618401": MAGIRECO_AUDITED_PARTIAL_PAIR[0],'
+NEW_LEGACY_ROUTE = (
+    '    "618401": '
+    '"login_story/6184 - 2021新年 各自的福袋梦/618401_1-7",'
+)
 
 
 class MigrationError(RuntimeError):
@@ -56,6 +61,7 @@ def migrate(source: str) -> str:
     require_once(source, PARTIAL_MERGE_BLOCK, "旧 partial 合并块")
     require_once(source, OLD_DOCSTRING, "旧配对函数说明")
     require_once(source, OLD_EXPECTED, "旧完整语料预期集合")
+    require_once(source, OLD_LEGACY_ROUTE, "旧 618401 路由身份")
 
     migrated = source.replace(
         PARTIAL_CONSTANT,
@@ -65,9 +71,12 @@ def migrate(source: str) -> str:
     migrated = migrated.replace(PARTIAL_MERGE_BLOCK, "")
     migrated = migrated.replace(OLD_DOCSTRING, NEW_DOCSTRING)
     migrated = migrated.replace(OLD_EXPECTED, NEW_EXPECTED)
+    migrated = migrated.replace(OLD_LEGACY_ROUTE, NEW_LEGACY_ROUTE)
 
     if "MAGIRECO_AUDITED_PARTIAL_PAIR" in migrated or "partial_id = \"618401\"" in migrated:
         raise MigrationError("旧 partial 配对引用仍有残留；拒绝写入")
+    if NEW_LEGACY_ROUTE not in migrated:
+        raise MigrationError("618401 完整语料路由身份未写入；拒绝写入")
     return migrated
 
 
