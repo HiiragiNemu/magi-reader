@@ -1,0 +1,56 @@
+name: Build Reconciled Exedra CN Output
+
+on:
+  pull_request:
+    branches:
+      - codex/exedra-cn-reconcile-pr-base
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-reconciled-exedra-cn-output
+  cancel-in-progress: true
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/exedra-cn-integration
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Preflight audited cross-folder reconciliation
+        run: python reconcile_magireco_cn_cross_folder_paths.py
+
+      - name: Build reconciled data tree
+        run: |
+          python reconcile_magireco_cn_cross_folder_paths.py \
+            --write \
+            --report CROSS_FOLDER_RECONCILIATION_REPORT.md
+
+      - name: Validate complete story catalogue
+        run: python generate_story_index.py --dry-run
+
+      - name: Publish validated output branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A \
+            magireco-translate-data-master/Scenarios_full \
+            CROSS_FOLDER_RECONCILIATION_REPORT.md
+          if git diff --cached --quiet; then
+            echo "No reconciliation changes to publish."
+            exit 0
+          fi
+          git commit -m "Reconcile complete CN story data into canonical paths"
+          git push --force origin HEAD:codex/exedra-cn-reconciled-output
