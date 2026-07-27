@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -43,7 +43,12 @@ jobs:
         run: python -m unittest discover -s tests -p "test_*.py"
 
       - name: Generate complete deployable story data
-        run: python generate_story_index.py
+        run: |
+          python generate_story_index.py
+          python generate_machine_translation_manifest.py \
+            --translation-base 65f221f2aaa5a9fe161ed32e03e4dfbb93d4746d \
+            --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb \
+            --check
 
       - name: Install website dependencies
         working-directory: website
@@ -206,17 +211,29 @@ jobs:
           done
           curl --fail --silent --show-error "$SITE_URL/story_index.json" -o "$RUNNER_TEMP/story-index.json"
           curl --fail --silent --show-error "$SITE_URL/api/proofreading/config" -o "$RUNNER_TEMP/config.json"
-          python - "$RUNNER_TEMP/home.html" "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/config.json" <<'PY'
+          curl --fail --silent --show-error "$SITE_URL/api/proofreading/machine-status" -o "$RUNNER_TEMP/machine-status.json"
+          python - "$RUNNER_TEMP/home.html" "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/config.json" "$RUNNER_TEMP/machine-status.json" <<'PY'
           import json, sys
           from pathlib import Path
           home = Path(sys.argv[1]).read_text(encoding='utf-8', errors='replace')
           stories = json.loads(Path(sys.argv[2]).read_text(encoding='utf-8'))
           config = json.loads(Path(sys.argv[3]).read_text(encoding='utf-8'))
+          machine = json.loads(Path(sys.argv[4]).read_text(encoding='utf-8'))
           if len(home) < 500 or not isinstance(stories, list) or not stories:
               raise SystemExit('Deployed site content is incomplete')
           if not config.get('submissions_enabled') or not config.get('turnstile_site_key'):
               raise SystemExit(f'Proofreading service is not enabled: {config}')
           if config.get('target_branch') != 'EXEDRA-TEST':
               raise SystemExit(f'Unexpected target branch: {config}')
-          print(f"SITE_OK stories={len(stories)} turnstile_test_mode={config.get('turnstile_test_mode')}")
+          if machine.get('total') != 450:
+              raise SystemExit(f'Unexpected machine translation total: {machine}')
+          if machine.get('remaining') != machine.get('total') - machine.get('verified', 0):
+              raise SystemExit(f'Invalid machine translation status: {machine}')
+          if len(machine.get('machine_translation_ids', [])) != machine.get('total'):
+              raise SystemExit(f'Incomplete machine translation id list: {machine}')
+          print(
+              f"SITE_OK stories={len(stories)} machine_total={machine['total']} "
+              f"machine_remaining={machine['remaining']} "
+              f"turnstile_test_mode={config.get('turnstile_test_mode')}"
+          )
           PY
