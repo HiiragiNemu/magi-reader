@@ -32,6 +32,7 @@ DEFAULT_STORY_MAP = (
 )
 SOURCE_PREFIX = "magireco-translate-data-master/Scenarios_full/"
 SOURCE_ROOT = ROOT / SOURCE_PREFIX
+HUMAN_ONLY_CATEGORIES = {"main_story", "scene0_main"}
 SOURCE_HEADER_RE = re.compile(
     r"\(Source:\s*([^()\r\n]+?\.json)\s*\)",
     re.IGNORECASE,
@@ -266,7 +267,10 @@ def build_outputs(
         absolute_txt = ROOT / repository_path
         if not absolute_txt.is_file():
             missing_repository_txt_paths.append(repository_path)
-        if repository_path not in added_txt_paths:
+        if (
+            repository_path not in added_txt_paths
+            or str(story.get("category") or "") in HUMAN_ONLY_CATEGORIES
+        ):
             continue
 
         references = referenced_json_sources(identity, absolute_txt)
