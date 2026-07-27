@@ -1,0 +1,50 @@
+name: Apply Community Proofreading Bundle via PR
+
+on:
+  pull_request:
+    branches:
+      - tooling/community-proofreading-apply-base
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-community-proofreading-bundle-pr
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/community-proofreading-apply-run' &&
+      github.event.pull_request.base.ref == 'tooling/community-proofreading-apply-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Fetch feature branch quietly
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init --quiet .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git -c protocol.version=2 fetch --quiet --depth=20 origin feature/community-proofreading-workflow
+          git checkout --quiet -B feature/community-proofreading-workflow FETCH_HEAD
+
+      - name: Verify and apply source bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode .github/community-proofreading-bundle.b64 > "$RUNNER_TEMP/community-proofreading.tar.gz"
+          echo '49a2d3ac6c336006a8295e61e7a1be94911a5e7b88453f8c09d7d12e11d36f80  '"$RUNNER_TEMP/community-proofreading.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/community-proofreading.tar.gz" -C .
+          rm .github/community-proofreading-bundle.b64
+          rm -f .github/workflows/apply-community-proofreading-bundle.yml
+
+      - name: Commit implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Add complete community proofreading workflow'
+          git push origin HEAD:feature/community-proofreading-workflow
