@@ -4,13 +4,16 @@ on:
   push:
     branches:
       - codex/exedra-cn-integration
+  pull_request:
+    branches:
+      - codex/exedra-cn-validation-base
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: validate-exedra-cn-integration
+  group: validate-exedra-cn-integration-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
