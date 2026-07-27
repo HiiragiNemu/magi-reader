@@ -59,6 +59,39 @@ class MachineTranslationManifestTests(unittest.TestCase):
         with self.assertRaises(MODULE.ManifestError):
             MODULE.identity_from_public_cn_path("/outside/story_cn.txt")
 
+    def test_only_paths_absent_from_trusted_main_are_added(self) -> None:
+        baseline = {
+            "human-main.txt": "aaa",
+            "human-event.txt": "bbb",
+        }
+        current = {
+            "human-main.txt": "aaa",
+            "human-event.txt": "bbb",
+            "new-machine.txt": "ccc",
+        }
+        added, overwritten, deleted = MODULE.classify_trust_boundary(
+            baseline, current
+        )
+        self.assertEqual(added, {"new-machine.txt"})
+        self.assertEqual(overwritten, set())
+        self.assertEqual(deleted, set())
+
+    def test_modified_or_deleted_trusted_files_are_detected(self) -> None:
+        baseline = {
+            "main_story/official.txt": "aaa",
+            "event_story/human.txt": "bbb",
+        }
+        current = {
+            "main_story/official.txt": "machine-overwrite",
+            "new-machine.txt": "ccc",
+        }
+        added, overwritten, deleted = MODULE.classify_trust_boundary(
+            baseline, current
+        )
+        self.assertEqual(added, {"new-machine.txt"})
+        self.assertEqual(overwritten, {"main_story/official.txt"})
+        self.assertEqual(deleted, {"event_story/human.txt"})
+
 
 if __name__ == "__main__":
     unittest.main()
