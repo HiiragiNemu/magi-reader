@@ -1,16 +1,15 @@
 name: Validate Exedra CN Integration
 
 on:
-  push:
+  pull_request:
     branches:
-      - codex/exedra-cn-integration
-  workflow_dispatch:
+      - codex/exedra-cn-full-validation-base
 
 permissions:
   contents: read
 
 concurrency:
-  group: validate-exedra-cn-integration
+  group: validate-exedra-cn-full-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
@@ -22,6 +21,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          show-progress: false
 
       - uses: actions/setup-python@v5
         with:
