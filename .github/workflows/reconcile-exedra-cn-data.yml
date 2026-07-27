@@ -1,0 +1,59 @@
+name: Reconcile Exedra CN Data Paths
+
+on:
+  push:
+    branches:
+      - codex/exedra-cn-integration
+    paths:
+      - reconcile_magireco_cn_cross_folder_paths.py
+      - .github/workflows/reconcile-exedra-cn-data.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reconcile-exedra-cn-data
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/exedra-cn-integration
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Preflight audited cross-folder reconciliation
+        run: python reconcile_magireco_cn_cross_folder_paths.py
+
+      - name: Reconcile translated JSON and TXT into canonical CN paths
+        run: |
+          python reconcile_magireco_cn_cross_folder_paths.py \
+            --write \
+            --report CROSS_FOLDER_RECONCILIATION_REPORT.md
+
+      - name: Rebuild and validate complete story catalogue
+        run: python generate_story_index.py --dry-run
+
+      - name: Commit validated data-path reconciliation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A \
+            magireco-translate-data-master/Scenarios_full \
+            CROSS_FOLDER_RECONCILIATION_REPORT.md
+          if git diff --cached --quiet; then
+            echo "No reconciliation changes to commit."
+            exit 0
+          fi
+          git commit -m "Reconcile complete CN story data into canonical paths"
+          git push origin HEAD:codex/exedra-cn-integration
