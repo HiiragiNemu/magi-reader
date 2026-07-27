@@ -42,7 +42,7 @@ export default function MachineTranslationReviewPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setToken(sessionStorage.getItem('magi-proofreading-admin-token') || '');
+    setToken(sessionStorage.getItem('magi-reader-proofreading-admin-token') || '');
     void fetch('/data/machine_translation_manifest.generated.json', { cache: 'no-store' })
       .then(response => response.json() as Promise<MachineTranslationManifest>)
       .then(setManifest)
@@ -58,7 +58,7 @@ export default function MachineTranslationReviewPage() {
         token,
         '/api/admin/machine-review',
       );
-      sessionStorage.setItem('magi-proofreading-admin-token', token);
+      sessionStorage.setItem('magi-reader-proofreading-admin-token', token);
       setStatus(result);
     } catch (error) {
       setStatus(null);

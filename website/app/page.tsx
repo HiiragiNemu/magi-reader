@@ -72,6 +72,14 @@ type SearchIndexSource = {
   entries: number;
 };
 
+type ProofreadingStatus = {
+  total: number;
+  verified: number;
+  remaining: number;
+  machine_translation_ids: string[];
+  verified_ids: string[];
+};
+
 const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
   main_story: { label: '主线', icon: Book },
   event_story: { label: '活动', icon: Calendar },
@@ -194,6 +202,12 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   );
   const [manuallyOpen, setManuallyOpen] = useState(hasSearchMatches);
   const contentId = useId();
+  const machinePending = group.items.filter(
+    story => story.machine_translation && !story.human_verified,
+  ).length;
+  const machineVerified = group.items.filter(
+    story => story.machine_translation && story.human_verified,
+  ).length;
   const isOpen = hasSearchMatches || manuallyOpen;
   const avgPercent = Math.round(
     group.items.reduce((sum, story) => sum + storyProgress(story), 0) /
@@ -204,7 +218,12 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   let headerClass = '';
   let progressClass = '';
 
-  if (isDark) {
+  if (machinePending > 0) {
+    headerClass = isDark
+      ? 'bg-amber-950/70 border-amber-700 text-amber-100'
+      : 'bg-amber-100 border-amber-400 text-amber-950';
+    progressClass = isDark ? 'text-amber-300' : 'text-amber-800';
+  } else if (isDark) {
     headerClass =
       avgPercent === 0
         ? 'bg-gray-800 border-gray-700 text-gray-400'
@@ -229,14 +248,16 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   return (
     <div
       className={`break-inside-avoid mb-3 rounded-lg border shadow-sm transition-all ${
-        isDark ? 'border-gray-700' : 'border-black/10'
+        machinePending > 0
+          ? isDark ? 'border-amber-700 ring-1 ring-amber-700/40' : 'border-amber-400 ring-1 ring-amber-300'
+          : isDark ? 'border-gray-700' : 'border-black/10'
       }`}
     >
       <button
         type="button"
         aria-controls={contentId}
         aria-expanded={isOpen}
-        onClick={() => setManuallyOpen((open) => !open)}
+        onClick={() => setManuallyOpen(open => !open)}
         className={`w-full flex items-start justify-between px-3 py-3 text-left transition-colors border-b ${
           isOpen ? 'border-inherit' : 'border-transparent'
         } ${headerClass}`}
@@ -256,6 +277,16 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
           >
             {displayTitle}
           </span>
+          {machinePending > 0 && (
+            <span className="shrink-0 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black text-white">
+              待校 {machinePending}
+            </span>
+          )}
+          {machinePending === 0 && machineVerified > 0 && (
+            <span className="shrink-0 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-black text-white">
+              已校 {machineVerified}
+            </span>
+          )}
         </div>
         <span className={`text-[10px] font-mono mt-0.5 flex-shrink-0 ${progressClass}`}>
           {avgPercent}%
@@ -267,17 +298,27 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
           <div className="flex flex-wrap gap-2">
             {[...group.items]
               .sort((a, b) => NATURAL_COLLATOR.compare(a.id, b.id))
-              .map((story) => {
+              .map(story => {
                 const label = getDisplayLabel(story);
                 const progress = storyProgress(story);
                 const snippet = group.matchSnippets?.[story.id];
-                const buttonClass = isDark
-                  ? progress > 0
-                    ? 'bg-emerald-900/30 border-emerald-700 text-emerald-400'
-                    : 'bg-gray-800 border-gray-700 text-gray-500'
-                  : progress > 0
-                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                    : 'bg-white border-gray-200 text-gray-400';
+                const machinePendingStory =
+                  story.machine_translation && !story.human_verified;
+                const buttonClass = machinePendingStory
+                  ? isDark
+                    ? 'bg-amber-950/60 border-amber-600 text-amber-200'
+                    : 'bg-amber-50 border-amber-400 text-amber-950'
+                  : story.machine_translation && story.human_verified
+                    ? isDark
+                      ? 'bg-emerald-950/50 border-emerald-600 text-emerald-300'
+                      : 'bg-emerald-50 border-emerald-400 text-emerald-900'
+                    : isDark
+                      ? progress > 0
+                        ? 'bg-emerald-900/30 border-emerald-700 text-emerald-400'
+                        : 'bg-gray-800 border-gray-700 text-gray-500'
+                      : progress > 0
+                        ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                        : 'bg-white border-gray-200 text-gray-400';
 
                 return (
                   <Link
@@ -291,6 +332,16 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                   >
                     <div className="px-2 py-1.5 flex justify-between items-center gap-2">
                       <span className="font-mono text-xs font-bold break-all">#{label}</span>
+                      {machinePendingStory && (
+                        <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[9px] font-black text-white">
+                          机翻待校
+                        </span>
+                      )}
+                      {story.machine_translation && story.human_verified && (
+                        <span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">
+                          人工已校
+                        </span>
+                      )}
                       {progress < 100 && progress > 0 && (
                         <span className="text-[10px] opacity-60">{progress}%</span>
                       )}
@@ -385,6 +436,8 @@ export default function Home() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [searchJp, setSearchJp] = useState(false);
   const [searchMode, setSearchMode] = useState<SearchMode>('all');
+  const [proofreadingStatus, setProofreadingStatus] = useState<ProofreadingStatus | null>(null);
+  const [onlyNeedsReview, setOnlyNeedsReview] = useState(false);
   const workerRef = useRef<Worker | null>(null);
   const searchSequenceRef = useRef(0);
 
@@ -410,10 +463,38 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (stories.length === 0) return;
+    const controller = new AbortController();
+    void fetch('/api/proofreading/machine-status', {
+      cache: 'no-store',
+      signal: controller.signal,
+    })
+      .then(response => response.ok ? response.json() as Promise<ProofreadingStatus> : null)
+      .then(status => {
+        if (status) setProofreadingStatus(status);
+      })
+      .catch(error => {
+        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+          console.error('人工校验清单读取失败：', error);
+        }
+      });
+    return () => controller.abort();
+  }, []);
+
+  const enrichedStories = useMemo(() => {
+    const machine = new Set(proofreadingStatus?.machine_translation_ids ?? []);
+    const verified = new Set(proofreadingStatus?.verified_ids ?? []);
+    return stories.map(story => ({
+      ...story,
+      machine_translation: machine.has(story.id),
+      human_verified: verified.has(story.id),
+    }));
+  }, [proofreadingStatus, stories]);
+
+  useEffect(() => {
+    if (enrichedStories.length === 0) return;
     const categoriesForSystem = Array.from(
       new Set(
-        stories
+        enrichedStories
           .map((story) => story.category || 'Unclassified')
           .filter((category) =>
             storySystem === 'exedra'
@@ -435,7 +516,7 @@ export default function Home() {
           )[0];
       setLastCategory(fallback);
     }
-  }, [lastCategory, setLastCategory, stories, storySystem]);
+  }, [enrichedStories, lastCategory, setLastCategory, storySystem]);
 
   useEffect(() => {
     if (!storyIndexSha256) return;
@@ -529,7 +610,7 @@ export default function Home() {
     const foundCategories = new Set<string>();
     const groups: Record<string, StoryGroup> = {};
 
-    for (const story of stories) {
+    for (const story of enrichedStories) {
       const category = story.category || 'Unclassified';
       const storyIsExedra = category.startsWith('exedra_');
       if (
@@ -539,6 +620,9 @@ export default function Home() {
         continue;
       }
       foundCategories.add(category);
+      if (onlyNeedsReview && (!story.machine_translation || story.human_verified)) {
+        continue;
+      }
 
       const titleText = [
         story.id,
@@ -594,7 +678,7 @@ export default function Home() {
       ),
       displayedGroups: sortedGroups,
     };
-  }, [stories, storySystem, lastCategory, normalizedQuery, searchMode, textMatches]);
+  }, [enrichedStories, storySystem, lastCategory, normalizedQuery, searchMode, textMatches, onlyNeedsReview]);
 
   const selectCategory = (category: string) => {
     setLastCategory(category);
@@ -605,6 +689,7 @@ export default function Home() {
     const nextSystem: StorySystem =
       storySystem === 'magireco' ? 'exedra' : 'magireco';
     setLastCategory(DEFAULT_CATEGORY[nextSystem]);
+    if (nextSystem === 'exedra') setOnlyNeedsReview(false);
     updateSearchTerm('');
   };
 
@@ -790,6 +875,76 @@ export default function Home() {
 
         <div className="flex-1 overflow-y-auto p-3 md:p-6 scroll-smooth">
           <div className="max-w-7xl mx-auto">
+            {storySystem === 'magireco' && proofreadingStatus && (
+              <section className={`mb-5 rounded-2xl border p-4 shadow-sm ${
+                theme === 'dark'
+                  ? 'border-amber-800 bg-amber-950/40 text-amber-100'
+                  : 'border-amber-300 bg-gradient-to-r from-amber-50 to-emerald-50 text-gray-900'
+              }`}>
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-base font-black">机器翻译人工校验清单</h2>
+                      <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black text-white">
+                        动态
+                      </span>
+                    </div>
+                    <p className="mt-1 text-sm opacity-80">
+                      总计 {proofreadingStatus.total} 部，已人工校验 {proofreadingStatus.verified} 部，
+                      仍需校验 <strong>{proofreadingStatus.remaining}</strong> 部。
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="min-w-48">
+                      <div className="mb-1 flex justify-between text-[10px] font-bold opacity-70">
+                        <span>校验进度</span>
+                        <span>
+                          {proofreadingStatus.total > 0
+                            ? Math.round((proofreadingStatus.verified / proofreadingStatus.total) * 100)
+                            : 0}%
+                        </span>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-full bg-black/10">
+                        <div
+                          className="h-full rounded-full bg-emerald-500 transition-all"
+                          style={{
+                            width: `${proofreadingStatus.total > 0
+                              ? (proofreadingStatus.verified / proofreadingStatus.total) * 100
+                              : 0}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      aria-pressed={onlyNeedsReview}
+                      onClick={() => setOnlyNeedsReview(value => !value)}
+                      className={`rounded-lg border px-3 py-2 text-xs font-black transition ${
+                        onlyNeedsReview
+                          ? 'border-amber-600 bg-amber-500 text-white'
+                          : theme === 'dark'
+                            ? 'border-amber-700 bg-black/20 text-amber-200'
+                            : 'border-amber-300 bg-white text-amber-800'
+                      }`}
+                    >
+                      {onlyNeedsReview ? '显示当前分类全部剧情' : '只看机器翻译待校剧情'}
+                    </button>
+                    <Link
+                      href="/review/machine-translations"
+                      className="rounded-lg bg-amber-600 px-3 py-2 text-xs font-black text-white hover:bg-amber-700"
+                    >
+                      管理机器校验标记
+                    </Link>
+                    <Link
+                      href="/review/submissions"
+                      className="rounded-lg bg-purple-600 px-3 py-2 text-xs font-black text-white hover:bg-purple-700"
+                    >
+                      投稿审核
+                    </Link>
+                  </div>
+                </div>
+              </section>
+            )}
             {storyError && (
               <div
                 role="alert"

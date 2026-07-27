@@ -35,6 +35,8 @@ export type Story = {
   sections?: string[];
   game?: string;
   source_identity?: string;
+  machine_translation?: boolean;
+  human_verified?: boolean;
   legacy_ids?: string[];
 };
 

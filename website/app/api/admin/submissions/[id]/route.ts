@@ -16,6 +16,10 @@ import {
   readProofreadingPullRequestState,
 } from '@/lib/github-proofreading';
 import {
+  MACHINE_TRANSLATION_ID_SET,
+  setMachineTranslationReviewState,
+} from '@/lib/machine-translation-review';
+import {
   getProofreadingSubmission,
   transitionProofreadingSubmission,
 } from '@/lib/proofreading-store';
@@ -234,6 +238,20 @@ export async function PATCH(
           processing_error: '',
         },
       );
+      if (MACHINE_TRANSLATION_ID_SET.has(completed.story_id)) {
+        await setMachineTranslationReviewState(
+          context.kv,
+          completed.story_id,
+          {
+            verified: true,
+            reviewer: context.authentication.identity.label,
+            reviewed_at: review.reviewed_at,
+            note: review.public_message || '社区校对投稿已批准并建立 PR',
+            submission_id: completed.id,
+            pull_request_url: pullRequest.url,
+          },
+        );
+      }
       return NextResponse.json(
         { success: true, submission: toProofreadingAdminDetail(completed) },
         { headers: NO_STORE_HEADERS },
