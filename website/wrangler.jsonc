@@ -11,6 +11,9 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "ai": {
+    "binding": "AI"
+  },
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
@@ -20,9 +23,11 @@
   "kv_namespaces": [
     {
       "binding": "SUBMISSIONS_KV",
-      // Required: replace this all-zero placeholder with a dedicated namespace ID.
-      // The deployment verifier rejects this placeholder.
       "id": "00000000000000000000000000000000"
     }
-  ]
+  ],
+  "vars": {
+    "EXEDRA_TRANSLATION_MODEL": "@cf/meta/llama-3.1-8b-instruct-fast",
+    "EXEDRA_WIKI_BASE_URL": "https://exedra.wiki"
+  }
 }
