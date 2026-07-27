@@ -68,7 +68,12 @@ jobs:
         run: python -m unittest discover -s tests -p "test_*.py"
 
       - name: Generate and validate complete story catalogue
-        run: python generate_story_index.py
+        run: |
+          python generate_story_index.py
+          python generate_machine_translation_manifest.py \
+            --translation-base 65f221f2aaa5a9fe161ed32e03e4dfbb93d4746d \
+            --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb \
+            --check
 
       - name: Install website dependencies
         working-directory: website
