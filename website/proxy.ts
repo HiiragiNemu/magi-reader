@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import storyIndexJson from './public/story_index.json';
 import searchManifestJson from './public/search_index_manifest.json';
+import { augmentExedraCnPaths } from './lib/exedra-localization';
 import {
   generalVoiceCatalogEntries,
   generalVoiceScriptToTxt,
@@ -31,11 +32,14 @@ const toHex = (buffer: ArrayBuffer): string =>
 const combinedIndex = async () => {
   const manifest = await loadGeneralVoiceManifest();
   const voiceEntries = generalVoiceCatalogEntries(manifest);
-  const base = Array.isArray(storyIndexJson) ? storyIndexJson : [];
+  const rawBase = Array.isArray(storyIndexJson)
+    ? storyIndexJson as Array<Record<string, unknown>>
+    : [];
+  const base = augmentExedraCnPaths(rawBase);
   if (base.length + voiceEntries.length > MAX_COMBINED_ENTRIES) {
     throw new Error('合并剧情目录超过安全上限');
   }
-  const ids = new Set(base.map(item => String((item as { id?: unknown }).id ?? '').toLowerCase()));
+  const ids = new Set(base.map(item => String(item.id ?? '').toLowerCase()));
   for (const entry of voiceEntries) {
     if (ids.has(entry.id.toLowerCase())) throw new Error(`语音剧情编号冲突：${entry.id}`);
     ids.add(entry.id.toLowerCase());
@@ -79,7 +83,12 @@ export async function proxy(request: NextRequest) {
     if (pathname === '/search_index_manifest.json') {
       const { sha256 } = await combinedIndexPayload();
       return Response.json(
-        { ...searchManifestJson, story_index_sha256: sha256 },
+        {
+          ...searchManifestJson,
+          story_index_sha256: sha256,
+          dynamic_general_voice_excluded_from_fulltext: true,
+          dynamic_exedra_cn_excluded_from_fulltext: true,
+        },
         { headers: jsonHeaders },
       );
     }
@@ -87,8 +96,8 @@ export async function proxy(request: NextRequest) {
     if (voiceMatch) return await voiceResponse(voiceMatch[1], voiceMatch[2]);
     return NextResponse.next();
   } catch (error) {
-    console.error('General voice proxy failed', error);
-    const message = error instanceof Error ? error.message : '语音数据服务暂时不可用';
+    console.error('Dynamic story proxy failed', error);
+    const message = error instanceof Error ? error.message : '动态剧情数据服务暂时不可用';
     return new Response(message, { status: 502, headers: textHeaders });
   }
 }
