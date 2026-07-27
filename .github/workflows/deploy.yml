@@ -47,6 +47,10 @@ jobs:
         working-directory: .
         run: python -m unittest discover -s tests -p "test_*.py"
 
+      - name: Generate deployable story catalogue
+        working-directory: .
+        run: python generate_story_index.py
+
       - name: Build and validate search index
         id: search
         shell: bash
