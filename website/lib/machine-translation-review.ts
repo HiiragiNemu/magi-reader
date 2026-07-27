@@ -9,14 +9,24 @@ export type MachineTranslationEntry = {
   repository_path_cn: string;
   path_cn: string;
   path_jp: string;
+  machine_source_json_count?: number;
+  direct_txt_changed?: boolean;
 };
 
 export type MachineTranslationManifest = {
-  version: 1;
+  version: 1 | 2;
   definition: string;
+  translation_base?: string;
   translation_commit: string;
+  changed_json_total?: number;
+  changed_txt_total?: number;
+  referenced_changed_json_total?: number;
   total: number;
   entries: MachineTranslationEntry[];
+  unreferenced_changed_json_count?: number;
+  unreferenced_changed_json_paths?: string[];
+  unmatched_changed_txt_identities?: string[];
+  missing_repository_txt_paths?: string[];
   unmatched_source_identities?: string[];
 };
 
