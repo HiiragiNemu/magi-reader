@@ -1,0 +1,80 @@
+name: Verify Trusted Translation Release
+
+on:
+  pull_request:
+    branches:
+      - tooling/verify-trusted-release-base
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/verify-trusted-release-run' &&
+      github.event.pull_request.base.ref == 'tooling/verify-trusted-release-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: translation-test-2026-07-27
+      V1: magireco-translation-test-2026-07-27-v1.zip
+      V2: magireco-translation-test-2026-07-27-v2-trusted-main-delta.zip
+    steps:
+      - name: Verify Release metadata and checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release view "$TAG" \
+            --repo "${{ github.repository }}" \
+            --json tagName,name,isDraft,isPrerelease,body,assets \
+            > "$RUNNER_TEMP/release.json"
+          mkdir -p "$RUNNER_TEMP/checksums"
+          gh release download "$TAG" \
+            --repo "${{ github.repository }}" \
+            --pattern '*.sha256.txt' \
+            --dir "$RUNNER_TEMP/checksums"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ['RUNNER_TEMP'])
+          release = json.loads((root / 'release.json').read_text(encoding='utf-8'))
+          assets = {asset['name']: asset for asset in release.get('assets', [])}
+          required = {
+              os.environ['V1'],
+              os.environ['V2'],
+              os.environ['V1'] + '.sha256.txt',
+              os.environ['V2'] + '.sha256.txt',
+          }
+          missing = sorted(required - set(assets))
+          if missing:
+              raise SystemExit(f'Missing corrected Release assets: {missing}')
+          if release.get('isDraft'):
+              raise SystemExit('Release is unexpectedly a draft')
+          if '可信 `main` 差值修正版' not in release.get('body', ''):
+              raise SystemExit('Release notes do not contain trusted-main warning')
+          for zip_name in (os.environ['V1'], os.environ['V2']):
+              asset = assets[zip_name]
+              digest = str(asset.get('digest') or '')
+              if not digest.startswith('sha256:'):
+                  raise SystemExit(f'Asset has no SHA-256 digest: {zip_name} {digest}')
+              checksum = (
+                  root / 'checksums' / f'{zip_name}.sha256.txt'
+              ).read_text(encoding='utf-8').split()[0]
+              if digest.removeprefix('sha256:') != checksum:
+                  raise SystemExit(
+                      f'Checksum mismatch: {zip_name} asset={digest} file={checksum}'
+                  )
+              print(
+                  'TRUSTED_RELEASE_ASSET '
+                  f'name={zip_name} bytes={asset.get("size")} '
+                  f'digest={digest} downloads={asset.get("downloadCount")}'
+              )
+          print(
+              'TRUSTED_RELEASE_METADATA_OK '
+              f'tag={release.get("tagName")} title={release.get("name")} '
+              f'prerelease={release.get("isPrerelease")}'
+          )
+          PY
