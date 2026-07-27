@@ -1,0 +1,99 @@
+name: Validate Community Proofreading PR
+
+on:
+  pull_request:
+    branches: [EXEDRA-TEST]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: community-proofreading-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    if: startsWith(github.event.pull_request.head.ref, 'community-proofreading/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce proofreading PR scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          mapfile -t files < <(git diff --name-only "$base" "$head")
+          if [ "${#files[@]}" -ne 1 ]; then
+            printf 'Community proofreading PR must change exactly one file; found %s\n' "${#files[@]}" >&2
+            printf '%s\n' "${files[@]}" >&2
+            exit 1
+          fi
+          file="${files[0]}"
+          case "$file" in
+            magireco-translate-data-master/Scenarios_full/*.txt|magiraexedra-translate-data-master/Scenarios_full/*.txt) ;;
+            *) echo "Disallowed proofreading path: $file" >&2; exit 1 ;;
+          esac
+          case "$file" in *.bak*|*.tmp*) echo "Backup/temp file is not allowed" >&2; exit 1;; esac
+          test -s "$file"
+          python - "$file" <<'PY'
+          from pathlib import Path
+          import re, sys
+          path = Path(sys.argv[1])
+          text = path.read_text(encoding='utf-8-sig')
+          headers = [line.strip() for line in text.replace('\r\n','\n').split('\n') if line.strip().startswith('---')]
+          pattern = re.compile(r'^---\s*\[Section\s+\d+(?:\s+-\s+Branch\s+\d+)?\]\s*\(Source:\s*[^()\r\n]+\.json\s*\)\s*---$', re.I)
+          if not headers or any(pattern.fullmatch(line) is None for line in headers):
+              raise SystemExit('Proofreading TXT has invalid Section/Branch structure')
+          PY
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Run Python tests
+        run: python -m unittest discover -s tests -p "test_*.py"
+
+      - name: Generate and validate complete story catalogue
+        run: python generate_story_index.py
+
+      - name: Install website dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Lint
+        working-directory: website
+        run: npm run lint
+
+      - name: Type check
+        working-directory: website
+        run: npm run type-check
+
+      - name: Website tests
+        working-directory: website
+        run: npm test
+
+      - name: Build and validate search index
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$RUNNER_TEMP/search_content.json"
+          python build_search_index_v6.py --output "$payload"
+          python build_search_index_v6.py --output "$payload" --validate-only
+
+      - name: Build Cloudflare Worker output
+        working-directory: website
+        run: npm run build:worker
