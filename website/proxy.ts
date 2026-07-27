@@ -26,9 +26,6 @@ const textHeaders = {
   'X-Content-Type-Options': 'nosniff',
 };
 
-const toHex = (buffer: ArrayBuffer): string =>
-  Array.from(new Uint8Array(buffer), byte => byte.toString(16).padStart(2, '0')).join('');
-
 const combinedIndex = async () => {
   const manifest = await loadGeneralVoiceManifest();
   const voiceEntries = generalVoiceCatalogEntries(manifest);
@@ -47,12 +44,9 @@ const combinedIndex = async () => {
   return [...base, ...voiceEntries];
 };
 
-const combinedIndexPayload = async () => {
-  const payload = JSON.stringify(await combinedIndex());
-  const bytes = new TextEncoder().encode(payload);
-  const sha256 = toHex(await crypto.subtle.digest('SHA-256', bytes));
-  return { payload, sha256 };
-};
+const combinedIndexPayload = async () => ({
+  payload: JSON.stringify(await combinedIndex()),
+});
 
 const voiceResponse = async (modelId: string, extension: string): Promise<Response> => {
   const [manifest, script] = await Promise.all([
@@ -81,11 +75,12 @@ export async function proxy(request: NextRequest) {
       return new Response(payload, { status: 200, headers: jsonHeaders });
     }
     if (pathname === '/search_index_manifest.json') {
-      const { sha256 } = await combinedIndexPayload();
+      // Keep the static story-index hash. The client compares it with the dynamic
+      // catalogue hash and deliberately disables stale full-text search while
+      // retaining title/category browsing. Never advertise an incomplete index as current.
       return Response.json(
         {
           ...searchManifestJson,
-          story_index_sha256: sha256,
           dynamic_general_voice_excluded_from_fulltext: true,
           dynamic_exedra_cn_excluded_from_fulltext: true,
         },
