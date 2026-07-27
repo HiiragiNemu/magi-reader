@@ -19,7 +19,11 @@ EXEDRA_PREFIXES = (
 
 
 def git_bytes(*args: str) -> bytes:
-    proc = subprocess.run(["git", *args], check=False, capture_output=True)
+    proc = subprocess.run(
+        ["git", "-c", "core.quotePath=false", *args],
+        check=False,
+        capture_output=True,
+    )
     if proc.returncode:
         raise SystemExit(proc.stderr.decode("utf-8", "replace"))
     return proc.stdout
