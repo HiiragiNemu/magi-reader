@@ -18,13 +18,13 @@ export async function GET() {
     {
       version: 1,
       definition: MACHINE_TRANSLATION_MANIFEST.definition,
+      translation_base: MACHINE_TRANSLATION_MANIFEST.translation_base,
       translation_commit: MACHINE_TRANSLATION_MANIFEST.translation_commit,
       total: machineIds.length,
       verified: verifiedIds.length,
       remaining: Math.max(0, machineIds.length - verifiedIds.length),
       machine_translation_ids: machineIds,
       verified_ids: verifiedIds,
-      states,
     },
     { headers: NO_STORE_HEADERS },
   );
