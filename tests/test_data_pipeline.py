@@ -770,19 +770,33 @@ class PipelineBuildTests(unittest.TestCase):
         )
         self.assertNotIn("legacy_ids", wrong)
 
-    def test_audited_partial_pair_keeps_distinct_translation_variant(
+    def test_completed_full_pair_keeps_distinct_translation_variant(
         self,
     ) -> None:
-        cn_identity, jp_identity = generate.MAGIRECO_AUDITED_PARTIAL_PAIR
-        cn_parent = cn_identity.rsplit("/", 1)[0]
+        full_identity = (
+            "login_story/6184 - 2021新年 各自的福袋梦/618401_1-7"
+        )
+        parent = full_identity.rsplit("/", 1)[0]
         write_text(
-            self.cn / f"{cn_identity}.txt",
+            self.cn / f"{full_identity}.txt",
             "---[Section 1] (Source: 618401-1-cn.json) ---\n"
             "彩羽: 中文第一节\n"
-            "八千代: 中文回应\n",
+            "八千代: 中文回应\n"
+            "---[Section 2] (Source: 618401-2-cn.json) ---\n"
+            "旁白: 中文第二节\n"
+            "---[Section 3] (Source: 618401-3-cn.json) ---\n"
+            "旁白: 中文第三节\n"
+            "---[Section 4] (Source: 618401-4-cn.json) ---\n"
+            "旁白: 中文第四节\n"
+            "---[Section 5] (Source: 618401-5-cn.json) ---\n"
+            "旁白: 中文第五节\n"
+            "---[Section 6] (Source: 618401-6-cn.json) ---\n"
+            "旁白: 中文第六节\n"
+            "---[Section 7] (Source: 618401-7-cn.json) ---\n"
+            "旁白: 中文第七节\n",
         )
         write_text(
-            self.jp / f"{jp_identity}.txt",
+            self.jp / f"{full_identity}.txt",
             "---[Section 1] (Source: 618401-1-jp.json) ---\n"
             "いろは: 日文第一节\n"
             "やちよ: 日文回应\n"
@@ -800,7 +814,7 @@ class PipelineBuildTests(unittest.TestCase):
             "旁白: 日文第七节\n",
         )
         write_text(
-            self.cn / cn_parent / "618401_1-1.txt",
+            self.cn / parent / "618401_1-1.txt",
             "---[Section 1] (Source: alternate.json) ---\n"
             "彩羽: 不同译本\n",
         )
@@ -820,10 +834,10 @@ class PipelineBuildTests(unittest.TestCase):
         )
         alternate = next(story for story in stories if story is not paired)
         self.assertTrue(paired["has_cn"] and paired["has_jp"])
-        self.assertEqual(paired["source_identity"], cn_identity)
+        self.assertEqual(paired["source_identity"], full_identity)
         self.assertTrue(alternate["has_cn"])
         self.assertFalse(alternate["has_jp"])
-        self.assertEqual(stats["magireco_audited_partial_pairs"], 1)
+        self.assertEqual(stats["magireco_audited_partial_pairs"], 0)
         self.assertEqual(stats["magireco_legacy_route_aliases"], 1)
 
     def test_hyphenated_numeric_raw_id_range_variants_pair(self) -> None:
