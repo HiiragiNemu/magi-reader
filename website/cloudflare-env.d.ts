@@ -28,7 +28,17 @@ declare global {
     list(options?: SubmissionKvListOptions): Promise<SubmissionKvListResult>;
   }
 
+  interface CloudflareAiBinding {
+    run(model: string, input: Record<string, unknown>): Promise<unknown>;
+  }
+
+  interface CloudflareAssetsBinding {
+    fetch(request: Request | string): Promise<Response>;
+  }
+
   interface CloudflareEnv {
+    ASSETS?: CloudflareAssetsBinding;
+    AI?: CloudflareAiBinding;
     SUBMISSIONS_KV?: SubmissionKvNamespace;
     SUBMISSIONS_ADMIN_TOKEN?: string;
     TURNSTILE_SITE_KEY?: string;
@@ -40,5 +50,7 @@ declare global {
     PROOFREADING_GITHUB_TOKEN?: string;
     PROOFREADING_ALLOW_GITHUB_ADMIN?: string;
     PROOFREADING_TURNSTILE_TEST_MODE?: string;
+    EXEDRA_TRANSLATION_MODEL?: string;
+    EXEDRA_WIKI_BASE_URL?: string;
   }
 }
