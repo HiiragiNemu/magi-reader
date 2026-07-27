@@ -1,0 +1,85 @@
+name: Refresh Machine Translation Manifest
+
+on:
+  pull_request:
+    branches:
+      - tooling/machine-manifest-refresh-base
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-machine-translation-manifest
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/machine-manifest-refresh-run' &&
+      github.event.pull_request.base.ref == 'tooling/machine-manifest-refresh-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Fetch feature and translation refs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init --quiet .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git -c protocol.version=2 fetch --quiet origin \
+            feature/community-proofreading-workflow \
+            codex/magireco-translation-test
+          git checkout --quiet -B feature/community-proofreading-workflow \
+            origin/feature/community-proofreading-workflow
+
+      - name: Regenerate provenance manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 generate_machine_translation_manifest.py \
+            --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path(
+              'website/public/data/machine_translation_manifest.generated.json'
+          ).read_text(encoding='utf-8'))
+          story_map = json.loads(Path(
+              'website/public/data/proofreading_story_map.generated.json'
+          ).read_text(encoding='utf-8'))
+          changed_json = manifest.get('changed_json_total', 0)
+          total = manifest.get('total', 0)
+          referenced = manifest.get('referenced_changed_json_total', 0)
+          if changed_json < 2000:
+              raise SystemExit(f'Incomplete translation JSON provenance: {changed_json}')
+          if total <= 15:
+              raise SystemExit(f'Old incomplete story baseline remains: {total}')
+          if referenced <= 0 or referenced > changed_json:
+              raise SystemExit(f'Invalid referenced JSON count: {referenced}/{changed_json}')
+          if len(manifest.get('entries', [])) != total:
+              raise SystemExit('Manifest total mismatch')
+          if story_map.get('total', 0) < total:
+              raise SystemExit('Proofreading source map is smaller than machine baseline')
+          print(
+              'MACHINE_PROVENANCE_OK '
+              f'total={total} changed_json={changed_json} '
+              f'referenced_json={referenced} '
+              f'unreferenced_json={manifest.get("unreferenced_changed_json_count")} '
+              f'source_map={story_map.get("total")}'
+          )
+          PY
+          python3 -m unittest tests.test_machine_translation_manifest
+
+      - name: Commit generated manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            website/public/data/machine_translation_manifest.generated.json \
+            website/public/data/proofreading_story_map.generated.json
+          git commit -m 'Regenerate complete machine translation provenance manifest'
+          git remote set-url origin \
+            "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git push origin HEAD:feature/community-proofreading-workflow
