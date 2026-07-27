@@ -28,10 +28,11 @@ jobs:
           set -euo pipefail
           git init --quiet .
           git remote add origin https://github.com/${{ github.repository }}.git
-          git -c protocol.version=2 fetch --quiet --depth=0 origin \
+          git -c protocol.version=2 fetch --quiet origin \
             feature/community-proofreading-workflow \
             codex/magireco-translation-test
-          git checkout --quiet FETCH_HEAD
+          git checkout --quiet -B feature/community-proofreading-workflow \
+            origin/feature/community-proofreading-workflow
 
       - uses: actions/setup-python@v5
         with:
