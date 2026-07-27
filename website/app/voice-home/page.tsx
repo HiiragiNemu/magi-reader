@@ -175,19 +175,31 @@ export default function VoiceEnabledHome() {
   }, []);
 
   useEffect(() => {
-    const apply = () => {
-      if (frame.current !== null) cancelAnimationFrame(frame.current);
-      frame.current = requestAnimationFrame(() => {
-        if (system === 'exedra') enhanceExedraCards(currentStatus);
-        else {
-          clearExedraEnhancements();
-          replaceVoiceLabels(document.body);
-        }
-      });
+    let observer: MutationObserver;
+    const observe = () => observer.observe(document.body, { childList: true, subtree: true });
+    const applyNow = () => {
+      observer.disconnect();
+      if (system === 'exedra') enhanceExedraCards(currentStatus);
+      else {
+        clearExedraEnhancements();
+        replaceVoiceLabels(document.body);
+      }
+      observe();
     };
-    apply();
-    const observer = new MutationObserver(apply);
-    observer.observe(document.body, { childList: true, subtree: true });
+    const schedule = () => {
+      if (frame.current !== null) cancelAnimationFrame(frame.current);
+      frame.current = requestAnimationFrame(applyNow);
+    };
+    observer = new MutationObserver(records => {
+      const onlyOwnBadges = records.every(record =>
+        [...record.addedNodes, ...record.removedNodes].every(node =>
+          node instanceof Element && node.hasAttribute('data-exedra-machine-badge'),
+        ),
+      );
+      if (!onlyOwnBadges) schedule();
+    });
+    observe();
+    schedule();
     return () => {
       observer.disconnect();
       if (frame.current !== null) cancelAnimationFrame(frame.current);
