@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 
 import AboutModal from '@/components/AboutModal';
+import TurnstileWidget from '@/components/TurnstileWidget';
 import Sidebar, { type Story } from '@/components/Sidebar';
 import StoryText from '@/components/StoryText';
 import {
@@ -25,6 +26,11 @@ import {
 import { useGlobal } from '@/app/providers';
 import { readLocalStoryPayload, readScenarioFile } from '@/lib/local-story';
 import { normalizeSearchText } from '@/lib/search';
+import {
+  normalizeProofreadingText,
+  sha256Text,
+} from '@/lib/proofreading';
+import { saveProofreadingReceipt } from '@/lib/proofreading-client';
 import {
   findStoryByRouteId,
   loadStoryIndex,
@@ -50,6 +56,15 @@ type LoadedSource = {
   name: string;
   raw: string;
   format: StoryFormat;
+};
+
+type ProofreadingConfig = {
+  submissions_enabled: boolean;
+  turnstile_site_key: string;
+  target_branch: string;
+  source_revision: string;
+  github_admin_auth: boolean;
+  turnstile_test_mode: boolean;
 };
 
 const MAX_STORY_SOURCE_BYTES = 8 * 1024 * 1024;
@@ -200,7 +215,18 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const [allStories, setAllStories] = useState<Story[]>([]);
   const [storyIndexReady, setStoryIndexReady] = useState(false);
   const [storyIndexError, setStoryIndexError] = useState('');
+  const [storyIndexSha256, setStoryIndexSha256] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
+  const [proofreadingConfig, setProofreadingConfig] =
+    useState<ProofreadingConfig | null>(null);
+  const [proofreadingConfigLoading, setProofreadingConfigLoading] =
+    useState(false);
+  const [proofreadingNickname, setProofreadingNickname] = useState('');
+  const [proofreadingNote, setProofreadingNote] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [submittingProofreading, setSubmittingProofreading] = useState(false);
+  const [lastSubmissionId, setLastSubmissionId] = useState('');
   const [editedCnLines, setEditedCnLines] = useState<StoryLine[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentMatchIndex, setCurrentMatchIndex] = useState(-1);
@@ -233,8 +259,9 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     }
     const controller = new AbortController();
     loadStoryIndex(controller.signal)
-      .then(({ stories }) => {
+      .then(({ stories, sha256 }) => {
         setAllStories(stories);
+        setStoryIndexSha256(sha256);
       })
       .catch(error => {
         if (error instanceof DOMException && error.name === 'AbortError') return;
@@ -246,6 +273,36 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       });
     return () => controller.abort();
   }, [deferStoryIndexUntilContent, loading]);
+
+  useEffect(() => {
+    if (!isEditMode || isLocal) return;
+    const controller = new AbortController();
+    setProofreadingConfigLoading(true);
+    setTurnstileToken('');
+    void fetch('/api/proofreading/config', {
+      cache: 'no-store',
+      credentials: 'same-origin',
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        const payload = await response.json() as ProofreadingConfig & {
+          error?: string;
+        };
+        if (!response.ok) {
+          throw new Error(payload.error || `HTTP ${response.status}`);
+        }
+        setProofreadingConfig(payload);
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        setProofreadingConfig(null);
+        setEditMessage('无法读取投稿服务配置；仍可下载 TXT 备份。');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setProofreadingConfigLoading(false);
+      });
+    return () => controller.abort();
+  }, [isEditMode, isLocal]);
 
   const currentStory = useMemo(
     () => findStoryByRouteId(allStories, id),
@@ -303,6 +360,9 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     setEditedCnLines([]);
     setIsEditMode(false);
     setEditMessage('');
+    setLastSubmissionId('');
+    setTurnstileToken('');
+    setTurnstileResetKey((value) => value + 1);
     setSearchQuery('');
     setCurrentMatchIndex(-1);
 
@@ -516,6 +576,16 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     }
   };
 
+  const handleTurnstileToken = useCallback((token: string) => {
+    setTurnstileToken(token);
+    if (token) setEditMessage('');
+  }, []);
+
+  const handleTurnstileError = useCallback((message: string) => {
+    setTurnstileToken('');
+    setEditMessage(message);
+  }, []);
+
   const submitToCloud = async () => {
     if (!currentStory) {
       setEditMessage('剧情目录尚未确认当前编号，暂不能在线提交。');
@@ -525,38 +595,90 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       setEditMessage('请先初始化或上传翻译内容。');
       return;
     }
-    const content = editedCnLines.map(serializeStoryLine).join('\n');
+    if (!proofreadingConfig?.submissions_enabled) {
+      setEditMessage('投稿服务尚未启用；请先下载当前进度作为备份。');
+      return;
+    }
+    if (!storyIndexSha256 || !currentStory.source_identity) {
+      setEditMessage('剧情版本信息尚未准备完成，请稍后重试。');
+      return;
+    }
+    if (!turnstileToken) {
+      setEditMessage('请先完成人机验证。');
+      return;
+    }
+
+    const content = normalizeProofreadingText(
+      editedCnLines.map(serializeStoryLine).join('\n'),
+    );
     if (content.trim().length < 10) {
       setEditMessage('内容过短，请编辑后再提交。');
       return;
     }
 
+    setSubmittingProofreading(true);
+    setLastSubmissionId('');
     try {
+      const [baseSha256, baseContentSha256] = await Promise.all([
+        sha256Text(cnSource?.raw ?? ''),
+        sha256Text(normalizeProofreadingText(
+          cnLines.map(serializeStoryLine).join('\n'),
+        )),
+      ]);
       const response = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           story_id: currentStory.id,
           content,
-          author: 'Anonymous',
+          nickname: proofreadingNickname,
+          note: proofreadingNote,
+          base_sha256: baseSha256,
+          base_content_sha256: baseContentSha256,
+          catalog_sha256: storyIndexSha256,
+          source_path_cn: currentStory.path_cn || '',
+          source_path_jp: currentStory.path_jp || '',
+          source_identity: currentStory.source_identity,
+          turnstile_token: turnstileToken,
         }),
       });
       const responseText = await response.text();
-      let data: { success?: boolean; key?: string; error?: string } = {};
+      let data: {
+        success?: boolean;
+        id?: string;
+        receipt?: string;
+        status?: string;
+        error?: string;
+      } = {};
       try {
         data = JSON.parse(responseText) as typeof data;
       } catch {
-        // The generic message below intentionally avoids exposing server internals.
+        // Keep a generic error without exposing server internals.
       }
-      if (!response.ok || !data.success) {
+      if (!response.ok || !data.success || !data.id || !data.receipt) {
         throw new Error(data.error || `提交服务暂不可用（HTTP ${response.status}）`);
       }
-      setEditMessage(`提交成功，审核编号：${data.key || '已接收'}`);
+      const nickname = proofreadingNickname.trim() || '匿名校对者';
+      saveProofreadingReceipt({
+        id: data.id,
+        receipt: data.receipt,
+        storyId: currentStory.id,
+        nickname,
+        submittedAt: new Date().toISOString(),
+      });
+      setLastSubmissionId(data.id);
+      setEditMessage(`提交成功，审核编号：${data.id}`);
+      setTurnstileToken('');
+      setTurnstileResetKey((value) => value + 1);
     } catch (error) {
       setEditMessage(
         `${error instanceof Error ? error.message : '在线提交失败'}；已自动下载备份文件。`,
       );
       downloadContent(content, `${currentStory.id}_submit.txt`, true);
+      setTurnstileToken('');
+      setTurnstileResetKey((value) => value + 1);
+    } finally {
+      setSubmittingProofreading(false);
     }
   };
 
@@ -780,16 +902,85 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   <button type="button" onClick={downloadTranslation} className="ml-auto rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow hover:bg-blue-700">
                     下载当前进度
                   </button>
-                  <button type="button" onClick={() => void submitToCloud()} className="rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-bold text-white shadow hover:bg-purple-700">
-                    提交审核
-                  </button>
                 </div>
+
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  <label className="text-xs font-bold text-emerald-900">
+                    昵称（可选）
+                    <input
+                      type="text"
+                      maxLength={40}
+                      value={proofreadingNickname}
+                      onChange={(event) => setProofreadingNickname(event.target.value)}
+                      placeholder="匿名校对者"
+                      className="mt-1 w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 font-normal outline-none focus:border-emerald-500"
+                    />
+                  </label>
+                  <label className="text-xs font-bold text-emerald-900">
+                    修改说明（可选）
+                    <textarea
+                      maxLength={1_000}
+                      rows={2}
+                      value={proofreadingNote}
+                      onChange={(event) => setProofreadingNote(event.target.value)}
+                      placeholder="例如：修正角色口吻、专有名词或错字"
+                      className="mt-1 w-full resize-y rounded-lg border border-emerald-200 bg-white px-3 py-2 font-normal outline-none focus:border-emerald-500"
+                    />
+                  </label>
+                </div>
+
+                <div className="mt-3 rounded-lg border border-emerald-200 bg-white/70 p-3">
+                  {proofreadingConfigLoading ? (
+                    <p className="text-xs text-emerald-800">正在连接投稿服务…</p>
+                  ) : proofreadingConfig?.submissions_enabled && proofreadingConfig.turnstile_site_key ? (
+                    <>
+                      {proofreadingConfig.turnstile_test_mode && (
+                        <p className="mb-2 rounded bg-amber-50 px-2 py-1 text-[10px] text-amber-800">
+                          当前检查站使用 Cloudflare 测试验证密钥，仅用于功能验收；正式开放前必须换成真实 Turnstile 密钥。
+                        </p>
+                      )}
+                      <TurnstileWidget
+                        siteKey={proofreadingConfig.turnstile_site_key}
+                        theme={theme}
+                        resetKey={turnstileResetKey}
+                        onToken={handleTurnstileToken}
+                        onError={handleTurnstileError}
+                      />
+                      <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                        <p className="text-[10px] text-emerald-700/70">
+                          投稿会记录当前剧情目录哈希和中文源文件哈希；源文本更新后，旧投稿不会被自动覆盖。
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => void submitToCloud()}
+                          disabled={!turnstileToken || submittingProofreading}
+                          className="rounded-lg bg-purple-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          {submittingProofreading ? '正在提交…' : '提交审核'}
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-xs text-amber-800">
+                      投稿服务尚未配置。你仍可下载 TXT，并将文件交给项目维护者。
+                    </p>
+                  )}
+                </div>
+
                 <p className="mt-2 text-[10px] text-emerald-700/70">
                   标题、分支、位置与动作信息会在初始化时保留。请定期下载 TXT 备份。
                 </p>
                 {editMessage && (
                   <p role="status" className="mt-2 rounded bg-white/70 px-2 py-1 text-xs text-emerald-900">
                     {editMessage}
+                    {lastSubmissionId && (
+                      <>
+                        {' '}
+                        <Link href="/proofreading/status" className="font-bold text-blue-700 underline">
+                          查看审核状态
+                        </Link>
+                      </>
+                    )}
                   </p>
                 )}
               </section>

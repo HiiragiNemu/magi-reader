@@ -1,36 +1,39 @@
 
----[Section 010] (Source: 912121-010.json) ---
-焰: 魔女的气息\n是从这附近…
-旁白: 又出现了\n你这偷吃猫
-焰: 佐仓杏子
-旁白: 这座城市是我的地盘\n就让你好好把欠我的还回来吧
-焰: …………
-杏子: 别以为你能逃得掉！！
-杏子: 哈！
-焰: 咕！
-杏子: 飞行武器姑且不论\n看来你不太擅长切砍类的吧！？
-杏子: 好了，这样就结束了
-杏子: 就让你把悲叹之种\n如数归还…
-旁白: 嘟噜噜噜噜噜噜！
-焰: …呵呵
-杏子: 嗯…？
-杏子: 什！？
-焰: ！
-杏子: 提前布置好了炸弹吗…\n可恶！
-焰: …………
-杏子: 给我等等！
-杏子: 就算你想坐着电车逃走…
-焰: 眩，要上了
+--- [Section 010] (Source: 912121-010.json) ---
+@S0	{"kind":"dialogue","speaker":"焰","text":"魔女的气息\\n是从这附近…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"又出现了\\n你这偷吃猫","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"佐仓杏子","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"这座城市是我的地盘\\n就让你好好把欠我的还回来吧","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"…………","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"别以为你能逃得掉！！","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"哈！","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"咕！","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"飞行武器姑且不论\\n看来你不太擅长切砍类的吧！？","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"好了，这样就结束了","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"就让你把悲叹之种\\n如数归还…","command":"textAvRight","position":"right"}
+@S0	{"kind":"narration","speaker":"旁白","text":"嘟噜噜噜噜噜噜！","command":"narration"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"…呵呵","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"嗯…？","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"什！？","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"！","command":"textAvLeft","position":"left"}
+@S0	{"kind":"dialogue","speaker":"杏子","text":"提前布置好了炸弹吗…\\n可恶！","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"…………","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"杏子的声音","text":"给我等等！","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"杏子的声音","text":"就算你想坐着电车逃走…","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"眩，要上了","command":"textAvCenter","position":"center"}
 
----[Section 015] (Source: 912121-015.json) ---
-旁白: 是！
-旁白: 咔嚓！
-旁白: 咔嚓！
-旁白: 咔——嚓！
-旁白: 你的动作…\n我已经全部看穿了！！
-旁白: 这样就…
-旁白: 全部结束了！！
-眩: 成功了…太好了…\n真的成功了…
-焰: 是啊
-焰: 做得很好，眩
-眩: 是…是！！
+--- [Section 015] (Source: 912121-015.json) ---
+@S0	{"kind":"dialogue","speaker":"眩","text":"是！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"fnarration","speaker":"眩","text":"（作为诱饵的晓美同学\\n停住时间，坐着电车逃走）","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"眩","text":"（趁此期间，我则独自…）","command":"progressFnarration"}
+@S0	{"kind":"fnarration","speaker":"眩","text":"（收拾掉这个魔女！）","command":"progressFnarration"}
+@S0	{"kind":"dialogue","speaker":"眩","text":"咔嚓！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"眩","text":"咔嚓！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"眩","text":"咔——嚓！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"眩","text":"你的动作…\\n我已经全部看穿了！！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"眩","text":"这样就…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"眩","text":"全部结束了！！","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"眩","text":"成功了…太好了…\\n真的成功了…","command":"textAvCenter","position":"center"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"是啊","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"焰","text":"做得很好，眩","command":"textAvRight","position":"right"}
+@S0	{"kind":"dialogue","speaker":"眩","text":"是…是！！","command":"textAvLeft","position":"left"}

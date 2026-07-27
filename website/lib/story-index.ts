@@ -12,6 +12,7 @@ export type StoryIndexEntry = {
   title?: string;
   sections?: string[];
   game?: string;
+  source_identity?: string;
   legacy_ids?: string[];
 };
 
@@ -257,10 +258,23 @@ const parseStory = (value: unknown, index: number): StoryIndexEntry => {
     'path_jp',
     'title',
     'game',
+    'source_identity',
   ] as const) {
     if (!isOptionalString(story[field])) {
       throw new Error(`${story.id}: ${field} 必须是字符串`);
     }
+  }
+  if (
+    typeof story.source_identity === 'string' &&
+    (
+      story.source_identity.length === 0 ||
+      story.source_identity.length > 1_024 ||
+      /[\u0000-\u001f\u007f]/u.test(story.source_identity) ||
+      story.source_identity.includes('\\') ||
+      story.source_identity.split('/').some((part) => part === '.' || part === '..')
+    )
+  ) {
+    throw new Error(`${story.id}: source_identity 无效`);
   }
   if (
     story.sections !== undefined &&

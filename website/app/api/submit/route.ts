@@ -1,42 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCloudflareContext } from '@opennextjs/cloudflare';
-import {
-  getAdminAccessConfiguration,
-  getRateLimitIdentity,
-} from '@/lib/submission-security';
+
+import { getRateLimitIdentity } from '@/lib/submission-security';
 import { createKnownStoryIds } from '@/lib/story-id-membership';
+import {
+  PROOFREADING_SCHEMA_VERSION,
+  isSafeSourceIdentity,
+  isSafeStoryWebPath,
+  isSha256,
+  normalizeProofreadingText,
+  sanitizeMultiline,
+  sanitizeSingleLine,
+  sha256Text,
+  type ProofreadingPublicStatus,
+  type ProofreadingSubmission,
+} from '@/lib/proofreading';
+import {
+  createProofreadingSubmission,
+  getProofreadingSubmission,
+  proofreadingIndexKey,
+  transitionProofreadingSubmission,
+} from '@/lib/proofreading-store';
+import { verifyTurnstileToken } from '@/lib/turnstile-server';
+import { readProofreadingPullRequestState } from '@/lib/github-proofreading';
 import storyIds from '../../../public/data/story_ids.generated.json';
 
-const SUBMISSION_PREFIX = 'submit_';
-const RATE_LIMIT_PREFIX = 'ratelimit_submit_';
+const RATE_LIMIT_PREFIX = 'proofreading:ratelimit:';
 const RATE_LIMIT_WINDOW_SECONDS = 10 * 60;
 const RATE_LIMIT_MAX_SUBMISSIONS = 5;
 const MAX_REQUEST_BYTES = 2 * 1024 * 1024;
 const MAX_STORY_ID_LENGTH = 256;
 const MAX_CONTENT_LENGTH = 500_000;
 const MIN_CONTENT_LENGTH = 10;
-const DEFAULT_ADMIN_LIST_LIMIT = 10;
-const MAX_ADMIN_LIST_LIMIT = 10;
-const MAX_ADMIN_RESPONSE_BYTES = 8 * 1024 * 1024;
+const MAX_NICKNAME_LENGTH = 40;
+const MAX_NOTE_LENGTH = 1_000;
+const MAX_SOURCE_IDENTITY_LENGTH = 1_024;
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' };
 const KNOWN_STORY_IDS = createKnownStoryIds(storyIds);
 
-type ValidSubmission = {
-  storyId: string;
-  content: string;
-  author: string;
-};
-
-type ValidationResult =
-  | { ok: true; submission: ValidSubmission }
-  | { ok: false; error: string };
-
-type BodyResult =
-  | { ok: true; value: unknown }
-  | { ok: false; status: 400 | 413; error: string };
-
-function errorResponse(error: string, status: number, headers?: HeadersInit) {
-  return NextResponse.json(
+const errorResponse = (error: string, status: number, headers?: HeadersInit) =>
+  NextResponse.json(
     { error },
     {
       status,
@@ -46,13 +49,15 @@ function errorResponse(error: string, status: number, headers?: HeadersInit) {
       },
     },
   );
-}
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
 
-async function readBoundedJson(request: NextRequest): Promise<BodyResult> {
+type BodyResult =
+  | { ok: true; value: unknown }
+  | { ok: false; status: 400 | 413; error: string };
+
+const readBoundedJson = async (request: NextRequest): Promise<BodyResult> => {
   const declaredLength = request.headers.get('content-length');
   if (declaredLength) {
     const parsedLength = Number(declaredLength);
@@ -60,7 +65,6 @@ async function readBoundedJson(request: NextRequest): Promise<BodyResult> {
       return { ok: false, status: 413, error: '提交内容过大' };
     }
   }
-
   if (!request.body) {
     return { ok: false, status: 400, error: '请求内容为空' };
   }
@@ -68,11 +72,9 @@ async function readBoundedJson(request: NextRequest): Promise<BodyResult> {
   const reader = request.body.getReader();
   const chunks: Uint8Array[] = [];
   let totalBytes = 0;
-
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-
     totalBytes += value.byteLength;
     if (totalBytes > MAX_REQUEST_BYTES) {
       await reader.cancel();
@@ -87,41 +89,62 @@ async function readBoundedJson(request: NextRequest): Promise<BodyResult> {
     bodyBytes.set(chunk, offset);
     offset += chunk.byteLength;
   }
-
   try {
     const text = new TextDecoder('utf-8', { fatal: true }).decode(bodyBytes);
     return { ok: true, value: JSON.parse(text) as unknown };
   } catch {
     return { ok: false, status: 400, error: '请求必须是有效的 JSON' };
   }
-}
+};
 
-function validateSubmission(value: unknown): ValidationResult {
+type ValidSubmission = {
+  storyId: string;
+  content: string;
+  nickname: string;
+  note: string;
+  baseSha256: string;
+  baseContentSha256: string;
+  catalogSha256: string;
+  sourcePathCn: string;
+  sourcePathJp: string;
+  sourceIdentity: string;
+  turnstileToken: string;
+};
+
+type ValidationResult =
+  | { ok: true; submission: ValidSubmission }
+  | { ok: false; error: string };
+
+const validateSubmission = (value: unknown): ValidationResult => {
   if (!isRecord(value)) {
     return { ok: false, error: '请求内容格式错误' };
   }
-
-  const allowedFields = new Set(['story_id', 'content', 'author']);
+  const allowedFields = new Set([
+    'story_id',
+    'content',
+    'nickname',
+    'note',
+    'base_sha256',
+    'base_content_sha256',
+    'catalog_sha256',
+    'source_path_cn',
+    'source_path_jp',
+    'source_identity',
+    'turnstile_token',
+  ]);
   if (Object.keys(value).some((key) => !allowedFields.has(key))) {
     return { ok: false, error: '请求包含不支持的字段' };
   }
-
   if (typeof value.story_id !== 'string' || typeof value.content !== 'string') {
     return { ok: false, error: 'story_id 和 content 必须是字符串' };
   }
-  if (
-    value.author !== undefined &&
-    (
-      typeof value.author !== 'string' ||
-      value.author.trim() !== 'Anonymous'
-    )
-  ) {
-    return { ok: false, error: '当前投稿仅支持匿名身份' };
-  }
 
   const storyId = value.story_id.trim();
-  const content = value.content;
-  const author = 'Anonymous';
+  const content = normalizeProofreadingText(value.content);
+  const nickname = sanitizeSingleLine(value.nickname, MAX_NICKNAME_LENGTH) || '匿名校对者';
+  const note = sanitizeMultiline(value.note, MAX_NOTE_LENGTH);
+  const turnstileToken =
+    typeof value.turnstile_token === 'string' ? value.turnstile_token.trim() : '';
 
   if (
     storyId.length === 0 ||
@@ -132,10 +155,28 @@ function validateSubmission(value: unknown): ValidationResult {
   }
   if (
     content.length > MAX_CONTENT_LENGTH ||
-    content.trim().length < MIN_CONTENT_LENGTH ||
-    content.includes('\u0000')
+    content.trim().length < MIN_CONTENT_LENGTH
   ) {
     return { ok: false, error: 'content 长度或格式不合法' };
+  }
+  if (
+    !isSha256(value.base_sha256) ||
+    !isSha256(value.base_content_sha256) ||
+    !isSha256(value.catalog_sha256)
+  ) {
+    return { ok: false, error: '源文本或剧情目录哈希无效' };
+  }
+  if (!isSafeStoryWebPath(value.source_path_cn, true)) {
+    return { ok: false, error: '中文源路径无效' };
+  }
+  if (!isSafeStoryWebPath(value.source_path_jp, true)) {
+    return { ok: false, error: '日文源路径无效' };
+  }
+  if (
+    !isSafeSourceIdentity(value.source_identity) ||
+    value.source_identity.length > MAX_SOURCE_IDENTITY_LENGTH
+  ) {
+    return { ok: false, error: '剧情来源身份无效' };
   }
 
   return {
@@ -143,34 +184,36 @@ function validateSubmission(value: unknown): ValidationResult {
     submission: {
       storyId,
       content,
-      author,
+      nickname,
+      note,
+      baseSha256: value.base_sha256.toLowerCase(),
+      baseContentSha256: value.base_content_sha256.toLowerCase(),
+      catalogSha256: value.catalog_sha256.toLowerCase(),
+      sourcePathCn: value.source_path_cn,
+      sourcePathJp: value.source_path_jp,
+      sourceIdentity: value.source_identity,
+      turnstileToken,
     },
   };
-}
+};
 
-async function sha256Hex(value: string): Promise<string> {
-  const digest = await crypto.subtle.digest(
-    'SHA-256',
-    new TextEncoder().encode(value),
-  );
-  return Array.from(new Uint8Array(digest), (byte) =>
-    byte.toString(16).padStart(2, '0'),
-  ).join('');
-}
+const getRuntimeEnv = async (): Promise<CloudflareEnv> => {
+  const { env } = await getCloudflareContext({ async: true });
+  return env;
+};
 
-async function consumeRateLimit(
+const consumeRateLimit = async (
   kv: SubmissionKvNamespace,
   request: NextRequest,
-): Promise<{ allowed: true } | { allowed: false; retryAfter: number }> {
-  const now = Math.floor(Date.now() / 1000);
+): Promise<{ allowed: true } | { allowed: false; retryAfter: number }> => {
+  const now = Math.floor(Date.now() / 1_000);
   const windowStart =
     Math.floor(now / RATE_LIMIT_WINDOW_SECONDS) * RATE_LIMIT_WINDOW_SECONDS;
   const clientIdentity = getRateLimitIdentity(request.headers);
-  const clientHash = (await sha256Hex(clientIdentity)).slice(0, 32);
-  const key = `${RATE_LIMIT_PREFIX}${clientHash}_${windowStart}`;
+  const clientHash = (await sha256Text(clientIdentity)).slice(0, 32);
+  const key = `${RATE_LIMIT_PREFIX}${clientHash}:${windowStart}`;
   const storedCount = Number.parseInt((await kv.get(key)) || '0', 10);
   const count = Number.isFinite(storedCount) ? storedCount : 0;
-
   if (count >= RATE_LIMIT_MAX_SUBMISSIONS) {
     return {
       allowed: false,
@@ -180,41 +223,11 @@ async function consumeRateLimit(
       ),
     };
   }
-
   await kv.put(key, String(count + 1), {
     expirationTtl: RATE_LIMIT_WINDOW_SECONDS * 2,
   });
   return { allowed: true };
-}
-
-async function secureTokenEquals(
-  providedToken: string,
-  expectedToken: string,
-): Promise<boolean> {
-  const [providedHash, expectedHash] = await Promise.all([
-    crypto.subtle.digest(
-      'SHA-256',
-      new TextEncoder().encode(providedToken),
-    ),
-    crypto.subtle.digest(
-      'SHA-256',
-      new TextEncoder().encode(expectedToken),
-    ),
-  ]);
-  const providedBytes = new Uint8Array(providedHash);
-  const expectedBytes = new Uint8Array(expectedHash);
-  let difference = providedBytes.length ^ expectedBytes.length;
-
-  for (let index = 0; index < providedBytes.length; index += 1) {
-    difference |= providedBytes[index] ^ (expectedBytes[index] ?? 0);
-  }
-  return difference === 0;
-}
-
-async function getRuntimeEnv(): Promise<CloudflareEnv> {
-  const { env } = await getCloudflareContext({ async: true });
-  return env;
-}
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -229,26 +242,28 @@ export async function POST(request: NextRequest) {
 
     const env = await getRuntimeEnv();
     const kv = env.SUBMISSIONS_KV;
-    if (!kv) {
-      return errorResponse('投稿服务暂不可用', 503);
-    }
+    if (!kv) return errorResponse('投稿服务暂不可用', 503);
 
     const bodyResult = await readBoundedJson(request);
     if (!bodyResult.ok) {
       return errorResponse(bodyResult.error, bodyResult.status);
     }
-
     const validation = validateSubmission(bodyResult.value);
-    if (!validation.ok) {
-      return errorResponse(validation.error, 400);
-    }
+    if (!validation.ok) return errorResponse(validation.error, 400);
     if (!KNOWN_STORY_IDS.has(validation.submission.storyId)) {
       return errorResponse('story_id 不在当前剧情目录中', 400);
     }
 
-    // Only a structurally valid submission consumes the user's quota. This
-    // prevents malformed requests from locking out other users behind a
-    // shared IP address.
+    const remoteIp = request.headers.get('cf-connecting-ip')?.trim();
+    const turnstile = await verifyTurnstileToken({
+      token: validation.submission.turnstileToken,
+      secret: env.TURNSTILE_SECRET_KEY,
+      remoteIp: remoteIp || undefined,
+      expectedAction: 'proofreading-submit',
+      allowedHostnames: env.TURNSTILE_ALLOWED_HOSTNAMES,
+    });
+    if (!turnstile.ok) return errorResponse(turnstile.error, turnstile.status);
+
     const rateLimit = await consumeRateLimit(kv, request);
     if (!rateLimit.allowed) {
       return errorResponse('提交过于频繁，请稍后再试', 429, {
@@ -256,101 +271,116 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const submittedAt = new Date().toISOString();
-    const key = `${SUBMISSION_PREFIX}${Date.now()}_${crypto.randomUUID()}`;
-    await kv.put(
-      key,
-      JSON.stringify({
-        story_id: validation.submission.storyId,
-        content: validation.submission.content,
-        author: validation.submission.author,
-        submitted_at: submittedAt,
-      }),
-    );
+    const contentSha256 = await sha256Text(validation.submission.content);
+    if (contentSha256 === validation.submission.baseContentSha256) {
+      return errorResponse('修订内容与当前中文文本没有变化', 400);
+    }
+
+    const now = new Date().toISOString();
+    const id = `ps_${Date.now().toString(36)}_${crypto.randomUUID()}`;
+    const receipt = `${crypto.randomUUID()}.${crypto.randomUUID()}`;
+    const receiptSha256 = await sha256Text(receipt);
+    const status = 'pending' as const;
+    const record: ProofreadingSubmission = {
+      schema_version: PROOFREADING_SCHEMA_VERSION,
+      id,
+      story_id: validation.submission.storyId,
+      nickname: validation.submission.nickname,
+      note: validation.submission.note,
+      content: validation.submission.content,
+      content_sha256: contentSha256,
+      base_sha256: validation.submission.baseSha256,
+      base_content_sha256: validation.submission.baseContentSha256,
+      catalog_sha256: validation.submission.catalogSha256,
+      source_path_cn: validation.submission.sourcePathCn,
+      source_path_jp: validation.submission.sourcePathJp,
+      source_identity: validation.submission.sourceIdentity,
+      source_revision: env.PROOFREADING_SOURCE_COMMIT?.trim() || 'unknown',
+      target_branch: env.PROOFREADING_TARGET_BRANCH?.trim() || 'EXEDRA-TEST',
+      submitted_at: now,
+      updated_at: now,
+      status,
+      receipt_sha256: receiptSha256,
+      index_key: proofreadingIndexKey(status, now, id),
+    };
+
+    try {
+      await createProofreadingSubmission(kv, record);
+    } catch (error) {
+      if (error instanceof Error && error.message === 'DUPLICATE_SUBMISSION') {
+        return errorResponse('相同修订已经提交，请勿重复投稿', 409);
+      }
+      throw error;
+    }
 
     return NextResponse.json(
-      { success: true, key },
+      {
+        success: true,
+        id,
+        receipt,
+        status,
+      },
       { headers: NO_STORE_HEADERS },
     );
   } catch (error: unknown) {
-    console.error('Failed to store submission', error);
+    console.error('Failed to store proofreading submission', error);
     return errorResponse('服务器暂时无法处理提交', 500);
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
+    const id = request.nextUrl.searchParams.get('id')?.trim() || '';
+    const receipt = request.nextUrl.searchParams.get('receipt')?.trim() || '';
+    if (!/^ps_[A-Za-z0-9_-]{10,128}$/u.test(id) || receipt.length > 256) {
+      return errorResponse('审核编号或回执无效', 400);
+    }
     const env = await getRuntimeEnv();
     const kv = env.SUBMISSIONS_KV;
-    const adminConfiguration = getAdminAccessConfiguration(
-      Boolean(kv),
-      env.SUBMISSIONS_ADMIN_TOKEN,
-    );
-    if (!adminConfiguration.ok) {
-      return errorResponse('管理员接口不可用', adminConfiguration.status);
+    if (!kv) return errorResponse('投稿服务暂不可用', 503);
+    let record = await getProofreadingSubmission(kv, id);
+    if (!record || await sha256Text(receipt) !== record.receipt_sha256) {
+      return errorResponse('审核编号或回执无效', 404);
     }
-    if (!kv) return errorResponse('管理员接口不可用', 503);
-    const adminToken = adminConfiguration.token;
-
-    const authorization = request.headers.get('authorization');
-    const bearerMatch = authorization?.match(/^Bearer\s+(.+)$/iu);
-    const providedToken = bearerMatch?.[1]?.trim();
+    const githubToken = env.PROOFREADING_GITHUB_TOKEN?.trim();
+    const repository = env.PROOFREADING_GITHUB_REPO?.trim();
     if (
-      !providedToken ||
-      !(await secureTokenEquals(providedToken, adminToken))
+      record.status === 'pr_created' &&
+      record.pull_request &&
+      githubToken &&
+      repository
     ) {
-      return errorResponse('未授权', 401, {
-        'WWW-Authenticate': 'Bearer realm="submissions-admin"',
-      });
-    }
-
-    const url = new URL(request.url);
-    const requestedLimit = Number.parseInt(
-      url.searchParams.get('limit') || String(DEFAULT_ADMIN_LIST_LIMIT),
-      10,
-    );
-    const limit = Number.isFinite(requestedLimit)
-      ? Math.min(MAX_ADMIN_LIST_LIMIT, Math.max(1, requestedLimit))
-      : DEFAULT_ADMIN_LIST_LIMIT;
-    const cursor = url.searchParams.get('cursor') || undefined;
-    const listed = await kv.list({
-      prefix: SUBMISSION_PREFIX,
-      limit,
-      cursor,
-    });
-
-    const submissions: Record<string, unknown>[] = [];
-    let responseBytes = 0;
-    for (const { name } of listed.keys) {
-      const value = await kv.get(name);
-      if (!value) continue;
-      responseBytes += new TextEncoder().encode(value).byteLength;
-      if (responseBytes > MAX_ADMIN_RESPONSE_BYTES) {
-        return errorResponse('返回内容过大，请减小 limit 后重试', 413);
-      }
-
       try {
-        const parsed = JSON.parse(value) as unknown;
-        submissions.push(
-          isRecord(parsed)
-            ? { ...parsed, key: name }
-            : { key: name, invalid: true },
-        );
-      } catch {
-        submissions.push({ key: name, invalid: true });
+        const remote = await readProofreadingPullRequestState({
+          token: githubToken,
+          repository,
+          pullRequest: record.pull_request,
+        });
+        if (remote.status !== 'pr_created') {
+          record = await transitionProofreadingSubmission(
+            kv,
+            record,
+            remote.status,
+            { pull_request: remote.pullRequest },
+          );
+        }
+      } catch (error) {
+        console.error('Failed to synchronize public proofreading PR status', error);
       }
     }
-
-    return NextResponse.json(
-      {
-        submissions,
-        cursor: listed.list_complete ? null : listed.cursor,
-        list_complete: listed.list_complete,
-      },
-      { headers: NO_STORE_HEADERS },
-    );
+    const result: ProofreadingPublicStatus = {
+      id: record.id,
+      story_id: record.story_id,
+      nickname: record.nickname,
+      submitted_at: record.submitted_at,
+      updated_at: record.updated_at,
+      status: record.status,
+      public_message: record.review?.public_message || '',
+      pull_request: record.pull_request,
+    };
+    return NextResponse.json(result, { headers: NO_STORE_HEADERS });
   } catch (error: unknown) {
-    console.error('Failed to list submissions', error);
+    console.error('Failed to read proofreading status', error);
     return errorResponse('服务器暂时无法处理查询', 500);
   }
 }

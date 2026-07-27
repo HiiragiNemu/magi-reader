@@ -96,3 +96,7 @@ npm run deploy:worker
 如果尚未替换 `SUBMISSIONS_KV` 的全零占位 ID，部署会在本地校验阶段停止，不会向 Cloudflare 提交。本站当前不使用 ISR，因此没有声明不会生效的旧缓存绑定；若将来启用 ISR，应同时在 `open-next.config.ts` 中配置 OpenNext 缓存适配器及其对应绑定。
 
 GitHub Actions 只在推送到 `main` 时运行生产部署；`EXEDRA-TEST` 等测试分支不会触发。仓库需要配置 `CF_API_TOKEN`、`CF_ACCOUNT_ID` 和 `SUBMISSIONS_KV_NAMESPACE_ID` 三个 Actions secrets。流水线只把 namespace ID 写入临时部署配置，不改动或输出仓库模板；管理员 token 继续使用 Cloudflare Worker secret，不经过 Actions 构建。
+
+## 社区中文校对
+
+社区校对系统的审核流程、Cloudflare KV、Turnstile、GitHub PR 自动化和权限配置见仓库根目录 [`COMMUNITY_PROOFREADING.md`](../COMMUNITY_PROOFREADING.md)。
