@@ -71,6 +71,8 @@ def changed_translation_sources(
     translation_commit: str,
 ) -> tuple[set[str], set[str]]:
     output = run_git(
+        "-c",
+        "core.quotePath=false",
         "diff",
         "--name-status",
         "--find-renames",
