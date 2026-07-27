@@ -3,6 +3,7 @@ import { getCloudflareContext } from '@opennextjs/cloudflare';
 
 import { listCachedExedraLocalizations } from '@/lib/exedra-localization';
 import {
+  MACHINE_TRANSLATION_MANIFESTS,
   machineTranslationSystemSummary,
   parseMachineTranslationReviewState,
 } from '@/lib/machine-translation-review';
@@ -37,19 +38,31 @@ export async function GET() {
     const cached = env.SUBMISSIONS_KV
       ? await listCachedExedraLocalizations(env.SUBMISSIONS_KV)
       : [];
-    const machineIds = cached
+    const staticIds = MACHINE_TRANSLATION_MANIFESTS.exedra.entries
+      .map(entry => entry.story_id);
+    const cachedMachineIds = cached
       .filter(record => record.provenance === 'machine_translation')
-      .map(record => record.story_id)
-      .sort();
+      .map(record => record.story_id);
+    const machineIds = [...new Set([...staticIds, ...cachedMachineIds])].sort();
     const verifiedIds = await exedraReviewStates(env.SUBMISSIONS_KV, new Set(machineIds));
+    const staticCounts = MACHINE_TRANSLATION_MANIFESTS.exedra.provenance_counts ?? {};
+    const persistedIds = new Set(
+      MACHINE_TRANSLATION_MANIFESTS.exedra.entries.map(entry => entry.story_id),
+    );
+    const uncopiedCache = cached.filter(record => !persistedIds.has(record.story_id));
     const provenanceCounts = {
-      official_tw_human: cached.filter(record => record.provenance === 'official_tw_human').length,
-      exedra_wiki_human: cached.filter(record => record.provenance === 'exedra_wiki_human').length,
+      local_human: Number(staticCounts.local_human ?? 0),
+      official_tw_human:
+        Number(staticCounts.official_tw_human ?? 0) +
+        uncopiedCache.filter(record => record.provenance === 'official_tw_human').length,
+      exedra_wiki_human:
+        Number(staticCounts.exedra_wiki_human ?? 0) +
+        uncopiedCache.filter(record => record.provenance === 'exedra_wiki_human').length,
       machine_translation: machineIds.length,
     };
     const exedra = {
       system: 'exedra' as const,
-      definition: 'exedra_cached_provenance_machine_translation_only',
+      definition: 'exedra_persisted_or_cached_provenance_machine_translation_only',
       total: machineIds.length,
       verified: verifiedIds.length,
       remaining: Math.max(0, machineIds.length - verifiedIds.length),
