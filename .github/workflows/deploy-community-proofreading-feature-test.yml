@@ -1,0 +1,255 @@
+name: Deploy Community Proofreading Feature Test
+
+on:
+  pull_request:
+    branches:
+      - tooling/community-proofreading-deploy-base
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-community-proofreading-feature-test
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/community-proofreading-deploy-run' &&
+      github.event.pull_request.base.ref == 'tooling/community-proofreading-deploy-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      TEST_WORKER_NAME: magireader-exedra-cn-test
+      TEST_WORKER_HOSTNAME: magireader-exedra-cn-test.crynetsystemscell.workers.dev
+      PROOFREADING_KV_TITLE: magi-submissions-exedra-cn-test
+
+    steps:
+      - name: Fetch feature branch quietly
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init --quiet .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git -c protocol.version=2 fetch --quiet --depth=1 origin feature/community-proofreading-workflow
+          git checkout --quiet FETCH_HEAD
+          echo "SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Generate complete deployable story data
+        run: python generate_story_index.py
+
+      - name: Install website dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Generate matching search manifest without R2 upload
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$RUNNER_TEMP/search_content.json"
+          python build_search_index_v6.py --output "$payload"
+          python build_search_index_v6.py --output "$payload" --validate-only
+
+      - name: Build Cloudflare Worker output
+        working-directory: website
+        run: npm run build:worker
+
+      - name: Discover or create dedicated proofreading KV
+        id: kv
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: >-
+          python scripts/proofreading_queue.py namespace
+          --title "$PROOFREADING_KV_TITLE"
+          --create
+
+      - name: Prepare isolated Worker configurations
+        working-directory: website
+        env:
+          KV_NAMESPACE_ID: ${{ steps.kv.outputs.namespace_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > .wrangler-proofreading-bootstrap.jsonc <<EOF
+          {
+            "name": "$TEST_WORKER_NAME",
+            "main": ".wrangler-proofreading-bootstrap.mjs",
+            "compatibility_date": "2026-02-14",
+            "workers_dev": true
+          }
+          EOF
+          cat > .wrangler-proofreading-bootstrap.mjs <<'EOF'
+          export default { fetch() { return new Response('Preparing proofreading deployment.'); } };
+          EOF
+          cat > .wrangler-proofreading-test.jsonc <<EOF
+          {
+            "\$schema": "node_modules/wrangler/config-schema.json",
+            "name": "$TEST_WORKER_NAME",
+            "main": ".open-next/worker.js",
+            "compatibility_date": "2026-02-14",
+            "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+            "workers_dev": true,
+            "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+            "services": [
+              { "binding": "WORKER_SELF_REFERENCE", "service": "$TEST_WORKER_NAME" }
+            ],
+            "kv_namespaces": [
+              { "binding": "SUBMISSIONS_KV", "id": "$KV_NAMESPACE_ID" }
+            ],
+            "vars": {
+              "TURNSTILE_SITE_KEY": "1x00000000000000000000AA",
+              "TURNSTILE_ALLOWED_HOSTNAMES": "",
+              "PROOFREADING_TARGET_BRANCH": "EXEDRA-TEST",
+              "PROOFREADING_SOURCE_COMMIT": "$SOURCE_COMMIT",
+              "PROOFREADING_GITHUB_REPO": "${{ github.repository }}",
+              "PROOFREADING_ALLOW_GITHUB_ADMIN": "true",
+              "PROOFREADING_TURNSTILE_TEST_MODE": "true"
+            }
+          }
+          EOF
+
+      - name: Create isolated Worker service shell
+        working-directory: website
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: npx wrangler deploy --config .wrangler-proofreading-bootstrap.jsonc
+
+      - name: Configure Turnstile test secret
+        working-directory: website
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        shell: bash
+        run: printf '%s' '1x0000000000000000000000000000000AA' | npx wrangler secret put TURNSTILE_SECRET_KEY --config .wrangler-proofreading-test.jsonc
+
+      - name: Deploy isolated proofreading Worker
+        working-directory: website
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: npx opennextjs-cloudflare deploy --config .wrangler-proofreading-test.jsonc
+
+      - name: Smoke-test configuration, submit, status and cleanup
+        env:
+          SITE_URL: https://${{ env.TEST_WORKER_HOSTNAME }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          KV_NAMESPACE_ID: ${{ steps.kv.outputs.namespace_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 24); do
+            if curl --fail --silent --show-error "$SITE_URL/" -o "$RUNNER_TEMP/home.html"; then break; fi
+            test "$attempt" -lt 24
+            sleep 5
+          done
+          curl --fail --silent --show-error "$SITE_URL/story_index.json" -o "$RUNNER_TEMP/story-index.json"
+          curl --fail --silent --show-error "$SITE_URL/api/proofreading/config" -o "$RUNNER_TEMP/config.json"
+
+          python3 - "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/submission.json" "$RUNNER_TEMP/selected.json" "$SITE_URL" <<'PY'
+          import hashlib, json, sys, urllib.parse, urllib.request
+          from pathlib import Path
+
+          index_path, body_path, selected_path, site_url = sys.argv[1:]
+          raw_index = Path(index_path).read_bytes()
+          stories = json.loads(raw_index)
+          story = next(
+              value for value in stories
+              if isinstance(value, dict)
+              and value.get('path_cn')
+              and value.get('source_identity')
+          )
+          cn_url = site_url + urllib.parse.quote(story['path_cn'], safe='/')
+          with urllib.request.urlopen(cn_url, timeout=60) as response:
+              raw_cn = response.read().decode('utf-8')
+          normalize = lambda value: value.lstrip('\ufeff').replace('\r\n', '\n').replace('\r', '\n').replace('\x00', '')
+          base = normalize(raw_cn)
+          content = base.rstrip() + '\n旁白: 自动化测试投稿，请忽略。\n'
+          digest = lambda value: hashlib.sha256(normalize(value).encode('utf-8')).hexdigest()
+          payload = {
+              'story_id': story['id'],
+              'content': content,
+              'nickname': '自动化测试',
+              'note': '部署冒烟测试，验证后自动清理。',
+              'base_sha256': digest(raw_cn),
+              'base_content_sha256': digest(base),
+              'catalog_sha256': hashlib.sha256(raw_index).hexdigest(),
+              'source_path_cn': story.get('path_cn', ''),
+              'source_path_jp': story.get('path_jp', ''),
+              'source_identity': story['source_identity'],
+              'turnstile_token': 'XXXX.DUMMY.TOKEN.XXXX',
+          }
+          Path(body_path).write_text(json.dumps(payload, ensure_ascii=False), encoding='utf-8')
+          Path(selected_path).write_text(json.dumps(story, ensure_ascii=False), encoding='utf-8')
+          PY
+
+          curl --fail --silent --show-error \
+            -H 'Content-Type: application/json' \
+            --data-binary "@$RUNNER_TEMP/submission.json" \
+            "$SITE_URL/api/submit" -o "$RUNNER_TEMP/submit-result.json"
+
+          python3 - "$RUNNER_TEMP/config.json" "$RUNNER_TEMP/submit-result.json" "$RUNNER_TEMP/status-url.txt" "$SITE_URL" <<'PY'
+          import json, sys, urllib.parse
+          from pathlib import Path
+          config = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
+          result = json.loads(Path(sys.argv[2]).read_text(encoding='utf-8'))
+          if not config.get('submissions_enabled') or not config.get('turnstile_test_mode'):
+              raise SystemExit(f'Proofreading config is not enabled in test mode: {config}')
+          if config.get('target_branch') != 'EXEDRA-TEST':
+              raise SystemExit(f'Unexpected target branch: {config}')
+          if not result.get('success') or result.get('status') != 'pending':
+              raise SystemExit(f'Synthetic submission failed: {result}')
+          query = urllib.parse.urlencode({'id': result['id'], 'receipt': result['receipt']})
+          Path(sys.argv[3]).write_text(f"{sys.argv[4]}/api/submit?{query}", encoding='utf-8')
+          print(f"SYNTHETIC_SUBMISSION_ID={result['id']}")
+          PY
+
+          curl --fail --silent --show-error "$(cat "$RUNNER_TEMP/status-url.txt")" -o "$RUNNER_TEMP/status.json"
+          python3 - "$RUNNER_TEMP/submit-result.json" "$RUNNER_TEMP/status.json" <<'PY'
+          import json, sys
+          from pathlib import Path
+          submitted = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
+          status = json.loads(Path(sys.argv[2]).read_text(encoding='utf-8'))
+          if status.get('id') != submitted.get('id') or status.get('status') != 'pending':
+              raise SystemExit(f'Public status mismatch: {status}')
+          print('PUBLIC_STATUS_OK')
+          PY
+
+          python3 - "$RUNNER_TEMP/submit-result.json" <<'PY'
+          import json, os, sys, urllib.parse, urllib.request
+          from pathlib import Path
+          result = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
+          account = os.environ['CLOUDFLARE_ACCOUNT_ID']
+          namespace = os.environ['KV_NAMESPACE_ID']
+          token = os.environ['CLOUDFLARE_API_TOKEN']
+          root = f'https://api.cloudflare.com/client/v4/accounts/{account}/storage/kv/namespaces/{namespace}'
+          headers = {'Authorization': f'Bearer {token}', 'User-Agent': 'magi-reader-proofreading-smoke'}
+          def request(method, suffix):
+              req = urllib.request.Request(root + suffix, method=method, headers=headers)
+              with urllib.request.urlopen(req, timeout=45) as response:
+                  return response.read()
+          record_key = f"proofreading:record:{result['id']}"
+          raw = request('GET', '/values/' + urllib.parse.quote(record_key, safe='')).decode('utf-8')
+          record = json.loads(raw)
+          keys = [
+              record_key,
+              record['index_key'],
+              f"proofreading:dedupe:{record['story_id']}:{record['content_sha256']}",
+          ]
+          for key in keys:
+              request('DELETE', '/values/' + urllib.parse.quote(key, safe=''))
+          print('SYNTHETIC_SUBMISSION_CLEANED')
+          PY
