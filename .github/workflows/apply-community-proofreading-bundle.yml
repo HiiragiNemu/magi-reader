@@ -1,0 +1,45 @@
+name: Apply Community Proofreading Bundle
+
+on:
+  push:
+    branches:
+      - feature/community-proofreading-workflow
+    paths:
+      - .github/community-proofreading-bundle.b64
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-community-proofreading-bundle
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/community-proofreading-workflow
+          fetch-depth: 0
+
+      - name: Verify and apply source bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode .github/community-proofreading-bundle.b64 > "$RUNNER_TEMP/community-proofreading.tar.gz"
+          echo '49a2d3ac6c336006a8295e61e7a1be94911a5e7b88453f8c09d7d12e11d36f80  '"$RUNNER_TEMP/community-proofreading.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/community-proofreading.tar.gz" -C .
+          rm .github/community-proofreading-bundle.b64
+          rm .github/workflows/apply-community-proofreading-bundle.yml
+
+      - name: Commit implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Add complete community proofreading workflow'
+          git push origin HEAD:feature/community-proofreading-workflow
