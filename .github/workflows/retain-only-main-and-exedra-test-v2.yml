@@ -1,0 +1,74 @@
+name: Retain Only Main And Exedra Test Branches V2
+
+on:
+  pull_request:
+    branches:
+      - tooling/branch-cleanup2-base
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/branch-cleanup2-run' &&
+      github.event.pull_request.base.ref == 'tooling/branch-cleanup2-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Delete every non-whitelisted branch via REST
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          own_base='tooling/branch-cleanup2-base'
+          own_head='tooling/branch-cleanup2-run'
+          default_branch="$(gh api "repos/$repo" --jq '.default_branch')"
+          test "$default_branch" = 'main'
+
+          list_branches() {
+            gh api --paginate "repos/$repo/branches?per_page=100" --jq '.[].name' | sort -u
+          }
+
+          delete_ref() {
+            local branch="$1"
+            local encoded
+            encoded="$(python3 - "$branch" <<'PY'
+          import sys
+          from urllib.parse import quote
+          print(quote(sys.argv[1], safe=''))
+          PY
+            )"
+            echo "DELETE $branch"
+            gh api --method DELETE "repos/$repo/git/refs/heads/$encoded" --silent
+          }
+
+          mapfile -t before < <(list_branches)
+          echo "BRANCHES_BEFORE=${#before[@]}"
+          printf '%s\n' "${before[@]}" | grep -Fxq 'main'
+          printf '%s\n' "${before[@]}" | grep -Fxq 'EXEDRA-TEST'
+
+          for branch in "${before[@]}"; do
+            case "$branch" in
+              main|EXEDRA-TEST|"$own_base"|"$own_head") ;;
+              *) delete_ref "$branch" ;;
+            esac
+          done
+
+          # Delete this workflow's head and base last. The running job continues from its checked-out workflow snapshot.
+          delete_ref "$own_head"
+          delete_ref "$own_base"
+
+          sleep 5
+          mapfile -t after < <(list_branches)
+          echo "BRANCHES_AFTER=${#after[@]}"
+          printf 'SURVIVOR %s\n' "${after[@]}"
+          test "${#after[@]}" -eq 2
+          printf '%s\n' "${after[@]}" | grep -Fxq 'main'
+          printf '%s\n' "${after[@]}" | grep -Fxq 'EXEDRA-TEST'
+          if printf '%s\n' "${after[@]}" | grep -Fvxq -e 'main' -e 'EXEDRA-TEST'; then
+            exit 1
+          fi
+          echo 'BRANCH_CLEANUP_COMPLETE kept=main,EXEDRA-TEST'
