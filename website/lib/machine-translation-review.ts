@@ -9,18 +9,26 @@ export type MachineTranslationEntry = {
   repository_path_cn: string;
   path_cn: string;
   path_jp: string;
+  provenance?: 'added_after_trusted_main' | string;
   machine_source_json_count?: number;
   direct_txt_changed?: boolean;
 };
 
 export type MachineTranslationManifest = {
-  version: 1 | 2;
+  version: 1 | 2 | 3;
   definition: string;
+  trusted_baseline?: string;
+  source_commit?: string;
   translation_base?: string;
   translation_commit: string;
+  trusted_baseline_file_total?: number;
+  current_file_total?: number;
+  added_file_total?: number;
   changed_json_total?: number;
   changed_txt_total?: number;
   referenced_changed_json_total?: number;
+  protected_human_overwrite_count?: number;
+  protected_human_deletion_count?: number;
   total: number;
   entries: MachineTranslationEntry[];
   unreferenced_changed_json_count?: number;
@@ -28,6 +36,7 @@ export type MachineTranslationManifest = {
   unmatched_changed_txt_identities?: string[];
   missing_repository_txt_paths?: string[];
   unmatched_source_identities?: string[];
+  legacy_translation_commit_not_used_for_classification?: string;
 };
 
 export type MachineTranslationReviewState = {
