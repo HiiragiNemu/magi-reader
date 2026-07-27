@@ -1,0 +1,252 @@
+name: Repair Translation Release From Trusted Main
+
+on:
+  pull_request:
+    branches:
+      - tooling/repair-translation-release-base
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-translation-release-from-trusted-main
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/repair-translation-release-run' &&
+      github.event.pull_request.base.ref == 'tooling/repair-translation-release-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      TARGET_BRANCH: feature/community-proofreading-workflow
+      RELEASE_TAG: translation-test-2026-07-27
+      RELEASE_V1: magireco-translation-test-2026-07-27-v1.zip
+      RELEASE_V2: magireco-translation-test-2026-07-27-v2-trusted-main-delta.zip
+    steps:
+      - name: Fetch target, trusted baseline and repair tooling
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init --quiet .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git -c protocol.version=2 fetch --quiet --tags origin \
+            main \
+            EXEDRA-TEST \
+            "$TARGET_BRANCH" \
+            tooling/repair-translation-release-base
+          git checkout --quiet -B "$TARGET_BRANCH" "origin/$TARGET_BRANCH"
+          git show \
+            origin/tooling/repair-translation-release-base:scripts/rebuild_trusted_translation_release.py \
+            > "$RUNNER_TEMP/rebuild_trusted_translation_release.py"
+          chmod +x "$RUNNER_TEMP/rebuild_trusted_translation_release.py"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Exclude every main-line category from machine classification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('generate_machine_translation_manifest.py')
+          source = path.read_text(encoding='utf-8')
+          constant = '''HUMAN_ONLY_CATEGORIES = {"main_story", "scene0_main"}\n'''
+          anchor = 'SOURCE_ROOT = ROOT / SOURCE_PREFIX\n'
+          if constant not in source:
+              if source.count(anchor) != 1:
+                  raise SystemExit('Cannot locate machine manifest constant anchor')
+              source = source.replace(anchor, anchor + constant, 1)
+          old = '''        if repository_path not in added_txt_paths:\n            continue\n'''
+          new = '''        if (\n            repository_path not in added_txt_paths\n            or str(story.get("category") or "") in HUMAN_ONLY_CATEGORIES\n        ):\n            continue\n'''
+          if old in source:
+              source = source.replace(old, new, 1)
+          elif new not in source:
+              raise SystemExit('Cannot locate machine classification condition')
+          path.write_text(source, encoding='utf-8')
+          PY
+
+      - name: Restore trusted main and keep only absent-file additions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/rebuild_trusted_translation_release.py" repair \
+            --baseline origin/main \
+            --source origin/EXEDRA-TEST \
+            --report "$RUNNER_TEMP/trusted-main-delta-report.json"
+          git add -A
+          git commit -m 'Restore trusted main translations and isolate absent-file additions'
+          echo "REPAIRED_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Regenerate site data and trusted machine manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 generate_story_index.py
+          python3 generate_machine_translation_manifest.py \
+            --trusted-baseline origin/main \
+            --source-ref HEAD
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path(
+              'website/public/data/machine_translation_manifest.generated.json'
+          ).read_text(encoding='utf-8'))
+          if manifest.get('version') != 3:
+              raise SystemExit(f'Unexpected manifest schema: {manifest.get("version")}')
+          if manifest.get('definition') != 'magireco_cn_txt_absent_from_trusted_main':
+              raise SystemExit(f'Unexpected definition: {manifest.get("definition")}')
+          if manifest.get('protected_human_overwrite_count') != 0:
+              raise SystemExit('Trusted human files remain overwritten')
+          if manifest.get('protected_human_deletion_count') != 0:
+              raise SystemExit('Trusted human files remain deleted')
+          forbidden = [
+              entry for entry in manifest.get('entries', [])
+              if entry.get('category') in {'main_story', 'scene0_main'}
+          ]
+          if forbidden:
+              raise SystemExit(f'Main-line stories were marked machine: {forbidden[:5]}')
+          if manifest.get('changed_json_total') != 2356:
+              raise SystemExit(f'Unexpected added JSON count: {manifest.get("changed_json_total")}')
+          if manifest.get('changed_txt_total') != 645:
+              raise SystemExit(f'Unexpected added TXT count: {manifest.get("changed_txt_total")}')
+          if manifest.get('total', 0) <= 0:
+              raise SystemExit('Machine story manifest is empty')
+          print(
+              'TRUSTED_MACHINE_MANIFEST_OK '
+              f"stories={manifest['total']} added_txt={manifest['changed_txt_total']}"
+          )
+          PY
+
+      - name: Run data, frontend and Worker validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tests -p 'test_*.py'
+          cd website
+          npm ci
+          npm run lint
+          npm run type-check
+          npm test
+          npm run build:worker
+
+      - name: Commit corrected generated data and push repair branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m 'Regenerate trusted-main machine review manifest'
+          fi
+          git remote set-url origin \
+            "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+          git push origin HEAD:"$TARGET_BRANCH"
+          echo "FINAL_FEATURE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Build deterministic corrected release archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/rebuild_trusted_translation_release.py" package \
+            --report "$RUNNER_TEMP/trusted-main-delta-report.json" \
+            --output "$RUNNER_TEMP/$RELEASE_V1"
+          cp "$RUNNER_TEMP/$RELEASE_V1" "$RUNNER_TEMP/$RELEASE_V2"
+          python3 - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ['RUNNER_TEMP'])
+          for name in (os.environ['RELEASE_V1'], os.environ['RELEASE_V2']):
+              path = root / name
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              (root / f'{name}.sha256.txt').write_text(
+                  f'{digest}  {name}\n', encoding='utf-8'
+              )
+              print(f'RELEASE_SHA256 name={name} sha256={digest} bytes={path.stat().st_size}')
+          PY
+
+      - name: Replace unsafe release asset and publish corrected v2
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = json.loads(Path(
+              os.environ['RUNNER_TEMP'] + '/trusted-main-delta-report.json'
+          ).read_text(encoding='utf-8'))
+          manifest = json.loads(Path(
+              'website/public/data/machine_translation_manifest.generated.json'
+          ).read_text(encoding='utf-8'))
+          notes = f'''## 可信 `main` 差值修正版
+
+此前的 `v1` 压缩包打包了未经可信边界保护的完整翻译树，**已作废并被同名修正版覆盖**。任何此前下载且 SHA-256 不匹配的新文件都必须删除。
+
+本次重建规则：
+
+- `main`（`{report["trusted_baseline_sha"]}`）中的全部魔法纪录文件视为官方或人工翻译，逐字节保留。
+- 已恢复 {len(report["restored_overwritten_paths"])} 个被覆盖的 `main` 文件，其中 TXT 为 {report["restored_overwritten_human_txt_total"]} 个。
+- 已恢复 {len(report["restored_deleted_paths"])} 个被删除的 `main` 文件，其中 TXT 为 {report["restored_deleted_human_txt_total"]} 个。
+- 仅保留 `EXEDRA-TEST` 相对 `main` 新增的 {report["added_file_total"]} 个文件：JSON {report["added_json_total"]} 个，TXT {report["added_txt_total"]} 个。
+- 所有 `main_story`、`Scene0主线`、`scene0_main` 内容均视为人工主线，不进入机器翻译清单。
+- 修正后的待人工校验剧情为 {manifest["total"]} 部。
+- 压缩包不含任何 Exedra 文件。
+
+资产：
+
+- `{os.environ["RELEASE_V1"]}`：覆盖旧 URL 的修正版。
+- `{os.environ["RELEASE_V2"]}`：名称明确的同内容修正版。
+- 对应 `.sha256.txt`：完整性校验。
+'''
+          Path(os.environ['RUNNER_TEMP'] + '/release-notes.md').write_text(
+              notes, encoding='utf-8'
+          )
+          PY
+          gh release upload "$RELEASE_TAG" \
+            "$RUNNER_TEMP/$RELEASE_V1#可信 main 差值修正版（替换旧包）" \
+            "$RUNNER_TEMP/$RELEASE_V1.sha256.txt#v1 修正版 SHA-256" \
+            "$RUNNER_TEMP/$RELEASE_V2#可信 main 差值修正版 v2" \
+            "$RUNNER_TEMP/$RELEASE_V2.sha256.txt#v2 SHA-256" \
+            --repo "${{ github.repository }}" \
+            --clobber
+          gh release edit "$RELEASE_TAG" \
+            --repo "${{ github.repository }}" \
+            --title '魔法纪录剧情中文补齐：可信 main 差值修正版 2026-07-27' \
+            --notes-file "$RUNNER_TEMP/release-notes.md" \
+            --prerelease
+
+      - name: Re-download and verify replaced public asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/verify"
+          gh release download "$RELEASE_TAG" \
+            --repo "${{ github.repository }}" \
+            --pattern "$RELEASE_V1" \
+            --dir "$RUNNER_TEMP/verify"
+          expected="$(sha256sum "$RUNNER_TEMP/$RELEASE_V1" | awk '{print $1}')"
+          actual="$(sha256sum "$RUNNER_TEMP/verify/$RELEASE_V1" | awk '{print $1}')"
+          test "$expected" = "$actual"
+          python3 - "$RUNNER_TEMP/verify/$RELEASE_V1" <<'PY'
+          import sys, zipfile
+          with zipfile.ZipFile(sys.argv[1]) as archive:
+              names = archive.namelist()
+              if any('magiraexedra' in name.lower() for name in names):
+                  raise SystemExit('Verified release contains Exedra files')
+              if 'TRUSTED_MAIN_DELTA_MANIFEST.json' not in names:
+                  raise SystemExit('Verified release lacks trust manifest')
+              print(f'PUBLIC_RELEASE_VERIFIED members={len(names)}')
+          PY
