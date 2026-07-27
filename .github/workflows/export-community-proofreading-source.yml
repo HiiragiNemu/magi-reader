@@ -1,0 +1,64 @@
+name: Export Community Proofreading Source
+
+on:
+  pull_request:
+    branches:
+      - tooling/community-proofreading-export-base
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/community-proofreading-export-run' &&
+      github.event.pull_request.base.ref == 'tooling/community-proofreading-export-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Fetch target branch quietly
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init --quiet .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git -c protocol.version=2 fetch --quiet --depth=1 origin feature/community-proofreading-workflow
+          git checkout --quiet FETCH_HEAD
+
+      - name: Package editable source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/export"
+          tar \
+            --exclude='website/node_modules' \
+            --exclude='website/.next' \
+            --exclude='website/.open-next' \
+            --exclude='website/public/data' \
+            --exclude='website/public/search_content.json' \
+            --exclude='.git' \
+            -czf "$RUNNER_TEMP/export/community-proofreading-source.tar.gz" \
+            .github \
+            website \
+            tests \
+            generate_story_index.py \
+            build_search_index_v6.py \
+            pyproject.toml \
+            requirements.txt \
+            2>/dev/null || \
+          tar \
+            --exclude='website/node_modules' \
+            --exclude='website/.next' \
+            --exclude='website/.open-next' \
+            --exclude='website/public/data' \
+            --exclude='website/public/search_content.json' \
+            --exclude='.git' \
+            -czf "$RUNNER_TEMP/export/community-proofreading-source.tar.gz" \
+            .github website tests generate_story_index.py build_search_index_v6.py
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: community-proofreading-source
+          path: ${{ runner.temp }}/export/community-proofreading-source.tar.gz
+          if-no-files-found: error
+          retention-days: 1
