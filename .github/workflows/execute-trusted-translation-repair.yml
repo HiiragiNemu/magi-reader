@@ -1,0 +1,54 @@
+name: Execute Trusted Translation Repair
+
+on:
+  pull_request:
+    branches:
+      - tooling/repair-translation-execute-base
+
+permissions:
+  contents: write
+
+concurrency:
+  group: execute-trusted-translation-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/repair-translation-execute-run' &&
+      github.event.pull_request.base.ref == 'tooling/repair-translation-execute-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Fetch repair scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init --quiet .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git -c protocol.version=2 fetch --quiet origin \
+            tooling/repair-translation-release-base
+          git show \
+            origin/tooling/repair-translation-release-base:scripts/rebuild_trusted_translation_release.py \
+            > "$RUNNER_TEMP/rebuild_trusted_translation_release.py"
+          git show \
+            origin/tooling/repair-translation-release-base:scripts/execute_trusted_translation_repair.sh \
+            > "$RUNNER_TEMP/execute_trusted_translation_repair.sh"
+          chmod +x \
+            "$RUNNER_TEMP/rebuild_trusted_translation_release.py" \
+            "$RUNNER_TEMP/execute_trusted_translation_repair.sh"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Repair source tree, manifest and Release
+        shell: bash
+        run: "$RUNNER_TEMP/execute_trusted_translation_repair.sh"
