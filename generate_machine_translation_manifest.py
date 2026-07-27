@@ -2,10 +2,10 @@
 """Generate the immutable machine-translation proofreading baseline.
 
 A story is classified as machine translated when its deployed Magia Record Chinese TXT
-was directly changed by the translation commit, or when one of the JSON source files
-referenced by that TXT was added/modified by the translation commit. Runtime human-
-review state is stored separately in Cloudflare KV, so this generated manifest remains
-a reproducible provenance baseline.
+was directly changed in the translation branch range, or when one of the JSON source
+files referenced by that TXT was added/modified in that range. Runtime human-review
+state is stored separately in Cloudflare KV, so this generated manifest remains a
+reproducible provenance baseline.
 """
 
 from __future__ import annotations
@@ -26,7 +26,6 @@ DEFAULT_STORY_MAP = (
     ROOT / "website" / "public" / "data" / "proofreading_story_map.generated.json"
 )
 SOURCE_PREFIX = "magireco-translate-data-master/Scenarios_full/"
-SOURCE_ROOT = ROOT / SOURCE_PREFIX
 SOURCE_HEADER_RE = re.compile(
     r"\(Source:\s*([^()\r\n]+?\.json)\s*\)",
     re.IGNORECASE,
@@ -68,13 +67,14 @@ def canonicalize_identity(identity: str) -> str:
 
 
 def changed_translation_sources(
+    translation_base: str,
     translation_commit: str,
 ) -> tuple[set[str], set[str]]:
     output = run_git(
         "diff",
         "--name-status",
         "--find-renames",
-        f"{translation_commit}^",
+        translation_base,
         translation_commit,
         "--",
         SOURCE_PREFIX,
@@ -96,7 +96,7 @@ def changed_translation_sources(
         elif lowered.endswith(".txt"):
             changed_txt.add(relative[:-4])
     if not changed_json and not changed_txt:
-        raise ManifestError("translation commit produced no Magia Record source changes")
+        raise ManifestError("translation range produced no Magia Record source changes")
     return changed_json, changed_txt
 
 
@@ -151,10 +151,10 @@ def referenced_json_sources(identity: str, repository_path: Path) -> set[str]:
         text = repository_path.read_text(encoding="utf-8-sig")
     except FileNotFoundError:
         return set()
-    sources: set[str] = set()
-    for match in SOURCE_HEADER_RE.finditer(text):
-        sources.add(resolve_source_reference(identity, match.group(1)))
-    return sources
+    return {
+        resolve_source_reference(identity, match.group(1))
+        for match in SOURCE_HEADER_RE.finditer(text)
+    }
 
 
 def public_entry(
@@ -177,10 +177,14 @@ def public_entry(
 
 def build_outputs(
     *,
+    translation_base: str,
     translation_commit: str,
     stories: list[dict[str, Any]],
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    changed_json, changed_txt = changed_translation_sources(translation_commit)
+    changed_json, changed_txt = changed_translation_sources(
+        translation_base,
+        translation_commit,
+    )
     source_map: dict[str, dict[str, Any]] = {}
     machine_entries: list[dict[str, Any]] = []
     matched_changed_json: set[str] = set()
@@ -215,12 +219,13 @@ def build_outputs(
         if not machine_json and not direct_txt_changed:
             continue
 
-        machine_entry = {
-            **entry,
-            "machine_source_json_count": len(machine_json),
-            "direct_txt_changed": direct_txt_changed,
-        }
-        machine_entries.append(machine_entry)
+        machine_entries.append(
+            {
+                **entry,
+                "machine_source_json_count": len(machine_json),
+                "direct_txt_changed": direct_txt_changed,
+            }
+        )
         matched_changed_json.update(machine_json)
         if direct_txt_changed:
             matched_changed_txt.add(identity)
@@ -232,7 +237,8 @@ def build_outputs(
     unmatched_txt = sorted(changed_txt - matched_changed_txt)
     manifest = {
         "version": 2,
-        "definition": "magireco_cn_story_references_translation_commit_json",
+        "definition": "magireco_cn_story_references_translation_branch_json",
+        "translation_base": translation_base,
         "translation_commit": translation_commit,
         "changed_json_total": len(changed_json),
         "changed_txt_total": len(changed_txt),
@@ -254,6 +260,7 @@ def build_outputs(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--translation-base", required=True)
     parser.add_argument("--translation-commit", required=True)
     parser.add_argument("--story-index", type=Path, default=DEFAULT_STORY_INDEX)
     parser.add_argument("--manifest-output", type=Path, default=DEFAULT_MANIFEST)
@@ -261,8 +268,10 @@ def main() -> int:
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
+    base = run_git("rev-parse", args.translation_base).strip()
     commit = run_git("rev-parse", args.translation_commit).strip()
     manifest, story_map = build_outputs(
+        translation_base=base,
         translation_commit=commit,
         stories=load_story_index(args.story_index.resolve()),
     )
