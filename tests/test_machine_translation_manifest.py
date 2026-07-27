@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -22,11 +23,41 @@ class MachineTranslationManifestTests(unittest.TestCase):
             "event_story/5216 - 海岸边的缎带/521610_0-20",
         )
 
-    def test_repository_path(self) -> None:
-        self.assertEqual(
-            MODULE.repository_path_for("event_story/demo/123_1-2"),
-            "magireco-translate-data-master/Scenarios_full/event_story/demo/123_1-2.txt",
+    def test_identity_comes_from_deployed_cn_path(self) -> None:
+        identity = MODULE.identity_from_public_cn_path(
+            "/data/event_story/5129 - Dependence Blue/512901_0-5_cn.txt"
         )
+        self.assertEqual(
+            identity,
+            "event_story/5129 - Dependence Blue/512901_0-5",
+        )
+        self.assertEqual(
+            MODULE.repository_path_for(identity),
+            "magireco-translate-data-master/Scenarios_full/"
+            "event_story/5129 - Dependence Blue/512901_0-5.txt",
+        )
+
+    def test_referenced_json_sources_are_resolved_in_txt_directory(self) -> None:
+        identity = "event_story/5129 - Dependence Blue/512901_0-5"
+        with tempfile.TemporaryDirectory() as raw_directory:
+            path = Path(raw_directory) / "story.txt"
+            path.write_text(
+                "---[Section 0] (Source: 512901-0.json) ---\n"
+                "角色: 文本\n"
+                "---[Section 1] (Source: nested/512901-1.json) ---\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                MODULE.referenced_json_sources(identity, path),
+                {
+                    "event_story/5129 - Dependence Blue/512901-0.json",
+                    "event_story/5129 - Dependence Blue/nested/512901-1.json",
+                },
+            )
+
+    def test_invalid_public_cn_path_is_rejected(self) -> None:
+        with self.assertRaises(MODULE.ManifestError):
+            MODULE.identity_from_public_cn_path("/outside/story_cn.txt")
 
 
 if __name__ == "__main__":
