@@ -1,0 +1,81 @@
+name: Final Branch Cleanup
+
+on:
+  pull_request:
+    branches:
+      - tooling/final-branch-cleanup-base
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  cleanup:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/final-branch-cleanup-run' &&
+      github.event.pull_request.base.ref == 'tooling/final-branch-cleanup-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      REPOSITORY: ${{ github.repository }}
+      CLEANUP_HEAD: tooling/final-branch-cleanup-run
+      CLEANUP_BASE: tooling/final-branch-cleanup-base
+    steps:
+      - name: Delete every branch except main and EXEDRA-TEST
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          delete_branch() {
+            local branch="$1"
+            local encoded
+            encoded="$(python3 - "$branch" <<'PY'
+          import sys
+          import urllib.parse
+          print(urllib.parse.quote(sys.argv[1], safe=''))
+          PY
+          )"
+            echo "Deleting branch: $branch"
+            gh api --method DELETE "repos/$REPOSITORY/git/refs/heads/$encoded"
+          }
+
+          mapfile -t branches < <(
+            gh api --paginate "repos/$REPOSITORY/branches?per_page=100" --jq '.[].name'
+          )
+
+          echo "Branches before cleanup (${#branches[@]}):"
+          printf '  %s\n' "${branches[@]}"
+
+          for branch in "${branches[@]}"; do
+            case "$branch" in
+              main|EXEDRA-TEST|"$CLEANUP_HEAD"|"$CLEANUP_BASE")
+                continue
+                ;;
+            esac
+            delete_branch "$branch"
+          done
+
+          # Close the trigger PR before deleting its refs.
+          gh pr close "${{ github.event.pull_request.number }}" \
+            --repo "$REPOSITORY" \
+            --comment 'Branch cleanup completed; this temporary PR is being removed.' || true
+
+          delete_branch "$CLEANUP_HEAD"
+          delete_branch "$CLEANUP_BASE"
+
+          mapfile -t remaining < <(
+            gh api --paginate "repos/$REPOSITORY/branches?per_page=100" --jq '.[].name' | sort
+          )
+          echo "Branches after cleanup (${#remaining[@]}):"
+          printf '  %s\n' "${remaining[@]}"
+
+          expected=$'EXEDRA-TEST\nmain'
+          actual="$(printf '%s\n' "${remaining[@]}")"
+          if [ "$actual" != "$expected" ]; then
+            echo 'Unexpected branches remain after cleanup.' >&2
+            exit 1
+          fi
+
+          echo 'BRANCH_CLEANUP_OK kept=main,EXEDRA-TEST'
