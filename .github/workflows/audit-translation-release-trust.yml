@@ -1,0 +1,176 @@
+name: Audit Translation Release Trust Boundary
+
+on:
+  pull_request:
+    branches:
+      - tooling/repair-translation-release-base
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/repair-translation-release-run' &&
+      github.event.pull_request.base.ref == 'tooling/repair-translation-release-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Fetch trusted and current refs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init --quiet .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git -c protocol.version=2 fetch --quiet --tags origin \
+            main \
+            EXEDRA-TEST \
+            codex/magireco-translation-test \
+            feature/community-proofreading-workflow
+
+      - name: Download existing release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/release"
+          gh release view translation-test-2026-07-27 \
+            --repo "${{ github.repository }}" \
+            --json tagName,name,isDraft,isPrerelease,assets
+          gh release download translation-test-2026-07-27 \
+            --repo "${{ github.repository }}" \
+            --pattern 'magireco-translation-test-2026-07-27-v1.zip' \
+            --dir "$RUNNER_TEMP/release"
+          ls -lh "$RUNNER_TEMP/release"
+
+      - name: Audit main/current/release provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "$RUNNER_TEMP/release/magireco-translation-test-2026-07-27-v1.zip" <<'PY'
+          from __future__ import annotations
+
+          import collections
+          import hashlib
+          import io
+          import json
+          import subprocess
+          import sys
+          import zipfile
+          from pathlib import PurePosixPath
+
+          REPO = '${{ github.repository }}'
+          MAIN = 'origin/main'
+          CURRENT = 'origin/EXEDRA-TEST'
+          MAGIRECO = 'magireco-translate-data-master/Scenarios_full/'
+          EXEDRA_PREFIXES = (
+              'magiraexedra-source-master/',
+              'magiraexedra-translate-data-master/',
+          )
+
+          def git_bytes(*args: str) -> bytes:
+              proc = subprocess.run(['git', *args], check=False, capture_output=True)
+              if proc.returncode:
+                  raise SystemExit(proc.stderr.decode('utf-8', 'replace'))
+              return proc.stdout
+
+          def tree(ref: str, prefix: str) -> dict[str, str]:
+              raw = git_bytes('ls-tree', '-r', '-z', '--format=%(objectname)\t%(path)', ref, '--', prefix)
+              result: dict[str, str] = {}
+              for record in raw.split(b'\0'):
+                  if not record:
+                      continue
+                  sha, path = record.decode('utf-8').split('\t', 1)
+                  result[path] = sha
+              return result
+
+          def ext_counts(paths):
+              return dict(sorted(collections.Counter(PurePosixPath(p).suffix.lower() or '<none>' for p in paths).items()))
+
+          main = tree(MAIN, MAGIRECO)
+          current = tree(CURRENT, MAGIRECO)
+          main_paths = set(main)
+          current_paths = set(current)
+          added = sorted(current_paths - main_paths)
+          deleted = sorted(main_paths - current_paths)
+          overwritten = sorted(p for p in main_paths & current_paths if main[p] != current[p])
+          unchanged = sorted(p for p in main_paths & current_paths if main[p] == current[p])
+
+          print(f'TRUST_AUDIT main_ref={MAIN} current_ref={CURRENT}')
+          print(f'MAGIRECO_MAIN_TOTAL={len(main)}')
+          print(f'MAGIRECO_CURRENT_TOTAL={len(current)}')
+          print(f'MAGIRECO_UNCHANGED_TRUSTED={len(unchanged)}')
+          print(f'MAGIRECO_ADDED_MACHINE_CANDIDATES={len(added)}')
+          print(f'MAGIRECO_OVERWRITTEN_HUMAN_UNTRUSTED={len(overwritten)}')
+          print(f'MAGIRECO_DELETED_HUMAN_UNTRUSTED={len(deleted)}')
+          print('ADDED_EXTENSIONS=' + json.dumps(ext_counts(added), ensure_ascii=False, sort_keys=True))
+          print('OVERWRITTEN_EXTENSIONS=' + json.dumps(ext_counts(overwritten), ensure_ascii=False, sort_keys=True))
+          print('DELETED_EXTENSIONS=' + json.dumps(ext_counts(deleted), ensure_ascii=False, sort_keys=True))
+          print('ADDED_MAIN_STORY=' + str(sum('/main_story/' in p for p in added)))
+          print('OVERWRITTEN_MAIN_STORY=' + str(sum('/main_story/' in p for p in overwritten)))
+          print('DELETED_MAIN_STORY=' + str(sum('/main_story/' in p for p in deleted)))
+
+          for label, paths in (
+              ('ADDED_SAMPLE', added),
+              ('OVERWRITTEN_SAMPLE', overwritten),
+              ('DELETED_SAMPLE', deleted),
+          ):
+              print(label + '_BEGIN')
+              for path in paths[:40]:
+                  print(path)
+              print(label + '_END')
+
+          archive_path = sys.argv[1]
+          with zipfile.ZipFile(archive_path) as archive:
+              members = [i for i in archive.infolist() if not i.is_dir()]
+              print(f'RELEASE_MEMBER_TOTAL={len(members)}')
+              top = collections.Counter(i.filename.split('/', 1)[0] for i in members)
+              print('RELEASE_TOP_LEVEL=' + json.dumps(top.most_common(20), ensure_ascii=False))
+
+              magireco_members = []
+              exedra_members = []
+              other_members = []
+              for info in members:
+                  name = info.filename.replace('\\', '/')
+                  pos = name.find(MAGIRECO)
+                  if pos >= 0:
+                      magireco_members.append((info, name[pos:]))
+                  elif any(prefix in name for prefix in EXEDRA_PREFIXES):
+                      exedra_members.append(info)
+                  else:
+                      other_members.append(info)
+
+              matches = collections.Counter()
+              unknown_paths = []
+              for info, path in magireco_members:
+                  data = archive.read(info)
+                  digest = hashlib.sha1(f'blob {len(data)}\0'.encode() + data).hexdigest()
+                  in_main = path in main
+                  in_current = path in current
+                  if in_main and digest == main[path]:
+                      matches['main_exact'] += 1
+                  elif in_current and digest == current[path]:
+                      matches['current_exact_not_main'] += 1
+                  elif in_main or in_current:
+                      matches['known_path_content_mismatch'] += 1
+                  else:
+                      matches['unknown_path'] += 1
+                      if len(unknown_paths) < 40:
+                          unknown_paths.append(path)
+
+              print(f'RELEASE_MAGIRECO_MEMBERS={len(magireco_members)}')
+              print(f'RELEASE_EXEDRA_MEMBERS={len(exedra_members)}')
+              print(f'RELEASE_OTHER_MEMBERS={len(other_members)}')
+              print('RELEASE_PROVENANCE=' + json.dumps(matches, ensure_ascii=False, sort_keys=True))
+              print('RELEASE_UNKNOWN_PATHS_BEGIN')
+              for path in unknown_paths:
+                  print(path)
+              print('RELEASE_UNKNOWN_PATHS_END')
+
+          # Hard safety assertions: main is ancestor and current contains some additions.
+          subprocess.run(['git', 'merge-base', '--is-ancestor', MAIN, CURRENT], check=True)
+          if not added:
+              raise SystemExit('No Magia Record additions found; refusing to derive machine set')
+          print('TRUST_AUDIT_COMPLETE')
+          PY
