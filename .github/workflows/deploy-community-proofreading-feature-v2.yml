@@ -1,0 +1,223 @@
+name: Deploy Community Proofreading Feature V2
+
+on:
+  pull_request:
+    branches:
+      - tooling/community-proofreading-deploy-v2-base
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-community-proofreading-feature-v2
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/community-proofreading-deploy-v2-run' &&
+      github.event.pull_request.base.ref == 'tooling/community-proofreading-deploy-v2-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      TEST_WORKER_NAME: magireader-exedra-cn-test
+      TEST_WORKER_HOSTNAME: magireader-exedra-cn-test.crynetsystemscell.workers.dev
+      PROOFREADING_KV_TITLE: magi-submissions-exedra-cn-test
+      SERVER_GITHUB_TOKEN: ${{ secrets.PROOFREADING_GITHUB_TOKEN }}
+      SHARED_ADMIN_TOKEN: ${{ secrets.SUBMISSIONS_ADMIN_TOKEN }}
+
+    steps:
+      - name: Fetch validated feature branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init --quiet .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git -c protocol.version=2 fetch --quiet origin \
+            feature/community-proofreading-workflow \
+            codex/magireco-translation-test
+          git checkout --quiet -B feature/community-proofreading-workflow \
+            origin/feature/community-proofreading-workflow
+          echo "FEATURE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Generate and verify deployable data
+        run: |
+          python generate_story_index.py
+          python generate_machine_translation_manifest.py \
+            --translation-base 65f221f2aaa5a9fe161ed32e03e4dfbb93d4746d \
+            --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb \
+            --check
+
+      - name: Install dependencies and build Worker
+        working-directory: website
+        run: |
+          npm ci
+          npm run build:worker
+
+      - name: Discover or create dedicated proofreading KV
+        id: kv
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: >-
+          python scripts/proofreading_queue.py namespace
+          --title "$PROOFREADING_KV_TITLE"
+          --create
+
+      - name: Resolve Turnstile credentials
+        id: turnstile
+        env:
+          REAL_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
+          REAL_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "$REAL_SITE_KEY" ] && [ -n "$REAL_SECRET_KEY" ]; then
+            site_key="$REAL_SITE_KEY"
+            secret_key="$REAL_SECRET_KEY"
+            test_mode=false
+          else
+            site_key='1x00000000000000000000AA'
+            secret_key='1x0000000000000000000000000000000AA'
+            test_mode=true
+          fi
+          echo "site_key=$site_key" >> "$GITHUB_OUTPUT"
+          echo "test_mode=$test_mode" >> "$GITHUB_OUTPUT"
+          echo "TURNSTILE_SECRET_KEY_VALUE=$secret_key" >> "$GITHUB_ENV"
+          echo "::add-mask::$secret_key"
+
+      - name: Prepare isolated Worker configurations
+        working-directory: website
+        env:
+          KV_NAMESPACE_ID: ${{ steps.kv.outputs.namespace_id }}
+          TURNSTILE_SITE_KEY: ${{ steps.turnstile.outputs.site_key }}
+          TURNSTILE_TEST_MODE: ${{ steps.turnstile.outputs.test_mode }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > .wrangler-proofreading-bootstrap.jsonc <<EOF
+          {
+            "name": "$TEST_WORKER_NAME",
+            "main": ".wrangler-proofreading-bootstrap.mjs",
+            "compatibility_date": "2026-02-14",
+            "workers_dev": true
+          }
+          EOF
+          cat > .wrangler-proofreading-bootstrap.mjs <<'EOF'
+          export default { fetch() { return new Response('Preparing proofreading deployment.'); } };
+          EOF
+          cat > .wrangler-proofreading-test.jsonc <<EOF
+          {
+            "\$schema": "node_modules/wrangler/config-schema.json",
+            "name": "$TEST_WORKER_NAME",
+            "main": ".open-next/worker.js",
+            "compatibility_date": "2026-02-14",
+            "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+            "workers_dev": true,
+            "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+            "services": [
+              { "binding": "WORKER_SELF_REFERENCE", "service": "$TEST_WORKER_NAME" }
+            ],
+            "kv_namespaces": [
+              { "binding": "SUBMISSIONS_KV", "id": "$KV_NAMESPACE_ID" }
+            ],
+            "vars": {
+              "TURNSTILE_SITE_KEY": "$TURNSTILE_SITE_KEY",
+              "TURNSTILE_ALLOWED_HOSTNAMES": "$TEST_WORKER_HOSTNAME",
+              "PROOFREADING_TARGET_BRANCH": "EXEDRA-TEST",
+              "PROOFREADING_SOURCE_COMMIT": "$FEATURE_COMMIT",
+              "PROOFREADING_GITHUB_REPO": "${{ github.repository }}",
+              "PROOFREADING_ALLOW_GITHUB_ADMIN": "true",
+              "PROOFREADING_TURNSTILE_TEST_MODE": "$TURNSTILE_TEST_MODE"
+            }
+          }
+          EOF
+
+      - name: Create Worker shell
+        working-directory: website
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: npx wrangler deploy --config .wrangler-proofreading-bootstrap.jsonc
+
+      - name: Configure Worker secrets
+        working-directory: website
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          TURNSTILE_SECRET: ${{ env.TURNSTILE_SECRET_KEY_VALUE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' "$TURNSTILE_SECRET" | npx wrangler secret put TURNSTILE_SECRET_KEY --config .wrangler-proofreading-test.jsonc
+          if [ -n "$SERVER_GITHUB_TOKEN" ]; then
+            printf '%s' "$SERVER_GITHUB_TOKEN" | npx wrangler secret put PROOFREADING_GITHUB_TOKEN --config .wrangler-proofreading-test.jsonc
+          fi
+          if [ -n "$SHARED_ADMIN_TOKEN" ]; then
+            printf '%s' "$SHARED_ADMIN_TOKEN" | npx wrangler secret put SUBMISSIONS_ADMIN_TOKEN --config .wrangler-proofreading-test.jsonc
+          fi
+
+      - name: Deploy complete feature
+        working-directory: website
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: npx opennextjs-cloudflare deploy --config .wrangler-proofreading-test.jsonc
+
+      - name: Smoke-test dynamic proofreading system
+        env:
+          SITE_URL: https://${{ env.TEST_WORKER_HOSTNAME }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 24); do
+            if curl --fail --silent --show-error "$SITE_URL/" -o "$RUNNER_TEMP/home.html"; then break; fi
+            test "$attempt" -lt 24
+            sleep 5
+          done
+          curl --fail --silent --show-error "$SITE_URL/api/proofreading/config" -o "$RUNNER_TEMP/config.json"
+          curl --fail --silent --show-error "$SITE_URL/api/proofreading/machine-status" -o "$RUNNER_TEMP/machine.json"
+          curl --fail --silent --show-error "$SITE_URL/review/submissions" -o "$RUNNER_TEMP/submissions.html"
+          curl --fail --silent --show-error "$SITE_URL/review/machine-translations" -o "$RUNNER_TEMP/machine-review.html"
+          admin_code="$(curl --silent --show-error -o "$RUNNER_TEMP/admin.json" -w '%{http_code}' "$SITE_URL/api/admin/machine-review")"
+          python3 - "$RUNNER_TEMP/home.html" "$RUNNER_TEMP/config.json" "$RUNNER_TEMP/machine.json" "$RUNNER_TEMP/submissions.html" "$RUNNER_TEMP/machine-review.html" "$admin_code" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          home = Path(sys.argv[1]).read_text(encoding='utf-8', errors='replace')
+          config = json.loads(Path(sys.argv[2]).read_text(encoding='utf-8'))
+          machine = json.loads(Path(sys.argv[3]).read_text(encoding='utf-8'))
+          submissions = Path(sys.argv[4]).read_text(encoding='utf-8', errors='replace')
+          machine_review = Path(sys.argv[5]).read_text(encoding='utf-8', errors='replace')
+          admin_code = sys.argv[6]
+          if min(map(len, (home, submissions, machine_review))) < 500:
+              raise SystemExit('One or more deployed pages are incomplete')
+          if not config.get('submissions_enabled') or config.get('target_branch') != 'EXEDRA-TEST':
+              raise SystemExit(f'Invalid proofreading config: {config}')
+          if machine.get('total') != 450:
+              raise SystemExit(f'Unexpected machine translation total: {machine}')
+          if machine.get('remaining') != machine.get('total') - machine.get('verified', 0):
+              raise SystemExit(f'Invalid dynamic machine totals: {machine}')
+          if len(machine.get('machine_translation_ids', [])) != 450:
+              raise SystemExit('Machine translation ID list is incomplete')
+          if 'states' in machine:
+              raise SystemExit('Public machine status leaked private review metadata')
+          if admin_code not in {'401', '503'}:
+              raise SystemExit(f'Unauthenticated admin API returned {admin_code}')
+          print(
+              f"DEPLOYED_PROOFREADING_OK total={machine['total']} "
+              f"verified={machine['verified']} remaining={machine['remaining']} "
+              f"admin_unauthenticated={admin_code}"
+          )
+          PY
