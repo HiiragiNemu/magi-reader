@@ -162,6 +162,8 @@ export const toProofreadingListItem = (
     index_key: _indexKey,
     ...rest
   } = record;
+  void _receipt;
+  void _indexKey;
   return {
     ...rest,
     content_length: content.length,
@@ -172,5 +174,7 @@ export const toProofreadingAdminDetail = (
   record: ProofreadingSubmission,
 ): ProofreadingAdminDetail => {
   const { receipt_sha256: _receipt, index_key: _indexKey, ...rest } = record;
+  void _receipt;
+  void _indexKey;
   return rest;
 };
