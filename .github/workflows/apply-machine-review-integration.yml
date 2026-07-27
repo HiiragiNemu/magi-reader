@@ -1,0 +1,97 @@
+name: Apply Machine Review Integration
+
+on:
+  pull_request:
+    branches:
+      - tooling/machine-review-apply-base
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-machine-review-integration
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/machine-review-apply-run' &&
+      github.event.pull_request.base.ref == 'tooling/machine-review-apply-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Fetch feature and translation refs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init --quiet .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git -c protocol.version=2 fetch --quiet origin \
+            feature/community-proofreading-workflow \
+            codex/magireco-translation-test
+          git checkout --quiet -B feature/community-proofreading-workflow \
+            origin/feature/community-proofreading-workflow
+
+      - name: Apply audited main-page and integration changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat \
+            .github/machine-review-main.patch.part.00 \
+            .github/machine-review-main.patch.part.01 \
+            > "$RUNNER_TEMP/machine-review-main.patch"
+          git apply --check "$RUNNER_TEMP/machine-review-main.patch"
+          git apply "$RUNNER_TEMP/machine-review-main.patch"
+          python3 .github/apply-machine-review-integration.py
+
+      - name: Generate immutable machine-translation baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 generate_machine_translation_manifest.py \
+            --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path(
+              'website/public/data/machine_translation_manifest.generated.json'
+          ).read_text(encoding='utf-8'))
+          story_map = json.loads(Path(
+              'website/public/data/proofreading_story_map.generated.json'
+          ).read_text(encoding='utf-8'))
+          if manifest.get('total', 0) <= 0:
+              raise SystemExit(f'Empty machine translation manifest: {manifest}')
+          if len(manifest.get('entries', [])) != manifest['total']:
+              raise SystemExit('Machine manifest total mismatch')
+          if story_map.get('total', 0) <= manifest['total']:
+              raise SystemExit('Proofreading source map is unexpectedly small')
+          print(
+              'MACHINE_MANIFEST_OK '
+              f"total={manifest['total']} "
+              f"source_map={story_map['total']} "
+              f"unmatched={len(manifest.get('unmatched_source_identities', []))}"
+          )
+          PY
+
+      - name: Remove temporary integration payloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f \
+            .github/machine-review-main.patch.part.00 \
+            .github/machine-review-main.patch.part.01 \
+            .github/apply-machine-review-integration.py \
+            .github/community-proofreading-bundle.b64 \
+            .github/community-proofreading-package \
+            .github/workflows/apply-community-proofreading-bundle.yml \
+            .github/workflows/apply-machine-review-integration.yml
+
+      - name: Commit integrated source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Add dynamic machine translation review dashboard'
+          git push origin HEAD:feature/community-proofreading-workflow
