@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { authenticateProofreadingAdmin } from '@/lib/admin-auth';
 import {
-  MACHINE_TRANSLATION_ID_SET,
-  MACHINE_TRANSLATION_MANIFEST,
+  MACHINE_TRANSLATION_ID_SETS,
+  MACHINE_TRANSLATION_MANIFESTS,
   listMachineTranslationReviewStates,
   setMachineTranslationReviewState,
+  type MachineTranslationSystem,
 } from '@/lib/machine-translation-review';
 import { sanitizeMultiline } from '@/lib/proofreading';
 
@@ -13,21 +14,28 @@ const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' };
 const errorResponse = (error: string, status: number) =>
   NextResponse.json({ error }, { status, headers: NO_STORE_HEADERS });
 
+const systemFrom = (value: unknown): MachineTranslationSystem | null =>
+  value === 'magireco' || value === 'exedra' ? value : null;
+
 export async function GET(request: NextRequest) {
   const { env } = await getCloudflareContext({ async: true });
   const authentication = await authenticateProofreadingAdmin(request, env);
   if (!authentication.ok) return errorResponse(authentication.error, authentication.status);
   if (!env.SUBMISSIONS_KV) return errorResponse('投稿数据库尚未配置', 503);
-  const states = await listMachineTranslationReviewStates(env.SUBMISSIONS_KV);
-  const verified = MACHINE_TRANSLATION_MANIFEST.entries.filter(
+  const system = systemFrom(request.nextUrl.searchParams.get('system')) ?? 'magireco';
+  const manifest = MACHINE_TRANSLATION_MANIFESTS[system];
+  const states = await listMachineTranslationReviewStates(env.SUBMISSIONS_KV, system);
+  const verified = manifest.entries.filter(
     entry => states[entry.story_id]?.verified === true,
   ).length;
   return NextResponse.json(
     {
       reviewer: authentication.identity.label,
-      total: MACHINE_TRANSLATION_MANIFEST.total,
+      system,
+      definition: manifest.definition,
+      total: manifest.total,
       verified,
-      remaining: Math.max(0, MACHINE_TRANSLATION_MANIFEST.total - verified),
+      remaining: Math.max(0, manifest.total - verified),
       states,
     },
     { headers: NO_STORE_HEADERS },
@@ -49,9 +57,10 @@ export async function PATCH(request: NextRequest) {
     return errorResponse('请求格式错误', 400);
   }
   const record = body as Record<string, unknown>;
+  const system = systemFrom(record.system) ?? 'magireco';
   const storyId = typeof record.story_id === 'string' ? record.story_id.trim() : '';
-  if (!MACHINE_TRANSLATION_ID_SET.has(storyId)) {
-    return errorResponse('该剧情不在机器翻译人工校验清单中', 400);
+  if (!MACHINE_TRANSLATION_ID_SETS[system].has(storyId)) {
+    return errorResponse('该剧情不在当前游戏的机器翻译人工校验清单中', 400);
   }
   if (typeof record.verified !== 'boolean') {
     return errorResponse('verified 必须是布尔值', 400);
@@ -64,6 +73,14 @@ export async function PATCH(request: NextRequest) {
     reviewed_at: new Date().toISOString(),
     note,
   };
-  await setMachineTranslationReviewState(env.SUBMISSIONS_KV, storyId, state);
-  return NextResponse.json({ success: true, story_id: storyId, state }, { headers: NO_STORE_HEADERS });
+  await setMachineTranslationReviewState(
+    env.SUBMISSIONS_KV,
+    storyId,
+    state,
+    system,
+  );
+  return NextResponse.json(
+    { success: true, system, story_id: storyId, state },
+    { headers: NO_STORE_HEADERS },
+  );
 }
