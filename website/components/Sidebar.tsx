@@ -34,6 +34,7 @@ export type Story = {
   title?: string;
   sections?: string[];
   game?: string;
+  source_identity?: string;
   legacy_ids?: string[];
 };
 
