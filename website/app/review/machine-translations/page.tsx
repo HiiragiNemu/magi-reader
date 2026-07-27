@@ -1,17 +1,26 @@
 'use client';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type {
-  MachineTranslationManifest,
-  MachineTranslationReviewState,
+import {
+  MACHINE_TRANSLATION_MANIFESTS,
+  type MachineTranslationReviewState,
+  type MachineTranslationSystem,
 } from '@/lib/machine-translation-review';
 
 type MachineStatus = {
+  system: MachineTranslationSystem;
+  definition: string;
   total: number;
   verified: number;
   remaining: number;
   states: Record<string, MachineTranslationReviewState>;
+};
+
+const SYSTEM_LABELS: Record<MachineTranslationSystem, string> = {
+  magireco: '魔法纪录',
+  exedra: 'Magia Exedra',
 };
 
 const requestAdmin = async <T,>(
@@ -33,20 +42,20 @@ const requestAdmin = async <T,>(
 };
 
 export default function MachineTranslationReviewPage() {
+  const searchParams = useSearchParams();
+  const initialSystem: MachineTranslationSystem =
+    searchParams.get('system') === 'exedra' ? 'exedra' : 'magireco';
+  const [system, setSystem] = useState<MachineTranslationSystem>(initialSystem);
   const [token, setToken] = useState('');
-  const [manifest, setManifest] = useState<MachineTranslationManifest | null>(null);
   const [status, setStatus] = useState<MachineStatus | null>(null);
   const [query, setQuery] = useState('');
   const [showVerified, setShowVerified] = useState(false);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const manifest = MACHINE_TRANSLATION_MANIFESTS[system];
 
   useEffect(() => {
     setToken(sessionStorage.getItem('magi-reader-proofreading-admin-token') || '');
-    void fetch('/data/machine_translation_manifest.generated.json', { cache: 'no-store' })
-      .then(response => response.json() as Promise<MachineTranslationManifest>)
-      .then(setManifest)
-      .catch(() => setMessage('无法读取机器翻译基线清单。'));
   }, []);
 
   const refresh = useCallback(async () => {
@@ -56,7 +65,7 @@ export default function MachineTranslationReviewPage() {
     try {
       const result = await requestAdmin<MachineStatus>(
         token,
-        '/api/admin/machine-review',
+        `/api/admin/machine-review?system=${encodeURIComponent(system)}`,
       );
       sessionStorage.setItem('magi-reader-proofreading-admin-token', token);
       setStatus(result);
@@ -66,11 +75,14 @@ export default function MachineTranslationReviewPage() {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [system, token]);
 
   useEffect(() => {
+    setStatus(null);
+    setQuery('');
+    setShowVerified(false);
     if (token) void refresh();
-  }, [refresh, token]);
+  }, [refresh, system, token]);
 
   const toggle = async (storyId: string, verified: boolean) => {
     if (!token) return;
@@ -81,11 +93,12 @@ export default function MachineTranslationReviewPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          system,
           story_id: storyId,
           verified,
           note: verified
-            ? '管理员确认已完成人工校验'
-            : '管理员恢复机器翻译待校标记',
+            ? `管理员确认已完成${SYSTEM_LABELS[system]}人工校验`
+            : `管理员恢复${SYSTEM_LABELS[system]}机器翻译待校标记`,
         }),
       });
       setMessage(verified ? `${storyId} 已取消待校高亮。` : `${storyId} 已恢复待校高亮。`);
@@ -99,7 +112,7 @@ export default function MachineTranslationReviewPage() {
 
   const entries = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    return (manifest?.entries ?? []).filter(entry => {
+    return manifest.entries.filter(entry => {
       const verified = status?.states?.[entry.story_id]?.verified === true;
       if (!showVerified && verified) return false;
       if (!normalized) return true;
@@ -108,7 +121,7 @@ export default function MachineTranslationReviewPage() {
         .toLowerCase()
         .includes(normalized);
     });
-  }, [manifest, query, showVerified, status]);
+  }, [manifest.entries, query, showVerified, status]);
 
   return (
     <main className="min-h-screen bg-gray-100 p-4 text-gray-900 md:p-8">
@@ -122,7 +135,7 @@ export default function MachineTranslationReviewPage() {
               </div>
               <h1 className="mt-3 text-2xl font-black">机器翻译人工校验清单</h1>
               <p className="mt-1 text-sm text-gray-500">
-                清单基于合并中文化提交自动生成；KV 只保存人工校验状态，不改写基线来源。
+                魔法纪录和 Exedra 使用独立来源清单与 KV 状态；人工/Wiki/官方繁中不会进入机翻总数。
               </p>
             </div>
             <div className="flex min-w-0 flex-1 gap-2 lg:max-w-xl">
@@ -142,6 +155,22 @@ export default function MachineTranslationReviewPage() {
                 登录/刷新
               </button>
             </div>
+          </div>
+          <div className="mt-5 flex gap-2">
+            {(['magireco', 'exedra'] as const).map(value => (
+              <button
+                type="button"
+                key={value}
+                onClick={() => setSystem(value)}
+                className={`rounded-lg px-4 py-2 text-sm font-black ${
+                  system === value
+                    ? value === 'exedra' ? 'bg-violet-600 text-white' : 'bg-emerald-600 text-white'
+                    : 'border bg-white text-gray-500'
+                }`}
+              >
+                {SYSTEM_LABELS[value]}（{MACHINE_TRANSLATION_MANIFESTS[value].total}）
+              </button>
+            ))}
           </div>
         </header>
 
@@ -178,6 +207,7 @@ export default function MachineTranslationReviewPage() {
                   <div className="min-w-0">
                     <p className="truncate font-bold">{entry.title || entry.source_identity}</p>
                     <p className="truncate text-xs text-gray-500">{entry.folder}</p>
+                    <p className="truncate text-[10px] text-gray-400">来源：{entry.provenance || manifest.definition}</p>
                     {state && <p className="mt-1 text-[10px] text-gray-400">{state.reviewer} · {new Date(state.reviewed_at).toLocaleString('zh-CN')} · {state.note}</p>}
                   </div>
                   <button
@@ -191,7 +221,7 @@ export default function MachineTranslationReviewPage() {
                 </article>
               );
             })}
-            {!entries.length && <p className="p-8 text-center text-gray-400">没有符合筛选条件的剧情。</p>}
+            {!entries.length && <p className="p-8 text-center text-gray-400">当前系统没有符合筛选条件的机器翻译剧情。</p>}
           </div>
         </section>
       </div>
