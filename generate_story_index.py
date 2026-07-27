@@ -226,10 +226,8 @@ if (
     or len(MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS) != 33
 ):
     raise RuntimeError("Magia Record 审计配对白名单必须恰好包含 33 个唯一 ID")
-MAGIRECO_AUDITED_PARTIAL_PAIR = (
-    "login_story/6184 - 2021新年 各自的福袋梦/618401_1",
-    "login_story/6184 - 2021新年 各自的福袋梦/618401_1-7",
-)
+# 618401 曾使用 CN 第 1 节对 JP 第 1–7 节的临时配对。
+# 完整中文语料现已提供 618401_1-7，交由正常精确配对处理。
 
 MAGIRECO_LEGACY_ROUTE_IDENTITIES = {
     "310031": (
@@ -294,7 +292,7 @@ MAGIRECO_LEGACY_ROUTE_IDENTITIES = {
         "event_story/5170 - 七彩夏日绘～笔记中记录的日常～/"
         "5170110-17_40-47"
     ),
-    "618401": MAGIRECO_AUDITED_PARTIAL_PAIR[0],
+    "618401": "login_story/6184 - 2021新年 各自的福袋梦/618401_1-7",
     "103001": (
         "main_story/1030-20 - 第II部 第9章 - 集結の百禍編/"
         "103001_1-10"
@@ -1268,7 +1266,7 @@ def _pair_audited_magireco_sources(
     *,
     require_all: bool,
 ) -> None:
-    """Apply only the reviewed cross-folder and partial-story pairings."""
+    """Apply only the reviewed cross-folder pairings."""
 
     satisfied: set[str] = set()
     for raw_id, (cn_identity, jp_identity) in (
@@ -1283,18 +1281,8 @@ def _pair_audited_magireco_sources(
         ):
             satisfied.add(raw_id)
 
-    partial_id = "618401"
-    if _merge_audited_magireco_pair(
-        logical_sources,
-        cn_identity=MAGIRECO_AUDITED_PARTIAL_PAIR[0],
-        jp_identity=MAGIRECO_AUDITED_PARTIAL_PAIR[1],
-        stats=stats,
-        partial_cn_prefix=True,
-    ):
-        satisfied.add(partial_id)
-
     if require_all:
-        expected = set(MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS) | {partial_id}
+        expected = set(MAGIRECO_AUDITED_CROSS_FOLDER_PAIRS)
         missing = sorted(expected - satisfied)
         if missing:
             raise PipelineError(
