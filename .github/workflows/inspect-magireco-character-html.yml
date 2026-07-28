@@ -1,0 +1,91 @@
+name: Inspect Magireco Character HTML
+
+on:
+  push:
+    branches: [deploy/magireco-cn-reader]
+    paths:
+      - '.github/workflows/inspect-magireco-character-html.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Fetch representative character pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p output
+          ua='Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 Version/18.5 Mobile/15E148 Safari/604.1 MagirecoPreservation/4.0'
+          for item in \
+            'yachiyo|https://magireco.moe/wiki/%E4%B8%83%E6%B5%B7%E5%85%AB%E5%8D%83%E4%BB%A3' \
+            'iroha-swimsuit|https://magireco.moe/wiki/%E7%8E%AF%E4%BC%8A%E5%90%95%E6%B3%A2%EF%BC%88%E6%B3%B3%E8%A3%85ver.%EF%BC%89'; do
+            name=${item%%|*}
+            url=${item#*|}
+            curl --fail --location --compressed --silent --show-error \
+              --user-agent "$ua" \
+              --header 'Accept: text/html,application/xhtml+xml' \
+              --output "output/$name.html" "$url"
+          done
+
+      - name: Summarize infobox voice and media markup
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from bs4 import BeautifulSoup
+          import json, re
+
+          report = {}
+          for path in Path('output').glob('*.html'):
+              html = path.read_text(encoding='utf-8', errors='replace')
+              soup = BeautifulSoup(html, 'html.parser')
+              headings = [(node.name, node.get('id'), node.get_text(' ', strip=True)) for node in soup.select('h1,h2,h3,h4')]
+              voice_heading = next((node for node in soup.select('h2,h3,h4') if '角色语音' in node.get_text(' ', strip=True)), None)
+              voice_html = ''
+              if voice_heading:
+                  parts = []
+                  node = voice_heading.next_sibling
+                  while node:
+                      if getattr(node, 'name', None) == voice_heading.name:
+                          break
+                      parts.append(str(node))
+                      node = node.next_sibling
+                  voice_html = ''.join(parts)
+              info_tables = []
+              for table in soup.select('table'):
+                  text = table.get_text(' ', strip=True)
+                  if '人物信息' in text:
+                      info_tables.append(str(table))
+              audio_nodes = [str(node) for node in soup.select('audio,source')]
+              media_links = []
+              for a in soup.select('a[href]'):
+                  href = a.get('href', '')
+                  if re.search(r'\.(?:mp3|ogg|wav|m4a)(?:$|\?)', href, re.I) or 'Vo_char_' in href:
+                      media_links.append({'text': a.get_text(' ', strip=True), 'href': href})
+              report[path.stem] = {
+                  'bytes': len(html.encode('utf-8')),
+                  'title': soup.select_one('#firstHeading').get_text(' ', strip=True) if soup.select_one('#firstHeading') else '',
+                  'headings': headings,
+                  'infoTableCount': len(info_tables),
+                  'voiceHtmlBytes': len(voice_html.encode('utf-8')),
+                  'audioNodeCount': len(audio_nodes),
+                  'mediaLinkCount': len(media_links),
+                  'mediaLinks': media_links[:100],
+              }
+              Path(f'output/{path.stem}-infobox.html').write_text('\n'.join(info_tables), encoding='utf-8')
+              Path(f'output/{path.stem}-voice.html').write_text(voice_html, encoding='utf-8')
+              Path(f'output/{path.stem}-audio-nodes.html').write_text('\n'.join(audio_nodes), encoding='utf-8')
+          Path('output/report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
+          print(json.dumps(report, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload HTML diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-character-html-diagnostics
+          path: output
+          retention-days: 7
