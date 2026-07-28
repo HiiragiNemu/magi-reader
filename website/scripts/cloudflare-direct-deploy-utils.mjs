@@ -8,17 +8,18 @@ export const resolveNpmInvocation = ({
   nodeExecutable,
   npmExecPath,
 }) => {
+  const pathFlavor = platform === 'win32' ? path.win32 : path.posix;
   const npmCli = String(npmExecPath ?? '').trim();
   if (npmCli) {
     if (
-      !path.isAbsolute(npmCli) ||
+      !pathFlavor.isAbsolute(npmCli) ||
       /[\0\r\n]/u.test(npmCli) ||
-      !/npm-cli\.(?:c?js|mjs)$/iu.test(path.basename(npmCli))
+      !/npm-cli\.(?:c?js|mjs)$/iu.test(pathFlavor.basename(npmCli))
     ) {
       throw new Error('npm_execpath 不是安全的 npm CLI 绝对路径');
     }
     if (
-      !path.isAbsolute(nodeExecutable) ||
+      !pathFlavor.isAbsolute(nodeExecutable) ||
       /[\0\r\n]/u.test(nodeExecutable)
     ) {
       throw new Error('Node 可执行文件路径无效');

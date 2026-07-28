@@ -99,6 +99,18 @@ test('Windows npm invocation uses the current Node process without cmd.exe', () 
   });
 });
 
+test('POSIX npm invocation validates paths with POSIX semantics', () => {
+  const invocation = resolveNpmInvocation({
+    platform: 'linux',
+    nodeExecutable: '/usr/local/bin/node',
+    npmExecPath: '/usr/local/lib/node_modules/npm/bin/npm-cli.js',
+  });
+  assert.deepEqual(invocation, {
+    command: '/usr/local/bin/node',
+    prefixArgs: ['/usr/local/lib/node_modules/npm/bin/npm-cli.js'],
+  });
+});
+
 test('Windows npm invocation rejects missing or relative npm CLI paths', () => {
   assert.throws(
     () => resolveNpmInvocation({
