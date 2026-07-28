@@ -9,26 +9,30 @@ async function waitForProductionRuntime() {
   for (let attempt = 1; attempt <= 40; attempt += 1) {
     const nonce = `${Date.now()}-${attempt}`;
     try {
-      const [indexResponse, runtimeResponse, healthResponse] = await Promise.all([
+      const [indexResponse, runtimeResponse, fixesResponse, healthResponse] = await Promise.all([
         fetch(`${base}?runtime=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
         fetch(`${base}ui-v4-runtime.js?runtime=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
+        fetch(`${base}ui-v4-fixes.css?runtime=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
         fetch(`${base}health.json?runtime=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
       ]);
-      const [index, runtime, health] = await Promise.all([
+      const [index, runtime, fixes, health] = await Promise.all([
         indexResponse.text(),
         runtimeResponse.text(),
+        fixesResponse.text(),
         healthResponse.json(),
       ]);
       if (
-        indexResponse.ok && runtimeResponse.ok && healthResponse.ok &&
-        index.includes('ui-v4-runtime.js?v=4.1') &&
+        indexResponse.ok && runtimeResponse.ok && fixesResponse.ok && healthResponse.ok &&
+        index.includes('ui-v4-runtime.js?v=4.2') &&
+        index.includes('ui-v4-fixes.css?v=4.2') &&
         runtime.includes('stopImmediatePropagation') &&
-        health.uiVersion === 4 && health.counts?.pages === 500
+        fixes.includes('backdrop-filter: none') &&
+        health.uiVersion === 4 && health.uiRevision === '4.2' && health.counts?.pages === 500
       ) return;
     } catch {}
     await new Promise((resolve) => setTimeout(resolve, 5000));
   }
-  throw new Error('生产站在等待窗口内没有提供UI v4.1运行时');
+  throw new Error('生产站在等待窗口内没有提供UI v4.2运行时');
 }
 
 await waitForProductionRuntime();
@@ -51,6 +55,7 @@ async function diagnosticState(stage, error = null) {
     url: location.href,
     hash: location.hash,
     displayMenuOpen: document.querySelector('.display-menu')?.open || false,
+    displayPanelRect: document.querySelector('.display-panel')?.getBoundingClientRect().toJSON() || null,
     portalCards: [...document.querySelectorAll('[data-portal]')].map((node) => ({
       id: node.dataset.portal,
       active: node.classList.contains('active'),
@@ -120,6 +125,8 @@ try {
     const summary = page.locator('.display-menu > summary');
     await summary.click();
     await page.waitForFunction(() => document.querySelector('.display-menu')?.open === true, null, { timeout: 5000 });
+    const panelRect = await page.locator('.display-panel').evaluate((node) => node.getBoundingClientRect().toJSON());
+    check(panelRect.top >= -1 && panelRect.bottom <= 853, `外观面板超出视口：${JSON.stringify(panelRect)}`);
     const button = page.getByRole('button', { name: label, exact: true });
     await button.click({ timeout: 5000 });
     await page.waitForFunction((expected) => document.documentElement.dataset.theme === expected, id, { timeout: 5000 });
@@ -138,7 +145,7 @@ try {
   }
 
   if (failures.length) throw new Error(failures.join('\n'));
-  console.log('PRODUCTION_UI_V4_BROWSER_OK', metrics);
+  console.log('PRODUCTION_UI_V4_2_BROWSER_OK', metrics);
 } catch (error) {
   await diagnosticState('failure', error);
   await page.screenshot({ path: `${output}/99-failure-mobile.png` }).catch(() => {});
