@@ -1,0 +1,35 @@
+name: Verify Magireco Chinese Reader Production
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Fetch uncached production health
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://magireco-cn-reader.pages.dev/health.json?verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          curl --fail --silent --show-error --location \
+            --header 'Cache-Control: no-cache' \
+            --header 'Pragma: no-cache' \
+            --output /tmp/health.json \
+            "$url"
+          cat /tmp/health.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('/tmp/health.json').read_text(encoding='utf-8-sig'))
+          assert value['status'] == 'ok', value
+          assert value['readerVersion'] == 3, value
+          assert value['counts']['pages'] >= 300, value
+          print('PRODUCTION_OK', value['generatedAt'], value['counts'])
+          PY
