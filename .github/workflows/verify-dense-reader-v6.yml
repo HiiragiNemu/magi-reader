@@ -1,0 +1,181 @@
+name: Verify Dense Reader v6
+
+on:
+  pull_request:
+    branches: [deploy/magireco-cn-reader]
+    paths:
+      - 'wiki-preservation/static/**'
+      - 'wiki-preservation/scripts/patch_dense_reader.py'
+      - 'wiki-preservation/scripts/patch_structured_runtime.py'
+      - 'wiki-preservation/scripts/extract_structured_characters.py'
+      - 'wiki-preservation/scripts/extract_structured_doppel.py'
+      - '.github/workflows/verify-dense-reader-v6.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: verify-dense-reader-v6
+  cancel-in-progress: true
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out UI and extraction code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            wiki-preservation/static
+            wiki-preservation/scripts/patch_dense_reader.py
+            wiki-preservation/scripts/patch_structured_runtime.py
+            wiki-preservation/scripts/extract_structured_characters.py
+            wiki-preservation/scripts/extract_structured_doppel.py
+          sparse-checkout-cone-mode: true
+          show-progress: false
+
+      - name: Download verified 500-page snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: magireco-cn-reader-500-page-parallel-snapshot
+          path: site
+          github-token: ${{ github.token }}
+          repository: HiiragiNemu/magi-reader
+          run-id: 30333056699
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Assemble dense reader
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check beautifulsoup4 lxml
+          for file in index.html app.js styles.css ui-v4-fixes.css ui-v4-runtime.js structured-ui.js structured-ui.css doppel-ui.js doppel-ui.css dense-reader.css dense-reader-compact.css; do
+            cp "wiki-preservation/static/$file" "site/$file"
+          done
+          python wiki-preservation/scripts/patch_structured_runtime.py site/structured-ui.js
+          python wiki-preservation/scripts/extract_structured_characters.py site
+          python wiki-preservation/scripts/extract_structured_doppel.py site
+          python wiki-preservation/scripts/patch_dense_reader.py site
+          node --check site/app.js
+          node --check site/structured-ui.js
+          node --check site/doppel-ui.js
+          grep -q '/dense-reader.css?v=6.0' site/index.html
+          grep -q '/dense-reader-compact.css?v=6.0' site/index.html
+          ! grep -R -E '把原 Wiki|不会删减底层|这里不是Wiki文章关键词筛选|这里不是正文关键词筛选' site/index.html site/app.js site/structured-ui.js site/doppel-ui.js
+          grep -q 'requestIdleCallback' site/app.js
+          grep -q 'subtree: false' site/structured-ui.js
+          grep -q 'subtree: false' site/doppel-ui.js
+
+      - name: Install Chromium
+        run: |
+          npm init -y
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Run local desktop and mobile regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 4173 --directory site >/tmp/dense-server.log 2>&1 &
+          echo $! > /tmp/dense-server.pid
+          for attempt in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          cat > /tmp/test-dense.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs/promises';
+          await fs.mkdir('dense-v6-evidence', { recursive: true });
+          const browser = await chromium.launch({ headless: true });
+          const errors = [];
+          const assert = (condition, message) => { if (!condition) errors.push(message); };
+
+          const desktop = await browser.newContext({ viewport: { width: 2048, height: 1060 }, deviceScaleFactor: 1 });
+          const page = await desktop.newPage();
+          page.on('pageerror', error => errors.push(`desktop pageerror: ${error}`));
+          await page.goto('http://127.0.0.1:4173/#/portal/all', { waitUntil: 'networkidle', timeout: 60000 });
+          await page.waitForSelector('.article-row');
+          const portal = await page.evaluate(() => ({
+            mainWidth: document.querySelector('.site-main')?.getBoundingClientRect().width || 0,
+            viewport: document.documentElement.clientWidth,
+            scrollHeight: document.documentElement.scrollHeight,
+            cardHeights: [...document.querySelectorAll('.portal-card')].map(node => node.getBoundingClientRect().height),
+            text: document.body.innerText,
+            overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          }));
+          assert(portal.mainWidth >= 1650, `桌面主内容仍过窄：${JSON.stringify(portal)}`);
+          assert(Math.max(...portal.cardHeights) <= 100, `门户入口仍是大卡片：${Math.max(...portal.cardHeights)}`);
+          assert(!/把原 Wiki|不会删减|这里不是/.test(portal.text), '首页仍包含开发指令式文案');
+          assert(portal.overflow <= 2, `首页横向溢出：${portal.overflow}`);
+          await page.screenshot({ path: 'dense-v6-evidence/01-portal-desktop.png', fullPage: false });
+
+          const archive = await (await page.request.get('http://127.0.0.1:4173/data/archive-index.json')).json();
+          const target = archive.find(item => item.title === '魔女化身' && item.namespace === 0)
+            || archive.find(item => item.title === '千岁由麻' && item.namespace === 0)
+            || archive.find(item => item.namespace === 0 && (item.headings || []).length >= 6);
+          assert(Boolean(target), '找不到长文章测试目标');
+          if (target) {
+            await page.goto(`http://127.0.0.1:4173/#/article/${encodeURIComponent(target.id)}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+            await page.waitForSelector('.wiki-document');
+            await page.waitForTimeout(1800);
+            const article = await page.evaluate(() => {
+              const body = document.querySelector('.wiki-document');
+              const articlePage = document.querySelector('.article-page');
+              const toc = document.querySelector('.article-toc');
+              const largeImages = [...document.querySelectorAll('.wiki-document img')]
+                .map(node => node.getBoundingClientRect())
+                .filter(box => box.width > 250 && box.height > 150);
+              const floated = [...document.querySelectorAll('.wiki-document .floatright, .wiki-document .tright, .wiki-document .infobox')]
+                .some(node => getComputedStyle(node).float === 'right');
+              return {
+                pageWidth: articlePage?.getBoundingClientRect().width || 0,
+                bodyWidth: body?.getBoundingClientRect().width || 0,
+                tocWidth: toc?.getBoundingClientRect().width || 0,
+                maxLargeImageHeight: Math.max(0, ...largeImages.map(box => box.height)),
+                floated,
+                overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+                enhanced: body?.dataset.enhanced || '',
+              };
+            });
+            assert(article.pageWidth >= 1450, `文章仍未利用桌面空间：${JSON.stringify(article)}`);
+            assert(article.bodyWidth >= 1150, `正文列仍过窄：${JSON.stringify(article)}`);
+            assert(article.maxLargeImageHeight <= 530, `文章大图仍占据过高空间：${JSON.stringify(article)}`);
+            assert(article.overflow <= 2, `文章横向溢出：${JSON.stringify(article)}`);
+            await page.screenshot({ path: 'dense-v6-evidence/02-article-desktop.png', fullPage: false });
+          }
+
+          const mobile = await browser.newContext({ viewport: { width: 393, height: 852 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+          const mobilePage = await mobile.newPage();
+          mobilePage.on('pageerror', error => errors.push(`mobile pageerror: ${error}`));
+          await mobilePage.goto('http://127.0.0.1:4173/#/characters', { waitUntil: 'networkidle', timeout: 60000 });
+          await mobilePage.waitForSelector('.character-card');
+          const mobileMetrics = await mobilePage.evaluate(() => ({
+            cards: document.querySelectorAll('.character-card').length,
+            overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+            width: document.documentElement.clientWidth,
+          }));
+          assert(mobileMetrics.cards >= 40, `手机人物卡不足：${JSON.stringify(mobileMetrics)}`);
+          assert(mobileMetrics.overflow <= 2, `手机页面横向溢出：${JSON.stringify(mobileMetrics)}`);
+          await mobilePage.screenshot({ path: 'dense-v6-evidence/03-characters-mobile.png', fullPage: false });
+
+          await fs.writeFile('dense-v6-evidence/metrics.json', JSON.stringify({ portal, mobileMetrics, errors }, null, 2));
+          await browser.close();
+          if (errors.length) throw new Error(errors.join('\n'));
+          console.log('DENSE_READER_V6_OK');
+          JS
+          node /tmp/test-dense.mjs
+
+      - name: Upload layout evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dense-reader-v6-evidence
+          path: dense-v6-evidence
+          if-no-files-found: warn
+          retention-days: 14
