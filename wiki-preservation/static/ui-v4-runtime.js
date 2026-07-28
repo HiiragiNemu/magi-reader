@@ -1,4 +1,7 @@
 (() => {
+  const RUNTIME_REVISION = '4.3-image-viewer-routing';
+  document.documentElement.dataset.uiRuntime = RUNTIME_REVISION;
+
   const closeMenu = (except = null) => {
     document.querySelectorAll('.display-menu[open]').forEach((menu) => {
       if (menu === except) return;
