@@ -1,0 +1,155 @@
+name: Verify Memoria Ordinary Articles v2
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-magireco-memoria-ordinary-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: magireco-memoria-ordinary-v2
+  cancel-in-progress: true
+
+jobs:
+  sample:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+    steps:
+      - name: Check out extractor and restricted proxy
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: memoria-crawl
+          sparse-checkout-cone-mode: true
+          show-progress: false
+
+      - name: Download verified fidelity snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: magireco-cn-reader-500-page-parallel-snapshot
+          path: snapshot
+          github-token: ${{ github.token }}
+          repository: HiiragiNemu/magi-reader
+          run-id: 30333056699
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+
+      - name: Deploy temporary ordinary-article proxy
+        shell: bash
+        run: |
+          set -euo pipefail
+          project="magireco-memoria-v2-${GITHUB_RUN_ID}"
+          token="$(openssl rand -hex 24)"
+          proxy="https://${project}.pages.dev"
+          mkdir -p memoria-proxy-dist memoria-v2-evidence
+          python - <<PY
+          from pathlib import Path
+          source = Path('memoria-crawl/proxy-worker.js').read_text(encoding='utf-8')
+          Path('memoria-proxy-dist/_worker.js').write_text(source.replace('__PROXY_TOKEN__', '${token}'), encoding='utf-8')
+          PY
+          node --check memoria-proxy-dist/_worker.js
+          echo "MEMORIA_PROXY_PROJECT=$project" >> "$GITHUB_ENV"
+          echo "MAGIRECO_FETCH_PROXY=$proxy" >> "$GITHUB_ENV"
+          echo "MAGIRECO_PROXY_TOKEN=$token" >> "$GITHUB_ENV"
+          npx --yes wrangler@latest pages project create "$project" --production-branch main
+          npx --yes wrangler@latest pages deploy memoria-proxy-dist \
+            --project-name "$project" --branch main --commit-dirty=true
+          for attempt in $(seq 1 40); do
+            status="$(curl --silent --show-error -o memoria-v2-evidence/health.json -w '%{http_code}' "$proxy/health" || true)"
+            if [ "$status" = 200 ] && grep -q 'ordinary-memoria-articles-only' memoria-v2-evidence/health.json; then
+              exit 0
+            fi
+            sleep 3
+          done
+          exit 1
+
+      - name: Record non-blocking article probe
+        continue-on-error: true
+        shell: bash
+        run: |
+          target='https://magireco.moe/wiki/记忆结晶/1000円未満の魔法'
+          encoded="$(python -c 'import sys,urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$target")"
+          curl --silent --show-error \
+            -D memoria-v2-evidence/probe.headers.txt \
+            -o memoria-v2-evidence/probe.body.html \
+            -w '%{http_code}\n' \
+            -H "x-magireco-proxy-token: $MAGIRECO_PROXY_TOKEN" \
+            "$MAGIRECO_FETCH_PROXY/?url=$encoded" \
+            | tee memoria-v2-evidence/probe.status.txt
+
+      - name: Parse serial representative sample
+        run: |
+          python memoria-crawl/build_memoria_from_snapshot.py \
+            --snapshot snapshot \
+            --output memoria-sample \
+            --limit 20 \
+            --include '1000円未満の魔法' \
+            --include '1000年の眠りを超えて' \
+            --workers 3 \
+            --pause 0.45 \
+            --timeout 40 \
+            --retries 6 \
+            --max-requests 240
+
+      - name: Validate real sample coverage
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('memoria-sample')
+          manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))
+          records = json.loads((root / 'memoria.json').read_text(encoding='utf-8'))
+          failures = json.loads((root / 'failures.json').read_text(encoding='utf-8'))
+          by_ja = {item['nameJa']: item for item in records}
+
+          assert manifest['snapshotArticleMembers'] == 1042, manifest
+          assert manifest['records'] == manifest['selectedArticlePages'] >= 20, manifest
+          assert manifest['withImage'] == manifest['records'], manifest
+          assert manifest['withChineseName'] >= 18, manifest
+          assert manifest['withStats'] >= 16, manifest
+          assert manifest['withChineseDescription'] >= 14, manifest
+          assert len(failures) <= 4, failures
+
+          for name in ('1000円未満の魔法', '1000年の眠りを超えて'):
+              item = by_ja[name]
+              assert item['articleStatus'] == 200, item
+              assert item['number'] is not None, item
+              assert item['rarity'] in (1, 2, 3, 4), item
+              assert item['type'] and item['effect'], item
+              assert all(item[key] is not None for key in ('hpMin','hpMax','atkMin','atkMax','defMin','defMax')), item
+          print(json.dumps({'manifest': manifest, 'failures': failures}, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload sample evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-memoria-ordinary-v2-sample
+          path: |
+            memoria-sample
+            memoria-v2-evidence
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Delete temporary proxy
+        if: always()
+        run: |
+          if [ -n "${MEMORIA_PROXY_PROJECT:-}" ]; then
+            npx --yes wrangler@latest pages project delete "$MEMORIA_PROXY_PROJECT" --yes || true
+          fi
