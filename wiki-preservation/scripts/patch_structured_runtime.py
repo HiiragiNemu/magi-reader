@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Apply deterministic runtime fixes to structured-ui.js.
 
-The structured layer coexists with the preservation reader.  The patch makes
+The structured layer coexists with the preservation reader. The patch makes
 legacy navigation upgrades idempotent, cancels stale debounced list renders
 when leaving a route, and renders a structured destination immediately after
 changing the hash instead of relying solely on listener ordering.
@@ -45,7 +45,7 @@ def main() -> None:
     value = replace_once(
         value,
         marker,
-        marker + "\nconst STRUCTURED_RUNTIME_REVISION = '5.2-route-timer-isolation';",
+        marker + "\nconst STRUCTURED_RUNTIME_REVISION = '5.1-idempotent-navigation;5.2-route-timer-isolation';",
     )
     path.write_text(value, encoding="utf-8")
 
