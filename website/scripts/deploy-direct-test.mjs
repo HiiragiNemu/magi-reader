@@ -194,6 +194,7 @@ try {
   preparedConfig = prepareConfig(namespaceId);
 
   if (!skipChecks) {
+    run(npmCommand, ['run', 'test:python']);
     run(npmCommand, ['run', 'lint']);
     run(npmCommand, ['run', 'type-check']);
     run(npmCommand, ['test']);
@@ -223,11 +224,11 @@ try {
       : `测试 Worker 已部署：https://${workerName}.workers.dev`,
   );
 } finally {
-  restoreOpenNextConfigRedirect(redirectHeld);
   if (!keepConfig) {
     rmSync(resolvedConfig, { force: true });
     rmSync(testConfig, { force: true });
   } else if (preparedConfig) {
     console.log(`保留临时配置：${preparedConfig}`);
   }
+  restoreOpenNextConfigRedirect(redirectHeld);
 }
