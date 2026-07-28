@@ -3,11 +3,17 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
+  renameSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+
+import {
+  parseNamespaceList,
+  rewriteTestConfig,
+} from './cloudflare-direct-deploy-utils.mjs';
 
 const DEFAULT_WORKER_NAME = 'magireader-exedra-cn-test';
 const DEFAULT_KV_TITLE = 'magi-submissions-exedra-cn-test';
@@ -24,8 +30,6 @@ const flagValue = (name) => {
 };
 
 const hasFlag = (name) => process.argv.includes(name);
-const stripAnsi = (value) => value.replace(/\u001b\[[0-9;]*m/gu, '');
-
 const workerName = (
   flagValue('--worker-name') ??
   process.env.MAGIREADER_TEST_WORKER_NAME ??
@@ -47,6 +51,7 @@ const message = (
 ).trim();
 const dryRun = hasFlag('--dry-run');
 const skipBuild = hasFlag('--skip-build');
+const skipChecks = hasFlag('--skip-checks');
 const keepConfig = hasFlag('--keep-config');
 
 if (!/^[a-z0-9][a-z0-9-]{0,62}$/u.test(workerName)) {
@@ -80,6 +85,16 @@ const generatedDirectory = path.resolve(
 );
 const resolvedConfig = path.join(generatedDirectory, 'wrangler.resolved.jsonc');
 const testConfig = path.join(generatedDirectory, 'wrangler.test.jsonc');
+const openNextRedirect = path.resolve(
+  projectRoot,
+  '.wrangler',
+  'deploy',
+  'config.json',
+);
+const heldOpenNextRedirect = path.join(
+  generatedDirectory,
+  'opennext-deploy-config.hold.json',
+);
 
 for (const required of [sourceConfig, verifyConfig, wranglerEntry]) {
   if (!existsSync(required)) {
@@ -89,7 +104,7 @@ for (const required of [sourceConfig, verifyConfig, wranglerEntry]) {
 
 const run = (command, args, options = {}) => {
   const result = spawnSync(command, args, {
-    cwd: projectRoot,
+    cwd: options.cwd ?? projectRoot,
     env: { ...process.env, ...(options.env ?? {}) },
     encoding: options.capture ? 'utf8' : undefined,
     stdio: options.capture ? ['ignore', 'pipe', 'pipe'] : 'inherit',
@@ -109,74 +124,6 @@ const run = (command, args, options = {}) => {
     : '';
 };
 
-const collectNamespaceObjects = (value, result = []) => {
-  if (Array.isArray(value)) {
-    for (const item of value) collectNamespaceObjects(item, result);
-  } else if (value && typeof value === 'object') {
-    const record = value;
-    const id = typeof record.id === 'string' ? record.id.trim() : '';
-    const title = typeof record.title === 'string'
-      ? record.title.trim()
-      : typeof record.name === 'string'
-        ? record.name.trim()
-        : '';
-    if (ID_RE.test(id) && title) result.push({ id, title });
-    for (const nested of Object.values(record)) {
-      if (nested && typeof nested === 'object') {
-        collectNamespaceObjects(nested, result);
-      }
-    }
-  }
-  return result;
-};
-
-const parseNamespaceList = (raw, exactTitle) => {
-  const output = stripAnsi(raw).trim();
-  const matches = [];
-
-  const jsonCandidates = [output];
-  const firstArray = output.indexOf('[');
-  const lastArray = output.lastIndexOf(']');
-  if (firstArray >= 0 && lastArray > firstArray) {
-    jsonCandidates.push(output.slice(firstArray, lastArray + 1));
-  }
-  const firstObject = output.indexOf('{');
-  const lastObject = output.lastIndexOf('}');
-  if (firstObject >= 0 && lastObject > firstObject) {
-    jsonCandidates.push(output.slice(firstObject, lastObject + 1));
-  }
-
-  for (const candidate of jsonCandidates) {
-    try {
-      for (const item of collectNamespaceObjects(JSON.parse(candidate))) {
-        if (item.title === exactTitle) matches.push(item.id.toLowerCase());
-      }
-    } catch {
-      // Wrangler versions differ; fall through to table/text parsing.
-    }
-  }
-
-  for (const line of output.split(/\r?\n/gu)) {
-    if (!line.includes(exactTitle)) continue;
-    for (const match of line.matchAll(/[a-f0-9]{32}/giu)) {
-      matches.push(match[0].toLowerCase());
-    }
-  }
-
-  const unique = [...new Set(matches)];
-  if (unique.length === 0) {
-    throw new Error(
-      `Wrangler 返回中没有找到名称完全等于 ${JSON.stringify(exactTitle)} 的 KV namespace。`,
-    );
-  }
-  if (unique.length !== 1) {
-    throw new Error(
-      `KV namespace 名称 ${JSON.stringify(exactTitle)} 对应多个 ID：${unique.join(', ')}`,
-    );
-  }
-  return unique[0];
-};
-
 const resolveNamespaceId = () => {
   if (explicitNamespaceId) return explicitNamespaceId.toLowerCase();
   const output = run(
@@ -185,14 +132,6 @@ const resolveNamespaceId = () => {
     { capture: true },
   );
   return parseNamespaceList(output, namespaceTitle);
-};
-
-const replaceExactlyOnce = (source, expression, replacement, label) => {
-  const matches = source.match(new RegExp(expression.source, `${expression.flags.includes('g') ? expression.flags : `${expression.flags}g`}`));
-  if (!matches || matches.length !== 1) {
-    throw new Error(`${label} 预期匹配 1 次，实际 ${matches?.length ?? 0} 次`);
-  }
-  return source.replace(expression, replacement);
 };
 
 const prepareConfig = (namespaceId) => {
@@ -208,38 +147,57 @@ const prepareConfig = (namespaceId) => {
     ],
     { env: { SUBMISSIONS_KV_NAMESPACE_ID: namespaceId } },
   );
-
-  let source = readFileSync(resolvedConfig, 'utf8');
-  source = replaceExactlyOnce(
+  const source = readFileSync(resolvedConfig, 'utf8');
+  const rewritten = rewriteTestConfig({
     source,
-    /"name"\s*:\s*"[^"]+"/u,
-    `"name": ${JSON.stringify(workerName)}`,
-    'Worker name',
-  );
-  source = replaceExactlyOnce(
-    source,
-    /"service"\s*:\s*"[^"]+"/u,
-    `"service": ${JSON.stringify(workerName)}`,
-    'WORKER_SELF_REFERENCE service',
-  );
-  if (source.includes('00000000000000000000000000000000')) {
-    throw new Error('生成配置仍包含全零 KV ID');
-  }
-  if (!source.includes(namespaceId)) {
-    throw new Error('生成配置没有包含解析出的测试 KV ID');
-  }
-  writeFileSync(testConfig, source, { encoding: 'utf8', mode: 0o600 });
+    workerName,
+    namespaceId,
+  });
+  writeFileSync(testConfig, rewritten, { encoding: 'utf8', mode: 0o600 });
   return testConfig;
 };
 
+const holdOpenNextConfigRedirect = () => {
+  if (existsSync(heldOpenNextRedirect)) {
+    if (existsSync(openNextRedirect)) {
+      throw new Error(
+        '同时发现 OpenNext 部署配置和旧的暂存配置，拒绝覆盖。',
+      );
+    }
+    mkdirSync(path.dirname(openNextRedirect), { recursive: true });
+    renameSync(heldOpenNextRedirect, openNextRedirect);
+  }
+  if (existsSync(openNextRedirect)) {
+    mkdirSync(generatedDirectory, { recursive: true });
+    renameSync(openNextRedirect, heldOpenNextRedirect);
+    return true;
+  }
+  return false;
+};
+
+const restoreOpenNextConfigRedirect = (held) => {
+  if (!held || !existsSync(heldOpenNextRedirect)) return;
+  mkdirSync(path.dirname(openNextRedirect), { recursive: true });
+  if (existsSync(openNextRedirect)) {
+    throw new Error('部署后出现新的 OpenNext 配置，无法安全恢复原配置。');
+  }
+  renameSync(heldOpenNextRedirect, openNextRedirect);
+};
+
 const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-let namespaceId = '';
 let preparedConfig = '';
+let redirectHeld = false;
 try {
-  namespaceId = resolveNamespaceId();
+  const namespaceId = resolveNamespaceId();
   console.log(`测试 Worker：${workerName}`);
   console.log(`测试 KV：${namespaceTitle} (${namespaceId})`);
   preparedConfig = prepareConfig(namespaceId);
+
+  if (!skipChecks) {
+    run(npmCommand, ['run', 'lint']);
+    run(npmCommand, ['run', 'type-check']);
+    run(npmCommand, ['test']);
+  }
 
   if (!skipBuild) {
     run(npmCommand, ['run', 'build:worker']);
@@ -247,6 +205,7 @@ try {
     throw new Error('--skip-build 需要已有 .open-next/worker.js');
   }
 
+  redirectHeld = holdOpenNextConfigRedirect();
   const deployArgs = [
     wranglerEntry,
     'deploy',
@@ -264,6 +223,7 @@ try {
       : `测试 Worker 已部署：https://${workerName}.workers.dev`,
   );
 } finally {
+  restoreOpenNextConfigRedirect(redirectHeld);
   if (!keepConfig) {
     rmSync(resolvedConfig, { force: true });
     rmSync(testConfig, { force: true });
