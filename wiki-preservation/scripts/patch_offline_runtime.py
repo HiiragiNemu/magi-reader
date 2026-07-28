@@ -100,6 +100,7 @@ const SHELL = `${{VERSION}}-shell`;
 const DATA = `${{VERSION}}-data`;
 const STATIC = `${{VERSION}}-static`;
 const CORE = {json.dumps(core, ensure_ascii=False, indent=2)};
+const FALLBACK_URL = new URL('/index.html', self.location.origin).href;
 
 self.addEventListener('install', (event) => {{
   event.waitUntil(
@@ -121,22 +122,29 @@ self.addEventListener('activate', (event) => {{
   );
 }});
 
-async function networkFirst(request, fallback = null) {{
+async function cachedShell(request) {{
+  const cache = await caches.open(SHELL);
+  return (await cache.match(request, {{ ignoreSearch: true }}))
+    || (await cache.match(FALLBACK_URL, {{ ignoreSearch: true }}));
+}}
+
+async function networkFirst(request) {{
   const cache = await caches.open(SHELL);
   try {{
     const response = await fetch(request);
     if (response.ok) await cache.put(request, response.clone());
     return response;
   }} catch {{
-    return (await cache.match(request))
-      || (fallback ? await cache.match(fallback) : null)
-      || Response.error();
+    return (await cachedShell(request)) || new Response(
+      '<!doctype html><meta charset="utf-8"><title>离线</title><p>资料库离线缓存尚未完成，请恢复网络后重新打开一次。</p>',
+      {{ status: 503, headers: {{ 'content-type': 'text/html; charset=utf-8' }} }},
+    );
   }}
 }}
 
 async function staleWhileRevalidate(request, cacheName) {{
   const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
+  const cached = await cache.match(request, {{ ignoreSearch: true }});
   const refresh = fetch(request)
     .then(async (response) => {{
       if (response.ok) await cache.put(request, response.clone());
@@ -153,11 +161,11 @@ self.addEventListener('fetch', (event) => {{
   if (url.origin !== self.location.origin) return;
 
   if (request.mode === 'navigate') {{
-    event.respondWith(networkFirst(request, '/index.html'));
+    event.respondWith(networkFirst(request));
     return;
   }}
   if (url.pathname === '/health.json' || url.pathname === '/index.html') {{
-    event.respondWith(networkFirst(request, '/index.html'));
+    event.respondWith(networkFirst(request));
     return;
   }}
   if (url.pathname.startsWith('/data/') && (url.pathname.endsWith('.json') || url.pathname.endsWith('.gz'))) {{
