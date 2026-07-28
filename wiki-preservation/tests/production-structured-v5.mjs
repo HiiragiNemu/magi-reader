@@ -65,7 +65,6 @@ try {
   check(await yachiyoCard.count() === 1, '未找到七海八千代基础人物条目');
   await yachiyoCard.click();
   await page.waitForSelector('.character-detail .profile-fields', { timeout: 20_000 });
-  check(location !== undefined, '');
   const profileText = await page.locator('.character-detail').innerText();
   check(profileText.includes('雨宫天'), '人物详情缺少声优');
   check(profileText.includes('七海 やちよ'), '人物详情缺少日文名');
@@ -105,7 +104,6 @@ try {
   await page.waitForSelector('.character-detail');
   await page.getByRole('button', { name: '阅读完整Wiki正文', exact: true }).click();
   await page.waitForSelector('.article-page .wiki-document', { timeout: 20_000 });
-  check(location !== undefined, '');
   check((await page.locator('.wiki-document').innerText()).includes('七海八千代'), 'Wiki正文没有保留人物内容');
 
   const metrics = await page.evaluate(() => ({
