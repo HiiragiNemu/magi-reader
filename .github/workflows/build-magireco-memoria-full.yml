@@ -1,0 +1,207 @@
+name: Build Full Magireco Memoria Catalog
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'memoria-crawl/**'
+      - '.github/workflows/build-magireco-memoria-full.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: magireco-memoria-full-catalog
+  cancel-in-progress: false
+
+jobs:
+  batch:
+    name: batch-${{ matrix.id }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - { id: '00', start: 0, limit: 140 }
+          - { id: '01', start: 140, limit: 140 }
+          - { id: '02', start: 280, limit: 140 }
+          - { id: '03', start: 420, limit: 140 }
+          - { id: '04', start: 560, limit: 140 }
+          - { id: '05', start: 700, limit: 140 }
+          - { id: '06', start: 840, limit: 140 }
+          - { id: '07', start: 980, limit: 62 }
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+    steps:
+      - name: Check out crawler
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: memoria-crawl
+          sparse-checkout-cone-mode: true
+          show-progress: false
+
+      - name: Download verified 500-page fidelity snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: magireco-cn-reader-500-page-parallel-snapshot
+          path: snapshot
+          github-token: ${{ github.token }}
+          repository: HiiragiNemu/magi-reader
+          run-id: 30333056699
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install parser dependencies
+        run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+
+      - name: Deploy temporary ordinary-article proxy
+        shell: bash
+        run: |
+          set -euo pipefail
+          project="magi-mem-${GITHUB_RUN_ID}-${{ matrix.id }}"
+          token="$(openssl rand -hex 24)"
+          proxy="https://${project}.pages.dev"
+          mkdir -p proxy-dist
+          python - <<PY
+          from pathlib import Path
+          source = Path('memoria-crawl/proxy-worker.js').read_text(encoding='utf-8')
+          Path('proxy-dist/_worker.js').write_text(source.replace('__PROXY_TOKEN__', '${token}'), encoding='utf-8')
+          PY
+          node --check proxy-dist/_worker.js
+          echo "MEMORIA_PROXY_PROJECT=$project" >> "$GITHUB_ENV"
+          echo "MAGIRECO_FETCH_PROXY=$proxy" >> "$GITHUB_ENV"
+          echo "MAGIRECO_PROXY_TOKEN=$token" >> "$GITHUB_ENV"
+          npx --yes wrangler@latest pages project create "$project" --production-branch main >/tmp/project.log 2>&1
+          npx --yes wrangler@latest pages deploy proxy-dist --project-name "$project" --branch main --commit-dirty=true >/tmp/deploy.log 2>&1
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent "$proxy/health" | grep -q 'ordinary-memoria-articles-only'; then
+              exit 0
+            fi
+            sleep 3
+          done
+          cat /tmp/project.log /tmp/deploy.log
+          exit 1
+
+      - name: Run three recoverable passes
+        shell: bash
+        run: |
+          set -euo pipefail
+          for pass in 1 2 3; do
+            python memoria-crawl/crawl_memoria_selection.py \
+              --snapshot snapshot \
+              --output "passes/pass-${pass}" \
+              --start ${{ matrix.start }} \
+              --limit ${{ matrix.limit }} \
+              --workers 4 \
+              --pause 1.4 \
+              --timeout 50 \
+              --retries 1 \
+              --max-requests 220
+            sleep 6
+          done
+
+      - name: Merge and validate batch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python memoria-crawl/merge_memoria_passes.py \
+            --input passes/pass-1 \
+            --input passes/pass-2 \
+            --input passes/pass-3 \
+            --output batch-merged
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('batch-merged')
+          manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))
+          records = json.loads((root / 'memoria.json').read_text(encoding='utf-8'))
+          expected = ${{ matrix.limit }}
+          assert manifest['records'] == expected, manifest
+          assert len(records) == expected
+          assert manifest['withImage'] == expected, manifest
+          assert manifest['withChineseName'] >= expected - 4, manifest
+          assert manifest['withStats'] >= expected - 8, manifest
+          assert manifest['remainingFailures'] <= 8, manifest
+          print(json.dumps(manifest, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload merged batch
+        uses: actions/upload-artifact@v4
+        with:
+          name: memoria-batch-${{ matrix.id }}
+          path: batch-merged
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Delete temporary proxy
+        if: always()
+        run: |
+          if [ -n "${MEMORIA_PROXY_PROJECT:-}" ]; then
+            npx --yes wrangler@latest pages project delete "$MEMORIA_PROXY_PROJECT" --yes || true
+          fi
+
+  aggregate:
+    name: aggregate-full-catalog
+    needs: batch
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out merger
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: memoria-crawl/merge_memoria_passes.py
+          sparse-checkout-cone-mode: false
+          show-progress: false
+
+      - name: Download all batch artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: memoria-batch-*
+          path: batches
+          merge-multiple: false
+
+      - name: Merge and validate all 1042 records
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t roots < <(find batches -type f -name manifest.json -printf '%h\n' | sort)
+          test "${#roots[@]}" -eq 8
+          args=()
+          for root in "${roots[@]}"; do args+=(--input "$root"); done
+          python memoria-crawl/merge_memoria_passes.py "${args[@]}" --output memoria-full
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('memoria-full')
+          manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))
+          records = json.loads((root / 'memoria.json').read_text(encoding='utf-8'))
+          failures = json.loads((root / 'failures.json').read_text(encoding='utf-8'))
+          assert manifest['snapshotArticleMembers'] == 1042, manifest
+          assert manifest['records'] == 1042 and len(records) == 1042, manifest
+          assert manifest['withImage'] == 1042, manifest
+          assert manifest['withChineseName'] >= 1030, manifest
+          assert manifest['withStats'] >= 1010, manifest
+          assert manifest['uniqueNumbers'] >= 1010, manifest
+          assert manifest['remainingFailures'] <= 32 and len(failures) <= 32, manifest
+          titles = {item['nameJa'] for item in records}
+          assert {'1000円未満の魔法', '1000年の眠りを超えて'} <= titles
+          print(json.dumps(manifest, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload complete structured Memoria catalog
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-memoria-full-1042
+          path: memoria-full
+          if-no-files-found: error
+          retention-days: 30
