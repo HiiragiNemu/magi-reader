@@ -39,7 +39,7 @@ jobs:
               continue
 
           identity_key, parent_parts, file_stem = magireco_source_identity(
-          '''.replace('          ', '')
+          '''
           new = '''        if "WEBSITE_DATA" in relative.parts:
               continue
           try:
@@ -53,7 +53,10 @@ jobs:
               continue
 
           identity_key, parent_parts, file_stem = magireco_source_identity(
-          '''.replace('          ', '')
+          '''
+          # YAML block indentation is removed before Python sees this script;
+          # the strings above therefore match the eight/twelve-space source
+          # indentation exactly.
           if old in text:
               text = text.replace(old, new, 1)
           elif new not in text:
@@ -74,11 +77,12 @@ jobs:
           assert item.get('path_jp'), item
           assert item.get('has_cn') is False, item
           assert not item.get('path_cn'), item
-          assert all(
-              path.stat().st_size > 0
+          empty = [
+              str(path)
               for path in Path('website/public/data').rglob('*.txt')
-              if path.is_file()
-          )
+              if path.is_file() and path.stat().st_size <= 0
+          ]
+          assert not empty, empty[:50]
           print('EMPTY_STORY_SOURCES_REJECTED', item)
           PY
 
