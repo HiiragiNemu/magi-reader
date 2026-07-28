@@ -218,7 +218,11 @@ def main() -> int:
             sidecar_name,
             *[PurePosixPath(str(value)).name for value in source_paths],
         }
-        existing = [output_dir / name for name in expected_names if (output_dir / name).exists()]
+        existing = [
+            output_dir / name
+            for name in expected_names
+            if (output_dir / name).exists()
+        ]
         cn_path = output_dir / cn_name
         report_path = output_dir / report_name
         if cn_path.is_file() and report_path.is_file():
@@ -226,7 +230,9 @@ def main() -> int:
             continue
         if existing:
             stats["failed"] += 1
-            failures.append(f"{identity}: 发现不完整既有产物，拒绝覆盖：{existing[:3]}")
+            failures.append(
+                f"{identity}: 发现不完整既有产物，拒绝覆盖：{existing[:3]}"
+            )
             continue
 
         try:
@@ -298,7 +304,7 @@ def main() -> int:
                     group_key,
                     jp_path,
                     staged_cn,
-                    Path("exedra-wiki-export"),
+                    "exedra-wiki-export",
                     json_meta,
                 )
                 report["provenance"] = "exedra_wiki_human"
@@ -351,7 +357,10 @@ def main() -> int:
         ) + "\n",
         encoding="utf-8",
     )
-    common.shutil.rmtree(STAGING_ROOT, ignore_errors=True)
+    try:
+        STAGING_ROOT.rmdir()
+    except OSError:
+        pass
     print(json.dumps(stats, ensure_ascii=False))
     return 2 if failures else 0
 
