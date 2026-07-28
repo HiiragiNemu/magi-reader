@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Publish raw Magia Record / Magia Exedra scenario JSON with provenance.
+"""Index every raw scenario JSON without duplicating 1+ GiB into the Worker.
 
-The normal reader uses consolidated TXT because it is stable for bilingual
-alignment.  This script additionally copies every raw scenario JSON into the
-public asset tree, writes a SHA-256 manifest, and attaches exact stem/folder
-matches to story_index entries without replacing their normal TXT sources.
+The normal reader uses consolidated TXT for stable bilingual alignment. Raw
+JSON remains in this Git repository. This script hashes every source file,
+creates commit-pinned raw.githubusercontent.com links, writes a public manifest,
+and attaches exact stem/folder matches to story_index entries.
 """
 
 from __future__ import annotations
@@ -12,12 +12,14 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import shutil
 from collections import Counter, defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 
 SOURCE_TREES = (
@@ -39,6 +41,7 @@ EXEDRA_CATEGORY_MAP = {
 SECTION_SUFFIX_RE = re.compile(r"\s+Section\s+\d+$", re.I)
 EXCLUDED_SUFFIXES = (".import-report.json",)
 EXCLUDED_NAMES = {"exedra_manifest.json", "story_ids.generated.json"}
+COMMIT_RE = re.compile(r"^[0-9a-f]{40}$", re.I)
 
 
 def sha256_file(path: Path) -> str:
@@ -69,13 +72,13 @@ def safe_json_files(root: Path) -> list[Path]:
     if not root.is_dir():
         return []
     files: list[Path] = []
+    resolved_root = root.resolve()
     for path in root.rglob("*.json"):
         if path.is_symlink() or not path.is_file():
             continue
         if path.name in EXCLUDED_NAMES or path.name.endswith(EXCLUDED_SUFFIXES):
             continue
-        resolved = path.resolve()
-        resolved.relative_to(root.resolve())
+        path.resolve().relative_to(resolved_root)
         files.append(path)
     return sorted(files, key=lambda value: value.as_posix().casefold())
 
@@ -96,6 +99,11 @@ def story_stems(item: dict[str, Any]) -> set[str]:
     return {value.casefold() for value in values if value}
 
 
+def raw_url(repository: str, commit: str, repository_path: str) -> str:
+    encoded = "/".join(quote(part, safe="") for part in repository_path.split("/"))
+    return f"https://raw.githubusercontent.com/{repository}/{commit}/{encoded}"
+
+
 def update_story_manifest(public: Path, stories: list[dict[str, Any]]) -> None:
     story_path = public / "story_index.json"
     raw = json.dumps(stories, ensure_ascii=False, indent=2).encode("utf-8")
@@ -108,7 +116,7 @@ def update_story_manifest(public: Path, stories: list[dict[str, Any]]) -> None:
         "sha256": hashlib.sha256(raw).hexdigest(),
         "bytes": len(raw),
         "entries": len(stories),
-        "raw_json_published": True,
+        "raw_json_indexed": True,
     })
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
@@ -117,14 +125,20 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--public", type=Path, default=Path("website/public"))
     parser.add_argument("--repo", type=Path, default=Path("."))
+    parser.add_argument("--repository", default=os.environ.get("GITHUB_REPOSITORY", "HiiragiNemu/magi-reader"))
+    parser.add_argument("--commit", default=os.environ.get("GITHUB_SHA", ""))
     args = parser.parse_args()
+
+    if not COMMIT_RE.fullmatch(args.commit):
+        raise RuntimeError("--commit must be an immutable 40-character Git commit SHA")
+    if "/" not in args.repository or args.repository.startswith("/") or args.repository.endswith("/"):
+        raise RuntimeError("--repository must be owner/name")
 
     repo = args.repo.resolve()
     public = args.public.resolve()
-    output_root = public / "data" / "raw"
-    if output_root.exists():
-        shutil.rmtree(output_root)
-    output_root.mkdir(parents=True, exist_ok=True)
+    duplicated_root = public / "data" / "raw"
+    if duplicated_root.exists():
+        shutil.rmtree(duplicated_root)
 
     entries: list[dict[str, Any]] = []
     by_match: dict[tuple[str, str, str, str], list[dict[str, Any]]] = defaultdict(list)
@@ -135,13 +149,11 @@ def main() -> None:
         source_root = (repo / relative_root).resolve()
         for source in safe_json_files(source_root):
             relative = source.relative_to(source_root)
-            destination = output_root / game / language / relative
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, destination)
+            repository_path = (relative_root / relative).as_posix()
             category = normalized_category(game, relative)
             folder = relative.parts[1] if len(relative.parts) > 2 else relative.parent.name
-            web_path = "/" + destination.relative_to(public).as_posix()
-            size = destination.stat().st_size
+            size = source.stat().st_size
+            url = raw_url(args.repository, args.commit, repository_path)
             entry = {
                 "game": game,
                 "language": language,
@@ -149,9 +161,10 @@ def main() -> None:
                 "folder": folder,
                 "name": source.name,
                 "stem": source.stem,
-                "path": web_path,
+                "repositoryPath": repository_path,
+                "url": url,
                 "bytes": size,
-                "sha256": sha256_file(destination),
+                "sha256": sha256_file(source),
                 "storyIds": [],
             }
             entries.append(entry)
@@ -164,7 +177,7 @@ def main() -> None:
 
     story_path = public / "story_index.json"
     stories: list[dict[str, Any]] = json.loads(story_path.read_text(encoding="utf-8"))
-    attached_paths: set[str] = set()
+    attached_urls: set[str] = set()
     associated_stories = 0
     for item in stories:
         game = str(item.get("game") or ("exedra" if str(item.get("category", "")).startswith("exedra_") else "magireco"))
@@ -177,20 +190,20 @@ def main() -> None:
             seen: set[str] = set()
             for stem in stems:
                 for entry in by_match.get((game, language, category, stem), []):
-                    path = str(entry["path"])
-                    if path in seen:
+                    url = str(entry["url"])
+                    if url in seen:
                         continue
-                    seen.add(path)
+                    seen.add(url)
                     candidates.append(entry)
             exact_folder = [entry for entry in candidates if str(entry.get("folder", "")).casefold() == folder]
             selected = exact_folder or candidates
-            selected.sort(key=lambda entry: str(entry["path"]).casefold())
+            selected.sort(key=lambda entry: str(entry["repositoryPath"]).casefold())
             if selected:
                 key = f"raw_json_{language}"
-                item[key] = [str(entry["path"]) for entry in selected]
+                item[key] = [str(entry["url"]) for entry in selected]
                 for entry in selected:
                     entry["storyIds"].append(str(item["id"]))
-                    attached_paths.add(str(entry["path"]))
+                    attached_urls.add(str(entry["url"]))
                 attached_for_story += len(selected)
         if attached_for_story:
             associated_stories += 1
@@ -200,14 +213,16 @@ def main() -> None:
 
     update_story_manifest(public, stories)
     manifest = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "generatedAt": datetime.now(UTC).isoformat(),
+        "repository": args.repository,
+        "commit": args.commit,
         "entries": len(entries),
         "bytes": total_bytes,
         "counts": dict(sorted(counts.items())),
         "associatedStories": associated_stories,
-        "associatedFiles": len(attached_paths),
-        "unassociatedFiles": len(entries) - len(attached_paths),
+        "associatedFiles": len(attached_urls),
+        "unassociatedFiles": len(entries) - len(attached_urls),
         "files": entries,
     }
     (public / "raw_story_json_manifest.json").write_text(
