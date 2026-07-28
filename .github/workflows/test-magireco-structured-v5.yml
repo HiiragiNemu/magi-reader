@@ -8,6 +8,7 @@ on:
       - 'wiki-preservation/static/structured-ui.js'
       - 'wiki-preservation/static/structured-ui.css'
       - 'wiki-preservation/scripts/extract_structured_characters.py'
+      - 'wiki-preservation/scripts/patch_structured_runtime.py'
       - '.github/workflows/deploy-magireco-ui-hotfix.yml'
       - '.github/workflows/test-magireco-structured-v5.yml'
   workflow_dispatch:
@@ -42,8 +43,17 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
+      - name: Prepare v5.1 production test
+        shell: bash
+        run: |
+          set -euo pipefail
+          sed 's/structured-ui\.js?v=5\.0/structured-ui.js?v=5.1/g' \
+            wiki-preservation/tests/production-structured-v5.mjs \
+            > /tmp/production-structured-v5.1.mjs
+          grep -q 'structured-ui.js?v=5.1' /tmp/production-structured-v5.1.mjs
+
       - name: Run structured character and voice production test
-        run: node wiki-preservation/tests/production-structured-v5.mjs
+        run: node /tmp/production-structured-v5.1.mjs
 
       - name: Upload structured reader evidence
         if: always()
