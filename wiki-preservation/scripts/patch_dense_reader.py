@@ -56,9 +56,16 @@ def patch_app(path: Path) -> None:
             "Wiki条目保留可读正文、分类、章节、来源与原始页面HTML。",
             "about fidelity copy",
         ),
+        (
+            "本站用于研究、保存、检索和兼容性开发。游戏文本、图像、音频、角色、商标及其他第三方内容的权利归各自权利人所有；Wiki编辑文本和译文的使用条件以原站声明为准。",
+            "游戏文本、图像、音频、角色、商标及其他第三方内容的权利归各自权利人所有；Wiki编辑文本和译文的使用条件以原站声明为准。",
+            "neutral rights copy",
+        ),
     ]
     for old, new, label in replacements:
         text = replace_once(text, old, new, label)
+    text = text.replace("来源与保存说明", "关于资料库")
+    text = text.replace("setDocumentTitle('关于数据')", "setDocumentTitle('关于资料库')")
 
     eager = re.compile(r"function enhanceArticle\(\) \{.*?\n\}\n\nasync function articlePage", re.S)
     replacement = r'''function enhanceArticle() {
@@ -155,6 +162,7 @@ def patch_structured(path: Path) -> None:
     ]
     for old, new, label in replacements:
         text = replace_once(text, old, new, label)
+    text = text.replace("来源与保存说明", "关于资料库")
     old_observer = "structuredObserver.observe(structuredApp, { childList: true, subtree: true });"
     if old_observer in text:
         text = text.replace(old_observer, "structuredObserver.observe(structuredApp, { childList: true, subtree: false });", 1)
@@ -180,6 +188,7 @@ def patch_doppel(path: Path) -> None:
     ]
     for old, new, label in replacements:
         text = replace_once(text, old, new, label)
+    text = text.replace("来源与保存说明", "关于资料库")
     old_observer = "doppelObserver.observe(doppelApp, { childList: true, subtree: true });"
     if old_observer in text:
         text = text.replace(old_observer, "doppelObserver.observe(doppelApp, { childList: true, subtree: false });", 1)
@@ -202,9 +211,11 @@ def patch_memoria(path: Path) -> None:
             "memoria visitor copy",
         ),
         ("记忆结晶资料读取失败", "资料读取失败", "memoria error"),
+        ("来源与保存状态", "来源信息", "memoria source heading"),
     ]
     for old, new, label in replacements:
         text = replace_once(text, old, new, label)
+    text = text.replace("来源与保存说明", "关于资料库")
     old_observer = "memoriaObserver.observe(memoriaApp, { childList: true, subtree: true });"
     if old_observer in text:
         text = text.replace(old_observer, "memoriaObserver.observe(memoriaApp, { childList: true, subtree: false });", 1)
