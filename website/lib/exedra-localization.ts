@@ -1,7 +1,7 @@
-import storyIndexJson from '@/public/story_index.json';
-
 export const EXEDRA_CACHE_PREFIX = 'exedra-localization:v1:';
 const MAX_SOURCE_BYTES = 8 * 1024 * 1024;
+const MAX_CATALOG_BYTES = 32 * 1024 * 1024;
+const MAX_CATALOG_ENTRIES = 100_000;
 const MAX_BLOCKS_PER_SECTION = 4_000;
 const MAX_TEXT_LENGTH = 20_000;
 const EXEDRA_ID_RE = /^[A-Za-z0-9_.:-]{1,256}$/u;
@@ -17,7 +17,7 @@ export type ExedraStoryEntry = {
   category: string;
   folder: string;
   title: string;
-  game?: string;
+  game: 'exedra';
   path_cn: string;
   path_jp: string;
   source_identity: string;
@@ -47,26 +47,12 @@ export type CachedExedraLocalization = {
   text: string;
 };
 
-const entries = (Array.isArray(storyIndexJson) ? storyIndexJson : [])
-  .filter((value): value is ExedraStoryEntry => {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
-    const item = value as Partial<ExedraStoryEntry>;
-    return item.game === 'exedra' &&
-      typeof item.id === 'string' &&
-      typeof item.category === 'string' &&
-      typeof item.folder === 'string' &&
-      typeof item.title === 'string' &&
-      typeof item.path_cn === 'string' &&
-      typeof item.path_jp === 'string' &&
-      typeof item.source_identity === 'string';
-  });
+type ExedraCatalog = {
+  stories: ExedraStoryEntry[];
+  byId: Map<string, ExedraStoryEntry>;
+};
 
-const entryMap = new Map(entries.map(entry => [entry.id, entry]));
-
-export const EXEDRA_STORIES = entries;
-
-export const findExedraStory = (storyId: string): ExedraStoryEntry | null =>
-  EXEDRA_ID_RE.test(storyId) ? entryMap.get(storyId) ?? null : null;
+let catalogPromise: Promise<ExedraCatalog> | null = null;
 
 const normalize = (value: string): string =>
   value.replace(/^\uFEFF/u, '').replace(/\r\n?/gu, '\n').replace(/\u0000/gu, '');
@@ -87,6 +73,131 @@ const splitDialogue = (line: string): [string, string] => {
   if (positions.length === 0) return ['旁白', line.trim()];
   const separator = Math.min(...positions);
   return [line.slice(0, separator).trim(), line.slice(separator + 1).trim()];
+};
+
+const readBoundedBytes = async (
+  response: Response,
+  label: string,
+  maxBytes: number,
+): Promise<ArrayBuffer> => {
+  if (!response.ok) throw new Error(`${label}读取失败（HTTP ${response.status}）`);
+  const declared = Number(response.headers.get('content-length'));
+  if (Number.isSafeInteger(declared) && declared > maxBytes) {
+    await response.body?.cancel(`${label}过大`);
+    throw new Error(`${label}超过 ${Math.floor(maxBytes / 1024 / 1024)} MiB`);
+  }
+  const bytes = await response.arrayBuffer();
+  if (bytes.byteLength > maxBytes) {
+    throw new Error(`${label}超过 ${Math.floor(maxBytes / 1024 / 1024)} MiB`);
+  }
+  return bytes;
+};
+
+const decodeUtf8 = (bytes: ArrayBuffer, label: string): string => {
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch {
+    throw new Error(`${label}不是有效 UTF-8`);
+  }
+};
+
+export const parseExedraStoryIndex = (value: unknown): ExedraStoryEntry[] => {
+  if (!Array.isArray(value) || value.length > MAX_CATALOG_ENTRIES) {
+    throw new Error('剧情目录不是数组或超过安全上限');
+  }
+  const stories: ExedraStoryEntry[] = [];
+  const ids = new Set<string>();
+  for (const raw of value) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) continue;
+    const item = raw as Record<string, unknown>;
+    if (item.game !== 'exedra') continue;
+    const id = clean(item.id, 256);
+    const category = clean(item.category, 128);
+    const folder = clean(item.folder, 512);
+    const title = clean(item.title, 2_000);
+    const pathCn = clean(item.path_cn, 2_000);
+    const pathJp = clean(item.path_jp, 2_000);
+    const sourceIdentity = clean(item.source_identity, 1_000);
+    if (
+      !EXEDRA_ID_RE.test(id) ||
+      !category.startsWith('exedra_') ||
+      !folder ||
+      !pathJp.startsWith('/data/') ||
+      (pathCn && !pathCn.startsWith('/data/')) ||
+      !sourceIdentity.startsWith('exedra:')
+    ) {
+      throw new Error(`Exedra 剧情目录条目无效：${id || '<empty>'}`);
+    }
+    const folded = id.toLowerCase();
+    if (ids.has(folded)) throw new Error(`Exedra 剧情编号重复：${id}`);
+    ids.add(folded);
+    stories.push({
+      id,
+      category,
+      folder,
+      title,
+      game: 'exedra',
+      path_cn: pathCn,
+      path_jp: pathJp,
+      source_identity: sourceIdentity,
+    });
+  }
+  if (!stories.length) throw new Error('剧情目录不含 Exedra 条目');
+  return stories;
+};
+
+const loadCatalog = async ({
+  request,
+  env,
+}: {
+  request: Request;
+  env: CloudflareEnv;
+}): Promise<ExedraCatalog> => {
+  if (!catalogPromise) {
+    catalogPromise = (async () => {
+      const catalogRequest = new Request(new URL('/story_index.json', request.url), {
+        headers: { Accept: 'application/json' },
+      });
+      const response = env.ASSETS
+        ? await env.ASSETS.fetch(catalogRequest)
+        : await fetch(catalogRequest);
+      const bytes = await readBoundedBytes(
+        response,
+        '剧情目录',
+        MAX_CATALOG_BYTES,
+      );
+      let value: unknown;
+      try {
+        value = JSON.parse(decodeUtf8(bytes, '剧情目录')) as unknown;
+      } catch (error) {
+        if (error instanceof SyntaxError) throw new Error('剧情目录不是有效 JSON');
+        throw error;
+      }
+      const stories = parseExedraStoryIndex(value);
+      return {
+        stories,
+        byId: new Map(stories.map(story => [story.id, story])),
+      };
+    })().catch(error => {
+      catalogPromise = null;
+      throw error;
+    });
+  }
+  return catalogPromise;
+};
+
+export const loadExedraStories = async (context: {
+  request: Request;
+  env: CloudflareEnv;
+}): Promise<ExedraStoryEntry[]> =>
+  (await loadCatalog(context)).stories;
+
+export const findExedraStory = async (
+  storyId: string,
+  context: { request: Request; env: CloudflareEnv },
+): Promise<ExedraStoryEntry | null> => {
+  if (!EXEDRA_ID_RE.test(storyId)) return null;
+  return (await loadCatalog(context)).byId.get(storyId) ?? null;
 };
 
 export const parseExedraTxt = (raw: string): ParsedSection[] => {
@@ -139,22 +250,6 @@ export const sha256ExedraText = async (value: string): Promise<string> => {
   return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
 };
 
-const readBoundedUtf8 = async (response: Response, label: string): Promise<string> => {
-  if (!response.ok) throw new Error(`${label}读取失败（HTTP ${response.status}）`);
-  const declared = Number(response.headers.get('content-length'));
-  if (Number.isSafeInteger(declared) && declared > MAX_SOURCE_BYTES) {
-    await response.body?.cancel(`${label}过大`);
-    throw new Error(`${label}超过 8 MiB`);
-  }
-  const bytes = await response.arrayBuffer();
-  if (bytes.byteLength > MAX_SOURCE_BYTES) throw new Error(`${label}超过 8 MiB`);
-  try {
-    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
-  } catch {
-    throw new Error(`${label}不是有效 UTF-8`);
-  }
-};
-
 export const readExedraJapaneseText = async ({
   request,
   env,
@@ -164,14 +259,16 @@ export const readExedraJapaneseText = async ({
   env: CloudflareEnv;
   entry: ExedraStoryEntry;
 }): Promise<string> => {
-  if (!entry.path_jp) throw new Error('Exedra 条目缺少日文路径');
   const sourceRequest = new Request(new URL(entry.path_jp, request.url), {
     headers: { Accept: 'text/plain' },
   });
   const response = env.ASSETS
     ? await env.ASSETS.fetch(sourceRequest)
     : await fetch(sourceRequest);
-  return readBoundedUtf8(response, 'Exedra 日文剧情');
+  return decodeUtf8(
+    await readBoundedBytes(response, 'Exedra 日文剧情', MAX_SOURCE_BYTES),
+    'Exedra 日文剧情',
+  );
 };
 
 export const exedraCacheKey = (storyId: string): string =>
