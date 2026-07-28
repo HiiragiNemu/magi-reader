@@ -1,0 +1,33 @@
+@media (max-width: 760px) {
+  /* backdrop-filter creates a containing block for fixed descendants in
+     Chromium/WebKit. Remove it so the appearance panel is fixed to viewport. */
+  .site-header {
+    backdrop-filter: none;
+    background: var(--paper-2);
+  }
+
+  .display-panel {
+    position: fixed;
+    inset: max(.65rem, env(safe-area-inset-top)) .65rem max(.65rem, env(safe-area-inset-bottom));
+    width: auto;
+    max-height: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1rem;
+    border-radius: 1.05rem;
+  }
+
+  .display-panel-head {
+    position: sticky;
+    top: -1rem;
+    z-index: 1;
+    margin: -1rem -1rem .75rem;
+    padding: 1rem 1rem .75rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper-2);
+  }
+
+  .display-panel .segmented button {
+    min-height: 2.65rem;
+  }
+}
