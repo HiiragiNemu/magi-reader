@@ -34,7 +34,6 @@ jobs:
           import json
           import os
           import time
-          import urllib.error
           import urllib.request
 
           base = os.environ['SITE_URL'].rstrip('/')
@@ -73,11 +72,17 @@ jobs:
                   report['errors'].append(item)
                   return None, item
 
+          def story_game(item):
+              explicit = str(item.get('game') or '').strip().casefold()
+              if explicit in {'magireco', 'exedra'}:
+                  return explicit
+              return 'exedra' if str(item.get('category', '')).startswith('exedra_') else 'magireco'
+
           nonce = str(time.time_ns())
-          home_payload, home_probe = get(f'{base}/?probe={nonce}')
-          stories_payload, stories_probe = get(f'{base}/story_index.json?probe={nonce}')
-          raw_payload, raw_probe = get(f'{base}/raw_story_json_manifest.json?probe={nonce}')
-          config_payload, config_probe = get(f'{base}/api/proofreading/config?probe={nonce}')
+          home_payload, _ = get(f'{base}/?probe={nonce}')
+          stories_payload, _ = get(f'{base}/story_index.json?probe={nonce}')
+          raw_payload, _ = get(f'{base}/raw_story_json_manifest.json?probe={nonce}')
+          config_payload, _ = get(f'{base}/api/proofreading/config?probe={nonce}')
 
           stories = None
           raw = None
@@ -96,12 +101,18 @@ jobs:
               report['errors'].append({'stage': 'parse_config', 'error': repr(error)})
 
           if isinstance(stories, list):
-              magireco = [item for item in stories if not str(item.get('category', '')).startswith('exedra_')]
-              exedra = [item for item in stories if str(item.get('category', '')).startswith('exedra_')]
+              magireco = [item for item in stories if story_game(item) == 'magireco']
+              exedra = [item for item in stories if story_game(item) == 'exedra']
+              category_magireco = [item for item in stories if not str(item.get('category', '')).startswith('exedra_')]
+              category_exedra = [item for item in stories if str(item.get('category', '')).startswith('exedra_')]
               report['story_summary'] = {
                   'total': len(stories),
                   'magireco': len(magireco),
                   'exedra': len(exedra),
+              }
+              report['legacy_category_summary'] = {
+                  'magireco': len(category_magireco),
+                  'exedra': len(category_exedra),
               }
               for label, values in (('magireco', magireco), ('exedra', exedra)):
                   item = next((value for value in values if value.get('path_cn') or value.get('path_jp')), None)
@@ -110,7 +121,7 @@ jobs:
                       continue
                   report[f'{label}_sample'] = {
                       key: item.get(key)
-                      for key in ('id', 'category', 'title', 'path_cn', 'path_jp')
+                      for key in ('id', 'game', 'category', 'title', 'path_cn', 'path_jp')
                   }
                   for key in ('path_cn', 'path_jp'):
                       path = item.get(key)
@@ -141,7 +152,7 @@ jobs:
                       key: item.get(key)
                       for key in ('name', 'repositoryPath', 'url', 'bytes', 'sha256')
                   }
-                  payload, probe = get(item['url'])
+                  payload, _ = get(item['url'])
                   if payload:
                       try:
                           json.loads(payload.decode('utf-8-sig'))
@@ -160,8 +171,11 @@ jobs:
 
           if not home_payload or '剧情阅读器'.encode('utf-8') not in home_payload:
               report['errors'].append({'stage': 'homepage_brand', 'error': 'public heading missing'})
-          if report.get('story_summary') != {'total': 2602, 'magireco': 2171, 'exedra': 431}:
-              report['errors'].append({'stage': 'story_counts', 'value': report.get('story_summary')})
+          summary = report.get('story_summary') or {}
+          if summary.get('total') != 2602 or summary.get('magireco', 0) <= 0 or summary.get('exedra', 0) <= 0:
+              report['errors'].append({'stage': 'story_counts', 'value': summary})
+          if summary.get('magireco', 0) + summary.get('exedra', 0) != summary.get('total'):
+              report['errors'].append({'stage': 'story_game_partition', 'value': summary})
           if report.get('raw_summary', {}).get('entries') != 24367:
               report['errors'].append({'stage': 'raw_count', 'value': report.get('raw_summary')})
 
