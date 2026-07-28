@@ -16,7 +16,7 @@
 - 分类改名、Exedra 机翻取消、可信 Wiki/台服导入框架、事务式 JSON/TXT/报告生成器。
 - 411 个魔法纪录 general voice 的运行时与离线导入框架。
 - GitHub API checkout 备用工具、直接 Cloudflare 测试部署工具、质量门和交接文档。
-- 0728 RAR 的完整文件清单与哈希已落盘 `artifacts/source-archives/rounddora-text-0728.manifest.json`；原始 RAR 是用户输入附件，下一位 AI 必须重新取得并验证 SHA-256 为 `2f55e92bd8ceb310ba37c7a7b5dd94dffe5849d1266017021ff52366595b572c`。
+- 0728 RAR 的审计元数据与哈希已落盘 `artifacts/source-archives/rounddora-text-0728.manifest.json`；原始 RAR 是用户输入附件，未嵌入 Git。下一位 AI 必须重新取得并验证 SHA-256 为 `2f55e92bd8ceb310ba37c7a7b5dd94dffe5849d1266017021ff52366595b572c`。
 
 ## 下一步先做
 
