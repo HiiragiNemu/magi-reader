@@ -7,6 +7,7 @@ website data.  Generation happens only through ``main``/``run_generation``.
 Supported source families:
 
 * Magia Record consolidated TXT trees with exact logical JP/CN pairing.
+* Audited local Magia Record general-voice JSON/TXT snapshots.
 * Magia Exedra organized chapter/character groups with exact JP/CN pairing.
 * Exedra JSON provenance validation through ``exedra_manifest.json``.
 """
@@ -43,9 +44,24 @@ DEFAULT_EXEDRA_JP_DIR = (
 DEFAULT_EXEDRA_CN_DIR = (
     SCRIPT_DIR / "magiraexedra-translate-data-master" / "Scenarios_full"
 )
+DEFAULT_GENERAL_VOICE_SOURCE_DIR = (
+    SCRIPT_DIR
+    / "magireco-voice-source-master"
+    / "Scenarios_full"
+    / "general_voice"
+)
+DEFAULT_GENERAL_VOICE_CN_DIR = (
+    SCRIPT_DIR
+    / "magireco-voice-translate-data-master"
+    / "Scenarios_full"
+    / "general_voice"
+)
 DEFAULT_PUBLIC_DIR = SCRIPT_DIR / "website" / "public"
 DEFAULT_TITLES_PATH = SCRIPT_DIR / "titles.json"
 EXEDRA_MANIFEST_NAME = "exedra_manifest.json"
+GENERAL_VOICE_MANIFEST_NAME = "general_voice_manifest.json"
+GENERAL_VOICE_MODEL_RE = re.compile(r"^\d{6}$")
+GENERAL_VOICE_EXPECTED_MODELS = 410
 
 # Kept for callers that used the old module-level name.  It is deliberately
 # empty until main() loads titles, so import remains read-only.
@@ -1907,7 +1923,7 @@ def _validate_exedra_cn_import_report(
     cn_path: Path,
     jp_sections: Sequence[ExedraSectionAlignment],
     cn_sections: Sequence[ExedraSectionAlignment],
-) -> None:
+) -> Mapping[str, Any]:
     """Require a schema-v1 proof binding current JP/CN bytes and block order."""
 
     report_path = cn_path.with_name(
@@ -2105,6 +2121,110 @@ def _validate_exedra_cn_import_report(
                 "Exedra 中文导入报告的说话人/旁白顺序哈希不匹配，"
                 "拒绝按数量放行: "
                 f"{group.manifest_id} Section {index}: {report_path}"
+            )
+    return report
+
+
+def _strict_exedra_json_rows(path: Path) -> list[dict[str, Any]]:
+    rows, diagnostics = load_exedra_dialogue_rows(path)
+    serious = [
+        diagnostic
+        for diagnostic in diagnostics
+        if "与前一工作表重复，已去重" not in diagnostic
+    ]
+    if serious:
+        raise PipelineError(
+            "Exedra JSON sheetList/表头/文本事件不可读: "
+            f"{path}: {serious[:3]}"
+        )
+    if not rows:
+        raise PipelineError(f"Exedra JSON 没有可读文本事件: {path}")
+    return rows
+
+
+def _validate_exedra_cn_json_sources(
+    *,
+    group: OrganizedExedraGroup,
+    jp_dir: Path,
+    cn_paths: Sequence[Path],
+    report: Mapping[str, Any],
+) -> None:
+    if tuple(path.name for path in cn_paths) != group.source_names:
+        raise PipelineError(
+            "Exedra 中文 JSON 与 manifest source_names 不是完整一一对应: "
+            f"{group.manifest_id}"
+        )
+    report_sources = report.get("sourceJson")
+    if (
+        not isinstance(report_sources, list)
+        or len(report_sources) != len(group.source_names)
+    ):
+        raise PipelineError(
+            "Exedra 中文导入报告 sourceJson 清单不完整: "
+            f"{group.manifest_id}"
+        )
+
+    for index, (source_name, cn_path, report_source) in enumerate(
+        zip(group.source_names, cn_paths, report_sources),
+        start=1,
+    ):
+        if not isinstance(report_source, dict):
+            raise PipelineError(
+                f"Exedra 中文导入报告 sourceJson[{index}] 不是对象: "
+                f"{group.manifest_id}"
+            )
+        if report_source.get("source") != source_name:
+            raise PipelineError(
+                "Exedra 中文导入报告 sourceJson 顺序/文件名与 manifest "
+                f"不一致: {group.manifest_id} #{index}"
+            )
+        jp_path = jp_dir / group.output_dir / source_name
+        if not jp_path.is_file() or _is_link_like(jp_path):
+            raise PipelineError(f"Exedra 日文 JSON 不存在或不是普通文件: {jp_path}")
+        expected_jp_sha = report_source.get("jpSha256")
+        expected_cn_sha = report_source.get("cnSha256")
+        if (
+            not _valid_sha256(expected_jp_sha)
+            or expected_jp_sha != _sha256_file(jp_path)
+        ):
+            raise PipelineError(
+                "Exedra 中文导入报告 sourceJson.jpSha256 与当前日文 "
+                f"JSON 不一致: {group.manifest_id} #{index}"
+            )
+        if (
+            not _valid_sha256(expected_cn_sha)
+            or expected_cn_sha != _sha256_file(cn_path)
+        ):
+            raise PipelineError(
+                "Exedra 中文导入报告 sourceJson.cnSha256 与当前中文 "
+                f"JSON 不一致: {group.manifest_id} #{index}"
+            )
+
+        jp_rows = _strict_exedra_json_rows(jp_path)
+        cn_rows = _strict_exedra_json_rows(cn_path)
+        event_count = report_source.get("eventCount")
+        if (
+            len(jp_rows) != len(cn_rows)
+            or not _is_plain_int(event_count)
+            or event_count != len(cn_rows)
+        ):
+            raise PipelineError(
+                "Exedra 中日 JSON 可读文本事件数量或报告 eventCount "
+                f"不一致: {group.manifest_id} #{index}: "
+                f"JP {len(jp_rows)}, CN {len(cn_rows)}, report {event_count!r}"
+            )
+        jp_structure = [
+            (str(row["action"]), str(row["speaker"]))
+            for row in jp_rows
+        ]
+        cn_structure = [
+            (str(row["action"]), str(row["speaker"]))
+            for row in cn_rows
+        ]
+        if jp_structure != cn_structure:
+            raise PipelineError(
+                "Exedra 中日 JSON 的 ActionType/说话人顺序不一致: "
+                f"{group.manifest_id} #{index}"
             )
 
 
@@ -2446,6 +2566,100 @@ def _find_exedra_cn_sources(
     return matched
 
 
+def _find_exedra_cn_json_sources(
+    cn_dir: Path,
+    groups: Sequence[OrganizedExedraGroup],
+    cn_text_sources: Mapping[str, Path],
+) -> dict[str, tuple[Path, ...]]:
+    if not cn_dir.exists():
+        return {}
+    cn_dir = _absolute_lexical(cn_dir)
+    content_json: dict[str, tuple[Path, str]] = {}
+    for path, relative, is_directory in _plain_tree_entries(cn_dir):
+        if is_directory or path.suffix.casefold() != ".json":
+            continue
+        name_folded = path.name.casefold()
+        if (
+            name_folded.endswith(EXEDRA_IMPORT_REPORT_SUFFIX.casefold())
+            or name_folded.endswith("_cn.provenance.json")
+        ):
+            continue
+        relative_name = relative.as_posix()
+        key = relative_name.casefold()
+        if key in content_json:
+            raise PipelineError(
+                "Exedra 中文 JSON 存在大小写冲突: "
+                f"{content_json[key][0]}, {path}"
+            )
+        content_json[key] = (path, relative_name)
+
+    matched: dict[str, tuple[Path, ...]] = {}
+    consumed: set[str] = set()
+    for group in groups:
+        expected_relatives = tuple(
+            (
+                Path(group.raw_category, group.group_key, source_name)
+                .as_posix()
+            )
+            for source_name in group.source_names
+        )
+        present = [
+            relative
+            for relative in expected_relatives
+            if relative.casefold() in content_json
+        ]
+        group_prefix = (
+            Path(group.raw_category, group.group_key).as_posix().casefold()
+            + "/"
+        )
+        actual_group_keys = {
+            key
+            for key in content_json
+            if key.startswith(group_prefix)
+            and "/" not in key[len(group_prefix) :]
+        }
+        if not present and not actual_group_keys:
+            continue
+        if group.manifest_id not in cn_text_sources:
+            raise PipelineError(
+                "Exedra 中文 JSON 存在但缺少对应中文 TXT: "
+                f"{group.manifest_id}"
+            )
+        expected_keys = {
+            relative.casefold() for relative in expected_relatives
+        }
+        if actual_group_keys != expected_keys:
+            missing = sorted(expected_keys - actual_group_keys)
+            extra = sorted(actual_group_keys - expected_keys)
+            raise PipelineError(
+                "Exedra 中文 JSON 与 manifest source_names "
+                "不是完整一一对应: "
+                f"{group.manifest_id}; 缺失 {len(missing)}, "
+                f"多余 {len(extra)}"
+            )
+        paths: list[Path] = []
+        for expected_relative in expected_relatives:
+            path, actual_relative = content_json[
+                expected_relative.casefold()
+            ]
+            if actual_relative != expected_relative:
+                raise PipelineError(
+                    "Exedra 中文 JSON 文件名大小写与 manifest 不一致: "
+                    f"{actual_relative}, 期望 {expected_relative}"
+                )
+            paths.append(path)
+            consumed.add(expected_relative.casefold())
+        matched[group.manifest_id] = tuple(paths)
+
+    orphan_keys = sorted(set(content_json) - consumed)
+    if orphan_keys:
+        raise PipelineError(
+            f"有 {len(orphan_keys)} 个 Exedra 中文 JSON 未匹配 manifest: "
+            f"{content_json[orphan_keys[0]][0]}"
+        )
+    return matched
+
+
 def scan_exedra_sources(
     *,
     jp_dir: Path,
@@ -2459,6 +2673,11 @@ def scan_exedra_sources(
 
     groups = load_exedra_manifest(jp_dir, stats=stats)
     cn_sources = _find_exedra_cn_sources(cn_dir, groups)
+    cn_json_sources = _find_exedra_cn_json_sources(
+        cn_dir,
+        groups,
+        cn_sources,
+    )
     unnamed_characters = sorted(
         group.group_key
         for group in groups
@@ -2578,7 +2797,7 @@ def scan_exedra_sources(
                     f"{group.manifest_id} Section {section}: "
                     f"JP {jp_count}, CN {cn_count}"
                 )
-            _validate_exedra_cn_import_report(
+            import_report = _validate_exedra_cn_import_report(
                 group=group,
                 jp_path=jp_path,
                 cn_path=cn_path,
@@ -2608,11 +2827,209 @@ def scan_exedra_sources(
                 web_path=cn_web_path,
             )
             story["turns_cn"] = sum(cn_turn_counts)
+            cn_json_paths = cn_json_sources.get(group.manifest_id)
+            if cn_json_paths is not None:
+                _validate_exedra_cn_json_sources(
+                    group=group,
+                    jp_dir=jp_dir,
+                    cn_paths=cn_json_paths,
+                    report=import_report,
+                )
+                published_json_paths: list[str] = []
+                for cn_json_path in cn_json_paths:
+                    json_destination = (
+                        staging_data_dir
+                        / destination_rel
+                        / cn_json_path.name
+                    )
+                    _copy_to_stage(cn_json_path, json_destination)
+                    published_json_paths.append(
+                        f"/data/{sanitize_path(destination_rel)}/"
+                        f"{cn_json_path.name}"
+                    )
+                story["json_paths_cn"] = published_json_paths
+                stats["exedra_cn_json_files"] += len(cn_json_paths)
             stats["exedra_cn_groups"] += 1
 
         story_map[story_id] = story
 
     stats["exedra_untranslated_groups"] = len(groups) - len(cn_sources)
+
+
+def _general_voice_name(value: Any, language: str) -> str:
+    if not isinstance(value, dict):
+        return ""
+    name = value.get(language)
+    return str(name).replace("\x00", "").strip() if isinstance(name, str) else ""
+
+
+def scan_general_voice_sources(
+    *,
+    source_dir: Path,
+    cn_dir: Path,
+    staging_data_dir: Path,
+    story_map: MutableMapping[str, dict[str, Any]],
+    stats: Counter[str],
+    source_audit: SourceAudit,
+) -> None:
+    """Publish the audited local general-voice snapshot without network fallback."""
+
+    if not source_dir.is_dir() or not cn_dir.is_dir():
+        raise PipelineError(
+            "魔法纪录语音目录不完整: "
+            f"source={source_dir}, cn={cn_dir}"
+        )
+    source_dir = _absolute_lexical(source_dir)
+    cn_dir = _absolute_lexical(cn_dir)
+    source_manifest_path = source_dir / GENERAL_VOICE_MANIFEST_NAME
+    cn_manifest_path = cn_dir / GENERAL_VOICE_MANIFEST_NAME
+    try:
+        source_manifest_bytes = source_manifest_path.read_bytes()
+        cn_manifest_bytes = cn_manifest_path.read_bytes()
+        manifest = json.loads(source_manifest_bytes.decode("utf-8-sig"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise PipelineError(f"魔法纪录语音清单无法读取: {exc}") from exc
+    if source_manifest_bytes != cn_manifest_bytes:
+        raise PipelineError("魔法纪录语音来源/中文清单不一致")
+    models = manifest.get("models") if isinstance(manifest, dict) else None
+    if (
+        manifest.get("version") != 1
+        or manifest.get("modelCount") != GENERAL_VOICE_EXPECTED_MODELS
+        or not isinstance(models, list)
+        or len(models) != GENERAL_VOICE_EXPECTED_MODELS
+    ):
+        raise PipelineError("魔法纪录语音清单版本或 410 模型数量异常")
+
+    destination_root = staging_data_dir / "general_voice"
+    seen_models: set[str] = set()
+    for index, model in enumerate(models, 1):
+        if not isinstance(model, dict):
+            raise PipelineError(f"魔法纪录语音清单第 {index} 项不是对象")
+        model_id = str(model.get("id") or "")
+        if not GENERAL_VOICE_MODEL_RE.fullmatch(model_id):
+            raise PipelineError(f"魔法纪录语音模型 ID 无效: {model_id!r}")
+        if model_id in seen_models:
+            raise PipelineError(f"魔法纪录语音模型 ID 重复: {model_id}")
+        seen_models.add(model_id)
+
+        source_json = source_dir / model_id / f"{model_id}.json"
+        source_txt = cn_dir / model_id / f"{model_id}_cn.txt"
+        if (
+            not source_json.is_file()
+            or _is_link_like(source_json)
+            or not source_txt.is_file()
+            or _is_link_like(source_txt)
+        ):
+            raise PipelineError(f"魔法纪录语音模型文件不完整: {model_id}")
+        expected_json_hash = str(model.get("jsonSha256") or "").casefold()
+        expected_txt_hash = str(model.get("txtSha256") or "").casefold()
+        if (
+            not re.fullmatch(r"[a-f0-9]{64}", expected_json_hash)
+            or not re.fullmatch(r"[a-f0-9]{64}", expected_txt_hash)
+            or _sha256_file(source_json) != expected_json_hash
+            or _sha256_file(source_txt) != expected_txt_hash
+        ):
+            raise PipelineError(f"魔法纪录语音来源哈希不一致: {model_id}")
+        try:
+            script = json.loads(source_json.read_text(encoding="utf-8-sig"))
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            raise PipelineError(
+                f"魔法纪录语音 JSON 无法读取: {model_id}: {exc}"
+            ) from exc
+        story = script.get("story") if isinstance(script, dict) else None
+        if not isinstance(story, dict) or not story:
+            raise PipelineError(f"魔法纪录语音 JSON 缺少 story: {model_id}")
+        group_keys = sorted(
+            story,
+            key=lambda value: int(str(value).removeprefix("group_"))
+            if re.fullmatch(r"group_\d+", str(value))
+            else -1,
+        )
+        if (
+            any(not re.fullmatch(r"group_\d+", str(key)) for key in group_keys)
+            or len(group_keys) != int(model.get("groups") or -1)
+            or any(not isinstance(story[key], list) for key in group_keys)
+        ):
+            raise PipelineError(f"魔法纪录语音 JSON 分组结构异常: {model_id}")
+
+        sections = extract_sections(source_txt)
+        if len(sections) != len(group_keys):
+            raise PipelineError(
+                f"魔法纪录语音 JSON/TXT Section 数量不同: {model_id}"
+            )
+        story_id = f"voice_{model_id}"
+        if story_id in story_map:
+            raise PipelineError(f"魔法纪录语音 story id 冲突: {story_id}")
+        char = model.get("char")
+        costume = model.get("costume")
+        char_id = str(model.get("charId") or model_id)
+        character_cn = _general_voice_name(char, "cn")
+        character_jp = _general_voice_name(char, "jp")
+        character_en = _general_voice_name(char, "en")
+        costume_cn = _general_voice_name(costume, "cn")
+        costume_jp = _general_voice_name(costume, "jp")
+        character_name = character_cn or character_jp or character_en or char_id
+        costume_name = costume_cn or costume_jp or model_id
+        folder = (
+            f"{char_id} - {character_name}"
+            + (
+                f"（{character_jp}）"
+                if character_jp and character_jp != character_name
+                else ""
+            )
+        )
+        voice_count = int(model.get("voices") or 0)
+        record = _new_story_record(
+            story_id=story_id,
+            raw_id=model_id,
+            file_stem=model_id,
+            category="general_voice",
+            folder=folder,
+            title=f"{costume_name} · {voice_count} 条语音",
+        )
+        destination_dir = destination_root / model_id
+        txt_name = f"{model_id}_cn.txt"
+        json_name = f"{model_id}_cn.json"
+        txt_destination = destination_dir / txt_name
+        json_destination = destination_dir / json_name
+        _copy_to_stage(source_txt, txt_destination)
+        _copy_to_stage(source_json, json_destination)
+        web_path = f"/data/general_voice/{model_id}/{txt_name}"
+        _set_language_source(
+            record,
+            lang_key="cn",
+            web_path=web_path,
+            source_filename=txt_name,
+            sections=sections,
+        )
+        record.update(
+            {
+                "game": "magireco",
+                "source_format": "general_voice_json",
+                "source_identity": f"general_voice/{model_id}",
+                "source_count": 1,
+                "turns_cn": len(group_keys),
+                "json_paths_cn": [
+                    f"/data/general_voice/{model_id}/{json_name}"
+                ],
+            }
+        )
+        source_audit.expect(source_txt)
+        source_audit.claim(
+            source_txt,
+            story_id=story_id,
+            lang_key="cn",
+            web_path=web_path,
+        )
+        story_map[story_id] = record
+        stats["general_voice_models"] += 1
+        stats["general_voice_groups"] += len(group_keys)
+        stats["general_voice_voices"] += voice_count
+
+    _copy_to_stage(
+        source_manifest_path,
+        destination_root / GENERAL_VOICE_MANIFEST_NAME,
+    )
 
 
 def custom_sort_key(item: Mapping[str, Any]) -> tuple[Any, ...]:
@@ -2661,6 +3078,7 @@ def finalize_story_list(
             "source_count",
             "turns_jp",
             "turns_cn",
+            "json_paths_cn",
         ):
             if extra_key in value:
                 entry[extra_key] = value[extra_key]
@@ -2767,6 +3185,7 @@ def validate_catalog(
                 )
 
     source_owners: dict[str, tuple[str, str]] = {}
+    json_owners: dict[str, str] = {}
     counts: Counter[str] = Counter()
     for index, story in enumerate(stories):
         story_id = str(story.get("id") or "")
@@ -2811,6 +3230,57 @@ def validate_catalog(
                     f"{story_id}: Exedra 路由反推路径与清单路径不一致"
                 )
 
+        json_paths_cn = story.get("json_paths_cn")
+        if json_paths_cn is not None:
+            if (
+                not isinstance(json_paths_cn, list)
+                or not json_paths_cn
+                or any(not isinstance(path, str) for path in json_paths_cn)
+                or len({path.casefold() for path in json_paths_cn})
+                != len(json_paths_cn)
+            ):
+                raise PipelineError(f"{story_id}: json_paths_cn 无效")
+            source_count = story.get("source_count")
+            if (
+                _is_plain_int(source_count)
+                and len(json_paths_cn) != source_count
+            ):
+                raise PipelineError(
+                    f"{story_id}: json_paths_cn 与 source_count 数量不同"
+                )
+            for web_path in json_paths_cn:
+                if not web_path.casefold().endswith(".json"):
+                    raise PipelineError(
+                        f"{story_id}: json_paths_cn 含非 JSON 路径"
+                    )
+                owner_key = web_path.casefold()
+                previous_owner = json_owners.get(owner_key)
+                if previous_owner is not None:
+                    raise PipelineError(
+                        f"JSON 路径被多个故事复用: {web_path}: "
+                        f"{previous_owner}, {story_id}"
+                    )
+                source_path = _resolve_public_source(public_dir, web_path)
+                if not source_path.is_file():
+                    raise PipelineError(
+                        f"{story_id}: JSON 文件不存在: {source_path}"
+                    )
+                try:
+                    parsed_json = json.loads(
+                        source_path.read_text(encoding="utf-8-sig")
+                    )
+                except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+                    raise PipelineError(
+                        f"{story_id}: JSON 文件不可读: {source_path}: {exc}"
+                    ) from exc
+                if not isinstance(parsed_json, dict):
+                    raise PipelineError(
+                        f"{story_id}: JSON 顶层必须是对象: {source_path}"
+                    )
+                if story.get("game") == "exedra":
+                    _strict_exedra_json_rows(source_path)
+                json_owners[owner_key] = story_id
+
         for lang in ("cn", "jp"):
             web_path = str(story.get(f"path_{lang}") or "")
             has_lang = bool(story.get(f"has_{lang}"))
@@ -2846,6 +3316,7 @@ def validate_catalog(
     counts["stories"] = len(stories)
     counts["legacy_story_ids"] = legacy_alias_count
     counts["source_files"] = len(source_owners)
+    counts["published_json_files"] = len(json_owners)
     story_ids_path = public_dir / "data" / STORY_IDS_FILENAME
     if (
         not story_ids_path.is_file()
@@ -2876,6 +3347,8 @@ def build_story_catalog(
     exedra_jp_dir: Path | None,
     exedra_cn_dir: Path | None,
     titles_path: Path,
+    general_voice_source_dir: Path | None = None,
+    general_voice_cn_dir: Path | None = None,
     include_magireco: bool = True,
     require_magireco_legacy_aliases: bool = False,
 ) -> tuple[list[dict[str, Any]], Counter[str]]:
@@ -2898,6 +3371,17 @@ def build_story_catalog(
             source_audit=source_audit,
             require_legacy_route_aliases=require_magireco_legacy_aliases,
         )
+        if general_voice_source_dir is not None:
+            if general_voice_cn_dir is None:
+                raise PipelineError("指定语音来源目录时也必须指定中文目录")
+            scan_general_voice_sources(
+                source_dir=general_voice_source_dir,
+                cn_dir=general_voice_cn_dir,
+                staging_data_dir=staging_data_dir,
+                story_map=story_map,
+                stats=stats,
+                source_audit=source_audit,
+            )
 
     if exedra_jp_dir is not None:
         scan_exedra_sources(
@@ -3312,6 +3796,18 @@ def run_generation(args: argparse.Namespace) -> int:
         getattr(args, "exedra_cn_dir", None),
         DEFAULT_EXEDRA_CN_DIR,
     )
+    include_general_voice = (
+        not args.skip_magireco
+        and not getattr(args, "skip_general_voice", False)
+    )
+    general_voice_source_dir = _resolve_argument_path(
+        getattr(args, "general_voice_source_dir", None),
+        DEFAULT_GENERAL_VOICE_SOURCE_DIR,
+    )
+    general_voice_cn_dir = _resolve_argument_path(
+        getattr(args, "general_voice_cn_dir", None),
+        DEFAULT_GENERAL_VOICE_CN_DIR,
+    )
     include_exedra = not getattr(args, "skip_exedra", False)
     assert public_dir is not None
     assert titles_path is not None
@@ -3355,6 +3851,12 @@ def run_generation(args: argparse.Namespace) -> int:
                 exedra_jp_dir=exedra_jp_dir if include_exedra else None,
                 exedra_cn_dir=exedra_cn_dir,
                 titles_path=titles_path,
+                general_voice_source_dir=(
+                    general_voice_source_dir if include_general_voice else None
+                ),
+                general_voice_cn_dir=(
+                    general_voice_cn_dir if include_general_voice else None
+                ),
                 include_magireco=not args.skip_magireco,
                 require_magireco_legacy_aliases=(
                     require_magireco_legacy_aliases
@@ -3385,6 +3887,12 @@ def run_generation(args: argparse.Namespace) -> int:
             exedra_jp_dir=exedra_jp_dir if include_exedra else None,
             exedra_cn_dir=exedra_cn_dir,
             titles_path=titles_path,
+            general_voice_source_dir=(
+                general_voice_source_dir if include_general_voice else None
+            ),
+            general_voice_cn_dir=(
+                general_voice_cn_dir if include_general_voice else None
+            ),
             include_magireco=not args.skip_magireco,
             require_magireco_legacy_aliases=require_magireco_legacy_aliases,
         )
@@ -3416,6 +3924,14 @@ def build_argument_parser() -> argparse.ArgumentParser:
         help="与日文逻辑组镜像的 Magia Exedra 中文 Scenarios_full",
     )
     parser.add_argument(
+        "--general-voice-source-dir",
+        help="魔法纪录 general_voice 可播放中文 JSON 快照目录",
+    )
+    parser.add_argument(
+        "--general-voice-cn-dir",
+        help="魔法纪录 general_voice 规范中文 TXT 目录",
+    )
+    parser.add_argument(
         "--exedra-dir",
         help=argparse.SUPPRESS,
     )
@@ -3430,6 +3946,11 @@ def build_argument_parser() -> argparse.ArgumentParser:
         "--skip-exedra",
         action="store_true",
         help="只构建 Magia Record（用于隔离验证/测试）",
+    )
+    parser.add_argument(
+        "--skip-general-voice",
+        action="store_true",
+        help="跳过本地魔法纪录语音快照（仅用于隔离测试）",
     )
     parser.add_argument(
         "--dry-run",

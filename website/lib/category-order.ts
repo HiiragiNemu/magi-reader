@@ -8,6 +8,7 @@ export const MAGIRECO_CATEGORY_ORDER = [
   'mirror_story',
   'scene0_main',
   'scene0_sub',
+  'general_voice',
 ] as const;
 
 export const EXEDRA_CATEGORY_ORDER = [

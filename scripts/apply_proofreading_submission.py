@@ -17,8 +17,16 @@ from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any, Mapping
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+import materialize_proofreading_assets as assets  # noqa: E402
+
 EXEDRA_SOURCE_ROOT = "magiraexedra-translate-data-master/Scenarios_full"
 MAGIRECO_SOURCE_ROOT = "magireco-translate-data-master/Scenarios_full"
+MAGIRECO_VOICE_SOURCE_ROOT = (
+    "magireco-voice-translate-data-master/Scenarios_full/general_voice"
+)
 SHA256_RE = re.compile(r"^[a-f0-9]{64}$", re.I)
 SAFE_COMPONENT_RE = re.compile(r"^[A-Za-z0-9_.-]{1,128}$")
 HEADER_RE = re.compile(r"^---\s*\[Section\s+\d+(?:\s+-\s+Branch\s+\d+)?\]\s*\(Source:\s*[^()\r\n]+\.json\s*\)\s*---$", re.I)
@@ -106,6 +114,16 @@ def resolve_source_path(repo_root: Path, story: Mapping[str, Any]) -> Path:
             raise ApplyError("Exedra 中文源文件名无效")
         relative = PurePosixPath(raw_category, group, filename)
         root = repo_root / EXEDRA_SOURCE_ROOT
+    elif identity.startswith("general_voice/"):
+        match = re.fullmatch(r"general_voice/(\d{6})", identity)
+        if not match:
+            raise ApplyError("魔法纪录语音 source_identity 格式无效")
+        model_id = match.group(1)
+        filename = story.get("filename_cn")
+        if filename != f"{model_id}_cn.txt":
+            raise ApplyError("魔法纪录语音中文源文件名无效")
+        relative = PurePosixPath(model_id, filename)
+        root = repo_root / MAGIRECO_VOICE_SOURCE_ROOT
     else:
         relative_identity = safe_relative(identity)
         relative = relative_identity.with_suffix(".txt")
@@ -144,6 +162,7 @@ class ApplyResult:
     new_sha256: str
     nickname: str
     note: str
+    materialized_paths: tuple[str, ...]
 
 
 def apply_submission(
@@ -235,10 +254,19 @@ def apply_submission(
     # Exactly one final LF makes reviews deterministic without changing the
     # reader-visible content. Hash metadata still refers to normalized content.
     output = content.rstrip("\n") + "\n"
-    if write:
-        temporary = source.with_name(f".{source.name}.proofreading-{os.getpid()}.tmp")
-        temporary.write_text(output, encoding="utf-8", newline="\n")
-        os.replace(temporary, source)
+    try:
+        materialization = assets.materialize(
+            source,
+            repo_root=repo_root,
+            write=write,
+            reviewed_text=output,
+        )
+    except assets.MaterializeError as exc:
+        raise ApplyError(
+            f"校对内容无法生成可播放 JSON/TXT：{exc}",
+            code="materialization_failed",
+            exit_code=5,
+        ) from exc
 
     return ApplyResult(
         submission_id=submission_id,
@@ -246,9 +274,10 @@ def apply_submission(
         source_path=source,
         source_relative=source.relative_to(repo_root.resolve()).as_posix(),
         old_sha256=current_sha256,
-        new_sha256=sha256_text(output),
+        new_sha256=str(materialization["reviewedTxtSha256"]),
         nickname=nickname,
         note=note,
+        materialized_paths=tuple(materialization["materializedPaths"]),
     )
 
 
@@ -261,6 +290,7 @@ def emit_result(result: ApplyResult, output_path: Path | None) -> None:
         "new_sha256": result.new_sha256,
         "nickname": result.nickname,
         "note": result.note,
+        "materialized_paths": list(result.materialized_paths),
     }
     encoded = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     if output_path:

@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
@@ -12,6 +16,25 @@ SPEC = importlib.util.spec_from_file_location(
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+
+
+def run_git(repository: Path, *args: str) -> str:
+    completed = subprocess.run(
+        ["git", *args],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    return completed.stdout.strip()
+
+
+def raw_blob_hash(path: Path) -> str:
+    data = path.read_bytes()
+    return hashlib.sha1(
+        f"blob {len(data)}\0".encode("ascii") + data
+    ).hexdigest()
 
 
 class MachineTranslationManifestTests(unittest.TestCase):
@@ -91,6 +114,106 @@ class MachineTranslationManifestTests(unittest.TestCase):
         self.assertEqual(added, {"new-machine.txt"})
         self.assertEqual(overwritten, {"main_story/official.txt"})
         self.assertEqual(deleted, {"event_story/human.txt"})
+
+    def test_worktree_hashes_apply_git_eol_and_clean_filter_semantics(self) -> None:
+        with tempfile.TemporaryDirectory() as raw_directory:
+            repository = Path(raw_directory)
+            run_git(repository, "init", "--quiet")
+            run_git(repository, "config", "user.name", "Manifest Test")
+            run_git(repository, "config", "user.email", "manifest@example.invalid")
+            run_git(
+                repository,
+                "config",
+                "filter.normalize-story.clean",
+                "git stripspace",
+            )
+            (repository / ".gitattributes").write_text(
+                "*.txt text eol=lf\n"
+                "*.story text eol=lf filter=normalize-story\n",
+                encoding="utf-8",
+            )
+            tracked_path = "数据 目录/人工 剧情.txt"
+            filtered_path = "数据 目录/过滤 剧情.story"
+            added_path = "数据 目录/新增 机翻.txt"
+            tracked_file = repository / Path(*tracked_path.split("/"))
+            filtered_file = repository / Path(*filtered_path.split("/"))
+            added_file = repository / Path(*added_path.split("/"))
+            tracked_file.parent.mkdir(parents=True)
+            tracked_file.write_bytes("人工文本\r\n第二行\r\n".encode("utf-8"))
+            filtered_file.write_bytes(
+                "需要过滤的文本  \r\n第二行\t\r\n".encode("utf-8")
+            )
+            run_git(
+                repository,
+                "add",
+                "--",
+                ".gitattributes",
+                tracked_path,
+                filtered_path,
+            )
+            baseline = {
+                tracked_path: run_git(repository, "rev-parse", f":{tracked_path}"),
+                filtered_path: run_git(repository, "rev-parse", f":{filtered_path}"),
+            }
+
+            # Leave the added file outside the index: it must remain classified as
+            # added while all baseline hashes use Git's clean-filter semantics.
+            added_file.write_bytes("新增文本\r\n".encode("utf-8"))
+            current = MODULE.git_worktree_blob_hashes(
+                [tracked_path, filtered_path, added_path],
+                repository_root=repository,
+            )
+
+            self.assertEqual(current[tracked_path], baseline[tracked_path])
+            self.assertEqual(current[filtered_path], baseline[filtered_path])
+            self.assertNotEqual(current[tracked_path], raw_blob_hash(tracked_file))
+            self.assertNotEqual(current[filtered_path], raw_blob_hash(filtered_file))
+            added, overwritten, deleted = MODULE.classify_trust_boundary(
+                baseline,
+                current,
+            )
+            self.assertEqual(added, {added_path})
+            self.assertEqual(overwritten, set())
+            self.assertEqual(deleted, set())
+
+    def test_worktree_hashes_reject_unsafe_or_missing_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as raw_directory:
+            repository = Path(raw_directory)
+            run_git(repository, "init", "--quiet")
+            with self.assertRaisesRegex(MODULE.ManifestError, "unsafe worktree path"):
+                MODULE.git_worktree_blob_hashes(
+                    ["目录/换行\n剧情.txt"],
+                    repository_root=repository,
+                )
+            with self.assertRaisesRegex(MODULE.ManifestError, "worktree file is missing"):
+                MODULE.git_worktree_blob_hashes(
+                    ["目录/不存在.txt"],
+                    repository_root=repository,
+                )
+
+    def test_worktree_hashes_reject_result_count_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as raw_directory:
+            repository = Path(raw_directory)
+            (repository / "a.txt").write_text("a", encoding="utf-8")
+            (repository / "b.txt").write_text("b", encoding="utf-8")
+            one_hash = "a" * 40 + "\n"
+            with mock.patch.object(
+                MODULE.subprocess,
+                "run",
+                return_value=SimpleNamespace(
+                    returncode=0,
+                    stdout=one_hash,
+                    stderr="",
+                ),
+            ):
+                with self.assertRaisesRegex(
+                    MODULE.ManifestError,
+                    "result count does not match",
+                ):
+                    MODULE.git_worktree_blob_hashes(
+                        ["a.txt", "b.txt"],
+                        repository_root=repository,
+                    )
 
 
 if __name__ == "__main__":

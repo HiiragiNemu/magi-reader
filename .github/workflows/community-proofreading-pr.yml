@@ -5,7 +5,8 @@ on:
     branches: [EXEDRA-TEST]
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: read
 
 concurrency:
   group: community-proofreading-pr-${{ github.event.pull_request.number }}
@@ -13,7 +14,9 @@ concurrency:
 
 jobs:
   validate:
-    if: startsWith(github.event.pull_request.head.ref, 'community-proofreading/')
+    if: >-
+      startsWith(github.event.pull_request.head.ref, 'community-proofreading/')
+      && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
@@ -23,40 +26,129 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
 
-      - name: Enforce proofreading PR scope
+      - name: Identify and constrain proofreading assets
+        id: scope
         shell: bash
         run: |
           set -euo pipefail
           base="${{ github.event.pull_request.base.sha }}"
           head="${{ github.event.pull_request.head.sha }}"
           mapfile -t files < <(git diff --name-only "$base" "$head")
-          if [ "${#files[@]}" -ne 1 ]; then
-            printf 'Community proofreading PR must change exactly one file; found %s\n' "${#files[@]}" >&2
+          mapfile -t txts < <(
+            printf '%s\n' "${files[@]}" |
+              grep -E '^(magireco-translate-data-master|magiraexedra-translate-data-master|magireco-voice-translate-data-master)/Scenarios_full/.+\.txt$' ||
+              true
+          )
+          if [ "${#txts[@]}" -ne 1 ]; then
+            printf 'Community proofreading PR must contain exactly one canonical TXT; found %s\n' "${#txts[@]}" >&2
             printf '%s\n' "${files[@]}" >&2
             exit 1
           fi
-          file="${files[0]}"
-          case "$file" in
-            magireco-translate-data-master/Scenarios_full/*.txt|magiraexedra-translate-data-master/Scenarios_full/*.txt) ;;
-            *) echo "Disallowed proofreading path: $file" >&2; exit 1 ;;
-          esac
-          case "$file" in *.bak*|*.tmp*) echo "Backup/temp file is not allowed" >&2; exit 1;; esac
-          test -s "$file"
-          python - "$file" <<'PY'
-          from pathlib import Path
-          import re, sys
-          path = Path(sys.argv[1])
-          text = path.read_text(encoding='utf-8-sig')
-          headers = [line.strip() for line in text.replace('\r\n','\n').split('\n') if line.strip().startswith('---')]
-          pattern = re.compile(r'^---\s*\[Section\s+\d+(?:\s+-\s+Branch\s+\d+)?\]\s*\(Source:\s*[^()\r\n]+\.json\s*\)\s*---$', re.I)
-          if not headers or any(pattern.fullmatch(line) is None for line in headers):
-              raise SystemExit('Proofreading TXT has invalid Section/Branch structure')
-          PY
+          txt="${txts[0]}"
+          directory="${txt%/*}"
+          voice_json=''
+          voice_source_manifest=''
+          voice_cn_manifest=''
+          voice_report=''
+          if [[ "$txt" =~ ^magireco-voice-translate-data-master/Scenarios_full/general_voice/([0-9]{6})/\1_cn\.txt$ ]]; then
+            model="${BASH_REMATCH[1]}"
+            voice_json="magireco-voice-source-master/Scenarios_full/general_voice/$model/$model.json"
+            voice_source_manifest="magireco-voice-source-master/Scenarios_full/general_voice/general_voice_manifest.json"
+            voice_cn_manifest="magireco-voice-translate-data-master/Scenarios_full/general_voice/general_voice_manifest.json"
+            voice_report="$directory/${model}_cn.proofreading-report.json"
+          fi
+          for file in "${files[@]}"; do
+            if [ -n "$voice_json" ]; then
+              case "$file" in
+                "$txt"|"$voice_json"|"$voice_source_manifest"|"$voice_cn_manifest"|"$voice_report") ;;
+                *) echo "Disallowed general-voice proofreading path: $file" >&2; exit 1 ;;
+              esac
+            else
+              case "$file" in
+                "$txt"|"$directory"/*.json) ;;
+                *) echo "Disallowed proofreading path: $file" >&2; exit 1 ;;
+              esac
+            fi
+            case "$file" in
+              *.bak*|*.tmp*|*.py|*.js|*.ts|*.yml|*.yaml)
+                echo "Executable, backup, or temporary file is not allowed: $file" >&2
+                exit 1
+                ;;
+            esac
+          done
+          test -s "$txt"
+          echo "txt=$txt" >> "$GITHUB_OUTPUT"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "head_ref=${{ github.event.pull_request.head.ref }}" >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+
+      - name: Materialize playable JSON before canonical TXT
+        id: materialize
+        shell: bash
+        run: |
+          set -euo pipefail
+          report="$RUNNER_TEMP/proofreading-materialization.json"
+          python scripts/materialize_proofreading_assets.py \
+            --txt "${{ steps.scope.outputs.txt }}" \
+            --base-ref "${{ steps.scope.outputs.base }}" \
+            --write \
+            --output "$report"
+          python - "$report" "$RUNNER_TEMP/materialized-paths.txt" <<'PY'
+          import json, sys
+          from pathlib import Path
+          report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          paths = report.get("materializedPaths")
+          if not isinstance(paths, list) or not paths:
+              raise SystemExit("Materializer did not report output paths")
+          Path(sys.argv[2]).write_text(
+              "".join(f"{value}\n" for value in paths),
+              encoding="utf-8",
+          )
+          PY
+          git add --pathspec-from-file="$RUNNER_TEMP/materialized-paths.txt"
+          python - "$report" "${{ steps.scope.outputs.base }}" <<'PY'
+          import json, subprocess, sys
+          from pathlib import Path
+          report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          expected = sorted(report.get("changedPaths") or [])
+          actual = sorted(filter(None, subprocess.check_output(
+              ["git", "diff", "--cached", "--name-only", sys.argv[2]],
+              text=True,
+              encoding="utf-8",
+          ).splitlines()))
+          if actual != expected:
+              raise SystemExit(
+                  "Materialized PR scope differs from the validated output set\n"
+                  f"expected={expected!r}\nactual={actual!r}"
+              )
+          PY
+
+      - name: Commit generated JSON and canonical TXT
+        shell: bash
+        env:
+          PUSH_TOKEN: ${{ secrets.PROOFREADING_GITHUB_TOKEN || secrets.TARGET_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
+          if git diff --cached --quiet HEAD; then
+            echo "Generated assets are already committed."
+            exit 0
+          fi
+          if [ -z "${PUSH_TOKEN:-}" ]; then
+            echo "PROOFREADING_GITHUB_TOKEN or TARGET_REPO_TOKEN is required to commit generated JSON/TXT." >&2
+            exit 1
+          fi
+          git config user.name "MagiReader Proofreading Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Materialize playable JSON for community proofreading"
+          auth="$(printf 'x-access-token:%s' "$PUSH_TOKEN" | base64 | tr -d '\n')"
+          git -c "http.extraheader=AUTHORIZATION: basic $auth" push \
+            origin "HEAD:${{ steps.scope.outputs.head_ref }}"
 
       - uses: actions/setup-node@v4
         with:

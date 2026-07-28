@@ -51,6 +51,7 @@ import {
 
 type ReaderMode = 'cn' | 'split' | 'jp';
 type EditSeed = 'empty' | 'jp' | 'current';
+type BilingualLayout = 'side-by-side' | 'stacked';
 
 type LoadedSource = {
   name: string;
@@ -68,6 +69,7 @@ type ProofreadingConfig = {
 };
 
 const MAX_STORY_SOURCE_BYTES = 8 * 1024 * 1024;
+const BILINGUAL_LAYOUT_STORAGE_KEY = 'magi-reader-bilingual-layout-v1';
 
 const THEME_STYLES: Record<string, string> = {
   light: 'bg-transparent text-gray-900',
@@ -212,6 +214,8 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const [showSettings, setShowSettings] = useState(false);
   const [fontSize, setFontSize] = useState(15);
   const [lineHeight, setLineHeight] = useState(1.1);
+  const [bilingualLayout, setBilingualLayout] =
+    useState<BilingualLayout>('side-by-side');
   const [allStories, setAllStories] = useState<Story[]>([]);
   const [storyIndexReady, setStoryIndexReady] = useState(false);
   const [storyIndexError, setStoryIndexError] = useState('');
@@ -236,6 +240,18 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     showSettings,
     () => setShowSettings(false),
   );
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(BILINGUAL_LAYOUT_STORAGE_KEY);
+    if (stored === 'side-by-side' || stored === 'stacked') {
+      setBilingualLayout(stored);
+    }
+  }, []);
+
+  const changeBilingualLayout = (layout: BilingualLayout) => {
+    setBilingualLayout(layout);
+    window.localStorage.setItem(BILINGUAL_LAYOUT_STORAGE_KEY, layout);
+  };
 
   const directSourceResolution = useMemo(() => {
     try {
@@ -329,7 +345,10 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const useManifestSources =
     storyIndexReady &&
     currentStory !== undefined &&
-    directSourceResolution.sources?.kind === 'query';
+    (
+      directSourceResolution.sources?.kind === 'query' ||
+      Boolean(currentStory.path_cn)
+    );
   const sourcePathCn =
     useManifestSources
       ? currentStory.path_cn ?? ''
@@ -416,7 +435,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
         } else {
           if (sourceError) throw new Error(sourceError);
           if (
-            directSourceResolution.sources?.kind === 'exedra-derived' &&
+            directSourceResolution.sources?.kind === 'exedra-trusted-runtime' &&
             !(await verifyExedraStoryId(id))
           ) {
             throw new Error('Exedra 剧情编号校验失败。');
@@ -1038,6 +1057,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                 index={index}
                 editIndex={row.cn ? (editedLineIndices.get(row.cn) ?? index) : index}
                 mode={mode}
+                bilingualLayout={bilingualLayout}
                 theme={theme}
                 isEditMode={isEditMode}
                 editedLines={editedCnLines}
@@ -1105,6 +1125,32 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   <span className="mb-1 block opacity-70">字号（{fontSize}px）</span>
                   <input type="range" min="12" max="22" value={fontSize} onChange={event => setFontSize(Number(event.target.value))} className="w-full" />
                 </label>
+                <div>
+                  <p className="mb-2 opacity-70">中日对照排列</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {([
+                      ['side-by-side', '左右排列'],
+                      ['stacked', '上下排列'],
+                    ] as const).map(([key, label]) => (
+                      <button
+                        type="button"
+                        key={key}
+                        aria-pressed={bilingualLayout === key}
+                        onClick={() => changeBilingualLayout(key)}
+                        className={`rounded border px-2 py-2 text-xs font-bold ${
+                          bilingualLayout === key
+                            ? 'border-blue-500 bg-blue-500/10 text-blue-600'
+                            : 'border-current opacity-60'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="mt-1 text-[11px] opacity-60">
+                    手机上两种模式都可手动选择；上下排列也适用于汉化输入框。
+                  </p>
+                </div>
                 <label className="block">
                   <span className="mb-1 block opacity-70">行高（{lineHeight}）</span>
                   <input type="range" min="1.1" max="2" step="0.1" value={lineHeight} onChange={event => setLineHeight(Number(event.target.value))} className="w-full" />
@@ -1125,6 +1171,7 @@ type StoryRowProps = {
   index: number;
   editIndex: number;
   mode: ReaderMode;
+  bilingualLayout: BilingualLayout;
   theme: string;
   isEditMode: boolean;
   editedLines: StoryLine[];
@@ -1140,6 +1187,7 @@ function StoryRow({
   index,
   editIndex,
   mode,
+  bilingualLayout,
   theme,
   isEditMode,
   editedLines,
@@ -1236,7 +1284,11 @@ function StoryRow({
   return (
     <div
       id={`line-${index}`}
-      className={`group flex flex-col border-b border-transparent py-1 transition-colors md:flex-row md:gap-4 ${
+      className={`group flex border-b border-transparent py-1 transition-colors ${
+        bilingualLayout === 'stacked'
+          ? 'flex-col gap-2'
+          : 'flex-col md:flex-row md:gap-4'
+      } ${
         focused
           ? theme === 'dark'
             ? 'bg-blue-900/30 ring-1 ring-blue-500/50'
@@ -1245,7 +1297,11 @@ function StoryRow({
       }`}
     >
       {mode !== 'jp' && (
-        <div className={`flex gap-3 ${mode === 'split' ? 'md:w-1/2' : 'w-full'}`}>
+        <div className={`flex gap-3 ${
+          mode === 'split' && bilingualLayout === 'side-by-side'
+            ? 'md:w-1/2'
+            : 'w-full'
+        }`}>
           {isEditMode ? (
             <>
               <input
@@ -1311,7 +1367,9 @@ function StoryRow({
       {mode !== 'cn' && (
         <div className={`flex gap-2 ${
           mode === 'split'
-            ? 'mt-1 border-current border-opacity-10 md:mt-0 md:w-1/2 md:border-l md:pl-4'
+            ? bilingualLayout === 'stacked'
+              ? 'w-full border-t border-current border-opacity-10 pt-2'
+              : 'mt-1 border-current border-opacity-10 md:mt-0 md:w-1/2 md:border-l md:pl-4'
             : 'w-full'
         }`}>
           {row.jp ? (

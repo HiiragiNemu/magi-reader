@@ -21,7 +21,7 @@ jobs:
       TEST_WORKER_NAME: magireader-exedra-cn-test
       PROOFREADING_KV_TITLE: magi-submissions-exedra-cn-test
       TEST_WORKER_HOSTNAME: magireader-exedra-cn-test.crynetsystemscell.workers.dev
-      SERVER_GITHUB_TOKEN: ${{ secrets.PROOFREADING_GITHUB_TOKEN }}
+      SERVER_GITHUB_TOKEN: ${{ secrets.PROOFREADING_GITHUB_TOKEN || secrets.TARGET_REPO_TOKEN }}
       SHARED_ADMIN_TOKEN: ${{ secrets.SUBMISSIONS_ADMIN_TOKEN }}
 
     steps:
@@ -227,8 +227,18 @@ jobs:
           import json
           from pathlib import Path
           import sys
-          value = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
-          print(value.get('total', 0))
+          try:
+              value = json.loads(
+                  Path(sys.argv[1]).read_text(encoding='utf-8')
+              )
+              total = value.get('total') if isinstance(value, dict) else None
+              if isinstance(total, int) and not isinstance(total, bool):
+                  print(total)
+          except (OSError, UnicodeError, json.JSONDecodeError):
+              # A newly deployed Worker can briefly return an empty or
+              # incomplete body. Leave the value empty so the outer loop
+              # retries instead of aborting under `set -e`.
+              pass
           PY
               )"
               if [ "$live_total" = "$EXPECTED_MACHINE_TOTAL" ]; then
@@ -244,24 +254,164 @@ jobs:
           fi
           curl --fail --silent --show-error "$SITE_URL/story_index.json" -o "$RUNNER_TEMP/story-index.json"
           curl --fail --silent --show-error "$SITE_URL/api/proofreading/config" -o "$RUNNER_TEMP/config.json"
+          curl --fail --silent --show-error "$SITE_URL/api/exedra/localization-status" -o "$RUNNER_TEMP/exedra-localization-status.json"
           curl --fail --silent --show-error "$SITE_URL/review/submissions" -o "$RUNNER_TEMP/submissions.html"
           curl --fail --silent --show-error "$SITE_URL/review/machine-translations" -o "$RUNNER_TEMP/machine-review.html"
+          python3 - "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/exedra-wiki-smoke-assets.txt" <<'PY'
+          import json
+          import sys
+          from pathlib import Path, PurePosixPath
+
+          stories = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
+          if not isinstance(stories, list):
+              raise SystemExit('Deployed story index is not a list')
+
+          voices = [
+              story for story in stories
+              if isinstance(story, dict) and story.get('category') == 'general_voice'
+          ]
+          if len(voices) != 410:
+              raise SystemExit(
+                  f'Unexpected general_voice story count: {len(voices)} (expected 410)'
+              )
+          known_voice = [
+              story for story in voices
+              if story.get('source_identity') == 'general_voice/100100'
+          ]
+          if (
+              len(known_voice) != 1
+              or known_voice[0].get('path_cn')
+              != '/data/general_voice/100100/100100_cn.txt'
+          ):
+              raise SystemExit('Known general_voice/100100 index entry is missing or invalid')
+
+          repository_root = Path.cwd()
+          public_root = repository_root / 'website' / 'public'
+          translation_root = (
+              repository_root
+              / 'magiraexedra-translate-data-master'
+              / 'Scenarios_full'
+          )
+          candidates = []
+          for story in stories:
+              if (
+                  not isinstance(story, dict)
+                  or story.get('category')
+                  not in {'exedra_character', 'exedra_reaction'}
+                  or not isinstance(story.get('path_cn'), str)
+                  or not story['path_cn'].startswith('/data/')
+              ):
+                  continue
+              identity = story.get('source_identity')
+              if not isinstance(identity, str):
+                  continue
+              parts = identity.split(':', 2)
+              if len(parts) != 3 or parts[0] != 'exedra':
+                  continue
+              source_category, group_key = parts[1:]
+              provenance_path = (
+                  translation_root
+                  / source_category
+                  / group_key
+                  / f'{group_key}_cn.provenance.json'
+              )
+              if not provenance_path.is_file():
+                  continue
+              provenance = json.loads(
+                  provenance_path.read_text(encoding='utf-8-sig')
+              )
+              if (
+                  provenance.get('sourceIdentity') != identity
+                  or provenance.get('machineTranslation') is not False
+                  or provenance.get('provenance')
+                  not in {'exedra_wiki_human', 'exedra_wiki_voice_human'}
+              ):
+                  continue
+              sources = provenance.get('sourceJson')
+              if not isinstance(sources, list):
+                  sources = provenance.get('episodes')
+              if not isinstance(sources, list):
+                  continue
+              wiki_sources = [
+                  source for source in sources
+                  if isinstance(source, dict)
+                  and source.get('provenance')
+                  in {'exedra_wiki_human', 'exedra_wiki_voice_human'}
+                  and isinstance(source.get('source'), str)
+                  and source['source'].endswith('.json')
+              ]
+              if not wiki_sources:
+                  continue
+              txt_path = PurePosixPath(story['path_cn'])
+              json_path = txt_path.parent / wiki_sources[0]['source']
+              local_txt = public_root / str(txt_path).lstrip('/')
+              local_json = public_root / str(json_path).lstrip('/')
+              if local_txt.is_file() and local_json.is_file():
+                  candidates.append((identity, str(txt_path), str(json_path)))
+
+          if not candidates:
+              raise SystemExit(
+                  'No deployed Exedra Wiki human TXT/JSON pair could be derived '
+                  'from story_index and provenance manifests'
+              )
+          _, wiki_txt_path, wiki_json_path = sorted(candidates)[0]
+          Path(sys.argv[2]).write_text(
+              f'{wiki_txt_path}\n{wiki_json_path}\n',
+              encoding='utf-8',
+          )
+          PY
+          mapfile -t wiki_assets < "$RUNNER_TEMP/exedra-wiki-smoke-assets.txt"
+          if [ "${#wiki_assets[@]}" -ne 2 ]; then
+            echo "Failed to resolve Exedra Wiki smoke-test assets." >&2
+            exit 1
+          fi
+          wiki_txt_path="${wiki_assets[0]}"
+          wiki_json_path="${wiki_assets[1]}"
+          curl --fail --silent --show-error "$SITE_URL/data/general_voice/100100/100100_cn.txt" -o "$RUNNER_TEMP/general-voice-100100.txt"
+          curl --fail --silent --show-error "$SITE_URL/data/general_voice/100100/100100_cn.json" -o "$RUNNER_TEMP/general-voice-100100.json"
+          curl --fail --silent --show-error "$SITE_URL$wiki_txt_path" -o "$RUNNER_TEMP/exedra-wiki-cn.txt"
+          curl --fail --silent --show-error "$SITE_URL$wiki_json_path" -o "$RUNNER_TEMP/exedra-wiki-cn.json"
           admin_code="$(curl --silent --show-error -o "$RUNNER_TEMP/admin.json" -w '%{http_code}' "$SITE_URL/api/admin/machine-review")"
-          python3 - "$RUNNER_TEMP/home.html" "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/config.json" "$RUNNER_TEMP/machine-status.json" "$RUNNER_TEMP/submissions.html" "$RUNNER_TEMP/machine-review.html" "$admin_code" "$EXPECTED_MACHINE_TOTAL" <<'PY'
+          python3 - "$RUNNER_TEMP/home.html" "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/config.json" "$RUNNER_TEMP/machine-status.json" "$RUNNER_TEMP/exedra-localization-status.json" "$RUNNER_TEMP/submissions.html" "$RUNNER_TEMP/machine-review.html" "$admin_code" "$EXPECTED_MACHINE_TOTAL" "$RUNNER_TEMP/general-voice-100100.txt" "$RUNNER_TEMP/general-voice-100100.json" "$RUNNER_TEMP/exedra-wiki-cn.txt" "$RUNNER_TEMP/exedra-wiki-cn.json" "$wiki_txt_path" "$wiki_json_path" <<'PY'
           import json, sys
           from pathlib import Path
           home = Path(sys.argv[1]).read_text(encoding='utf-8', errors='replace')
           stories = json.loads(Path(sys.argv[2]).read_text(encoding='utf-8'))
           config = json.loads(Path(sys.argv[3]).read_text(encoding='utf-8'))
           machine = json.loads(Path(sys.argv[4]).read_text(encoding='utf-8'))
-          submissions = Path(sys.argv[5]).read_text(encoding='utf-8', errors='replace')
-          machine_review = Path(sys.argv[6]).read_text(encoding='utf-8', errors='replace')
-          admin_code = sys.argv[7]
-          expected_total = int(sys.argv[8])
+          exedra_localization = json.loads(
+              Path(sys.argv[5]).read_text(encoding='utf-8')
+          )
+          submissions = Path(sys.argv[6]).read_text(encoding='utf-8', errors='replace')
+          machine_review = Path(sys.argv[7]).read_text(encoding='utf-8', errors='replace')
+          admin_code = sys.argv[8]
+          expected_total = int(sys.argv[9])
+          general_voice_txt = Path(sys.argv[10]).read_text(
+              encoding='utf-8', errors='strict'
+          )
+          general_voice_json = json.loads(
+              Path(sys.argv[11]).read_text(encoding='utf-8')
+          )
+          exedra_wiki_txt = Path(sys.argv[12]).read_text(
+              encoding='utf-8', errors='strict'
+          )
+          exedra_wiki_json = json.loads(
+              Path(sys.argv[13]).read_text(encoding='utf-8')
+          )
+          wiki_txt_path = sys.argv[14]
+          wiki_json_path = sys.argv[15]
           if min(map(len, (home, submissions, machine_review))) < 500:
               raise SystemExit('Deployed site content is incomplete')
           if not isinstance(stories, list) or not stories:
               raise SystemExit('Deployed story index is incomplete')
+          general_voice_stories = [
+              story for story in stories
+              if isinstance(story, dict) and story.get('category') == 'general_voice'
+          ]
+          if len(general_voice_stories) != 410:
+              raise SystemExit(
+                  f'Unexpected deployed general_voice count: {len(general_voice_stories)}'
+              )
           if not config.get('submissions_enabled') or not config.get('turnstile_site_key'):
               raise SystemExit(f'Proofreading service is not enabled: {config}')
           if config.get('target_branch') != 'EXEDRA-TEST':
@@ -274,11 +424,64 @@ jobs:
               raise SystemExit('Incomplete machine translation id list')
           if 'states' in machine:
               raise SystemExit('Public machine status leaked private review metadata')
+          entries = exedra_localization.get('entries')
+          if (
+              exedra_localization.get('version') != 1
+              or exedra_localization.get('database_configured') is not True
+              or not isinstance(entries, list)
+              or exedra_localization.get('total') != len(entries)
+          ):
+              raise SystemExit(
+                  f'Invalid Exedra localization status: {exedra_localization}'
+              )
+          trusted_provenance = {
+              'local_human',
+              'official_tw_human',
+              'exedra_wiki_human',
+          }
+          rejected_provenance = [
+              entry.get('provenance')
+              for entry in entries
+              if (
+                  not isinstance(entry, dict)
+                  or entry.get('provenance') not in trusted_provenance
+              )
+          ]
+          if rejected_provenance:
+              raise SystemExit(
+                  'Exedra localization status accepted an untrusted or machine '
+                  f'provenance: {rejected_provenance}'
+              )
+          if 'machine_translation' in json.dumps(
+              exedra_localization, ensure_ascii=False
+          ):
+              raise SystemExit(
+                  'Exedra localization status exposed machine translation data'
+              )
+          if (
+              len(general_voice_txt) < 100
+              or '--- [Section 1]' not in general_voice_txt
+              or not isinstance(general_voice_json, dict)
+              or not isinstance(general_voice_json.get('story'), dict)
+              or not general_voice_json['story']
+          ):
+              raise SystemExit('Known general_voice TXT/JSON assets are incomplete')
+          if (
+              len(exedra_wiki_txt) < 20
+              or '--- [Section 1]' not in exedra_wiki_txt
+              or not isinstance(exedra_wiki_json, dict)
+              or not isinstance(exedra_wiki_json.get('sheetList'), list)
+              or not exedra_wiki_json['sheetList']
+          ):
+              raise SystemExit('Derived Exedra Wiki TXT/JSON assets are incomplete')
           if admin_code not in {'401', '503'}:
               raise SystemExit(f'Unauthenticated admin API returned {admin_code}')
           print(
               f"SITE_OK stories={len(stories)} machine_total={machine['total']} "
               f"verified={machine['verified']} remaining={machine['remaining']} "
+              f"general_voice={len(general_voice_stories)} "
+              f"exedra_localizations={len(entries)} "
+              f"wiki_txt={wiki_txt_path} wiki_json={wiki_json_path} "
               f"turnstile_test_mode={config.get('turnstile_test_mode')} "
               f"admin_unauthenticated={admin_code}"
           )

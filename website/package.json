@@ -3,20 +3,27 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.6.0"
+  },
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "lint": "eslint . --max-warnings=0",
     "type-check": "tsc --noEmit",
-    "test": "node --test",
+    "test": "node --experimental-strip-types --test",
+    "test:python": "node scripts/run-python-checks.mjs",
     "audit:prod": "npm audit --omit=dev --audit-level=high",
-    "validate:scenarios": "node scripts/validate-scenarios.ts",
+    "validate:feature": "node scripts/validate-feature-policy.mjs",
+    "validate:scenarios": "node --experimental-strip-types scripts/validate-scenarios.ts",
     "verify:cloudflare-config": "node scripts/verify-cloudflare-config.mjs",
     "verify:cloudflare-output": "node scripts/verify-cloudflare-output.mjs",
-    "check": "npm run lint && npm run type-check && npm test && npm run audit:prod",
+    "check": "npm run validate:feature && npm run test:python && npm run lint && npm run type-check && npm test && npm run audit:prod",
     "build:worker": "node scripts/verify-cloudflare-output.mjs --build",
     "preview": "npm run build:worker && opennextjs-cloudflare preview",
-    "deploy:worker": "npm run verify:cloudflare-config && npm run build:worker && opennextjs-cloudflare deploy"
+    "deploy:worker": "npm run verify:cloudflare-config && npm run build:worker && opennextjs-cloudflare deploy",
+    "predeploy:test:direct": "npm run validate:feature && npm run test:python",
+    "deploy:test:direct": "node scripts/deploy-direct.mjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.7",

@@ -15,7 +15,6 @@ human-review state remains stored separately in Cloudflare KV.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import subprocess
@@ -65,10 +64,6 @@ def run_git(*args: str) -> str:
     return completed.stdout
 
 
-def git_blob_hash(data: bytes) -> str:
-    return hashlib.sha1(f"blob {len(data)}\0".encode("ascii") + data).hexdigest()
-
-
 def git_tree(ref: str, prefix: str = SOURCE_PREFIX) -> dict[str, str]:
     output = run_git(
         "ls-tree",
@@ -91,16 +86,102 @@ def git_tree(ref: str, prefix: str = SOURCE_PREFIX) -> dict[str, str]:
     return result
 
 
-def working_tree(prefix_root: Path = SOURCE_ROOT) -> dict[str, str]:
+def git_worktree_blob_hashes(
+    repository_paths: list[str],
+    *,
+    repository_root: Path = ROOT,
+) -> dict[str, str]:
+    """Hash worktree files with the same clean/eol filters Git uses for the index.
+
+    ``hash-object --stdin-paths`` treats every input filename as its repository
+    path, so attributes such as ``text eol=lf`` and custom clean filters are
+    applied without launching one Git process per file.
+    """
+
+    if not repository_paths:
+        return {}
+    if len(set(repository_paths)) != len(repository_paths):
+        raise ManifestError("duplicate worktree path passed to git hash-object")
+
+    root = repository_root.resolve()
+    for repository_path in repository_paths:
+        if (
+            not repository_path
+            or "\0" in repository_path
+            or "\n" in repository_path
+            or "\r" in repository_path
+            or "\\" in repository_path
+        ):
+            raise ManifestError(
+                f"unsafe worktree path passed to git hash-object: {repository_path!r}"
+            )
+        pure_path = PurePosixPath(repository_path)
+        if pure_path.is_absolute() or any(
+            part in {"", ".", ".."} for part in pure_path.parts
+        ):
+            raise ManifestError(
+                f"unsafe worktree path passed to git hash-object: {repository_path!r}"
+            )
+        absolute_path = root.joinpath(*pure_path.parts)
+        if not absolute_path.is_file():
+            raise ManifestError(f"worktree file is missing: {repository_path}")
+
+    completed = subprocess.run(
+        [
+            "git",
+            "-c",
+            "core.quotePath=false",
+            "hash-object",
+            "--stdin-paths",
+        ],
+        cwd=root,
+        check=False,
+        capture_output=True,
+        input="".join(f"{path}\n" for path in repository_paths),
+        text=True,
+        encoding="utf-8",
+    )
+    if completed.returncode != 0:
+        raise ManifestError(
+            completed.stderr.strip() or "git hash-object --stdin-paths failed"
+        )
+    object_names = completed.stdout.splitlines()
+    if len(object_names) != len(repository_paths):
+        raise ManifestError(
+            "git hash-object result count does not match worktree path count: "
+            f"paths={len(repository_paths)}, hashes={len(object_names)}"
+        )
+    if any(re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", value) is None
+           for value in object_names):
+        raise ManifestError("git hash-object returned an invalid object name")
+    if len({len(value) for value in object_names}) != 1:
+        raise ManifestError("git hash-object returned mixed object formats")
+    return dict(zip(repository_paths, object_names, strict=True))
+
+
+def working_tree(
+    prefix_root: Path = SOURCE_ROOT,
+    *,
+    repository_root: Path = ROOT,
+) -> dict[str, str]:
     if not prefix_root.is_dir():
         raise ManifestError(f"Magia Record source directory is missing: {prefix_root}")
-    result: dict[str, str] = {}
+    root = repository_root.resolve()
+    repository_paths: list[str] = []
     for path in sorted(prefix_root.rglob("*")):
         if not path.is_file():
             continue
-        repository_path = path.relative_to(ROOT).as_posix()
-        result[repository_path] = git_blob_hash(path.read_bytes())
-    return result
+        try:
+            repository_path = path.resolve().relative_to(root).as_posix()
+        except ValueError as exc:
+            raise ManifestError(
+                f"Magia Record source path is outside repository: {path}"
+            ) from exc
+        repository_paths.append(repository_path)
+    return git_worktree_blob_hashes(
+        repository_paths,
+        repository_root=root,
+    )
 
 
 def classify_trust_boundary(

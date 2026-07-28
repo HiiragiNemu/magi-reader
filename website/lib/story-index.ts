@@ -9,6 +9,7 @@ export type StoryIndexEntry = {
   filename_jp?: string;
   path_cn?: string;
   path_jp?: string;
+  json_paths_cn?: string[];
   title?: string;
   sections?: string[];
   game?: string;
@@ -23,6 +24,8 @@ export type LoadedStoryIndex = {
 
 const MAX_STORY_INDEX_BYTES = 32 * 1024 * 1024;
 const MAX_STORY_INDEX_ENTRIES = 100_000;
+const MAX_EXEDRA_LOCALIZATION_STATUS_BYTES = 2 * 1024 * 1024;
+const MAX_EXEDRA_LOCALIZATION_STATUS_ENTRIES = 10_000;
 const MAX_LEGACY_IDS_PER_STORY = 16;
 const MAX_LEGACY_ROUTE_ALIASES = 10_000;
 const SAFE_IDENTIFIER_RE = /^[A-Za-z0-9_.:-]+$/;
@@ -56,7 +59,19 @@ export type DirectStorySources = {
   pathCn: string;
   pathJp: string;
   optionalCn: boolean;
-  kind: 'exedra-derived' | 'query';
+  kind: 'exedra-trusted-runtime' | 'query';
+};
+
+export type TrustedExedraLocalizationStatusEntry = {
+  story_id: string;
+  source_identity: string;
+};
+
+export type TrustedExedraLocalizationStatus = {
+  version: 1;
+  total: number;
+  entries: TrustedExedraLocalizationStatusEntry[];
+  database_configured: boolean;
 };
 
 const isOptionalString = (value: unknown): value is string | undefined =>
@@ -165,16 +180,16 @@ export const resolveDirectStorySources = (
   if (exedraRoute) {
     const { category, groupKey } = exedraRoute;
     const basePath = `/data/${category}/${groupKey}/${groupKey}`;
-    const pathCn = `${basePath}_cn.txt`;
+    const pathCn = `/api/exedra/localized/${encodeURIComponent(id)}`;
     const pathJp = `${basePath}_jp.txt`;
-    if (!isSafeDataPath(pathCn) || !isSafeDataPath(pathJp)) {
+    if (!isSafeDataPath(pathJp)) {
       throw new Error('Exedra 剧情编号无法生成安全路径。');
     }
     return {
       pathCn,
       pathJp,
       optionalCn: true,
-      kind: 'exedra-derived',
+      kind: 'exedra-trusted-runtime',
     };
   }
 
@@ -289,6 +304,24 @@ const parseStory = (value: unknown, index: number): StoryIndexEntry => {
     throw new Error(`${story.id}: sections 无效`);
   }
   if (
+    story.json_paths_cn !== undefined &&
+    (
+      !Array.isArray(story.json_paths_cn) ||
+      story.json_paths_cn.length === 0 ||
+      story.json_paths_cn.length > 10_000 ||
+      story.json_paths_cn.some(
+        (path) =>
+          typeof path !== 'string' ||
+          !isSafeDataPath(path) ||
+          !/\.json$/iu.test(path),
+      ) ||
+      new Set(story.json_paths_cn.map(path => path.toLowerCase())).size
+        !== story.json_paths_cn.length
+    )
+  ) {
+    throw new Error(`${story.id}: json_paths_cn 无效`);
+  }
+  if (
     story.legacy_ids !== undefined &&
     (
       story.game !== 'magireco' ||
@@ -355,6 +388,142 @@ export const parseStoryIndex = (value: unknown): StoryIndexEntry[] => {
     }
   }
   return stories;
+};
+
+const isSafeSourceIdentity = (value: string): boolean =>
+  value.length > 0 &&
+  value.length <= 1_024 &&
+  !/[\u0000-\u001f\u007f]/u.test(value) &&
+  !value.includes('\\') &&
+  !value.split('/').some((part) => part === '.' || part === '..');
+
+export const parseTrustedExedraLocalizationStatus = (
+  value: unknown,
+): TrustedExedraLocalizationStatus => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('Exedra 可信中文状态格式无效');
+  }
+  const record = value as Record<string, unknown>;
+  if (
+    record.version !== 1 ||
+    typeof record.database_configured !== 'boolean' ||
+    !Number.isSafeInteger(record.total) ||
+    Number(record.total) < 0 ||
+    !Array.isArray(record.entries) ||
+    record.entries.length > MAX_EXEDRA_LOCALIZATION_STATUS_ENTRIES ||
+    Number(record.total) !== record.entries.length
+  ) {
+    throw new Error('Exedra 可信中文状态版本或条目数无效');
+  }
+
+  const seen = new Set<string>();
+  const entries = record.entries.map((value, index) => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      throw new Error(`Exedra 可信中文状态第 ${index + 1} 项无效`);
+    }
+    const entry = value as Record<string, unknown>;
+    const storyId = typeof entry.story_id === 'string' ? entry.story_id : '';
+    const sourceIdentity =
+      typeof entry.source_identity === 'string' ? entry.source_identity : '';
+    if (
+      storyId.length === 0 ||
+      storyId.length > 256 ||
+      !SAFE_IDENTIFIER_RE.test(storyId) ||
+      !sourceIdentity.startsWith('exedra:') ||
+      !isSafeSourceIdentity(sourceIdentity) ||
+      seen.has(storyId)
+    ) {
+      throw new Error(`Exedra 可信中文状态第 ${index + 1} 项身份无效`);
+    }
+    seen.add(storyId);
+    return {
+      story_id: storyId,
+      source_identity: sourceIdentity,
+    };
+  });
+
+  return {
+    version: 1,
+    total: entries.length,
+    entries,
+    database_configured: record.database_configured,
+  };
+};
+
+export const mergeTrustedExedraLocalizations = (
+  stories: readonly StoryIndexEntry[],
+  status: TrustedExedraLocalizationStatus,
+): StoryIndexEntry[] => {
+  if (!status.database_configured || status.entries.length === 0) {
+    return [...stories];
+  }
+  const entriesByStoryId = new Map(
+    status.entries.map((entry) => [entry.story_id, entry]),
+  );
+  return stories.map((story) => {
+    const trusted = entriesByStoryId.get(story.id);
+    if (
+      !trusted ||
+      story.game !== 'exedra' ||
+      story.has_cn ||
+      story.path_cn ||
+      !story.source_identity ||
+      story.source_identity !== trusted.source_identity
+    ) {
+      return story;
+    }
+    return {
+      ...story,
+      percent: 100,
+      has_cn: true,
+      path_cn: `/api/exedra/localized/${encodeURIComponent(story.id)}`,
+    };
+  });
+};
+
+export const applyTrustedExedraLocalizationStatus = async (
+  stories: readonly StoryIndexEntry[],
+  fetchStatus: typeof fetch = fetch,
+): Promise<StoryIndexEntry[]> => {
+  try {
+    const statusResponse = await fetchStatus(
+      '/api/exedra/localization-status',
+      {
+        cache: 'no-store',
+        credentials: 'same-origin',
+      },
+    );
+    if (!statusResponse.ok) {
+      throw new Error(`HTTP ${statusResponse.status}`);
+    }
+    const statusPayload = await readBoundedResponseBody(
+      statusResponse,
+      MAX_EXEDRA_LOCALIZATION_STATUS_BYTES,
+      'Exedra 可信中文状态',
+    );
+    let statusRaw: unknown;
+    try {
+      statusRaw = JSON.parse(
+        new TextDecoder('utf-8', { fatal: true }).decode(statusPayload),
+      ) as unknown;
+    } catch (error) {
+      throw new Error(
+        `Exedra 可信中文状态不是有效的 UTF-8 JSON: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+    return mergeTrustedExedraLocalizations(
+      stories,
+      parseTrustedExedraLocalizationStatus(statusRaw),
+    );
+  } catch (error) {
+    console.warn(
+      'Exedra 可信中文状态暂时不可用；继续使用静态剧情目录。',
+      error,
+    );
+    return stories.slice();
+  }
 };
 
 export const findStoryByRouteId = (
@@ -453,7 +622,11 @@ const fetchStoryIndex = async (): Promise<LoadedStoryIndex> => {
       }`,
     );
   }
-  return { stories: parseStoryIndex(raw), sha256 };
+  const stories = parseStoryIndex(raw);
+  return {
+    stories: await applyTrustedExedraLocalizationStatus(stories),
+    sha256,
+  };
 };
 
 const waitWithAbort = <T>(promise: Promise<T>, signal: AbortSignal): Promise<T> =>

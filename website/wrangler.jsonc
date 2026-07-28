@@ -20,9 +20,10 @@
   "kv_namespaces": [
     {
       "binding": "SUBMISSIONS_KV",
-      // Required: replace this all-zero placeholder with a dedicated namespace ID.
-      // The deployment verifier rejects this placeholder.
       "id": "00000000000000000000000000000000"
     }
-  ]
+  ],
+  "vars": {
+    "EXEDRA_WIKI_BASE_URL": "https://exedra.wiki"
+  }
 }
