@@ -49,6 +49,18 @@ jobs:
           assert stories
           PY
 
+      - name: Validate catalogue before raw JSON backlinks
+        shell: bash
+        run: |
+          set +e
+          python validate_public_story_corpus.py \
+            --public website/public \
+            --report public-story-corpus-before.json \
+            > public-story-validator-before.log 2>&1
+          status=$?
+          cat public-story-validator-before.log
+          exit $status
+
       - name: Index every raw scenario JSON
         run: |
           set -euxo pipefail
@@ -60,13 +72,17 @@ jobs:
             | tee public-raw-json-report.json
           test -s website/public/raw_story_json_manifest.json
 
-      - name: Validate complete story corpus
+      - name: Validate catalogue after raw JSON backlinks
+        shell: bash
         run: |
-          set -euxo pipefail
+          set +e
           python validate_public_story_corpus.py \
             --public website/public \
-            --report public-story-corpus-report.json
-          test -s public-story-corpus-report.json
+            --report public-story-corpus-after.json \
+            > public-story-validator-after.log 2>&1
+          status=$?
+          cat public-story-validator-after.log
+          exit $status
 
       - name: Validate raw manifest contract
         run: |
@@ -106,7 +122,10 @@ jobs:
           name: public-story-data-evidence
           path: |
             public-raw-json-report.json
-            public-story-corpus-report.json
+            public-story-corpus-before.json
+            public-story-corpus-after.json
+            public-story-validator-before.log
+            public-story-validator-after.log
             website/public/story_index.manifest.json
           if-no-files-found: warn
           retention-days: 14
