@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Synchronize the application shell and Service Worker with one revision.
+"""Synchronize the production shell with a versioned Service Worker file.
 
-The reader evolved from UI v4 to structured v5 without updating the old
-Service Worker cache namespace or its pre-cached URLs.  That allowed installed
-browsers to retain a v4 offline shell which did not include the character,
-voice, or Doppel runtimes.  This build-time patch derives the exact same-origin
-asset URLs from the final index.html, updates app.js registration revision, and
-writes a new Service Worker which deletes all older reader caches on activate.
+Cloudflare Pages may retain a static ``/sw.js`` response at the edge even when a
+query string changes.  A browser could therefore register an old v4 body under
+``/sw.js?v=5.4``.  This patch uses a genuinely versioned filename
+``/sw-v<revision>.js``, updates app.js to register that file, derives the exact
+pre-cache URLs from the final index, and writes both the versioned worker and a
+compatibility ``sw.js`` copy.
 """
 
 from __future__ import annotations
@@ -43,7 +43,8 @@ def main() -> None:
     root = args.root.resolve()
     index_path = root / "index.html"
     app_path = root / "app.js"
-    sw_path = root / "sw.js"
+    compatibility_sw_path = root / "sw.js"
+    versioned_sw_path = root / f"sw-v{args.revision}.js"
 
     index = index_path.read_text(encoding="utf-8")
     app = app_path.read_text(encoding="utf-8")
@@ -56,6 +57,12 @@ def main() -> None:
     )
     if replacements != 1:
         raise RuntimeError("app.js UI_VERSION declaration not found exactly once")
+
+    old_registration = "navigator.serviceWorker.register(`/sw.js?v=${UI_VERSION}`, { updateViaCache: 'none' })"
+    new_registration = "navigator.serviceWorker.register(`/sw-v${UI_VERSION}.js`, { updateViaCache: 'none' })"
+    if old_registration not in patched_app:
+        raise RuntimeError("legacy Service Worker registration expression not found")
+    patched_app = patched_app.replace(old_registration, new_registration, 1)
     app_path.write_text(patched_app, encoding="utf-8")
 
     assets: list[str] = []
@@ -168,8 +175,14 @@ self.addEventListener('message', (event) => {{
   }}
 }});
 """
-    sw_path.write_text(source, encoding="utf-8")
-    print(json.dumps({"revision": args.revision, "version": version, "core": core}, ensure_ascii=False, indent=2))
+    compatibility_sw_path.write_text(source, encoding="utf-8")
+    versioned_sw_path.write_text(source, encoding="utf-8")
+    print(json.dumps({
+        "revision": args.revision,
+        "version": version,
+        "worker": f"/sw-v{args.revision}.js",
+        "core": core,
+    }, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
