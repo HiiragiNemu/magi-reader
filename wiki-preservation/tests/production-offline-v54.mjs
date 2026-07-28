@@ -12,7 +12,7 @@ async function waitForProduction() {
       const [healthResponse, indexResponse, swResponse, appResponse] = await Promise.all([
         fetch(`${base}health.json?offline=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
         fetch(`${base}?offline=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
-        fetch(`${base}sw.js?offline=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
+        fetch(`${base}sw-v5.4.js?offline=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
         fetch(`${base}app.js?offline=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
       ]);
       const [health, index, sw, app] = await Promise.all([
@@ -24,12 +24,13 @@ async function waitForProduction() {
         index.includes('/structured-ui.js?v=5.4') &&
         index.includes('/doppel-ui.js?v=5.4') &&
         sw.includes('magireco-cn-reader-v5.4-offline') &&
-        app.includes("const UI_VERSION = '5.4'")
+        app.includes("const UI_VERSION = '5.4'") &&
+        app.includes('`/sw-v${UI_VERSION}.js`')
       ) return { health };
     } catch {}
     await new Promise((resolve) => setTimeout(resolve, 5000));
   }
-  throw new Error('生产站未在等待窗口内提供v5.4离线外壳');
+  throw new Error('生产站未在等待窗口内提供v5.4版本化离线外壳');
 }
 
 const production = await waitForProduction();
@@ -49,6 +50,14 @@ page.on('pageerror', (error) => events.push({ type: 'pageerror', text: String(er
 page.on('requestfailed', (request) => events.push({ type: 'requestfailed', url: request.url(), error: request.failure()?.errorText || '' }));
 
 try {
+  // Seed one obsolete cache in the same origin before the new worker is
+  // registered. Activation must remove it.
+  await page.goto(`${base}health.json?seed=${Date.now()}`, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+  await page.evaluate(async () => {
+    const cache = await caches.open('magireco-cn-reader-v4-ui-20260728-shell');
+    await cache.put('/legacy-test', new Response('legacy'));
+  });
+
   await page.goto(`${base}?offline-test=${Date.now()}#/characters`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
   await page.waitForSelector('.character-grid .character-card', { timeout: 40_000 });
   await page.waitForFunction(() => document.querySelectorAll('.character-card').length >= 40);
@@ -57,6 +66,7 @@ try {
   await page.waitForFunction(async () => {
     const names = await caches.keys();
     if (!names.some((name) => name === 'magireco-cn-reader-v5.4-offline-shell')) return false;
+    if (names.some((name) => name.startsWith('magireco-cn-reader-') && !name.startsWith('magireco-cn-reader-v5.4-offline'))) return false;
     const required = [
       '/index.html',
       '/app.js?v=5.4',
@@ -66,7 +76,7 @@ try {
     ];
     const results = await Promise.all(required.map((url) => caches.match(url)));
     return results.every(Boolean);
-  }, null, { timeout: 30_000 });
+  }, null, { timeout: 40_000 });
 
   const onlineState = await page.evaluate(async () => {
     const registration = await navigator.serviceWorker.ready;
@@ -81,7 +91,7 @@ try {
     };
   });
   if (!onlineState.controller) throw new Error(`Service Worker未控制页面：${JSON.stringify(onlineState)}`);
-  if (!onlineState.activeScript.includes('/sw.js?v=5.4')) throw new Error(`Service Worker脚本版本错误：${JSON.stringify(onlineState)}`);
+  if (!onlineState.activeScript.endsWith('/sw-v5.4.js')) throw new Error(`Service Worker脚本文件错误：${JSON.stringify(onlineState)}`);
   if (onlineState.oldCaches.length) throw new Error(`仍存在旧Reader缓存：${JSON.stringify(onlineState)}`);
   await page.screenshot({ path: `${output}/01-online-character-catalog.png`, fullPage: false });
 
