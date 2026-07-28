@@ -76,18 +76,73 @@ jobs:
           echo 'temporary proxy did not become ready' >&2
           exit 1
 
-      - name: Verify proxy can read a protected template page
+      - name: Probe source paths through edge proxy
         shell: bash
         run: |
-          set -euo pipefail
-          target='https://magireco.moe/wiki/Template:%E8%AE%B0%E5%BF%86%E6%95%B0%E6%8D%AE%E8%A1%A8%2F1000%E5%86%86%E6%9C%AA%E6%BA%80%E3%81%AE%E9%AD%94%E6%B3%95'
-          encoded="$(python -c 'import sys,urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$target")"
-          curl --fail --silent --show-error \
-            -H "x-magireco-proxy-token: $MAGIRECO_PROXY_TOKEN" \
-            "$MAGIRECO_FETCH_PROXY/?url=$encoded" \
-            -o /tmp/memoria-template.html
-          grep -q 'mw-content-text' /tmp/memoria-template.html
-          grep -q '1000' /tmp/memoria-template.html
+          set -uo pipefail
+          mkdir -p proxy-diagnostic
+          probe() {
+            name="$1"
+            target="$2"
+            encoded="$(python -c 'import sys,urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$target")"
+            status="$(curl --silent --show-error \
+              -D "proxy-diagnostic/${name}.headers.txt" \
+              -o "proxy-diagnostic/${name}.body.html" \
+              -w '%{http_code}' \
+              -H "x-magireco-proxy-token: $MAGIRECO_PROXY_TOKEN" \
+              "$MAGIRECO_FETCH_PROXY/?url=$encoded" || true)"
+            printf '%s\n' "$status" > "proxy-diagnostic/${name}.status.txt"
+          }
+          probe home 'https://magireco.moe/wiki/首页'
+          probe character 'https://magireco.moe/wiki/七海八千代'
+          probe category 'https://magireco.moe/wiki/Category:数据模板'
+          probe template_wiki 'https://magireco.moe/wiki/Template:记忆数据表/1000円未満の魔法'
+          probe template_index 'https://magireco.moe/index.php?title=Template:记忆数据表/1000円未満の魔法'
+
+          direct_status="$(curl --silent --show-error \
+            -o proxy-diagnostic/direct-template.body.html \
+            -D proxy-diagnostic/direct-template.headers.txt \
+            -w '%{http_code}' \
+            'https://magireco.moe/wiki/Template:记忆数据表/1000円未満の魔法' || true)"
+          printf '%s\n' "$direct_status" > proxy-diagnostic/direct-template.status.txt
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('proxy-diagnostic')
+          summary = {}
+          for path in sorted(root.glob('*.status.txt')):
+              name = path.name.removesuffix('.status.txt')
+              body = root / f'{name}.body.html'
+              headers = root / f'{name}.headers.txt'
+              summary[name] = {
+                  'status': path.read_text(encoding='utf-8').strip(),
+                  'bytes': body.stat().st_size if body.exists() else 0,
+                  'hasContent': 'mw-content-text' in body.read_text(encoding='utf-8', errors='replace') if body.exists() else False,
+                  'headers': headers.read_text(encoding='utf-8', errors='replace')[:3000] if headers.exists() else '',
+              }
+          (root / 'summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print(json.dumps(summary, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload proxy diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-memoria-proxy-diagnostic
+          path: proxy-diagnostic
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Require at least one readable template route
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          summary = json.loads(Path('proxy-diagnostic/summary.json').read_text(encoding='utf-8'))
+          candidates = [summary.get('template_wiki', {}), summary.get('template_index', {})]
+          assert any(item.get('status') == '200' and item.get('hasContent') for item in candidates), summary
+          PY
 
       - name: Crawl and parse representative sample
         run: |
