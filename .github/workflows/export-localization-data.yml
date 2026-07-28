@@ -1,0 +1,57 @@
+name: Export Localization Data Snapshot
+
+on:
+  pull_request:
+    branches:
+      - tooling/localization-data-export-base
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    if: >-
+      github.event.pull_request.head.ref == 'tooling/localization-data-export-run' &&
+      github.event.pull_request.base.ref == 'tooling/localization-data-export-base'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Fetch current localization branch quietly
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init --quiet .
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git -c protocol.version=2 fetch --quiet --depth=1 origin feature/exedra-cn-and-magireco-voice
+          git checkout --quiet FETCH_HEAD
+
+      - name: Package localization data only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/export"
+          test -d magireco-source-master/Scenarios_full
+          test -d magireco-translate-data-master/Scenarios_full
+          test -d magiraexedra-source-master/Scenarios_full
+          test -d magiraexedra-translate-data-master/Scenarios_full
+          tar -czf "$RUNNER_TEMP/export/localization-data-snapshot.tar.gz" \
+            magireco-source-master/Scenarios_full \
+            magireco-translate-data-master/Scenarios_full \
+            magiraexedra-source-master/Scenarios_full \
+            magiraexedra-translate-data-master/Scenarios_full
+          sha256sum "$RUNNER_TEMP/export/localization-data-snapshot.tar.gz" \
+            > "$RUNNER_TEMP/export/localization-data-snapshot.tar.gz.sha256"
+          find \
+            magireco-source-master/Scenarios_full \
+            magireco-translate-data-master/Scenarios_full \
+            magiraexedra-source-master/Scenarios_full \
+            magiraexedra-translate-data-master/Scenarios_full \
+            -type f -printf '%p\t%s\n' | sort \
+            > "$RUNNER_TEMP/export/localization-data-files.tsv"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: localization-data-snapshot
+          path: ${{ runner.temp }}/export/
+          if-no-files-found: error
+          retention-days: 1
