@@ -158,7 +158,7 @@ jobs:
           elif config.get('submissions_enabled') or config.get('github_admin_auth'):
               report['errors'].append({'stage': 'public_management_disabled', 'config': config})
 
-          if not home_payload or b'剧情阅读器' not in home_payload:
+          if not home_payload or '剧情阅读器'.encode('utf-8') not in home_payload:
               report['errors'].append({'stage': 'homepage_brand', 'error': 'public heading missing'})
           if report.get('story_summary') != {'total': 2602, 'magireco': 2171, 'exedra': 431}:
               report['errors'].append({'stage': 'story_counts', 'value': report.get('story_summary')})
