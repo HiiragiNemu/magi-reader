@@ -7,6 +7,7 @@ on:
       - 'wiki-preservation/static/**'
       - 'wiki-preservation/scripts/reclassify_portals.py'
       - 'wiki-preservation/scripts/extract_structured_characters.py'
+      - 'wiki-preservation/scripts/patch_structured_runtime.py'
       - '.github/workflows/deploy-magireco-ui-hotfix.yml'
   workflow_dispatch:
 
@@ -33,6 +34,7 @@ jobs:
             wiki-preservation/static
             wiki-preservation/scripts/reclassify_portals.py
             wiki-preservation/scripts/extract_structured_characters.py
+            wiki-preservation/scripts/patch_structured_runtime.py
           sparse-checkout-cone-mode: true
           show-progress: false
 
@@ -65,16 +67,22 @@ jobs:
           cp wiki-preservation/static/structured-ui.js snapshot/structured-ui.js
           cp wiki-preservation/static/structured-ui.css snapshot/structured-ui.css
           cp wiki-preservation/static/sw.js snapshot/sw.js
+          python wiki-preservation/scripts/patch_structured_runtime.py snapshot/structured-ui.js
           python wiki-preservation/scripts/reclassify_portals.py snapshot
           python wiki-preservation/scripts/extract_structured_characters.py snapshot
           python - <<'PY'
           import json
           from pathlib import Path
+          index_path = Path('snapshot/index.html')
+          index = index_path.read_text(encoding='utf-8')
+          index = index.replace('structured-ui.css?v=5.0', 'structured-ui.css?v=5.1')
+          index = index.replace('structured-ui.js?v=5.0', 'structured-ui.js?v=5.1')
+          index_path.write_text(index, encoding='utf-8')
           health_path = Path('snapshot/health.json')
           health = json.loads(health_path.read_text(encoding='utf-8-sig'))
           structured = json.loads(Path('snapshot/data/structured/manifest.json').read_text(encoding='utf-8'))
           health['uiVersion'] = 5
-          health['uiRevision'] = '5.0'
+          health['uiRevision'] = '5.1'
           health['portalClassification'] = 'wiki-articles-only'
           health['structured'] = structured
           health['uiFeatures'] = [
@@ -82,6 +90,7 @@ jobs:
               'structured-character-profiles',
               'native-audio-voice-player',
               'voice-costume-and-group-filters',
+              'idempotent-legacy-navigation-bridge',
               'wiki-article-preservation-layer',
               'responsive-wiki-html',
               'table-scroll-containers',
@@ -92,7 +101,7 @@ jobs:
           health_path.write_text(json.dumps(health, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           Path('snapshot/ui-version.json').write_text(json.dumps({
               'uiVersion': 5,
-              'uiRevision': '5.0',
+              'uiRevision': '5.1',
               'name': 'structured-character-and-voice-reader',
               'structured': structured,
           }, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
@@ -105,8 +114,11 @@ jobs:
           node --check snapshot/app.js
           node --check snapshot/ui-v4-runtime.js
           node --check snapshot/structured-ui.js
-          grep -q 'structured-ui.js?v=5.0' snapshot/index.html
-          grep -q 'structured-ui.css?v=5.0' snapshot/index.html
+          grep -q 'structured-ui.js?v=5.1' snapshot/index.html
+          grep -q 'structured-ui.css?v=5.1' snapshot/index.html
+          grep -q 'STRUCTURED_RUNTIME_REVISION.*5.1-idempotent-navigation' snapshot/structured-ui.js
+          grep -q "wiki.textContent !== 'Wiki正文'" snapshot/structured-ui.js
+          grep -q "people.textContent !== '人物'" snapshot/structured-ui.js
           grep -q 'CHARACTER VOICE ARCHIVE' snapshot/structured-ui.js
           grep -q 'audio controls preload="none"' snapshot/structured-ui.js
           python - <<'PY'
@@ -121,7 +133,7 @@ jobs:
           titles = set(by_title)
           assert health['counts']['pages'] == 500, health
           assert health['counts']['images'] >= 12000, health
-          assert health['uiVersion'] == 5, health
+          assert health['uiVersion'] == 5 and health['uiRevision'] == '5.1', health
           assert manifest['characters'] >= 235, manifest
           assert manifest['characterPages'] >= 225, manifest
           assert manifest['organizations'] >= 6, manifest
@@ -147,7 +159,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Deploy structured reader v5
+      - name: Deploy structured reader v5.1
         run: |
           npx --yes wrangler@latest pages deploy snapshot \
             --project-name magireco-cn-reader \
@@ -177,16 +189,18 @@ jobs:
               voice_index = json.loads(Path('/tmp/data_structured_voice-index_json').read_text(encoding='utf-8-sig'))
               titles = {item['title'] for item in characters}
               assert health['status'] == 'ok'
-              assert health['uiVersion'] == 5
+              assert health['uiVersion'] == 5 and health['uiRevision'] == '5.1'
               assert health['counts']['pages'] == 500
               assert manifest['characters'] >= 235
               assert manifest['voiceWithAudio'] >= 16000
               assert len(voice_index) >= 220
               assert {'七海八千代', '环伊吕波'} <= titles
               assert 'Ablaze' not in titles
-              assert 'structured-ui.js?v=5.0' in index
+              assert 'structured-ui.js?v=5.1' in index
+              assert '5.1-idempotent-navigation' in ui
+              assert "wiki.textContent !== 'Wiki正文'" in ui
               assert 'CHARACTER VOICE ARCHIVE' in ui
-              print('PRODUCTION_STRUCTURED_V5_OK', manifest)
+              print('PRODUCTION_STRUCTURED_V5_1_OK', manifest)
           except Exception as exc:
               print('not ready:', exc)
               raise SystemExit(1)
