@@ -1,0 +1,55 @@
+name: Test Magireco Reader v6
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'wiki-preservation/static/**'
+      - 'wiki-preservation/tests/production-reader-v6.mjs'
+      - 'wiki-preservation/scripts/prepare_memoria_runtime.py'
+      - 'wiki-preservation/scripts/patch_dense_reader.py'
+      - 'wiki-preservation/scripts/patch_offline_runtime.py'
+      - '.github/workflows/deploy-magireco-ui-hotfix.yml'
+      - '.github/workflows/test-magireco-reader-v6.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: magireco-reader-v6-production-browser
+  cancel-in-progress: true
+
+jobs:
+  production-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out v6 production test
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: wiki-preservation/tests/production-reader-v6.mjs
+          sparse-checkout-cone-mode: true
+          show-progress: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Playwright and Chromium
+        run: |
+          npm init -y
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Run Reader v6 production regression
+        run: node wiki-preservation/tests/production-reader-v6.mjs
+
+      - name: Upload production evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-reader-v6-production-evidence
+          path: reader-v6-evidence
+          if-no-files-found: warn
+          retention-days: 14
