@@ -49,11 +49,11 @@ jobs:
           set -euo pipefail
           sed 's/structured-ui\.js?v=5\.0/structured-ui.js?v=5.1/g' \
             wiki-preservation/tests/production-structured-v5.mjs \
-            > /tmp/production-structured-v5.1.mjs
-          grep -q 'structured-ui.js?v=5.1' /tmp/production-structured-v5.1.mjs
+            > wiki-preservation/tests/production-structured-v5.1.mjs
+          grep -q 'structured-ui.js?v=5.1' wiki-preservation/tests/production-structured-v5.1.mjs
 
       - name: Run structured character and voice production test
-        run: node /tmp/production-structured-v5.1.mjs
+        run: node wiki-preservation/tests/production-structured-v5.1.mjs
 
       - name: Upload structured reader evidence
         if: always()
