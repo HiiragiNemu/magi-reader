@@ -27,47 +27,75 @@ jobs:
       CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
     steps:
-      - name: Check out deployment branch
+      - name: Check out preservation deployment files
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            wiki-preservation
+          sparse-checkout-cone-mode: true
+          show-progress: false
+          fetch-depth: 1
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Probe MediaWiki API
+      - name: Diagnose and probe Wiki endpoints
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
-          import json, urllib.parse, urllib.request
-          endpoints = [
-              "https://magireco.moe/api.php",
-              "https://www.magireco.moe/api.php",
-          ]
-          errors = []
-          for endpoint in endpoints:
-              url = endpoint + "?" + urllib.parse.urlencode({
-                  "action": "query",
-                  "meta": "siteinfo",
-                  "format": "json",
-                  "formatversion": "2",
-              })
-              try:
-                  request = urllib.request.Request(url, headers={"User-Agent": "MagirecoChinesePreservationReader/3.0"})
-                  with urllib.request.urlopen(request, timeout=45) as response:
-                      data = json.load(response)
-                  print(endpoint, data.get("query", {}).get("general", {}).get("sitename"))
-                  break
-              except Exception as exc:
-                  errors.append(f"{endpoint}: {exc}")
-          else:
-              raise SystemExit("\n".join(errors))
+          query='action=query&meta=siteinfo&siprop=general%7Cstatistics&format=json&formatversion=2'
+          endpoints=(
+            'https://magireco.moe/api.php'
+            'https://www.magireco.moe/api.php'
+            'https://magireco.moe/w/api.php'
+            'https://www.magireco.moe/w/api.php'
+          )
+          success=0
+          for endpoint in "${endpoints[@]}"; do
+            echo "===== $endpoint ====="
+            status=$(curl --compressed --location --silent --show-error \
+              --output /tmp/wiki-probe-body \
+              --write-out '%{http_code}' \
+              --max-time 45 \
+              --header 'Accept: application/json,text/plain,*/*' \
+              --header 'Referer: https://magireco.moe/wiki/%E9%A6%96%E9%A1%B5' \
+              --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/138.0 Safari/537.36' \
+              "$endpoint?$query" || true)
+            echo "HTTP $status"
+            file /tmp/wiki-probe-body || true
+            head -c 500 /tmp/wiki-probe-body || true
+            echo
+            if [ "$status" = '200' ] && python - /tmp/wiki-probe-body <<'PY'
+          import json, pathlib, sys
+          data = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding='utf-8-sig'))
+          site = data.get('query', {}).get('general', {}).get('sitename')
+          print('siteinfo:', site)
+          raise SystemExit(0 if site else 1)
           PY
+            then
+              echo "$endpoint" > wiki-preservation/api-endpoint.txt
+              success=1
+              break
+            fi
+          done
+          if [ "$success" != '1' ]; then
+            echo '===== HTML fallback probe ====='
+            curl --compressed --location --fail --show-error --max-time 45 \
+              --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/138.0 Safari/537.36' \
+              --output /tmp/wiki-home \
+              'https://magireco.moe/wiki/%E9%A6%96%E9%A1%B5' || true
+            file /tmp/wiki-home || true
+            head -c 800 /tmp/wiki-home || true
+            echo
+            exit 1
+          fi
 
       - name: Build complete static snapshot
         run: |
           python wiki-preservation/scripts/build_snapshot.py \
+            --endpoint "$(cat wiki-preservation/api-endpoint.txt)" \
             --output wiki-preservation/dist
 
       - name: Verify snapshot coverage
