@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""Synchronize the production shell with a versioned Service Worker file.
-
-Cloudflare Pages may retain fixed application assets at the edge even when a
-query string changes. A browser could therefore load an old application body
-from a nominally new URL and register the obsolete worker. This patch uses a
-genuinely versioned worker filename, updates app.js registration, derives the
-pre-cache URLs from the final index, writes compatibility and versioned worker
-files, and emits no-cache rules for every application update entry point.
-"""
+"""Synchronize the production shell with a versioned Service Worker file."""
 
 from __future__ import annotations
 
@@ -37,7 +29,7 @@ def unique(values: list[str]) -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("root", type=Path)
-    parser.add_argument("--revision", default="5.5")
+    parser.add_argument("--revision", default="6.0")
     args = parser.parse_args()
 
     root = args.root.resolve()
@@ -74,24 +66,33 @@ def main() -> None:
         if parsed.path.endswith((".js", ".css", ".webmanifest", ".svg", ".png", ".ico")):
             assets.append(raw)
 
-    core = unique(
-        [
-            "/",
-            "/index.html",
-            *assets,
-            "/health.json",
-            "/data/runtime-manifest.json",
-            "/data/structured/manifest.json",
-            "/data/structured/characters.json",
-            "/data/structured/voice-index.json",
-            "/data/structured/doppel.json",
-        ]
-    )
+    core_candidates = [
+        "/",
+        "/index.html",
+        *assets,
+        "/health.json",
+        "/data/runtime-manifest.json",
+        "/data/structured/manifest.json",
+        "/data/structured/characters.json",
+        "/data/structured/voice-index.json",
+        "/data/structured/doppel.json",
+        "/data/structured/memoria-index.json",
+        "/data/structured/memoria-manifest.json",
+    ]
+    core = unique([value for value in core_candidates if value.startswith("/")])
 
-    required = ("/app.js", "/structured-ui.js", "/doppel-ui.js")
+    required = ("/app.js", "/structured-ui.js", "/doppel-ui.js", "/memoria-ui.js")
     for path in required:
         if not any(urlsplit(value).path == path for value in core):
             raise RuntimeError(f"final index does not reference required asset: {path}")
+
+    required_data = (
+        root / "data" / "structured" / "memoria-index.json",
+        root / "data" / "structured" / "memoria-manifest.json",
+    )
+    for path in required_data:
+        if not path.exists():
+            raise RuntimeError(f"required offline index is missing: {path}")
 
     version = f"magireco-cn-reader-v{args.revision}-offline"
     source = f"""/* Generated from the final production index by patch_offline_runtime.py. */
@@ -132,8 +133,7 @@ async function matchPrecache(request) {{
 }}
 
 async function cachedShell(request) {{
-  return (await matchPrecache(request))
-    || (await matchPrecache(FALLBACK_URL));
+  return (await matchPrecache(request)) || (await matchPrecache(FALLBACK_URL));
 }}
 
 async function networkFirst(request) {{
@@ -152,8 +152,7 @@ async function networkFirst(request) {{
 
 async function staleWhileRevalidate(request, cacheName) {{
   const cache = await caches.open(cacheName);
-  const cached = (await cache.match(request, {{ ignoreSearch: true }}))
-    || (await matchPrecache(request));
+  const cached = (await cache.match(request, {{ ignoreSearch: true }})) || (await matchPrecache(request));
   const refresh = fetch(request)
     .then(async (response) => {{
       if (response.ok) await cache.put(request, response.clone());
@@ -205,10 +204,14 @@ self.addEventListener('message', (event) => {{
         "/ui-v4-runtime.js",
         "/structured-ui.js",
         "/doppel-ui.js",
+        "/memoria-ui.js",
         "/styles.css",
         "/ui-v4-fixes.css",
         "/structured-ui.css",
         "/doppel-ui.css",
+        "/memoria-ui.css",
+        "/dense-reader.css",
+        "/dense-reader-compact.css",
     ]
     blocks = [f"{path}\n  {no_cache}" for path in update_paths]
     blocks.extend(
@@ -217,8 +220,7 @@ self.addEventListener('message', (event) => {{
             f"/{versioned_sw_name}\n  {no_cache}\n  Service-Worker-Allowed: /",
         ]
     )
-    headers = "\n\n".join(blocks) + "\n"
-    (root / "_headers").write_text(headers, encoding="utf-8")
+    (root / "_headers").write_text("\n\n".join(blocks) + "\n", encoding="utf-8")
 
     print(json.dumps({
         "revision": args.revision,
