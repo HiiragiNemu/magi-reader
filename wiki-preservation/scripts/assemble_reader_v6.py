@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
 import shutil
 import subprocess
@@ -59,6 +58,17 @@ FORBIDDEN_VISITOR_COPY = (
     "来源与保存说明",
     "本站用于研究",
     "兼容性开发",
+)
+
+NETWORK_FIRST_ASSETS = (
+    "/app.js",
+    "/ui-v4-runtime.js",
+    "/structured-ui.js",
+    "/doppel-ui.js",
+    "/memoria-ui.js",
+    "/styles.css",
+    "/dense-reader.css",
+    "/dense-reader-compact.css",
 )
 
 
@@ -127,6 +137,8 @@ def update_health(root: Path, revision: str) -> dict:
         "on-demand-memoria-detail-shards",
         "versioned-service-worker-file",
         "legacy-cache-eviction",
+        "first-reload-cache-migration",
+        "network-first-ui-assets",
         "offline-structured-indexes",
         "system-light-dark-eye-oled-themes",
         "font-and-content-width-controls",
@@ -201,6 +213,8 @@ def validate(root: Path, revision: str) -> dict:
     for asset in VERSIONED_ASSETS:
         if f"/{asset}?v={revision}" not in index:
             raise RuntimeError(f"versioned asset missing: {asset}")
+    if "reader-version-cache-bootstrap" not in index:
+        raise RuntimeError("version-scoped cache bootstrap missing")
     if "--site-max: 1760px" not in (root / "dense-reader.css").read_text(encoding="utf-8"):
         raise RuntimeError("dense desktop layout missing")
     if "repeat(5, minmax(0, 1fr))" not in (root / "dense-reader-compact.css").read_text(encoding="utf-8"):
@@ -210,6 +224,12 @@ def validate(root: Path, revision: str) -> dict:
     for name in ("structured-ui.js", "doppel-ui.js", "memoria-ui.js"):
         if "subtree: false" not in (root / name).read_text(encoding="utf-8"):
             raise RuntimeError(f"root-only observer missing: {name}")
+    worker = (root / f"sw-v{revision}.js").read_text(encoding="utf-8")
+    if "NETWORK_FIRST_PATHS" not in worker:
+        raise RuntimeError("network-first update policy missing")
+    for path in NETWORK_FIRST_ASSETS:
+        if path not in worker:
+            raise RuntimeError(f"critical asset missing from network-first policy: {path}")
     assert_visitor_copy(root)
     return {
         "health": health,
@@ -224,7 +244,7 @@ def main() -> None:
     parser.add_argument("--static", type=Path, required=True)
     parser.add_argument("--scripts", type=Path, required=True)
     parser.add_argument("--memoria", type=Path, required=True)
-    parser.add_argument("--revision", default="6.0")
+    parser.add_argument("--revision", default="6.2")
     args = parser.parse_args()
 
     root = args.snapshot.resolve()
@@ -251,6 +271,7 @@ def main() -> None:
     version_index(root / "index.html", args.revision)
     update_health(root, args.revision)
     run(scripts / "patch_offline_runtime.py", root, "--revision", args.revision)
+    run(scripts / "patch_update_bootstrap.py", root, "--revision", args.revision)
     result = validate(root, args.revision)
     print(json.dumps(result, ensure_ascii=False, indent=2), flush=True)
 
