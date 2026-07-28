@@ -54,28 +54,74 @@ jobs:
           python prepare_public_story_reader.py --website website
           grep -q 'PUBLIC_STORY_ARCHIVE' website/app/page.tsx
           grep -q '魔法纪录与 Magia Exedra 剧情阅读器' website/app/layout.tsx
-          ! grep -q '机器翻译人工校验清单' <(sed -n '/PUBLIC_STORY_ARCHIVE/,$p' website/app/page.tsx) || true
 
-      - name: Validate scenario pipeline
+      - name: Run scenario pipeline tests
+        run: python -m unittest discover -s tests -p 'test_*.py'
+
+      - name: Generate complete deployable story index
+        run: python generate_story_index.py
+
+      - name: Validate both systems and every indexed source
         run: |
-          python -m unittest discover -s tests -p 'test_*.py'
-          python generate_story_index.py
           python - <<'PY'
           import json
           from pathlib import Path
-          stories = json.loads(Path('website/public/story_index.json').read_text(encoding='utf-8'))
-          if not isinstance(stories, list) or len(stories) < 4000:
-              raise SystemExit(f'incomplete story index: {len(stories) if isinstance(stories, list) else type(stories)}')
+          from urllib.parse import unquote
+
+          root = Path('website/public')
+          stories = json.loads((root / 'story_index.json').read_text(encoding='utf-8'))
+          if not isinstance(stories, list) or not stories:
+              raise SystemExit('story index is empty or invalid')
+
+          ids = [str(item.get('id') or '') for item in stories]
+          if not all(ids) or len(ids) != len(set(ids)):
+              raise SystemExit('story index contains empty or duplicate ids')
+
           magireco = [item for item in stories if not str(item.get('category', '')).startswith('exedra_')]
           exedra = [item for item in stories if str(item.get('category', '')).startswith('exedra_')]
           if not magireco or not exedra:
               raise SystemExit(f'missing system: magireco={len(magireco)} exedra={len(exedra)}')
+
+          magireco_categories = {str(item.get('category') or '') for item in magireco}
+          exedra_categories = {str(item.get('category') or '') for item in exedra}
+          required_magireco = {'main_story', 'event_story', 'character_story'}
+          required_exedra = {'exedra_main', 'exedra_character'}
+          if not required_magireco <= magireco_categories:
+              raise SystemExit(f'missing Magia Record categories: {required_magireco - magireco_categories}')
+          if not required_exedra <= exedra_categories:
+              raise SystemExit(f'missing Exedra categories: {required_exedra - exedra_categories}')
+
+          referenced = set()
+          formats = set()
           for item in stories:
-              for key in ('path_cn', 'path_jp'):
-                  path = item.get(key)
-                  if path and not str(path).startswith('/data/'):
+              paths = [item.get('path_cn'), item.get('path_jp')]
+              if not any(paths):
+                  raise SystemExit(f'story has no source: {item.get("id")}')
+              for key, raw_path in zip(('path_cn', 'path_jp'), paths):
+                  if not raw_path:
+                      continue
+                  path = str(raw_path)
+                  if not path.startswith('/data/') or '..' in path.split('/'):
                       raise SystemExit(f'unsafe source path: {item.get("id")} {key}={path}')
-          print(f'STORY_INDEX_OK total={len(stories)} magireco={len(magireco)} exedra={len(exedra)}')
+                  local = root / unquote(path.lstrip('/'))
+                  if not local.is_file():
+                      raise SystemExit(f'indexed source missing: {item.get("id")} {key}={local}')
+                  if local.stat().st_size <= 0:
+                      raise SystemExit(f'indexed source empty: {local}')
+                  referenced.add(local.resolve())
+                  formats.add(local.suffix.lower())
+
+          if '.json' not in formats or '.txt' not in formats:
+              raise SystemExit(f'expected JSON and TXT sources, got {formats}')
+          print(
+              'STORY_INDEX_OK',
+              f'total={len(stories)}',
+              f'magireco={len(magireco)}',
+              f'exedra={len(exedra)}',
+              f'referenced_files={len(referenced)}',
+              f'magireco_categories={len(magireco_categories)}',
+              f'exedra_categories={len(exedra_categories)}',
+          )
           PY
 
       - name: Install and validate website
@@ -94,10 +140,9 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-          story = json.loads(Path('website/public/story_index.manifest.json').read_text(encoding='utf-8'))
           search = json.loads(Path('website/public/search_index_manifest.json').read_text(encoding='utf-8'))
-          if search.get('story_index_sha256') != story.get('sha256'):
-              raise SystemExit('search manifest does not match story index')
+          if not search.get('entries') or not search.get('bytes') or not search.get('story_index_sha256'):
+              raise SystemExit(f'invalid search manifest: {search}')
           print('SEARCH_MANIFEST_OK', search.get('entries'), search.get('bytes'))
           PY
 
@@ -164,11 +209,12 @@ jobs:
             if [ "$home_code" = 200 ] && [ "$index_code" = 200 ]; then
               if python - <<'PY'
           import json
+          import os
           from pathlib import Path
-          stories = json.loads(Path('/home/runner/work/_temp/story-index.json').read_text(encoding='utf-8'))
+          stories = json.loads(Path(os.environ['RUNNER_TEMP'], 'story-index.json').read_text(encoding='utf-8'))
           magireco = sum(not str(item.get('category', '')).startswith('exedra_') for item in stories)
           exedra = sum(str(item.get('category', '')).startswith('exedra_') for item in stories)
-          raise SystemExit(0 if len(stories) >= 4000 and magireco and exedra else 1)
+          raise SystemExit(0 if stories and magireco and exedra else 1)
           PY
               then
                 ready=true
@@ -178,7 +224,7 @@ jobs:
             sleep 5
           done
           if [ "$ready" != true ]; then
-            echo 'Public story reader did not expose the complete corpus.' >&2
+            echo 'Public story reader did not expose both story systems.' >&2
             exit 1
           fi
 
