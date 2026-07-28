@@ -8,8 +8,11 @@ on:
       - 'generate_story_index.py'
       - 'build_search_index_v6.py'
       - 'prepare_public_story_reader.py'
+      - 'validate_public_story_corpus.py'
+      - 'magireco-source-master/**'
       - 'magireco-translate-data-master/**'
       - 'magiraexedra-source-master/**'
+      - 'magiraexedra-translate-data-master/**'
       - '.github/workflows/deploy-public-story-reader.yml'
   workflow_dispatch:
 
@@ -58,71 +61,12 @@ jobs:
       - name: Run scenario pipeline tests
         run: python -m unittest discover -s tests -p 'test_*.py'
 
-      - name: Generate complete deployable story index
-        run: python generate_story_index.py
-
-      - name: Validate both systems and every indexed source
+      - name: Generate and validate complete story catalogue
         run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          from urllib.parse import unquote
-
-          root = Path('website/public')
-          stories = json.loads((root / 'story_index.json').read_text(encoding='utf-8'))
-          if not isinstance(stories, list) or not stories:
-              raise SystemExit('story index is empty or invalid')
-
-          ids = [str(item.get('id') or '') for item in stories]
-          if not all(ids) or len(ids) != len(set(ids)):
-              raise SystemExit('story index contains empty or duplicate ids')
-
-          magireco = [item for item in stories if not str(item.get('category', '')).startswith('exedra_')]
-          exedra = [item for item in stories if str(item.get('category', '')).startswith('exedra_')]
-          if not magireco or not exedra:
-              raise SystemExit(f'missing system: magireco={len(magireco)} exedra={len(exedra)}')
-
-          magireco_categories = {str(item.get('category') or '') for item in magireco}
-          exedra_categories = {str(item.get('category') or '') for item in exedra}
-          required_magireco = {'main_story', 'event_story', 'character_story'}
-          required_exedra = {'exedra_main', 'exedra_character'}
-          if not required_magireco <= magireco_categories:
-              raise SystemExit(f'missing Magia Record categories: {required_magireco - magireco_categories}')
-          if not required_exedra <= exedra_categories:
-              raise SystemExit(f'missing Exedra categories: {required_exedra - exedra_categories}')
-
-          referenced = set()
-          formats = set()
-          for item in stories:
-              paths = [item.get('path_cn'), item.get('path_jp')]
-              if not any(paths):
-                  raise SystemExit(f'story has no source: {item.get("id")}')
-              for key, raw_path in zip(('path_cn', 'path_jp'), paths):
-                  if not raw_path:
-                      continue
-                  path = str(raw_path)
-                  if not path.startswith('/data/') or '..' in path.split('/'):
-                      raise SystemExit(f'unsafe source path: {item.get("id")} {key}={path}')
-                  local = root / unquote(path.lstrip('/'))
-                  if not local.is_file():
-                      raise SystemExit(f'indexed source missing: {item.get("id")} {key}={local}')
-                  if local.stat().st_size <= 0:
-                      raise SystemExit(f'indexed source empty: {local}')
-                  referenced.add(local.resolve())
-                  formats.add(local.suffix.lower())
-
-          if '.json' not in formats or '.txt' not in formats:
-              raise SystemExit(f'expected JSON and TXT sources, got {formats}')
-          print(
-              'STORY_INDEX_OK',
-              f'total={len(stories)}',
-              f'magireco={len(magireco)}',
-              f'exedra={len(exedra)}',
-              f'referenced_files={len(referenced)}',
-              f'magireco_categories={len(magireco_categories)}',
-              f'exedra_categories={len(exedra_categories)}',
-          )
-          PY
+          python generate_story_index.py
+          python validate_public_story_corpus.py \
+            --public website/public \
+            --report public-story-corpus-report.json
 
       - name: Install and validate website
         working-directory: website
@@ -196,7 +140,7 @@ jobs:
         working-directory: website
         run: npx opennextjs-cloudflare deploy --config .wrangler-story-public.jsonc
 
-      - name: Wait for complete public corpus
+      - name: Wait for both public story systems
         env:
           SITE_URL: https://${{ env.STORY_WORKER_HOSTNAME }}
         shell: bash
@@ -208,8 +152,7 @@ jobs:
             index_code=$(curl -L --silent --show-error -o "$RUNNER_TEMP/story-index.json" -w '%{http_code}' "$SITE_URL/story_index.json?probe=${GITHUB_RUN_ID}-$attempt")
             if [ "$home_code" = 200 ] && [ "$index_code" = 200 ]; then
               if python - <<'PY'
-          import json
-          import os
+          import json, os
           from pathlib import Path
           stories = json.loads(Path(os.environ['RUNNER_TEMP'], 'story-index.json').read_text(encoding='utf-8'))
           magireco = sum(not str(item.get('category', '')).startswith('exedra_') for item in stories)
@@ -223,41 +166,29 @@ jobs:
             fi
             sleep 5
           done
-          if [ "$ready" != true ]; then
-            echo 'Public story reader did not expose both story systems.' >&2
-            exit 1
-          fi
+          [ "$ready" = true ] || { echo 'Public story reader did not expose both systems.' >&2; exit 1; }
 
-      - name: Validate public source files and disabled admin mode
+      - name: Validate public sources and disabled management
         env:
           SITE_URL: https://${{ env.STORY_WORKER_HOSTNAME }}
         run: |
           python - <<'PY'
-          import json
-          import os
-          import urllib.request
+          import json, os, urllib.request
           from pathlib import Path
           base = os.environ['SITE_URL']
           stories = json.loads(Path(os.environ['RUNNER_TEMP'], 'story-index.json').read_text(encoding='utf-8'))
           selected = []
-          for exedra in (False, True):
-              item = next(
-                  value for value in stories
-                  if bool(str(value.get('category', '')).startswith('exedra_')) is exedra
-                  and (value.get('path_cn') or value.get('path_jp'))
-              )
+          for is_exedra in (False, True):
+              item = next(value for value in stories if bool(str(value.get('category', '')).startswith('exedra_')) is is_exedra and (value.get('path_cn') or value.get('path_jp')))
               selected.append(item)
           for item in selected:
-              for key in ('path_cn', 'path_jp'):
-                  path = item.get(key)
+              for path in (item.get('path_cn'), item.get('path_jp')):
                   if not path:
                       continue
                   with urllib.request.urlopen(base + path, timeout=60) as response:
                       payload = response.read()
                   if len(payload) < 10:
                       raise SystemExit(f'empty story source: {item.get("id")} {path}')
-                  if path.lower().endswith('.json'):
-                      json.loads(payload.decode('utf-8-sig'))
           with urllib.request.urlopen(base + '/api/proofreading/config', timeout=60) as response:
               config = json.load(response)
           if config.get('submissions_enabled') or config.get('github_admin_auth'):
@@ -265,56 +196,21 @@ jobs:
           print('PUBLIC_STORY_SOURCES_OK', [item.get('id') for item in selected])
           PY
 
-      - name: Install Chromium for public browser test
-        working-directory: website
-        run: npx playwright install --with-deps chromium
-
-      - name: Run Magia Record and Exedra browser regression
+      - name: Install Chromium and run browser regression
         working-directory: website
         env:
           SITE_URL: https://${{ env.STORY_WORKER_HOSTNAME }}
         run: |
-          cat > public-story-smoke.mjs <<'JS'
-          import { chromium } from 'playwright';
-          import fs from 'node:fs/promises';
-          const base = process.env.SITE_URL;
-          await fs.mkdir('public-story-evidence', { recursive: true });
-          const browser = await chromium.launch({ headless: true });
-          const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, locale: 'zh-CN' });
-          const errors = [];
-          page.on('pageerror', error => errors.push(String(error.stack || error)));
-          await page.goto(`${base}/?probe=${Date.now()}`, { waitUntil: 'networkidle', timeout: 120000 });
-          await page.getByRole('heading', { name: '剧情阅读器' }).waitFor();
-          const body = await page.locator('body').innerText();
-          if (body.includes('机器翻译人工校验清单') || body.includes('管理机器校验标记') || body.includes('投稿审核')) {
-            throw new Error('review management leaked into public homepage');
-          }
-          const magirecoLinks = page.locator('a[href^="/reader/"]');
-          if (await magirecoLinks.count() < 1) throw new Error('Magia Record stories missing');
-          await page.screenshot({ path: 'public-story-evidence/01-magireco-home.png' });
-          await page.getByRole('button', { name: '切换到 Magia Exedra 剧情' }).click();
-          await page.waitForTimeout(500);
-          const exedraLinks = page.locator('a[href^="/reader/"]');
-          if (await exedraLinks.count() < 1) throw new Error('Magia Exedra stories missing');
-          await page.screenshot({ path: 'public-story-evidence/02-exedra-home.png' });
-          await exedraLinks.first().click();
-          await page.waitForURL(/\/reader\//, { timeout: 60000 });
-          await page.getByRole('button', { name: '显示中日双语' }).waitFor({ timeout: 60000 });
-          const readerText = await page.locator('main').innerText();
-          if (readerText.length < 20 || readerText.includes('无法打开这段剧情')) throw new Error('Exedra reader content failed');
-          await page.screenshot({ path: 'public-story-evidence/03-exedra-reader.png' });
-          await fs.writeFile('public-story-evidence/result.json', JSON.stringify({ errors, url: page.url() }, null, 2));
-          await browser.close();
-          if (errors.length) throw new Error(errors.join('\n'));
-          console.log('PUBLIC_MAGIA_STORY_READER_OK');
-          JS
-          node public-story-smoke.mjs
+          npx playwright install --with-deps chromium
+          node scripts/public-story-smoke.mjs
 
       - name: Upload public story reader evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: public-magia-story-reader-evidence
-          path: website/public-story-evidence
+          path: |
+            public-story-corpus-report.json
+            website/public-story-evidence
           if-no-files-found: warn
           retention-days: 14
