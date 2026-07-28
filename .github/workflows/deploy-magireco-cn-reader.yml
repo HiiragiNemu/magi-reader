@@ -4,13 +4,16 @@ on:
   push:
     branches:
       - deploy/magireco-cn-reader
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: magireco-cn-reader-cloudflare
+  group: magireco-cn-reader-cloudflare-${{ github.event_name }}
   cancel-in-progress: true
 
 jobs:
