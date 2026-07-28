@@ -58,22 +58,21 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check beautifulsoup4 lxml
-          for file in index.html app.js styles.css ui-v4-fixes.css ui-v4-runtime.js structured-ui.js structured-ui.css doppel-ui.js doppel-ui.css dense-reader.css dense-reader-compact.css; do
+          for file in index.html app.js styles.css ui-v4-fixes.css ui-v4-runtime.js structured-ui.js structured-ui.css doppel-ui.js doppel-ui.css memoria-ui.js memoria-ui.css dense-reader.css dense-reader-compact.css; do
             cp "wiki-preservation/static/$file" "site/$file"
           done
           python wiki-preservation/scripts/patch_structured_runtime.py site/structured-ui.js
           python wiki-preservation/scripts/extract_structured_characters.py site
           python wiki-preservation/scripts/extract_structured_doppel.py site
           python wiki-preservation/scripts/patch_dense_reader.py site
-          node --check site/app.js
-          node --check site/structured-ui.js
-          node --check site/doppel-ui.js
+          for file in app.js structured-ui.js doppel-ui.js memoria-ui.js; do node --check "site/$file"; done
           grep -q '/dense-reader.css?v=6.0' site/index.html
           grep -q '/dense-reader-compact.css?v=6.0' site/index.html
-          ! grep -R -E '把原 Wiki|不会删减底层|这里不是Wiki文章关键词筛选|这里不是正文关键词筛选' site/index.html site/app.js site/structured-ui.js site/doppel-ui.js
+          ! grep -R -E '把原 Wiki|不会删减底层|这里不是Wiki文章关键词筛选|这里不是正文关键词筛选|这里不是Wiki正文关键词筛选|以保存快照中的普通记忆结晶目录为成员基准' site/index.html site/app.js site/structured-ui.js site/doppel-ui.js site/memoria-ui.js
           grep -q 'requestIdleCallback' site/app.js
           grep -q 'subtree: false' site/structured-ui.js
           grep -q 'subtree: false' site/doppel-ui.js
+          grep -q 'subtree: false' site/memoria-ui.js
 
       - name: Install Chromium
         run: |
@@ -88,7 +87,7 @@ jobs:
           python -m http.server 4173 --directory site >/tmp/dense-server.log 2>&1 &
           echo $! > /tmp/dense-server.pid
           for attempt in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
-          cat > /tmp/test-dense.mjs <<'JS'
+          cat > test-dense.mjs <<'JS'
           import { chromium } from 'playwright';
           import fs from 'node:fs/promises';
           await fs.mkdir('dense-v6-evidence', { recursive: true });
@@ -111,7 +110,7 @@ jobs:
           }));
           assert(portal.mainWidth >= 1650, `桌面主内容仍过窄：${JSON.stringify(portal)}`);
           assert(Math.max(...portal.cardHeights) <= 100, `门户入口仍是大卡片：${Math.max(...portal.cardHeights)}`);
-          assert(!/把原 Wiki|不会删减|这里不是/.test(portal.text), '首页仍包含开发指令式文案');
+          assert(!/把原 Wiki|不会删减|这里不是|以保存快照/.test(portal.text), '首页仍包含开发指令式文案');
           assert(portal.overflow <= 2, `首页横向溢出：${portal.overflow}`);
           await page.screenshot({ path: 'dense-v6-evidence/01-portal-desktop.png', fullPage: false });
 
@@ -123,7 +122,7 @@ jobs:
           if (target) {
             await page.goto(`http://127.0.0.1:4173/#/article/${encodeURIComponent(target.id)}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
             await page.waitForSelector('.wiki-document');
-            await page.waitForTimeout(1800);
+            await page.waitForTimeout(2200);
             const article = await page.evaluate(() => {
               const body = document.querySelector('.wiki-document');
               const articlePage = document.querySelector('.article-page');
@@ -169,7 +168,7 @@ jobs:
           if (errors.length) throw new Error(errors.join('\n'));
           console.log('DENSE_READER_V6_OK');
           JS
-          node /tmp/test-dense.mjs
+          node test-dense.mjs
 
       - name: Upload layout evidence
         if: always()
