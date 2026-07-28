@@ -1,14 +1,30 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="system" data-reader-width="comfortable">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#773c68">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=5">
+  <meta name="theme-color" content="#f4f0ec">
+  <meta name="color-scheme" content="light dark">
   <meta name="description" content="魔法纪录中文 Wiki 的长期保存静态资料库：正文、分类、剧情、人物、记忆结晶、Doppel、图片与音频索引。">
   <title>魔法纪录中文资料库</title>
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/styles.css">
+  <script>
+    (() => {
+      try {
+        const value = JSON.parse(localStorage.getItem('magireco-reader-preferences') || '{}');
+        const themes = ['system', 'light', 'dark', 'eye', 'oled'];
+        const widths = ['narrow', 'comfortable', 'wide'];
+        const theme = themes.includes(value.theme) ? value.theme : 'system';
+        const width = widths.includes(value.width) ? value.width : 'comfortable';
+        const font = [0.9, 1, 1.12, 1.25].includes(Number(value.font)) ? Number(value.font) : 1;
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.readerWidth = width;
+        document.documentElement.style.setProperty('--reader-scale', String(font));
+      } catch {}
+    })();
+  </script>
+  <link rel="stylesheet" href="/styles.css?v=4">
 </head>
 <body>
   <noscript>本资料库需要 JavaScript 读取静态索引，但所有数据均为同源静态 JSON。</noscript>
@@ -19,6 +35,6 @@
       <span>正在载入静态保存索引……</span>
     </div>
   </div>
-  <script type="module" src="/app.js"></script>
+  <script type="module" src="/app.js?v=4"></script>
 </body>
 </html>
