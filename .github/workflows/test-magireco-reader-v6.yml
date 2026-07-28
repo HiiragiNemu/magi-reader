@@ -6,9 +6,7 @@ on:
     paths:
       - 'wiki-preservation/static/**'
       - 'wiki-preservation/tests/production-reader-v6.mjs'
-      - 'wiki-preservation/scripts/prepare_memoria_runtime.py'
-      - 'wiki-preservation/scripts/patch_dense_reader.py'
-      - 'wiki-preservation/scripts/patch_offline_runtime.py'
+      - 'wiki-preservation/scripts/**'
       - '.github/workflows/deploy-magireco-ui-hotfix.yml'
       - '.github/workflows/test-magireco-reader-v6.yml'
   workflow_dispatch:
@@ -24,6 +22,8 @@ jobs:
   production-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    env:
+      READER_REVISION: '6.1'
     steps:
       - name: Check out v6 production test
         uses: actions/checkout@v4
@@ -42,14 +42,43 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Run Reader v6 production regression
-        run: node wiki-preservation/tests/production-reader-v6.mjs
+      - name: Prepare Reader v6.1 production regression
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source = Path('wiki-preservation/tests/production-reader-v6.mjs')
+          target = source.with_name('production-reader-v61.mjs')
+          text = source.read_text(encoding='utf-8')
+          old = "const revision = '6.0';"
+          assert text.count(old) == 1
+          target.write_text(text.replace(old, "const revision = '6.1';", 1), encoding='utf-8')
+          PY
+
+      - name: Run Reader v6.1 production regression
+        run: node wiki-preservation/tests/production-reader-v61.mjs
+
+      - name: Require clean offline core-index startup
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path('reader-v6-evidence/result.json').read_text(encoding='utf-8'))
+          forbidden = ('/data/archive-index.json', '/data/category-index.json', '/data/portal-index.json')
+          failures = [
+              item for item in result.get('events', [])
+              if item.get('type') == 'requestfailed'
+              and any(value in item.get('url', '') for value in forbidden)
+          ]
+          assert not failures, failures
+          registration = result.get('registration', {})
+          assert '/sw-v6.1.js' in registration.get('active', ''), registration
+          PY
 
       - name: Upload production evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: magireco-reader-v6-production-evidence
+          name: magireco-reader-v61-production-evidence
           path: reader-v6-evidence
           if-no-files-found: warn
           retention-days: 14
