@@ -1,0 +1,161 @@
+name: Verify Reader v6.1 Offline Core
+
+on:
+  pull_request:
+    branches: [deploy/magireco-cn-reader]
+    paths:
+      - 'wiki-preservation/scripts/patch_offline_runtime.py'
+      - 'wiki-preservation/scripts/assemble_reader_v6.py'
+      - '.github/workflows/deploy-magireco-ui-hotfix.yml'
+      - '.github/workflows/test-magireco-reader-v6.yml'
+      - '.github/workflows/verify-reader-v61-offline.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: verify-reader-v61-offline
+  cancel-in-progress: true
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out Reader v6 sources
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            wiki-preservation/static
+            wiki-preservation/scripts
+          sparse-checkout-cone-mode: true
+          show-progress: false
+
+      - name: Download verified Wiki snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: magireco-cn-reader-500-page-parallel-snapshot
+          path: snapshot
+          github-token: ${{ github.token }}
+          repository: HiiragiNemu/magi-reader
+          run-id: 30333056699
+
+      - name: Download final Memoria corpus
+        uses: actions/download-artifact@v4
+        with:
+          name: magireco-memoria-full-1042
+          path: memoria-source
+          github-token: ${{ github.token }}
+          repository: HiiragiNemu/magi-reader
+          run-id: 30378346952
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Assemble Reader v6.1
+        run: |
+          python -m pip install --disable-pip-version-check beautifulsoup4 lxml
+          python wiki-preservation/scripts/assemble_reader_v6.py \
+            --snapshot snapshot \
+            --static wiki-preservation/static \
+            --scripts wiki-preservation/scripts \
+            --memoria memoria-source \
+            --revision 6.1
+          for path in archive-index.json category-index.json portal-index.json; do
+            grep -q "/data/$path" snapshot/sw-v6.1.js
+          done
+
+      - name: Install Chromium
+        run: |
+          npm init -y
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Verify clean offline startup
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 4173 --directory snapshot >/tmp/server.log 2>&1 &
+          for attempt in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          cat > verify-v61-offline.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs/promises';
+          await fs.mkdir('v61-offline-evidence', { recursive: true });
+          const browser = await chromium.launch({ headless: true });
+          const context = await browser.newContext({
+            viewport: { width: 393, height: 852 },
+            deviceScaleFactor: 2,
+            isMobile: true,
+            hasTouch: true,
+            serviceWorkers: 'allow',
+            locale: 'zh-CN',
+          });
+          const page = await context.newPage();
+          const events = [];
+          page.on('requestfailed', request => events.push({ type: 'requestfailed', url: request.url(), error: request.failure()?.errorText || '' }));
+          page.on('pageerror', error => events.push({ type: 'pageerror', error: String(error.stack || error) }));
+
+          await page.goto('http://127.0.0.1:4173/#/memoria', { waitUntil: 'networkidle', timeout: 90_000 });
+          await page.waitForSelector('.memoria-card');
+          await page.evaluate(async () => {
+            await caches.open('magireco-cn-reader-v6.0-offline-shell');
+            await navigator.serviceWorker.ready;
+          });
+          await page.reload({ waitUntil: 'networkidle', timeout: 90_000 });
+          await page.waitForSelector('.memoria-card');
+          const online = await page.evaluate(async () => {
+            const registration = await navigator.serviceWorker.ready;
+            const cacheNames = await caches.keys();
+            const required = [
+              '/data/archive-index.json',
+              '/data/category-index.json',
+              '/data/portal-index.json',
+              '/data/structured/memoria-index.json',
+            ];
+            const cached = await Promise.all(required.map(async path => [path, Boolean(await caches.match(path, { ignoreSearch: true }))]));
+            return {
+              script: registration.active?.scriptURL || '',
+              controller: Boolean(navigator.serviceWorker.controller),
+              cacheNames,
+              cached: Object.fromEntries(cached),
+            };
+          });
+          if (!online.script.includes('/sw-v6.1.js')) throw new Error(`wrong worker: ${JSON.stringify(online)}`);
+          if (!online.controller) throw new Error(`worker does not control page: ${JSON.stringify(online)}`);
+          if (online.cacheNames.some(name => name.startsWith('magireco-cn-reader-v6.0-'))) throw new Error(`old v6.0 cache remains: ${JSON.stringify(online)}`);
+          if (!Object.values(online.cached).every(Boolean)) throw new Error(`offline core missing: ${JSON.stringify(online)}`);
+
+          events.length = 0;
+          await context.setOffline(true);
+          await page.reload({ waitUntil: 'domcontentloaded', timeout: 60_000 });
+          await page.waitForSelector('.memoria-card', { timeout: 30_000 });
+          const offline = await page.evaluate(() => ({
+            title: document.querySelector('h1')?.textContent || '',
+            cards: document.querySelectorAll('.memoria-card').length,
+            overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          }));
+          const coreFailures = events.filter(item => item.type === 'requestfailed' && /\/data\/(?:archive-index|category-index|portal-index)\.json/.test(item.url || ''));
+          if (coreFailures.length) throw new Error(`core index failed offline: ${JSON.stringify(coreFailures)}`);
+          if (offline.cards !== 48 || offline.overflow > 2) throw new Error(`offline Memoria page invalid: ${JSON.stringify(offline)}`);
+          await page.screenshot({ path: 'v61-offline-evidence/memoria-offline.png' });
+          await context.setOffline(false);
+          await fs.writeFile('v61-offline-evidence/result.json', JSON.stringify({ online, offline, events }, null, 2));
+          await browser.close();
+          console.log('READER_V61_OFFLINE_OK');
+          JS
+          node verify-v61-offline.mjs
+
+      - name: Upload v6.1 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reader-v61-offline-evidence
+          path: v61-offline-evidence
+          if-no-files-found: warn
+          retention-days: 14
