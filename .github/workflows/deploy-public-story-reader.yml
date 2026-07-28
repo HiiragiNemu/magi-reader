@@ -33,6 +33,7 @@ jobs:
       NEXT_PUBLIC_STORY_ARCHIVE: '1'
       STORY_WORKER_NAME: magireco-exedra-story-reader
       STORY_WORKER_HOSTNAME: magireco-exedra-story-reader.crynetsystemscell.workers.dev
+      STORY_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
@@ -67,21 +68,31 @@ jobs:
       - name: Generate complete catalogue and raw JSON archive
         run: |
           python generate_story_index.py
-          python publish_raw_story_json.py --repo . --public website/public \
+          python publish_raw_story_json.py \
+            --repo . \
+            --public website/public \
+            --repository "${{ github.repository }}" \
+            --commit "$STORY_SOURCE_COMMIT" \
             | tee public-raw-json-report.json
           python validate_public_story_corpus.py \
             --public website/public \
             --report public-story-corpus-report.json
           python - <<'PY'
           import json
+          import os
           from pathlib import Path
           manifest = json.loads(Path('website/public/raw_story_json_manifest.json').read_text(encoding='utf-8'))
           counts = manifest.get('counts') or {}
           if manifest.get('entries', 0) <= 0:
               raise SystemExit(f'raw JSON archive is empty: {manifest}')
+          if manifest.get('commit') != os.environ['STORY_SOURCE_COMMIT']:
+              raise SystemExit(f'raw JSON manifest commit mismatch: {manifest.get("commit")}')
           for required in ('magireco_jp', 'magireco_cn', 'exedra_jp'):
               if counts.get(required, 0) <= 0:
                   raise SystemExit(f'raw JSON language tree missing: {required}: {counts}')
+          files = manifest.get('files') or []
+          if not files or not all(str(item.get('url', '')).startswith('https://raw.githubusercontent.com/') for item in files[:100]):
+              raise SystemExit('raw JSON manifest contains invalid immutable URLs')
           if not Path('website/app/raw-json/page.tsx').is_file():
               raise SystemExit('raw JSON browser page is missing')
           print('RAW_JSON_PUBLIC_ARCHIVE_OK', manifest['entries'], manifest['bytes'], counts)
@@ -143,7 +154,7 @@ jobs:
             ],
             "vars": {
               "PROOFREADING_TARGET_BRANCH": "feature/portal-story-reader-v7",
-              "PROOFREADING_SOURCE_COMMIT": "${{ github.sha }}",
+              "PROOFREADING_SOURCE_COMMIT": "$STORY_SOURCE_COMMIT",
               "PROOFREADING_GITHUB_REPO": "${{ github.repository }}",
               "PROOFREADING_ALLOW_GITHUB_ADMIN": "false",
               "PROOFREADING_TURNSTILE_TEST_MODE": "false"
@@ -179,7 +190,12 @@ jobs:
           raw = json.loads((root / 'raw-json-manifest.json').read_text(encoding='utf-8'))
           magireco = sum(not str(item.get('category', '')).startswith('exedra_') for item in stories)
           exedra = sum(str(item.get('category', '')).startswith('exedra_') for item in stories)
-          raise SystemExit(0 if stories and magireco and exedra and raw.get('entries', 0) > 0 else 1)
+          ready = (
+              bool(stories) and bool(magireco) and bool(exedra)
+              and raw.get('entries', 0) > 0
+              and raw.get('commit') == os.environ['STORY_SOURCE_COMMIT']
+          )
+          raise SystemExit(0 if ready else 1)
           PY
               then
                 ready=true
@@ -214,14 +230,14 @@ jobs:
                   if len(payload) < 10:
                       raise SystemExit(f'empty story source: {item.get("id")} {path}')
           raw_file = next(item for item in raw['files'] if item.get('game') == 'exedra' and item.get('language') == 'jp')
-          with urllib.request.urlopen(base + raw_file['path'], timeout=60) as response:
+          with urllib.request.urlopen(raw_file['url'], timeout=60) as response:
               raw_payload = response.read()
           json.loads(raw_payload.decode('utf-8-sig'))
           with urllib.request.urlopen(base + '/api/proofreading/config', timeout=60) as response:
               config = json.load(response)
           if config.get('submissions_enabled') or config.get('github_admin_auth'):
               raise SystemExit(f'public archive unexpectedly enabled management: {config}')
-          print('PUBLIC_STORY_SOURCES_OK', [item.get('id') for item in selected], raw_file['path'])
+          print('PUBLIC_STORY_SOURCES_OK', [item.get('id') for item in selected], raw_file['url'])
           PY
 
       - name: Install Chromium and run browser regression
