@@ -7,8 +7,6 @@ on:
       - 'wiki-preservation/static/**'
       - 'wiki-preservation/scripts/patch_dense_reader.py'
       - 'wiki-preservation/scripts/patch_structured_runtime.py'
-      - 'wiki-preservation/scripts/extract_structured_characters.py'
-      - 'wiki-preservation/scripts/extract_structured_doppel.py'
       - '.github/workflows/verify-dense-reader-v6.yml'
   workflow_dispatch:
 
@@ -23,17 +21,15 @@ concurrency:
 jobs:
   browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 25
     steps:
-      - name: Check out UI and extraction code
+      - name: Check out UI patch code
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
             wiki-preservation/static
             wiki-preservation/scripts/patch_dense_reader.py
             wiki-preservation/scripts/patch_structured_runtime.py
-            wiki-preservation/scripts/extract_structured_characters.py
-            wiki-preservation/scripts/extract_structured_doppel.py
           sparse-checkout-cone-mode: true
           show-progress: false
 
@@ -53,17 +49,20 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Assemble dense reader
+      - name: Assemble dense reader from verified data
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check beautifulsoup4 lxml
           for file in index.html app.js styles.css ui-v4-fixes.css ui-v4-runtime.js structured-ui.js structured-ui.css doppel-ui.js doppel-ui.css memoria-ui.js memoria-ui.css dense-reader.css dense-reader-compact.css; do
             cp "wiki-preservation/static/$file" "site/$file"
           done
+          mkdir -p site/data/structured
+          for file in manifest.json characters.json voice-index.json doppel.json; do
+            curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' \
+              "https://magireco-cn-reader.pages.dev/data/structured/$file?dense=${GITHUB_RUN_ID}" \
+              -o "site/data/structured/$file"
+          done
           python wiki-preservation/scripts/patch_structured_runtime.py site/structured-ui.js
-          python wiki-preservation/scripts/extract_structured_characters.py site
-          python wiki-preservation/scripts/extract_structured_doppel.py site
           python wiki-preservation/scripts/patch_dense_reader.py site
           for file in app.js structured-ui.js doppel-ui.js memoria-ui.js; do node --check "site/$file"; done
           grep -q '/dense-reader.css?v=6.0' site/index.html
