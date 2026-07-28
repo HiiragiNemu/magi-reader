@@ -13,8 +13,11 @@ const REPLACEMENTS: Readonly<Record<string, string>> = {
   '8 Dungeon': '过场动画字幕',
   '10 战斗': '战斗',
 };
+const LABEL_SCOPE_SELECTOR = 'nav, h1, h2, h3, [role="tab"]';
 
 const normalizeTextNode = (node: Text) => {
+  const parent = node.parentElement;
+  if (!parent?.closest(LABEL_SCOPE_SELECTOR)) return;
   const replacement = REPLACEMENTS[node.nodeValue?.trim() ?? ''];
   if (replacement) node.nodeValue = replacement;
 };
