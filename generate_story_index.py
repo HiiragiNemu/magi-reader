@@ -840,6 +840,16 @@ def _collect_magireco_directory(
         if "WEBSITE_DATA" in relative.parts:
             continue
 
+        try:
+            source_size = source_path.stat().st_size
+        except OSError as error:
+            raise PipelineError(
+                f"无法读取 Magia Record TXT 大小: {source_path}: {error}"
+            ) from error
+        if source_size <= 0:
+            stats[f"magireco_{lang_key}_empty_txt"] += 1
+            continue
+
         identity_key, parent_parts, file_stem = magireco_source_identity(
             base_dir,
             source_path,
