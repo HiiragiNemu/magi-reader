@@ -1,0 +1,80 @@
+name: Verify Generated Public Story Types
+
+on:
+  pull_request:
+    branches: [feature/portal-story-reader-v7]
+    paths:
+      - 'website/**'
+      - 'generate_story_index.py'
+      - 'publish_raw_story_json.py'
+      - 'prepare_public_story_reader.py'
+      - '.github/workflows/verify-public-story-generated-types.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-generated-public-story-types
+  cancel-in-progress: true
+
+jobs:
+  types:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      NEXT_PUBLIC_STORY_ARCHIVE: '1'
+      STORY_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          show-progress: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Generate production-equivalent public data
+        run: |
+          python prepare_public_story_reader.py --website website
+          python generate_story_index.py
+          python publish_raw_story_json.py \
+            --repo . \
+            --public website/public \
+            --repository "${{ github.repository }}" \
+            --commit "$STORY_SOURCE_COMMIT"
+
+      - name: Install dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Capture TypeScript compiler report
+        id: tsc
+        working-directory: website
+        shell: bash
+        run: |
+          set +e
+          npx tsc --noEmit --pretty false > generated-typescript-report.txt 2>&1
+          status=$?
+          cat generated-typescript-report.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload TypeScript report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-story-generated-typescript-report
+          path: website/generated-typescript-report.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Require TypeScript success
+        if: steps.tsc.outputs.status != '0'
+        run: exit 1
