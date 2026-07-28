@@ -31,6 +31,8 @@ jobs:
   mobile-structured-reader:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      READER_REVISION: '5.5'
     steps:
       - name: Check out production browser tests
         uses: actions/checkout@v4
@@ -52,37 +54,39 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Prepare v5.4 structured production test
+      - name: Prepare versioned structured production test
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
+          import os
           from pathlib import Path
+          revision = os.environ['READER_REVISION']
           source = Path('wiki-preservation/tests/production-structured-v5.mjs').read_text(encoding='utf-8')
-          source = source.replace('structured-ui.js?v=5.0', 'structured-ui.js?v=5.4')
+          source = source.replace('structured-ui.js?v=5.0', f'structured-ui.js?v={revision}')
           source = source.replace(
               'health.uiVersion === 5 && health.counts?.pages === 500',
-              "health.uiVersion === 5 && health.uiRevision === '5.4' && health.counts?.pages === 500",
+              f"health.uiVersion === 5 && health.uiRevision === '{revision}' && health.counts?.pages === 500",
           )
-          target = Path('wiki-preservation/tests/production-structured-v5.4.mjs')
+          target = Path('wiki-preservation/tests/production-structured-current.mjs')
           target.write_text(source, encoding='utf-8')
           PY
-          grep -q 'structured-ui.js?v=5.4' wiki-preservation/tests/production-structured-v5.4.mjs
-          grep -q "health.uiRevision === '5.4'" wiki-preservation/tests/production-structured-v5.4.mjs
+          grep -q "structured-ui.js?v=${READER_REVISION}" wiki-preservation/tests/production-structured-current.mjs
+          grep -q "health.uiRevision === '${READER_REVISION}'" wiki-preservation/tests/production-structured-current.mjs
 
       - name: Run character voice production test
-        run: node wiki-preservation/tests/production-structured-v5.4.mjs
+        run: node wiki-preservation/tests/production-structured-current.mjs
 
-      - name: Run offline shell production test
+      - name: Run cache migration and offline production test
         run: node wiki-preservation/tests/production-offline-v54.mjs
 
       - name: Upload structured and offline evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: magireco-structured-v54-mobile-evidence
+          name: magireco-structured-current-mobile-evidence
           path: |
             structured-v5-evidence
-            offline-v54-evidence
+            offline-v5-evidence
           if-no-files-found: warn
           retention-days: 14
