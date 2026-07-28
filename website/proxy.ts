@@ -5,9 +5,11 @@ import searchManifestJson from './public/search_index_manifest.json';
 import {
   generalVoiceCatalogEntries,
   generalVoiceScriptToTxt,
-  loadGeneralVoiceManifest,
-  loadGeneralVoiceScript,
 } from './lib/general-voice-source';
+import {
+  loadCachedGeneralVoiceManifest,
+  loadCachedGeneralVoiceScript,
+} from './lib/general-voice-runtime';
 
 const VOICE_DATA_RE =
   /^\/data\/general_voice\/(\d{6})\/\1_cn\.(txt|json)$/u;
@@ -31,17 +33,30 @@ const toHex = (buffer: ArrayBuffer): string =>
     byte => byte.toString(16).padStart(2, '0'),
   ).join('');
 
+const baseIndex = Array.isArray(storyIndexJson)
+  ? storyIndexJson as Array<Record<string, unknown>>
+  : [];
+
 const combinedIndex = async () => {
-  const manifest = await loadGeneralVoiceManifest();
-  const voiceEntries = generalVoiceCatalogEntries(manifest);
-  const base = Array.isArray(storyIndexJson)
-    ? storyIndexJson as Array<Record<string, unknown>>
-    : [];
-  if (base.length + voiceEntries.length > MAX_COMBINED_ENTRIES) {
+  let voiceEntries: ReturnType<typeof generalVoiceCatalogEntries> = [];
+  let voiceAvailable = false;
+  try {
+    voiceEntries = generalVoiceCatalogEntries(
+      await loadCachedGeneralVoiceManifest(),
+    );
+    voiceAvailable = true;
+  } catch (error) {
+    console.error(
+      '语音上游当前不可用；剧情目录降级为不含 general_voice 的基础目录',
+      error,
+    );
+  }
+
+  if (baseIndex.length + voiceEntries.length > MAX_COMBINED_ENTRIES) {
     throw new Error('合并剧情目录超过安全上限');
   }
   const ids = new Set(
-    base.map(item => String(item.id ?? '').toLowerCase()),
+    baseIndex.map(item => String(item.id ?? '').toLowerCase()),
   );
   for (const entry of voiceEntries) {
     if (ids.has(entry.id.toLowerCase())) {
@@ -49,24 +64,25 @@ const combinedIndex = async () => {
     }
     ids.add(entry.id.toLowerCase());
   }
-  return [...base, ...voiceEntries];
+  return {
+    entries: [...baseIndex, ...voiceEntries],
+    voiceAvailable,
+  };
 };
 
 const combinedIndexPayload = async () => {
-  const payload = JSON.stringify(await combinedIndex());
+  const { entries, voiceAvailable } = await combinedIndex();
+  const payload = JSON.stringify(entries);
   const bytes = new TextEncoder().encode(payload);
   const sha256 = toHex(await crypto.subtle.digest('SHA-256', bytes));
-  return { payload, sha256 };
+  return { payload, sha256, voiceAvailable };
 };
 
 const voiceResponse = async (
   modelId: string,
   extension: string,
 ): Promise<Response> => {
-  const [manifest, script] = await Promise.all([
-    loadGeneralVoiceManifest(),
-    loadGeneralVoiceScript(modelId, 'cn'),
-  ]);
+  const manifest = await loadCachedGeneralVoiceManifest();
   const model = manifest.models.find(
     item => item.id === modelId && item.langs.cn,
   );
@@ -76,6 +92,7 @@ const voiceResponse = async (
       headers: textHeaders,
     });
   }
+  const script = await loadCachedGeneralVoiceScript(modelId, 'cn');
   if (extension === 'json') {
     return new Response(JSON.stringify(script), {
       status: 200,
@@ -95,17 +112,27 @@ export async function proxy(request: NextRequest) {
       return NextResponse.rewrite(new URL('/voice-home', request.url));
     }
     if (pathname === '/story_index.json') {
-      const { payload } = await combinedIndexPayload();
-      return new Response(payload, { status: 200, headers: jsonHeaders });
+      const { payload, voiceAvailable } = await combinedIndexPayload();
+      return new Response(payload, {
+        status: 200,
+        headers: {
+          ...jsonHeaders,
+          'X-MagiReader-General-Voice': voiceAvailable
+            ? 'available'
+            : 'temporarily-unavailable',
+        },
+      });
     }
     if (pathname === '/search_index_manifest.json') {
-      const { sha256 } = await combinedIndexPayload();
+      const { sha256, voiceAvailable } = await combinedIndexPayload();
       return Response.json(
         {
           ...searchManifestJson,
           story_index_sha256: sha256,
-          partial_catalog: true,
-          fulltext_excluded_categories: ['general_voice'],
+          partial_catalog: voiceAvailable,
+          fulltext_excluded_categories: voiceAvailable
+            ? ['general_voice']
+            : [],
         },
         { headers: jsonHeaders },
       );
