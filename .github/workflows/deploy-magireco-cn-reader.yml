@@ -1,0 +1,155 @@
+name: Deploy Magireco Chinese Preservation Reader
+
+on:
+  push:
+    branches:
+      - deploy/magireco-cn-reader
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: magireco-cn-reader-cloudflare
+  cancel-in-progress: true
+
+jobs:
+  snapshot-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+
+    steps:
+      - name: Check out deployment branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Probe MediaWiki API
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, urllib.parse, urllib.request
+          endpoints = [
+              "https://magireco.moe/api.php",
+              "https://www.magireco.moe/api.php",
+          ]
+          errors = []
+          for endpoint in endpoints:
+              url = endpoint + "?" + urllib.parse.urlencode({
+                  "action": "query",
+                  "meta": "siteinfo",
+                  "format": "json",
+                  "formatversion": "2",
+              })
+              try:
+                  request = urllib.request.Request(url, headers={"User-Agent": "MagirecoChinesePreservationReader/3.0"})
+                  with urllib.request.urlopen(request, timeout=45) as response:
+                      data = json.load(response)
+                  print(endpoint, data.get("query", {}).get("general", {}).get("sitename"))
+                  break
+              except Exception as exc:
+                  errors.append(f"{endpoint}: {exc}")
+          else:
+              raise SystemExit("\n".join(errors))
+          PY
+
+      - name: Build complete static snapshot
+        run: |
+          python wiki-preservation/scripts/build_snapshot.py \
+            --output wiki-preservation/dist
+
+      - name: Verify snapshot coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f wiki-preservation/dist/index.html
+          test -f wiki-preservation/dist/data/runtime-manifest.json
+          test -f wiki-preservation/dist/data/archive-index.json
+          test -f wiki-preservation/dist/data/media-index.json
+          test -f wiki-preservation/dist/health.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("wiki-preservation/dist")
+          manifest = json.loads((root / "data/runtime-manifest.json").read_text(encoding="utf-8"))
+          counts = manifest["counts"]
+          assert counts["pages"] >= 5000, counts
+          assert counts["shards"] >= 100, counts
+          assert counts["media"] >= 10000, counts
+          assert counts["images"] >= 1000, counts
+          assert counts["audio"] >= 1000, counts
+          files = [path for path in root.rglob("*") if path.is_file()]
+          oversized = [path for path in files if path.stat().st_size > 25 * 1024 * 1024]
+          assert len(files) <= 20000, len(files)
+          assert not oversized, [(str(path), path.stat().st_size) for path in oversized]
+          print(json.dumps(manifest, ensure_ascii=False, indent=2))
+          print(f"deployment files: {len(files)}")
+          print(f"deployment bytes: {sum(path.stat().st_size for path in files)}")
+          PY
+
+      - name: Upload snapshot artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-cn-reader-static-snapshot
+          path: wiki-preservation/dist
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Verify Cloudflare credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          npx --yes wrangler@latest whoami
+
+      - name: Create Cloudflare Pages project when missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! npx --yes wrangler@latest pages project list --json \
+            | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>{const a=JSON.parse(s);process.exit(a.some(x=>x.name==="magireco-cn-reader")?0:1)})'; then
+            npx --yes wrangler@latest pages project create magireco-cn-reader \
+              --production-branch main
+          fi
+
+      - name: Deploy production site
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@latest pages deploy wiki-preservation/dist \
+            --project-name magireco-cn-reader \
+            --branch main \
+            --commit-dirty=true
+
+      - name: Verify public deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://magireco-cn-reader.pages.dev/health.json"
+          for attempt in $(seq 1 40); do
+            if body=$(curl --fail --silent --show-error --max-time 20 "$url"); then
+              echo "$body"
+              echo "$body" | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>{const x=JSON.parse(s);if(x.status!=="ok"||x.readerVersion!==3)process.exit(1)})'
+              echo "Published: https://magireco-cn-reader.pages.dev/#/portal"
+              exit 0
+            fi
+            echo "Waiting for deployment ($attempt/40)..."
+            sleep 8
+          done
+          echo "Deployment command completed, but health check did not pass in time." >&2
+          exit 1
