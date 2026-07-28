@@ -21,7 +21,7 @@ function allowed(target) {
 
 async function sourceFetch(target) {
   let last = null;
-  for (let attempt = 1; attempt <= 4; attempt += 1) {
+  for (let attempt = 1; attempt <= 5; attempt += 1) {
     last = await fetch(target.toString(), {
       method: 'GET',
       redirect: 'follow',
@@ -37,7 +37,7 @@ async function sourceFetch(target) {
       },
     });
     if (!RETRYABLE.has(last.status)) break;
-    if (attempt < 4) await new Promise((resolve) => setTimeout(resolve, 400 * attempt));
+    if (attempt < 5) await new Promise((resolve) => setTimeout(resolve, 1500 * attempt));
   }
   return last;
 }
@@ -46,7 +46,7 @@ export default {
   async fetch(request) {
     const incoming = new URL(request.url);
     if (incoming.pathname === '/health') {
-      return json({ status: 'ok', scope: 'ordinary-memoria-articles-only' });
+      return json({ status: 'ok', scope: 'ordinary-memoria-articles-only', retries: 5, backoff: '1.5s-linear' });
     }
     if (request.headers.get('x-magireco-proxy-token') !== PROXY_TOKEN) return json({ error: 'forbidden' }, 403);
 
