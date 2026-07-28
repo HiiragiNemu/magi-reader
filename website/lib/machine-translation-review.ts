@@ -1,7 +1,6 @@
-import magirecoManifestJson from '@/public/data/machine_translation_manifest.generated.json';
-import exedraManifestJson from '@/public/data/exedra_machine_translation_manifest.generated.json';
+import manifestJson from '@/public/data/machine_translation_manifest.generated.json';
 
-export type MachineTranslationSystem = 'magireco' | 'exedra';
+export type MachineTranslationSystem = 'magireco';
 
 export type MachineTranslationEntry = {
   story_id: string;
@@ -12,7 +11,7 @@ export type MachineTranslationEntry = {
   repository_path_cn: string;
   path_cn: string;
   path_jp: string;
-  provenance?: 'added_after_trusted_main' | 'machine_translation' | string;
+  provenance?: 'added_after_trusted_main' | string;
   machine_source_json_count?: number;
   direct_txt_changed?: boolean;
 };
@@ -41,7 +40,6 @@ export type MachineTranslationManifest = {
   missing_repository_txt_paths?: string[];
   unmatched_source_identities?: string[];
   legacy_translation_commit_not_used_for_classification?: string;
-  provenance_counts?: Record<string, number>;
 };
 
 export type MachineTranslationReviewState = {
@@ -54,64 +52,45 @@ export type MachineTranslationReviewState = {
 };
 
 const LEGACY_STATE_PREFIX = 'proofreading:machine-review:';
-const statePrefix = (system: MachineTranslationSystem): string =>
-  `proofreading:machine-review:${system}:`;
+const STATE_PREFIX = 'proofreading:machine-review:magireco:';
 
-const normalizeManifest = (
-  value: unknown,
-  system: MachineTranslationSystem,
-): MachineTranslationManifest => {
+const normalizeManifest = (value: unknown): MachineTranslationManifest => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    throw new Error(`${system} machine translation manifest is invalid`);
+    throw new Error('Magia Record machine translation manifest is invalid');
   }
   const record = value as Partial<MachineTranslationManifest>;
-  if (!Array.isArray(record.entries) || !Number.isSafeInteger(record.total) ||
-      record.total !== record.entries.length) {
-    throw new Error(`${system} machine translation manifest is inconsistent`);
+  if (
+    !Array.isArray(record.entries) ||
+    !Number.isSafeInteger(record.total) ||
+    record.total !== record.entries.length
+  ) {
+    throw new Error('Magia Record machine translation manifest is inconsistent');
   }
-  return { ...record, system } as MachineTranslationManifest;
+  return { ...record, system: 'magireco' } as MachineTranslationManifest;
 };
 
-export const MACHINE_TRANSLATION_MANIFESTS: Record<
-  MachineTranslationSystem,
-  MachineTranslationManifest
-> = {
-  magireco: normalizeManifest(magirecoManifestJson, 'magireco'),
-  exedra: normalizeManifest(exedraManifestJson, 'exedra'),
-};
+export const MACHINE_TRANSLATION_MANIFEST = normalizeManifest(manifestJson);
+export const MACHINE_TRANSLATION_ID_SET = new Set(
+  MACHINE_TRANSLATION_MANIFEST.entries.map(entry => entry.story_id),
+);
 
-export const MACHINE_TRANSLATION_ID_SETS: Record<
-  MachineTranslationSystem,
-  Set<string>
-> = {
-  magireco: new Set(
-    MACHINE_TRANSLATION_MANIFESTS.magireco.entries.map(entry => entry.story_id),
-  ),
-  exedra: new Set(
-    MACHINE_TRANSLATION_MANIFESTS.exedra.entries.map(entry => entry.story_id),
-  ),
-};
-
-// Backward-compatible exports used by existing submission routes. They represent the
-// union of both systems; callers that mutate state should pass an explicit system.
-export const MACHINE_TRANSLATION_MANIFEST = MACHINE_TRANSLATION_MANIFESTS.magireco;
-export const MACHINE_TRANSLATION_ID_SET = new Set([
-  ...MACHINE_TRANSLATION_ID_SETS.magireco,
-  ...MACHINE_TRANSLATION_ID_SETS.exedra,
-]);
+// Compatibility aliases retained for existing Magia Record-only callers.
+export const MACHINE_TRANSLATION_MANIFESTS = {
+  magireco: MACHINE_TRANSLATION_MANIFEST,
+} as const;
+export const MACHINE_TRANSLATION_ID_SETS = {
+  magireco: MACHINE_TRANSLATION_ID_SET,
+} as const;
 
 export const machineTranslationSystemForStory = (
   storyId: string,
-): MachineTranslationSystem | null => {
-  if (MACHINE_TRANSLATION_ID_SETS.magireco.has(storyId)) return 'magireco';
-  if (MACHINE_TRANSLATION_ID_SETS.exedra.has(storyId)) return 'exedra';
-  return null;
-};
+): MachineTranslationSystem | null =>
+  MACHINE_TRANSLATION_ID_SET.has(storyId) ? 'magireco' : null;
 
 export const machineTranslationStateKey = (
   storyId: string,
-  system: MachineTranslationSystem = 'magireco',
-): string => `${statePrefix(system)}${storyId}`;
+  _system: MachineTranslationSystem = 'magireco',
+): string => `${STATE_PREFIX}${storyId}`;
 
 export const parseMachineTranslationReviewState = (
   raw: string | null,
@@ -133,7 +112,9 @@ export const parseMachineTranslationReviewState = (
       reviewed_at: value.reviewed_at,
       note: value.note,
       submission_id:
-        typeof value.submission_id === 'string' ? value.submission_id : undefined,
+        typeof value.submission_id === 'string'
+          ? value.submission_id
+          : undefined,
       pull_request_url:
         typeof value.pull_request_url === 'string'
           ? value.pull_request_url
@@ -147,13 +128,12 @@ export const parseMachineTranslationReviewState = (
 export const getMachineTranslationReviewState = async (
   kv: SubmissionKvNamespace,
   storyId: string,
-  system: MachineTranslationSystem = 'magireco',
+  _system: MachineTranslationSystem = 'magireco',
 ): Promise<MachineTranslationReviewState | null> => {
   const current = parseMachineTranslationReviewState(
-    await kv.get(machineTranslationStateKey(storyId, system)),
+    await kv.get(machineTranslationStateKey(storyId)),
   );
-  if (current || system !== 'magireco') return current;
-  // Read legacy Magia Record keys created before system separation.
+  if (current) return current;
   return parseMachineTranslationReviewState(
     await kv.get(`${LEGACY_STATE_PREFIX}${storyId}`),
   );
@@ -163,68 +143,68 @@ export const setMachineTranslationReviewState = async (
   kv: SubmissionKvNamespace,
   storyId: string,
   state: MachineTranslationReviewState,
-  system?: MachineTranslationSystem,
+  _system: MachineTranslationSystem = 'magireco',
 ): Promise<void> => {
-  const resolved = system ?? machineTranslationSystemForStory(storyId);
-  if (!resolved || !MACHINE_TRANSLATION_ID_SETS[resolved].has(storyId)) {
+  if (!MACHINE_TRANSLATION_ID_SET.has(storyId)) {
     throw new Error('STORY_NOT_IN_MACHINE_TRANSLATION_MANIFEST');
   }
-  await kv.put(machineTranslationStateKey(storyId, resolved), JSON.stringify(state));
+  await kv.put(machineTranslationStateKey(storyId), JSON.stringify(state));
 };
 
 export const listMachineTranslationReviewStates = async (
   kv: SubmissionKvNamespace,
-  system: MachineTranslationSystem = 'magireco',
+  _system: MachineTranslationSystem = 'magireco',
 ): Promise<Record<string, MachineTranslationReviewState>> => {
   const result: Record<string, MachineTranslationReviewState> = {};
-  const allowed = MACHINE_TRANSLATION_ID_SETS[system];
   let cursor: string | undefined;
-  const prefix = statePrefix(system);
   do {
-    const listed = await kv.list({ prefix, limit: 1000, cursor });
+    const listed = await kv.list({ prefix: STATE_PREFIX, limit: 1000, cursor });
     for (const item of listed.keys) {
-      const storyId = item.name.slice(prefix.length);
-      if (!allowed.has(storyId)) continue;
+      const storyId = item.name.slice(STATE_PREFIX.length);
+      if (!MACHINE_TRANSLATION_ID_SET.has(storyId)) continue;
       const state = parseMachineTranslationReviewState(await kv.get(item.name));
       if (state) result[storyId] = state;
     }
     cursor = listed.list_complete ? undefined : listed.cursor;
   } while (cursor);
 
-  if (system === 'magireco') {
-    // Merge legacy entries only when no system-specific value exists.
-    cursor = undefined;
-    do {
-      const listed = await kv.list({ prefix: LEGACY_STATE_PREFIX, limit: 1000, cursor });
-      for (const item of listed.keys) {
-        const suffix = item.name.slice(LEGACY_STATE_PREFIX.length);
-        if (suffix.startsWith('magireco:') || suffix.startsWith('exedra:')) continue;
-        if (!allowed.has(suffix) || result[suffix]) continue;
-        const state = parseMachineTranslationReviewState(await kv.get(item.name));
-        if (state) result[suffix] = state;
-      }
-      cursor = listed.list_complete ? undefined : listed.cursor;
-    } while (cursor);
-  }
+  // Merge legacy Magia Record entries only when no namespaced value exists.
+  cursor = undefined;
+  do {
+    const listed = await kv.list({
+      prefix: LEGACY_STATE_PREFIX,
+      limit: 1000,
+      cursor,
+    });
+    for (const item of listed.keys) {
+      const suffix = item.name.slice(LEGACY_STATE_PREFIX.length);
+      if (suffix.startsWith('magireco:') || suffix.startsWith('exedra:')) continue;
+      if (!MACHINE_TRANSLATION_ID_SET.has(suffix) || result[suffix]) continue;
+      const state = parseMachineTranslationReviewState(await kv.get(item.name));
+      if (state) result[suffix] = state;
+    }
+    cursor = listed.list_complete ? undefined : listed.cursor;
+  } while (cursor);
   return result;
 };
 
 export const machineTranslationSystemSummary = async (
   kv: SubmissionKvNamespace | undefined,
-  system: MachineTranslationSystem,
+  _system: MachineTranslationSystem = 'magireco',
 ) => {
-  const manifest = MACHINE_TRANSLATION_MANIFESTS[system];
-  const states = kv ? await listMachineTranslationReviewStates(kv, system) : {};
-  const verifiedIds = manifest.entries
+  const states = kv ? await listMachineTranslationReviewStates(kv) : {};
+  const verifiedIds = MACHINE_TRANSLATION_MANIFEST.entries
     .filter(entry => states[entry.story_id]?.verified === true)
     .map(entry => entry.story_id);
   return {
-    system,
-    definition: manifest.definition,
-    total: manifest.total,
+    system: 'magireco' as const,
+    definition: MACHINE_TRANSLATION_MANIFEST.definition,
+    total: MACHINE_TRANSLATION_MANIFEST.total,
     verified: verifiedIds.length,
-    remaining: Math.max(0, manifest.total - verifiedIds.length),
-    machine_translation_ids: manifest.entries.map(entry => entry.story_id),
+    remaining: Math.max(0, MACHINE_TRANSLATION_MANIFEST.total - verifiedIds.length),
+    machine_translation_ids: MACHINE_TRANSLATION_MANIFEST.entries.map(
+      entry => entry.story_id,
+    ),
     verified_ids: verifiedIds,
   };
 };
