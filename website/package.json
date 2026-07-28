@@ -18,6 +18,7 @@
     "build:worker": "node scripts/verify-cloudflare-output.mjs --build",
     "preview": "npm run build:worker && opennextjs-cloudflare preview",
     "deploy:worker": "npm run verify:cloudflare-config && npm run build:worker && opennextjs-cloudflare deploy",
+    "predeploy:test:direct": "npm run validate:feature",
     "deploy:test:direct": "node scripts/deploy-direct-test.mjs"
   },
   "dependencies": {
