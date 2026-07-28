@@ -43,17 +43,26 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Prepare v5.1 production test
+      - name: Prepare v5.2 production test
         shell: bash
         run: |
           set -euo pipefail
-          sed 's/structured-ui\.js?v=5\.0/structured-ui.js?v=5.1/g' \
-            wiki-preservation/tests/production-structured-v5.mjs \
-            > wiki-preservation/tests/production-structured-v5.1.mjs
-          grep -q 'structured-ui.js?v=5.1' wiki-preservation/tests/production-structured-v5.1.mjs
+          python - <<'PY'
+          from pathlib import Path
+          source = Path('wiki-preservation/tests/production-structured-v5.mjs').read_text(encoding='utf-8')
+          source = source.replace('structured-ui.js?v=5.0', 'structured-ui.js?v=5.2&rev=5.2')
+          source = source.replace(
+              'health.uiVersion === 5 && health.counts?.pages === 500',
+              "health.uiVersion === 5 && health.uiRevision === '5.2' && health.counts?.pages === 500",
+          )
+          target = Path('wiki-preservation/tests/production-structured-v5.2.mjs')
+          target.write_text(source, encoding='utf-8')
+          PY
+          grep -q 'structured-ui.js?v=5.2&rev=5.2' wiki-preservation/tests/production-structured-v5.2.mjs
+          grep -q "health.uiRevision === '5.2'" wiki-preservation/tests/production-structured-v5.2.mjs
 
       - name: Run structured character and voice production test
-        run: node wiki-preservation/tests/production-structured-v5.1.mjs
+        run: node wiki-preservation/tests/production-structured-v5.2.mjs
 
       - name: Upload structured reader evidence
         if: always()
