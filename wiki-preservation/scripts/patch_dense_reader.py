@@ -2,8 +2,8 @@
 """Apply visitor-facing copy, dense-layout and long-page performance patches.
 
 The static sources intentionally keep extraction terminology for engineering
-traceability.  Production pages should present the archive itself, not the
-operator's implementation instructions.  This patch also replaces the eager
+traceability. Production pages should present the archive itself, not the
+operator's implementation instructions. This patch also replaces the eager
 whole-document enhancer with an idle-chunked implementation and limits legacy
 MutationObservers to root-level application swaps.
 """
@@ -186,6 +186,31 @@ def patch_doppel(path: Path) -> None:
     path.write_text(text, encoding="utf-8")
 
 
+def patch_memoria(path: Path) -> None:
+    text = path.read_text(encoding="utf-8")
+    replacements = [
+        ("STRUCTURED ARCHIVE & READER", "MAGIA RECORD DATABASE", "memoria brand"),
+        (
+            "记忆结晶目录、数值、效果与中日简介 · 不完整记录明确标记",
+            "记忆结晶资料",
+            "memoria footer",
+        ),
+        ("STRUCTURED MEMORIA ARCHIVE", "MEMORIA DATABASE", "memoria eyebrow"),
+        (
+            "以保存快照中的普通记忆结晶目录为成员基准，按需载入数值、普通/满破效果、冷却、装备限制、画师及中日双语简介。这里不是Wiki正文关键词筛选。",
+            "按名称、编号、稀有度、类型、效果、画师与实装来源浏览记忆结晶。",
+            "memoria visitor copy",
+        ),
+        ("记忆结晶资料读取失败", "资料读取失败", "memoria error"),
+    ]
+    for old, new, label in replacements:
+        text = replace_once(text, old, new, label)
+    old_observer = "memoriaObserver.observe(memoriaApp, { childList: true, subtree: true });"
+    if old_observer in text:
+        text = text.replace(old_observer, "memoriaObserver.observe(memoriaApp, { childList: true, subtree: false });", 1)
+    path.write_text(text, encoding="utf-8")
+
+
 def patch_index(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
     text = text.replace('aria-live="polite"', 'aria-live="off"')
@@ -205,6 +230,7 @@ def main() -> None:
     patch_app(root / "app.js")
     patch_structured(root / "structured-ui.js")
     patch_doppel(root / "doppel-ui.js")
+    patch_memoria(root / "memoria-ui.js")
     patch_index(root / "index.html")
     print("dense reader patch applied")
 
