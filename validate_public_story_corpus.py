@@ -18,6 +18,12 @@ RAW_JSON_ROOTS = {
     "exedra_jp": Path("magiraexedra-source-master/Scenarios_full"),
     "exedra_cn": Path("magiraexedra-translate-data-master/Scenarios_full"),
 }
+RAW_TXT_ROOTS = {
+    "magireco_jp": Path("magireco-source-master/Scenarios_full"),
+    "magireco_cn": Path("magireco-translate-data-master/Scenarios_full"),
+    "exedra_jp": Path("magiraexedra-source-master/Scenarios_full"),
+    "exedra_cn": Path("magiraexedra-translate-data-master/Scenarios_full"),
+}
 
 
 def main() -> None:
@@ -74,6 +80,20 @@ def main() -> None:
     if set(source_formats) != {".txt"}:
         raise RuntimeError(f"unexpected reader source formats: {dict(source_formats)}")
 
+    published_txt = [
+        path for path in (public / "data").rglob("*.txt")
+        if path.is_file()
+    ]
+    published_empty_txt = [
+        path for path in published_txt
+        if path.stat().st_size <= 0
+    ]
+    if published_empty_txt:
+        raise RuntimeError(
+            "public data tree contains empty TXT files: "
+            + ", ".join(str(path) for path in published_empty_txt[:50])
+        )
+
     raw_json_counts: dict[str, int] = {}
     raw_json_bytes: dict[str, int] = {}
     for label, source in RAW_JSON_ROOTS.items():
@@ -86,7 +106,7 @@ def main() -> None:
             path for path in root.rglob("*.json")
             if path.is_file()
             and not path.name.endswith(".import-report.json")
-            and path.name != "exedra_manifest.json"
+            and path.name not in {"exedra_manifest.json", "story_ids.generated.json"}
         ]
         raw_json_counts[label] = len(files)
         raw_json_bytes[label] = sum(path.stat().st_size for path in files)
@@ -95,6 +115,17 @@ def main() -> None:
         if raw_json_counts.get(required, 0) <= 0:
             raise RuntimeError(f"raw JSON tree is missing: {required}")
 
+    raw_txt_counts: dict[str, int] = {}
+    raw_empty_txt_counts: dict[str, int] = {}
+    raw_empty_txt_sample: dict[str, list[str]] = {}
+    for label, source in RAW_TXT_ROOTS.items():
+        root = source.resolve()
+        files = [path for path in root.rglob("*.txt") if path.is_file()] if root.exists() else []
+        empty = [path for path in files if path.stat().st_size <= 0]
+        raw_txt_counts[label] = len(files)
+        raw_empty_txt_counts[label] = len(empty)
+        raw_empty_txt_sample[label] = [str(path) for path in empty[:20]]
+
     report = {
         "stories": len(stories),
         "magireco": len(magireco),
@@ -102,8 +133,13 @@ def main() -> None:
         "categories": dict(sorted(categories.items())),
         "readerSourceFiles": len(referenced),
         "readerSourceFormats": dict(source_formats),
+        "publishedTxtFiles": len(published_txt),
+        "publishedEmptyTxtFiles": len(published_empty_txt),
         "rawJsonFiles": raw_json_counts,
         "rawJsonBytes": raw_json_bytes,
+        "rawTxtFiles": raw_txt_counts,
+        "rawEmptyTxtFiles": raw_empty_txt_counts,
+        "rawEmptyTxtSample": raw_empty_txt_sample,
     }
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)
