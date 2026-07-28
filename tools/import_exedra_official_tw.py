@@ -20,10 +20,10 @@ import hashlib
 import json
 import os
 import re
-import shutil
 import sys
 import tempfile
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -35,6 +35,7 @@ JP_ROOT = ROOT / "magiraexedra-source-master/Scenarios_full"
 CN_ROOT = ROOT / "magiraexedra-translate-data-master/Scenarios_full"
 MANIFEST = JP_ROOT / "exedra_manifest.json"
 STAGING_ROOT = ROOT / "artifacts/.exedra-official-tw-staging"
+SOURCE_LABEL = "official-tw-scenario-json"
 TEXT_ACTIONS = {"talk", "narration", "charactertalk", "onlytext"}
 SECTION_RE = re.compile(
     r"^---\s*\[Section\s+(\d+)\]\s*"
@@ -115,6 +116,13 @@ class TwSourceIndex:
             f"台服 JSON basename 匹配不唯一：{safe.name}: {basename_matches[:3]}"
         )
 
+    def relative_name(self, path: Path) -> str:
+        resolved = path.resolve(strict=True)
+        try:
+            return resolved.relative_to(self.root).as_posix()
+        except ValueError as exc:
+            raise RuntimeError(f"台服 JSON 不在来源根目录中：{path}") from exc
+
 
 def json_bytes(value: Any) -> bytes:
     return (json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
@@ -192,7 +200,10 @@ def load_groups() -> list[dict[str, Any]]:
     groups = value.get("groups")
     if value.get("schemaVersion") != 1 or not isinstance(groups, list) or len(groups) != 443:
         raise RuntimeError("Exedra organizer manifest 版本或组数异常")
-    return [group for group in groups if isinstance(group, dict)]
+    result = [group for group in groups if isinstance(group, dict)]
+    if len(result) != 443:
+        raise RuntimeError("Exedra organizer manifest 含非对象逻辑组")
+    return result
 
 
 def extract_rows(path: Path) -> list[dict[str, Any]]:
@@ -359,7 +370,7 @@ def build_report(
     group_key: str,
     jp_path: Path,
     cn_path: Path,
-    source_root: Path,
+    source_label: str,
     json_meta: list[dict[str, Any]],
 ) -> dict[str, Any]:
     jp_sections = pipeline._exedra_alignment_sections(jp_path)
@@ -396,7 +407,7 @@ def build_report(
         "schemaVersion": 1,
         "status": "validated",
         "provenance": "official_tw_human",
-        "sourceRoot": str(source_root),
+        "sourceRoot": source_label,
         "group": {"category": category, "groupKey": group_key},
         "validation": {
             "passed": True,
@@ -427,7 +438,11 @@ def build_report(
 
 def commit_staged_group(stage: Path, output_dir: Path) -> None:
     files = sorted(path for path in stage.iterdir() if path.is_file())
-    collisions = [output_dir / path.name for path in files if (output_dir / path.name).exists()]
+    collisions = [
+        output_dir / path.name
+        for path in files
+        if (output_dir / path.name).exists()
+    ]
     if collisions:
         raise RuntimeError(f"目标目录已有文件，拒绝覆盖：{collisions[:3]}")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -494,7 +509,11 @@ def main() -> int:
             f"{group_key}_cn.provenance.json",
             *[PurePosixPath(str(value)).name for value in source_paths],
         }
-        existing = [output_dir / name for name in expected_names if (output_dir / name).exists()]
+        existing = [
+            output_dir / name
+            for name in expected_names
+            if (output_dir / name).exists()
+        ]
         cn_path = output_dir / f"{group_key}_cn.txt"
         report_path = output_dir / f"{group_key}{pipeline.EXEDRA_IMPORT_REPORT_SUFFIX}"
         if cn_path.is_file() and report_path.is_file():
@@ -551,7 +570,7 @@ def main() -> int:
                     json_meta.append({
                         "source": section.source,
                         "manifestSourcePath": source_path,
-                        "twPath": str(tw_path),
+                        "twPath": tw_index.relative_name(tw_path),
                         "twSha256": pipeline._sha256_file(tw_path),
                         "simplifiedJsonSha256": digest,
                     })
@@ -566,7 +585,7 @@ def main() -> int:
                     group_key,
                     jp_path,
                     staged_cn,
-                    source_root,
+                    SOURCE_LABEL,
                     json_meta,
                 )
                 staged_report = (
@@ -577,10 +596,8 @@ def main() -> int:
                     "version": 1,
                     "sourceIdentity": str(group.get("id") or ""),
                     "provenance": "official_tw_human",
-                    "sourceRoot": str(source_root),
-                    "generatedAt": __import__("datetime").datetime.now(
-                        __import__("datetime").timezone.utc
-                    ).isoformat(),
+                    "sourceRoot": SOURCE_LABEL,
+                    "generatedAt": datetime.now(timezone.utc).isoformat(),
                     "jpSha256": pipeline._sha256_utf8_text_file(jp_path),
                     "cnSha256": pipeline._sha256_utf8_text_file(staged_cn),
                     "sourceJson": json_meta,
@@ -588,7 +605,6 @@ def main() -> int:
                 (stage / f"{group_key}_cn.provenance.json").write_bytes(
                     json_bytes(sidecar)
                 )
-                # Re-run the repository's independent schema-v1 validator before commit.
                 pipeline._validate_exedra_cn_import_report(
                     group=pipeline.OrganizedExedraGroup(
                         manifest_id=str(group.get("id") or ""),
@@ -629,7 +645,10 @@ def main() -> int:
         ) + "\n",
         encoding="utf-8",
     )
-    shutil.rmtree(STAGING_ROOT, ignore_errors=True)
+    try:
+        STAGING_ROOT.rmdir()
+    except OSError:
+        pass
     print(json.dumps(stats, ensure_ascii=False))
     return 2 if stats["failed"] else 0
 
