@@ -2,11 +2,10 @@
 """Synchronize the production shell with a versioned Service Worker file.
 
 Cloudflare Pages may retain a static ``/sw.js`` response at the edge even when a
-query string changes.  A browser could therefore register an old v4 body under
-``/sw.js?v=5.4``.  This patch uses a genuinely versioned filename
-``/sw-v<revision>.js``, updates app.js to register that file, derives the exact
-pre-cache URLs from the final index, and writes both the versioned worker and a
-compatibility ``sw.js`` copy.
+query string changes. A browser could therefore register an old v4 body under a
+new query URL. This patch uses a genuinely versioned filename, updates app.js,
+derives pre-cache URLs from the final index, writes both worker files, and emits
+Cloudflare Pages ``_headers`` rules which prevent caching update entry points.
 """
 
 from __future__ import annotations
@@ -44,7 +43,8 @@ def main() -> None:
     index_path = root / "index.html"
     app_path = root / "app.js"
     compatibility_sw_path = root / "sw.js"
-    versioned_sw_path = root / f"sw-v{args.revision}.js"
+    versioned_sw_name = f"sw-v{args.revision}.js"
+    versioned_sw_path = root / versioned_sw_name
 
     index = index_path.read_text(encoding="utf-8")
     app = app_path.read_text(encoding="utf-8")
@@ -177,10 +177,31 @@ self.addEventListener('message', (event) => {{
 """
     compatibility_sw_path.write_text(source, encoding="utf-8")
     versioned_sw_path.write_text(source, encoding="utf-8")
+
+    no_cache = "Cache-Control: no-cache, no-store, must-revalidate"
+    headers = f"""/
+  {no_cache}
+
+/index.html
+  {no_cache}
+
+/health.json
+  {no_cache}
+
+/sw.js
+  {no_cache}
+  Service-Worker-Allowed: /
+
+/{versioned_sw_name}
+  {no_cache}
+  Service-Worker-Allowed: /
+"""
+    (root / "_headers").write_text(headers, encoding="utf-8")
+
     print(json.dumps({
         "revision": args.revision,
         "version": version,
-        "worker": f"/sw-v{args.revision}.js",
+        "worker": f"/{versioned_sw_name}",
         "core": core,
     }, ensure_ascii=False, indent=2))
 
