@@ -36,22 +36,72 @@ const requireCondition = (condition, message) => {
 };
 
 const requireIncludes = (source, expected, file) =>
-  requireCondition(source.includes(expected), `${file} 必须包含 ${JSON.stringify(expected)}`);
+  requireCondition(
+    source.includes(expected),
+    `${file} 必须包含 ${JSON.stringify(expected)}`,
+  );
 const requireExcludes = (source, forbidden, file) =>
-  requireCondition(!source.includes(forbidden), `${file} 不得包含 ${JSON.stringify(forbidden)}`);
+  requireCondition(
+    !source.includes(forbidden),
+    `${file} 不得包含 ${JSON.stringify(forbidden)}`,
+  );
 
 const exedraManifestPath =
   'magiraexedra-source-master/Scenarios_full/exedra_manifest.json';
 const exedraManifest = parseJson(exedraManifestPath);
 if (exedraManifest) {
-  requireCondition(exedraManifest.schemaVersion === 1, 'Exedra manifest schemaVersion 必须为 1');
-  requireCondition(exedraManifest.summary?.groupCount === 443, 'Exedra 逻辑组必须为 443');
-  requireCondition(exedraManifest.summary?.sourceCount === 3061, 'Exedra 来源 JSON 必须为 3061');
-  requireCondition(exedraManifest.summary?.dialogueCount === 105867, 'Exedra 文本事件必须为 105867');
+  requireCondition(
+    exedraManifest.schemaVersion === 1,
+    'Exedra manifest schemaVersion 必须为 1',
+  );
+  requireCondition(
+    exedraManifest.summary?.groupCount === 443,
+    'Exedra 逻辑组必须为 443',
+  );
+  requireCondition(
+    exedraManifest.summary?.sourceCount === 3061,
+    'Exedra 来源 JSON 必须为 3061',
+  );
+  requireCondition(
+    exedraManifest.summary?.dialogueCount === 105867,
+    'Exedra 文本事件必须为 105867',
+  );
   requireCondition(
     Array.isArray(exedraManifest.groups) && exedraManifest.groups.length === 443,
     'Exedra groups 数组必须完整包含 443 组',
   );
+}
+
+const finalLabels = [
+  ['exedra_main', '主线'],
+  ['exedra_sub', '活动'],
+  ['exedra_character', '角色'],
+  ['exedra_portrait', '肖像'],
+  ['exedra_reaction', '语音'],
+  ['exedra_namae', 'Namae'],
+  ['exedra_dungeon', '过场动画字幕'],
+  ['exedra_battle', '战斗'],
+];
+const sidebarPath = 'website/components/Sidebar.tsx';
+const sidebar = read(sidebarPath);
+for (const [category, label] of finalLabels) {
+  requireIncludes(
+    sidebar,
+    `${category}: { label: '${label}'`,
+    sidebarPath,
+  );
+}
+for (const forbidden of [
+  "exedra_main: { label: '1 主线'",
+  "exedra_sub: { label: '2 Sub'",
+  "exedra_character: { label: '3 角色'",
+  "exedra_portrait: { label: '4 肖像'",
+  "exedra_reaction: { label: '6 语音'",
+  "exedra_namae: { label: '7 Namae'",
+  "exedra_dungeon: { label: '8 Dungeon'",
+  "exedra_battle: { label: '10 战斗'",
+]) {
+  requireExcludes(sidebar, forbidden, sidebarPath);
 }
 
 const categoryNormalizerPath = 'website/components/CategoryLabelNormalizer.tsx';
@@ -73,7 +123,10 @@ for (const [legacy, expected] of [
 const wranglerPath = 'website/wrangler.jsonc';
 const wrangler = parseJson(wranglerPath);
 if (wrangler) {
-  requireCondition(!Object.hasOwn(wrangler, 'ai'), 'Wrangler 配置不得包含 AI binding');
+  requireCondition(
+    !Object.hasOwn(wrangler, 'ai'),
+    'Wrangler 配置不得包含 AI binding',
+  );
   requireCondition(
     !Object.hasOwn(wrangler.vars ?? {}, 'EXEDRA_TRANSLATION_MODEL'),
     'Wrangler vars 不得包含 Exedra 翻译模型',
@@ -108,6 +161,7 @@ const localizationPath = 'website/lib/exedra-localization.ts';
 const localization = read(localizationPath);
 requireExcludes(localization, 'loadOrCreateExedraLocalization', localizationPath);
 requireExcludes(localization, 'CloudflareAiBinding', localizationPath);
+requireExcludes(localization, "'machine_translation'", localizationPath);
 requireIncludes(localization, "'official_tw_human'", localizationPath);
 requireIncludes(localization, "'exedra_wiki_human'", localizationPath);
 
@@ -124,7 +178,11 @@ requireExcludes(
   'exedra_machine_translation_manifest',
   machineReviewPath,
 );
-requireIncludes(machineReview, "export type MachineTranslationSystem = 'magireco'", machineReviewPath);
+requireIncludes(
+  machineReview,
+  "export type MachineTranslationSystem = 'magireco'",
+  machineReviewPath,
+);
 
 const voiceSourcePath = 'website/lib/general-voice-source.ts';
 const voiceSource = read(voiceSourcePath);
@@ -138,13 +196,26 @@ requireIncludes(
   'https://566b00b8.magiaexedralive2dviewer.pages.dev/story/general',
   voiceSourcePath,
 );
+const voiceRuntimePath = 'website/lib/general-voice-runtime.ts';
+const voiceRuntime = read(voiceRuntimePath);
+requireIncludes(voiceRuntime, 'const EXPECTED_CN_MODELS = 411', voiceRuntimePath);
+requireIncludes(voiceRuntime, '继续使用旧缓存', voiceRuntimePath);
 
 const packagePath = 'website/package.json';
 const packageJson = parseJson(packagePath);
 if (packageJson) {
   requireCondition(
+    packageJson.engines?.node === '>=22.6.0',
+    'Node 版本下限必须支持原生 TypeScript 类型剥离',
+  );
+  requireCondition(
     packageJson.scripts?.test === 'node --experimental-strip-types --test',
     'npm test 必须执行 TypeScript 测试',
+  );
+  requireCondition(
+    packageJson.scripts?.['test:python'] ===
+      'node scripts/run-python-checks.mjs',
+    '必须执行 Python 编译和回归测试',
   );
   requireCondition(
     packageJson.scripts?.['deploy:test:direct'] ===
@@ -167,10 +238,12 @@ for (const tool of [
   'tools/import_exedra_official_tw.py',
   'tools/import_exedra_cache_export.py',
   'tools/github_api_checkout.py',
+  'tools/run_python_checks.py',
+  'tests/test_exedra_import_tools.py',
 ]) {
   requireCondition(
     existsSync(path.resolve(repositoryRoot, tool)),
-    `直接处理工具必须存在：${tool}`,
+    `直接处理/验证工具必须存在：${tool}`,
   );
 }
 requireCondition(
