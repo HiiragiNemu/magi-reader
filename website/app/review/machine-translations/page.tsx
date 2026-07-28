@@ -1,18 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  MACHINE_TRANSLATION_MANIFESTS,
+  MACHINE_TRANSLATION_MANIFEST,
   type MachineTranslationEntry,
   type MachineTranslationReviewState,
-  type MachineTranslationSystem,
 } from '@/lib/machine-translation-review';
 
 type MachineStatus = {
-  system: MachineTranslationSystem;
-  definition: string;
   total: number;
   verified: number;
   remaining: number;
@@ -20,15 +16,17 @@ type MachineStatus = {
   entries?: MachineTranslationEntry[];
 };
 
-const SYSTEM_LABELS: Record<MachineTranslationSystem, string> = {
-  magireco: '魔法纪录',
-  exedra: 'Magia Exedra',
-};
-
-const requestAdmin = async <T,>(token: string, input: string, init?: RequestInit): Promise<T> => {
+const requestAdmin = async <T,>(
+  token: string,
+  input: string,
+  init?: RequestInit,
+): Promise<T> => {
   const response = await fetch(input, {
     ...init,
-    headers: { Authorization: `Bearer ${token}`, ...(init?.headers ?? {}) },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(init?.headers ?? {}),
+    },
     cache: 'no-store',
   });
   const payload = await response.json() as T & { error?: string };
@@ -37,19 +35,17 @@ const requestAdmin = async <T,>(token: string, input: string, init?: RequestInit
 };
 
 export default function MachineTranslationReviewPage() {
-  const searchParams = useSearchParams();
-  const initialSystem: MachineTranslationSystem = searchParams.get('system') === 'exedra' ? 'exedra' : 'magireco';
-  const [system, setSystem] = useState<MachineTranslationSystem>(initialSystem);
   const [token, setToken] = useState('');
   const [status, setStatus] = useState<MachineStatus | null>(null);
   const [query, setQuery] = useState('');
   const [showVerified, setShowVerified] = useState(false);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const manifest = MACHINE_TRANSLATION_MANIFESTS[system];
-  const sourceEntries = status?.entries ?? manifest.entries;
+  const sourceEntries = status?.entries ?? MACHINE_TRANSLATION_MANIFEST.entries;
 
-  useEffect(() => setToken(sessionStorage.getItem('magi-reader-proofreading-admin-token') || ''), []);
+  useEffect(() => {
+    setToken(sessionStorage.getItem('magi-reader-proofreading-admin-token') || '');
+  }, []);
 
   const refresh = useCallback(async () => {
     if (!token) return;
@@ -58,24 +54,23 @@ export default function MachineTranslationReviewPage() {
     try {
       const result = await requestAdmin<MachineStatus>(
         token,
-        `/api/admin/machine-review?system=${encodeURIComponent(system)}`,
+        '/api/admin/machine-review',
       );
       sessionStorage.setItem('magi-reader-proofreading-admin-token', token);
       setStatus(result);
     } catch (error) {
       setStatus(null);
-      setMessage(error instanceof Error ? error.message : '读取人工校验状态失败');
+      setMessage(
+        error instanceof Error ? error.message : '读取人工校验状态失败',
+      );
     } finally {
       setLoading(false);
     }
-  }, [system, token]);
+  }, [token]);
 
   useEffect(() => {
-    setStatus(null);
-    setQuery('');
-    setShowVerified(false);
     if (token) void refresh();
-  }, [refresh, system, token]);
+  }, [refresh, token]);
 
   const toggle = async (storyId: string, verified: boolean) => {
     if (!token) return;
@@ -86,15 +81,18 @@ export default function MachineTranslationReviewPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          system,
           story_id: storyId,
           verified,
           note: verified
-            ? `管理员确认已完成${SYSTEM_LABELS[system]}人工校验`
-            : `管理员恢复${SYSTEM_LABELS[system]}机器翻译待校标记`,
+            ? '管理员确认已完成魔法纪录人工校验'
+            : '管理员恢复魔法纪录机器翻译待校标记',
         }),
       });
-      setMessage(verified ? `${storyId} 已取消待校高亮。` : `${storyId} 已恢复待校高亮。`);
+      setMessage(
+        verified
+          ? `${storyId} 已取消待校高亮。`
+          : `${storyId} 已恢复待校高亮。`,
+      );
       await refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : '更新标记失败');
@@ -110,7 +108,9 @@ export default function MachineTranslationReviewPage() {
       if (!showVerified && verified) return false;
       if (!normalized) return true;
       return [entry.story_id, entry.folder, entry.title, entry.source_identity]
-        .join(' ').toLowerCase().includes(normalized);
+        .join(' ')
+        .toLowerCase()
+        .includes(normalized);
     });
   }, [query, showVerified, sourceEntries, status]);
 
@@ -123,49 +123,106 @@ export default function MachineTranslationReviewPage() {
               <div className="flex gap-3 text-sm font-bold">
                 <Link href="/" className="text-emerald-700">← 返回目录</Link>
                 <Link href="/review/submissions" className="text-purple-700">投稿审核台</Link>
-                <Link href="/review/exedra-localization" className="text-violet-700">Exedra 中文生成</Link>
+                <Link href="/review/exedra-localization" className="text-violet-700">Exedra 可信中文</Link>
               </div>
-              <h1 className="mt-3 text-2xl font-black">机器翻译人工校验清单</h1>
-              <p className="mt-1 text-sm text-gray-500">魔法纪录和 Exedra 使用独立来源清单与 KV 状态；人工、Wiki 与官方繁中不会进入机翻总数。</p>
+              <h1 className="mt-3 text-2xl font-black">魔法纪录机器翻译人工校验清单</h1>
+              <p className="mt-1 text-sm text-gray-500">
+                Exedra 自动机翻计划已经取消；本页只管理魔法纪录既有机翻基线。
+              </p>
             </div>
             <div className="flex min-w-0 flex-1 gap-2 lg:max-w-xl">
-              <input type="password" value={token} onChange={event => setToken(event.target.value.trim())} className="min-w-0 flex-1 rounded-lg border px-3 py-2 font-mono text-sm" placeholder="管理员令牌或具有仓库写权限的 GitHub PAT" />
-              <button type="button" disabled={!token || loading} onClick={() => void refresh()} className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-bold text-white disabled:opacity-40">登录/刷新</button>
-            </div>
-          </div>
-          <div className="mt-5 flex gap-2">
-            {(['magireco', 'exedra'] as const).map(value => (
-              <button type="button" key={value} onClick={() => setSystem(value)} className={`rounded-lg px-4 py-2 text-sm font-black ${system === value ? value === 'exedra' ? 'bg-violet-600 text-white' : 'bg-emerald-600 text-white' : 'border bg-white text-gray-500'}`}>
-                {SYSTEM_LABELS[value]}（{value === system && status ? status.total : MACHINE_TRANSLATION_MANIFESTS[value].total}）
+              <input
+                type="password"
+                value={token}
+                onChange={event => setToken(event.target.value.trim())}
+                className="min-w-0 flex-1 rounded-lg border px-3 py-2 font-mono text-sm"
+                placeholder="管理员令牌或具有仓库写权限的 GitHub PAT"
+              />
+              <button
+                type="button"
+                disabled={!token || loading}
+                onClick={() => void refresh()}
+                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-bold text-white disabled:opacity-40"
+              >
+                登录/刷新
               </button>
-            ))}
+            </div>
           </div>
         </header>
 
-        {status && <section className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-amber-300 bg-amber-50 p-4"><p className="text-xs font-bold text-amber-700">机器翻译总数</p><p className="text-3xl font-black">{status.total}</p></div>
-          <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4"><p className="text-xs font-bold text-emerald-700">已人工校验</p><p className="text-3xl font-black">{status.verified}</p></div>
-          <div className="rounded-xl border border-red-300 bg-red-50 p-4"><p className="text-xs font-bold text-red-700">剩余待校</p><p className="text-3xl font-black">{status.remaining}</p></div>
-        </section>}
+        {status && (
+          <section className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-amber-300 bg-amber-50 p-4">
+              <p className="text-xs font-bold text-amber-700">机器翻译总数</p>
+              <p className="text-3xl font-black">{status.total}</p>
+            </div>
+            <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4">
+              <p className="text-xs font-bold text-emerald-700">已人工校验</p>
+              <p className="text-3xl font-black">{status.verified}</p>
+            </div>
+            <div className="rounded-xl border border-red-300 bg-red-50 p-4">
+              <p className="text-xs font-bold text-red-700">剩余待校</p>
+              <p className="text-3xl font-black">{status.remaining}</p>
+            </div>
+          </section>
+        )}
 
-        {message && <div role="status" className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">{message}</div>}
+        {message && (
+          <div role="status" className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">
+            {message}
+          </div>
+        )}
 
         <section className="rounded-xl border bg-white p-4 shadow-sm">
           <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <input value={query} onChange={event => setQuery(event.target.value)} className="rounded-lg border px-3 py-2 text-sm md:w-96" placeholder="搜索编号、标题或目录" />
-            <label className="flex items-center gap-2 text-sm font-bold"><input type="checkbox" checked={showVerified} onChange={event => setShowVerified(event.target.checked)} />显示已经人工校验的剧情</label>
+            <input
+              value={query}
+              onChange={event => setQuery(event.target.value)}
+              className="rounded-lg border px-3 py-2 text-sm md:w-96"
+              placeholder="搜索编号、标题或目录"
+            />
+            <label className="flex items-center gap-2 text-sm font-bold">
+              <input
+                type="checkbox"
+                checked={showVerified}
+                onChange={event => setShowVerified(event.target.checked)}
+              />
+              显示已经人工校验的剧情
+            </label>
           </div>
           <div className="max-h-[72vh] overflow-auto rounded-lg border">
             {entries.map(entry => {
               const state = status?.states?.[entry.story_id];
               const verified = state?.verified === true;
-              return <article key={entry.story_id} className={`grid gap-3 border-b p-3 md:grid-cols-[9rem_minmax(0,1fr)_10rem] md:items-center ${verified ? 'bg-emerald-50' : 'bg-amber-50'}`}>
-                <strong className="font-mono text-sm">{entry.story_id}</strong>
-                <div className="min-w-0"><p className="truncate font-bold">{entry.title || entry.source_identity}</p><p className="truncate text-xs text-gray-500">{entry.folder}</p><p className="truncate text-[10px] text-gray-400">来源：{entry.provenance || manifest.definition}</p>{state && <p className="mt-1 text-[10px] text-gray-400">{state.reviewer} · {new Date(state.reviewed_at).toLocaleString('zh-CN')} · {state.note}</p>}</div>
-                <button type="button" disabled={!token || loading} onClick={() => void toggle(entry.story_id, !verified)} className={`rounded-lg px-3 py-2 text-xs font-black text-white disabled:opacity-40 ${verified ? 'bg-amber-600' : 'bg-emerald-600'}`}>{verified ? '恢复待校标记' : '标记为人工已校'}</button>
-              </article>;
+              return (
+                <article
+                  key={entry.story_id}
+                  className={`grid gap-3 border-b p-3 md:grid-cols-[9rem_minmax(0,1fr)_10rem] md:items-center ${verified ? 'bg-emerald-50' : 'bg-amber-50'}`}
+                >
+                  <strong className="font-mono text-sm">{entry.story_id}</strong>
+                  <div className="min-w-0">
+                    <p className="truncate font-bold">{entry.title || entry.source_identity}</p>
+                    <p className="truncate text-xs text-gray-500">{entry.folder}</p>
+                    {state && (
+                      <p className="mt-1 text-[10px] text-gray-400">
+                        {state.reviewer} · {new Date(state.reviewed_at).toLocaleString('zh-CN')} · {state.note}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    disabled={!token || loading}
+                    onClick={() => void toggle(entry.story_id, !verified)}
+                    className={`rounded-lg px-3 py-2 text-xs font-black text-white disabled:opacity-40 ${verified ? 'bg-amber-600' : 'bg-emerald-600'}`}
+                  >
+                    {verified ? '恢复待校标记' : '标记为人工已校'}
+                  </button>
+                </article>
+              );
             })}
-            {!entries.length && <p className="p-8 text-center text-gray-400">当前系统没有符合筛选条件的机器翻译剧情。</p>}
+            {!entries.length && (
+              <p className="p-8 text-center text-gray-400">没有符合筛选条件的魔法纪录机翻剧情。</p>
+            )}
           </div>
         </section>
       </div>
