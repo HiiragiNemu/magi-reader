@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'wiki-preservation/static/**'
+      - 'wiki-preservation/scripts/reclassify_portals.py'
       - '.github/workflows/deploy-magireco-ui-hotfix.yml'
   workflow_dispatch:
 
@@ -24,10 +25,12 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
     steps:
-      - name: Check out UI files only
+      - name: Check out UI and portal classifier
         uses: actions/checkout@v4
         with:
-          sparse-checkout: wiki-preservation/static
+          sparse-checkout: |
+            wiki-preservation/static
+            wiki-preservation/scripts/reclassify_portals.py
           sparse-checkout-cone-mode: true
           show-progress: false
 
@@ -40,7 +43,7 @@ jobs:
           repository: HiiragiNemu/magi-reader
           run-id: 30333056699
 
-      - name: Replace application shell without rebuilding data
+      - name: Replace application shell and rebuild portal membership
         shell: bash
         run: |
           set -euo pipefail
@@ -50,6 +53,7 @@ jobs:
           cp wiki-preservation/static/ui-v4-fixes.css snapshot/ui-v4-fixes.css
           cp wiki-preservation/static/sw.js snapshot/sw.js
           cp wiki-preservation/static/ui-v4-runtime.js snapshot/ui-v4-runtime.js
+          python wiki-preservation/scripts/reclassify_portals.py snapshot
           python - <<'PY'
           import json
           from pathlib import Path
@@ -57,8 +61,10 @@ jobs:
           health = json.loads(health_path.read_text(encoding='utf-8-sig'))
           health['uiVersion'] = 4
           health['uiRevision'] = '4.3'
+          health['portalClassification'] = 'strong-category-v1'
           health['uiFeatures'] = [
               'functional-portal-routing',
+              'strong-category-portal-classification',
               'responsive-wiki-html',
               'table-scroll-containers',
               'image-lightbox',
@@ -72,11 +78,12 @@ jobs:
           Path('snapshot/ui-version.json').write_text(json.dumps({
               'uiVersion': 4,
               'uiRevision': '4.3',
+              'portalClassification': 'strong-category-v1',
               'name': 'mobile-reader-overhaul',
           }, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           PY
 
-      - name: Validate UI and retained corpus
+      - name: Validate UI, portal semantics and retained corpus
         shell: bash
         run: |
           set -euo pipefail
@@ -94,11 +101,20 @@ jobs:
           import json
           from pathlib import Path
           health = json.loads(Path('snapshot/health.json').read_text(encoding='utf-8'))
+          archive = json.loads(Path('snapshot/data/archive-index.json').read_text(encoding='utf-8'))
+          portals = {item['id']: item for item in json.loads(Path('snapshot/data/portal-index.json').read_text(encoding='utf-8'))}
+          by_title = {item['title']: item for item in archive}
           assert health['counts']['pages'] == 500, health
           assert health['counts']['images'] >= 12000, health
           assert health['uiVersion'] == 4, health
           assert health['uiRevision'] == '4.3', health
-          print(json.dumps(health, ensure_ascii=False, indent=2))
+          assert health['portalClassification'] == 'strong-category-v1', health
+          assert 100 <= portals['characters']['count'] <= 375, portals['characters']
+          assert portals['story']['count'] >= 50, portals['story']
+          assert 'characters' not in by_title['Ablaze']['portals'], by_title['Ablaze']
+          character_pages = [item for item in archive if 'characters' in item['portals']]
+          assert all('魔法纪录歌曲' not in item.get('categories', []) for item in character_pages), character_pages[:5]
+          print(json.dumps({'health': health, 'portalCounts': {k:v['count'] for k,v in portals.items()}}, ensure_ascii=False, indent=2))
           PY
 
       - name: Set up Node.js
@@ -106,14 +122,14 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Deploy UI v4.3 over existing production snapshot
+      - name: Deploy UI v4.3 and semantic portals
         run: |
           npx --yes wrangler@latest pages deploy snapshot \
             --project-name magireco-cn-reader \
             --branch main \
             --commit-dirty=true
 
-      - name: Verify uncached production UI
+      - name: Verify uncached production UI and portal classification
         shell: bash
         run: |
           set -euo pipefail
@@ -123,6 +139,7 @@ jobs:
             curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/app.js?ui=$nonce-$attempt" -o /tmp/app.js || true
             curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/ui-v4-runtime.js?ui=$nonce-$attempt" -o /tmp/runtime.js || true
             curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/ui-v4-fixes.css?ui=$nonce-$attempt" -o /tmp/fixes.css || true
+            curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/data/portal-index.json?ui=$nonce-$attempt" -o /tmp/portals.json || true
             if python - <<'PY'
           import json
           from pathlib import Path
@@ -131,15 +148,18 @@ jobs:
               app = Path('/tmp/app.js').read_text(encoding='utf-8')
               runtime = Path('/tmp/runtime.js').read_text(encoding='utf-8')
               fixes = Path('/tmp/fixes.css').read_text(encoding='utf-8')
+              portals = {x['id']: x for x in json.loads(Path('/tmp/portals.json').read_text(encoding='utf-8-sig'))}
               assert h['status'] == 'ok'
               assert h['counts']['pages'] == 500
               assert h.get('uiVersion') == 4
               assert h.get('uiRevision') == '4.3'
+              assert h.get('portalClassification') == 'strong-category-v1'
+              assert 100 <= portals['characters']['count'] <= 375
               assert 'const UI_VERSION = 4' in app
               assert '4.3-image-viewer-routing' in runtime
               assert 'event.preventDefault()' in runtime
               assert 'backdrop-filter: none' in fixes
-              print('PRODUCTION_UI_V4_3_OK', h['counts'])
+              print('PRODUCTION_UI_V4_3_SEMANTIC_OK', h['counts'], {k:v['count'] for k,v in portals.items()})
           except Exception as exc:
               print('not ready:', exc)
               raise SystemExit(1)
