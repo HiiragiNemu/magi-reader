@@ -4,11 +4,12 @@ import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { authenticateProofreadingAdmin } from '@/lib/admin-auth';
 import {
   EXEDRA_CACHE_PREFIX,
-  EXEDRA_STORIES,
   getTrustedCachedExedraLocalization,
   listCachedExedraLocalizations,
+  loadExedraStories,
   readExedraJapaneseText,
   sha256ExedraText,
+  type ExedraStoryEntry,
 } from '@/lib/exedra-localization';
 import { tryExactWikiLocalization } from '@/lib/exedra-wiki-exact';
 
@@ -19,13 +20,14 @@ const LEGACY_EXEDRA_REVIEW_PREFIX = 'proofreading:machine-review:exedra:';
 const errorResponse = (error: string, status: number) =>
   NextResponse.json({ error }, { status, headers: NO_STORE_HEADERS });
 
-const candidates = EXEDRA_STORIES
-  .filter(entry =>
-    entry.category === 'exedra_character' && !entry.path_cn && entry.path_jp,
-  )
-  .sort((left, right) =>
-    left.id.localeCompare(right.id, 'en', { numeric: true }),
-  );
+const candidatesFor = (stories: ExedraStoryEntry[]) =>
+  stories
+    .filter(entry =>
+      entry.category === 'exedra_character' && !entry.path_cn && entry.path_jp,
+    )
+    .sort((left, right) =>
+      left.id.localeCompare(right.id, 'en', { numeric: true }),
+    );
 
 const listKeys = async (kv: SubmissionKvNamespace, prefix: string) => {
   const names: string[] = [];
@@ -53,7 +55,11 @@ const legacyMachineCacheKeys = async (kv: SubmissionKvNamespace) => {
   return result;
 };
 
-const summary = async (env: CloudflareEnv) => {
+const summary = async (
+  env: CloudflareEnv,
+  stories: ExedraStoryEntry[],
+) => {
+  const candidates = candidatesFor(stories);
   const cached = env.SUBMISSIONS_KV
     ? await listCachedExedraLocalizations(env.SUBMISSIONS_KV)
     : [];
@@ -65,7 +71,7 @@ const summary = async (env: CloudflareEnv) => {
     missKeys.map(key => key.slice(WIKI_MISS_PREFIX.length)),
   );
   const counts = {
-    local_human: EXEDRA_STORIES.filter(entry => Boolean(entry.path_cn)).length,
+    local_human: stories.filter(entry => Boolean(entry.path_cn)).length,
     official_tw_human: cached.filter(
       record => record.provenance === 'official_tw_human',
     ).length,
@@ -80,7 +86,7 @@ const summary = async (env: CloudflareEnv) => {
     ? (await legacyMachineCacheKeys(env.SUBMISSIONS_KV)).length
     : 0;
   return {
-    total: EXEDRA_STORIES.length,
+    total: stories.length,
     wiki_candidates: candidates.length,
     wiki_reviewed: reviewed,
     wiki_missing: missIds.size,
@@ -97,8 +103,9 @@ export async function GET(request: NextRequest) {
   if (!authentication.ok) {
     return errorResponse(authentication.error, authentication.status);
   }
+  const stories = await loadExedraStories({ request, env });
   return NextResponse.json(
-    { reviewer: authentication.identity.label, ...(await summary(env)) },
+    { reviewer: authentication.identity.label, ...(await summary(env, stories)) },
     { headers: NO_STORE_HEADERS },
   );
 }
@@ -125,6 +132,9 @@ export async function POST(request: NextRequest) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
     return errorResponse('批处理请求格式错误', 400);
   }
+
+  const stories = await loadExedraStories({ request, env });
+  const candidates = candidatesFor(stories);
   const record = body as Record<string, unknown>;
   const cursor = Number.isSafeInteger(record.cursor) && Number(record.cursor) >= 0
     ? Number(record.cursor)
@@ -194,7 +204,7 @@ export async function POST(request: NextRequest) {
       next_cursor: nextCursor < candidates.length ? nextCursor : null,
       complete: nextCursor >= candidates.length,
       processed: results,
-      summary: await summary(env),
+      summary: await summary(env, stories),
     },
     { headers: NO_STORE_HEADERS },
   );
@@ -209,6 +219,7 @@ export async function DELETE(request: NextRequest) {
   if (!env.SUBMISSIONS_KV) {
     return errorResponse('Exedra 中文缓存 KV 尚未配置', 503);
   }
+  const stories = await loadExedraStories({ request, env });
   const scope = request.nextUrl.searchParams.get('scope');
   let keys: string[];
   if (scope === 'legacy-machine') {
@@ -221,9 +232,15 @@ export async function DELETE(request: NextRequest) {
   } else {
     return errorResponse('不支持的清理范围', 400);
   }
-  for (const key of keys) await env.SUBMISSIONS_KV.delete(key);
+  const uniqueKeys = [...new Set(keys)];
+  for (const key of uniqueKeys) await env.SUBMISSIONS_KV.delete(key);
   return NextResponse.json(
-    { success: true, scope, deleted: keys.length, summary: await summary(env) },
+    {
+      success: true,
+      scope,
+      deleted: uniqueKeys.length,
+      summary: await summary(env, stories),
+    },
     { headers: NO_STORE_HEADERS },
   );
 }
