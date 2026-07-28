@@ -1,4 +1,4 @@
-name: Deploy Magireco Reader UI v4
+name: Deploy Magireco Structured Reader v5
 
 on:
   pull_request:
@@ -6,6 +6,7 @@ on:
     paths:
       - 'wiki-preservation/static/**'
       - 'wiki-preservation/scripts/reclassify_portals.py'
+      - 'wiki-preservation/scripts/extract_structured_characters.py'
       - '.github/workflows/deploy-magireco-ui-hotfix.yml'
   workflow_dispatch:
 
@@ -14,27 +15,28 @@ permissions:
   actions: read
 
 concurrency:
-  group: magireco-cn-reader-ui-v4
+  group: magireco-cn-reader-structured-v5
   cancel-in-progress: true
 
 jobs:
-  deploy-ui:
+  deploy-structured-reader:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
     steps:
-      - name: Check out UI and portal classifier
+      - name: Check out structured UI and extractors
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
             wiki-preservation/static
             wiki-preservation/scripts/reclassify_portals.py
+            wiki-preservation/scripts/extract_structured_characters.py
           sparse-checkout-cone-mode: true
           show-progress: false
 
-      - name: Download verified 500-page production snapshot
+      - name: Download verified 500-page fidelity snapshot
         uses: actions/download-artifact@v4
         with:
           name: magireco-cn-reader-500-page-parallel-snapshot
@@ -43,7 +45,15 @@ jobs:
           repository: HiiragiNemu/magi-reader
           run-id: 30333056699
 
-      - name: Replace application shell and rebuild portal membership
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install structured extraction dependencies
+        run: python -m pip install --disable-pip-version-check beautifulsoup4 lxml
+
+      - name: Replace application shell and build structured datasets
         shell: bash
         run: |
           set -euo pipefail
@@ -51,70 +61,85 @@ jobs:
           cp wiki-preservation/static/app.js snapshot/app.js
           cp wiki-preservation/static/styles.css snapshot/styles.css
           cp wiki-preservation/static/ui-v4-fixes.css snapshot/ui-v4-fixes.css
-          cp wiki-preservation/static/sw.js snapshot/sw.js
           cp wiki-preservation/static/ui-v4-runtime.js snapshot/ui-v4-runtime.js
+          cp wiki-preservation/static/structured-ui.js snapshot/structured-ui.js
+          cp wiki-preservation/static/structured-ui.css snapshot/structured-ui.css
+          cp wiki-preservation/static/sw.js snapshot/sw.js
           python wiki-preservation/scripts/reclassify_portals.py snapshot
+          python wiki-preservation/scripts/extract_structured_characters.py snapshot
           python - <<'PY'
           import json
           from pathlib import Path
           health_path = Path('snapshot/health.json')
           health = json.loads(health_path.read_text(encoding='utf-8-sig'))
-          health['uiVersion'] = 4
-          health['uiRevision'] = '4.3'
-          health['portalClassification'] = 'strong-category-v1'
+          structured = json.loads(Path('snapshot/data/structured/manifest.json').read_text(encoding='utf-8'))
+          health['uiVersion'] = 5
+          health['uiRevision'] = '5.0'
+          health['portalClassification'] = 'wiki-articles-only'
+          health['structured'] = structured
           health['uiFeatures'] = [
-              'functional-portal-routing',
-              'strong-category-portal-classification',
+              'structured-character-catalog',
+              'structured-character-profiles',
+              'native-audio-voice-player',
+              'voice-costume-and-group-filters',
+              'wiki-article-preservation-layer',
               'responsive-wiki-html',
               'table-scroll-containers',
               'image-lightbox',
-              'image-file-link-interception',
               'system-light-dark-eye-oled-themes',
               'font-and-content-width-controls',
-              'explicit-mobile-display-menu',
-              'viewport-safe-display-panel',
           ]
           health_path.write_text(json.dumps(health, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           Path('snapshot/ui-version.json').write_text(json.dumps({
-              'uiVersion': 4,
-              'uiRevision': '4.3',
-              'portalClassification': 'strong-category-v1',
-              'name': 'mobile-reader-overhaul',
+              'uiVersion': 5,
+              'uiRevision': '5.0',
+              'name': 'structured-character-and-voice-reader',
+              'structured': structured,
           }, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           PY
 
-      - name: Validate UI, portal semantics and retained corpus
+      - name: Validate characters voices UI and retained corpus
         shell: bash
         run: |
           set -euo pipefail
           node --check snapshot/app.js
           node --check snapshot/ui-v4-runtime.js
-          grep -q 'const UI_VERSION = 4' snapshot/app.js
-          grep -q 'data-theme="eye"' snapshot/styles.css
-          grep -q 'data-theme="oled"' snapshot/styles.css
-          grep -q 'data-portal' snapshot/app.js
-          grep -q 'ui-v4-runtime.js?v=4.3' snapshot/index.html
-          grep -q 'ui-v4-fixes.css?v=4.3' snapshot/index.html
-          grep -q '4.3-image-viewer-routing' snapshot/ui-v4-runtime.js
-          grep -q 'backdrop-filter: none' snapshot/ui-v4-fixes.css
+          node --check snapshot/structured-ui.js
+          grep -q 'structured-ui.js?v=5.0' snapshot/index.html
+          grep -q 'structured-ui.css?v=5.0' snapshot/index.html
+          grep -q 'CHARACTER VOICE ARCHIVE' snapshot/structured-ui.js
+          grep -q 'audio controls preload="none"' snapshot/structured-ui.js
           python - <<'PY'
           import json
           from pathlib import Path
-          health = json.loads(Path('snapshot/health.json').read_text(encoding='utf-8'))
-          archive = json.loads(Path('snapshot/data/archive-index.json').read_text(encoding='utf-8'))
-          portals = {item['id']: item for item in json.loads(Path('snapshot/data/portal-index.json').read_text(encoding='utf-8'))}
-          by_title = {item['title']: item for item in archive}
+          root = Path('snapshot')
+          health = json.loads((root / 'health.json').read_text(encoding='utf-8'))
+          manifest = json.loads((root / 'data/structured/manifest.json').read_text(encoding='utf-8'))
+          characters = json.loads((root / 'data/structured/characters.json').read_text(encoding='utf-8'))
+          voices = json.loads((root / 'data/structured/voice-index.json').read_text(encoding='utf-8'))
+          by_title = {item['title']: item for item in characters}
+          titles = set(by_title)
           assert health['counts']['pages'] == 500, health
           assert health['counts']['images'] >= 12000, health
-          assert health['uiVersion'] == 4, health
-          assert health['uiRevision'] == '4.3', health
-          assert health['portalClassification'] == 'strong-category-v1', health
-          assert 100 <= portals['characters']['count'] <= 375, portals['characters']
-          assert portals['story']['count'] >= 50, portals['story']
-          assert 'characters' not in by_title['Ablaze']['portals'], by_title['Ablaze']
-          character_pages = [item for item in archive if 'characters' in item['portals']]
-          assert all('魔法纪录歌曲' not in item.get('categories', []) for item in character_pages), character_pages[:5]
-          print(json.dumps({'health': health, 'portalCounts': {k:v['count'] for k,v in portals.items()}}, ensure_ascii=False, indent=2))
+          assert health['uiVersion'] == 5, health
+          assert manifest['characters'] >= 235, manifest
+          assert manifest['characterPages'] >= 225, manifest
+          assert manifest['organizations'] >= 6, manifest
+          assert manifest['voiceCharacters'] >= 220, manifest
+          assert manifest['voiceLines'] >= 16000, manifest
+          assert manifest['voiceWithAudio'] >= 16000, manifest
+          assert {'七海八千代', '环伊吕波', '三穗野星罗'} <= titles, sorted(titles)[:20]
+          assert 'Ablaze' not in titles
+          assert not any('Music Collection' in title or 'Winter Recollection' in title for title in titles)
+          yachiyo = by_title['七海八千代']
+          assert yachiyo['voiceCount'] >= 70, yachiyo
+          voice_path = root / 'data/structured/voice' / f"{yachiyo['voiceKey']}.json"
+          lines = json.loads(voice_path.read_text(encoding='utf-8'))
+          assert len(lines) >= 70
+          assert any(str(item.get('audioUrl', '')).endswith('.mp3') for item in lines)
+          assert any(item.get('voiceId') == 'Vo_char_1002_00_01' for item in lines)
+          assert len(voices) == manifest['voiceCharacters']
+          print(json.dumps({'health': health, 'structured': manifest, 'yachiyoSample': lines[:2]}, ensure_ascii=False, indent=2))
           PY
 
       - name: Set up Node.js
@@ -122,44 +147,46 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Deploy UI v4.3 and semantic portals
+      - name: Deploy structured reader v5
         run: |
           npx --yes wrangler@latest pages deploy snapshot \
             --project-name magireco-cn-reader \
             --branch main \
             --commit-dirty=true
 
-      - name: Verify uncached production UI and portal classification
+      - name: Verify uncached production structured datasets
         shell: bash
         run: |
           set -euo pipefail
           nonce="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$(date +%s)"
-          for attempt in $(seq 1 40); do
-            curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/health.json?ui=$nonce-$attempt" -o /tmp/health.json || true
-            curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/app.js?ui=$nonce-$attempt" -o /tmp/app.js || true
-            curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/ui-v4-runtime.js?ui=$nonce-$attempt" -o /tmp/runtime.js || true
-            curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/ui-v4-fixes.css?ui=$nonce-$attempt" -o /tmp/fixes.css || true
-            curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/data/portal-index.json?ui=$nonce-$attempt" -o /tmp/portals.json || true
+          for attempt in $(seq 1 50); do
+            for file in health.json index.html structured-ui.js data/structured/manifest.json data/structured/characters.json data/structured/voice-index.json; do
+              safe=$(printf '%s' "$file" | tr '/.' '__')
+              curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' \
+                "https://magireco-cn-reader.pages.dev/$file?v=$nonce-$attempt" -o "/tmp/$safe" || true
+            done
             if python - <<'PY'
           import json
           from pathlib import Path
           try:
-              h = json.loads(Path('/tmp/health.json').read_text(encoding='utf-8-sig'))
-              app = Path('/tmp/app.js').read_text(encoding='utf-8')
-              runtime = Path('/tmp/runtime.js').read_text(encoding='utf-8')
-              fixes = Path('/tmp/fixes.css').read_text(encoding='utf-8')
-              portals = {x['id']: x for x in json.loads(Path('/tmp/portals.json').read_text(encoding='utf-8-sig'))}
-              assert h['status'] == 'ok'
-              assert h['counts']['pages'] == 500
-              assert h.get('uiVersion') == 4
-              assert h.get('uiRevision') == '4.3'
-              assert h.get('portalClassification') == 'strong-category-v1'
-              assert 100 <= portals['characters']['count'] <= 375
-              assert 'const UI_VERSION = 4' in app
-              assert '4.3-image-viewer-routing' in runtime
-              assert 'event.preventDefault()' in runtime
-              assert 'backdrop-filter: none' in fixes
-              print('PRODUCTION_UI_V4_3_SEMANTIC_OK', h['counts'], {k:v['count'] for k,v in portals.items()})
+              health = json.loads(Path('/tmp/health_json').read_text(encoding='utf-8-sig'))
+              index = Path('/tmp/index_html').read_text(encoding='utf-8')
+              ui = Path('/tmp/structured-ui_js').read_text(encoding='utf-8')
+              manifest = json.loads(Path('/tmp/data_structured_manifest_json').read_text(encoding='utf-8-sig'))
+              characters = json.loads(Path('/tmp/data_structured_characters_json').read_text(encoding='utf-8-sig'))
+              voice_index = json.loads(Path('/tmp/data_structured_voice-index_json').read_text(encoding='utf-8-sig'))
+              titles = {item['title'] for item in characters}
+              assert health['status'] == 'ok'
+              assert health['uiVersion'] == 5
+              assert health['counts']['pages'] == 500
+              assert manifest['characters'] >= 235
+              assert manifest['voiceWithAudio'] >= 16000
+              assert len(voice_index) >= 220
+              assert {'七海八千代', '环伊吕波'} <= titles
+              assert 'Ablaze' not in titles
+              assert 'structured-ui.js?v=5.0' in index
+              assert 'CHARACTER VOICE ARCHIVE' in ui
+              print('PRODUCTION_STRUCTURED_V5_OK', manifest)
           except Exception as exc:
               print('not ready:', exc)
               raise SystemExit(1)
