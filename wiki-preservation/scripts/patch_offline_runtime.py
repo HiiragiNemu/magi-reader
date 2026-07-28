@@ -122,10 +122,18 @@ self.addEventListener('activate', (event) => {{
   );
 }});
 
+async function matchCache(cacheName, request) {{
+  const cache = await caches.open(cacheName);
+  return cache.match(request, {{ ignoreSearch: true }});
+}}
+
+async function matchPrecache(request) {{
+  return matchCache(SHELL, request);
+}}
+
 async function cachedShell(request) {{
-  const cache = await caches.open(SHELL);
-  return (await cache.match(request, {{ ignoreSearch: true }}))
-    || (await cache.match(FALLBACK_URL, {{ ignoreSearch: true }}));
+  return (await matchPrecache(request))
+    || (await matchPrecache(FALLBACK_URL));
 }}
 
 async function networkFirst(request) {{
@@ -144,7 +152,8 @@ async function networkFirst(request) {{
 
 async function staleWhileRevalidate(request, cacheName) {{
   const cache = await caches.open(cacheName);
-  const cached = await cache.match(request, {{ ignoreSearch: true }});
+  const cached = (await cache.match(request, {{ ignoreSearch: true }}))
+    || (await matchPrecache(request));
   const refresh = fetch(request)
     .then(async (response) => {{
       if (response.ok) await cache.put(request, response.clone());
