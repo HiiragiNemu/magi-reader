@@ -17,43 +17,56 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Probe API and HTML endpoints
+      - name: Warm browser session then probe API
         shell: bash
         run: |
-          set +e
-          urls=(
-            'https://magireco.moe/api.php?action=query&meta=siteinfo&format=json&formatversion=2'
-            'https://www.magireco.moe/api.php?action=query&meta=siteinfo&format=json&formatversion=2'
-            'https://magireco.moe/w/api.php?action=query&meta=siteinfo&format=json&formatversion=2'
-            'https://www.magireco.moe/w/api.php?action=query&meta=siteinfo&format=json&formatversion=2'
+          set -euo pipefail
+          ua='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/138.0 Safari/537.36'
+          jar=/tmp/magireco-cookies.txt
+          rm -f "$jar"
+
+          echo '===== warm ordinary homepage ====='
+          curl --compressed --location --fail --show-error \
+            --max-time 45 \
+            --cookie-jar "$jar" \
+            --cookie "$jar" \
+            --header 'Accept: text/html,application/xhtml+xml,*/*' \
+            --header 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.5' \
+            --user-agent "$ua" \
+            --output /tmp/home \
+            --dump-header /tmp/home-headers \
             'https://magireco.moe/wiki/%E9%A6%96%E9%A1%B5'
-            'https://magireco.moe/index.php?title=Special:Export&pages=%E9%A6%96%E9%A1%B5'
-            'https://magireco.moe/index.php?title=Special:AllPages'
-            'https://magireco.moe/sitemap.xml'
-            'https://magireco.moe/robots.txt'
-          )
-          for url in "${urls[@]}"; do
-            echo
-            echo "=============================="
-            echo "$url"
-            curl --compressed --location \
-              --max-time 45 \
-              --connect-timeout 15 \
-              --dump-header /tmp/headers \
-              --output /tmp/body \
-              --write-out 'curl_exit=%{exitcode} http=%{http_code} remote=%{remote_ip} content_type=%{content_type} redirect=%{redirect_url}\n' \
-              --header 'Accept: application/json,text/html,application/xhtml+xml,*/*' \
-              --header 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.5' \
-              --header 'Referer: https://magireco.moe/' \
-              --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/138.0 Safari/537.36' \
-              "$url"
-            echo '--- headers ---'
-            sed -n '1,30p' /tmp/headers
-            echo '--- body type/size ---'
-            file /tmp/body
-            wc -c /tmp/body
-            echo '--- body preview ---'
-            head -c 800 /tmp/body
-            echo
-          done
-          exit 0
+          sed -n '1,25p' /tmp/home-headers
+          echo 'cookie jar:'
+          cat "$jar"
+          echo 'homepage bytes:'
+          wc -c /tmp/home
+
+          echo '===== API after homepage ====='
+          url='https://magireco.moe/api.php?action=query&meta=siteinfo&siprop=general%7Cstatistics&format=json&formatversion=2'
+          status=$(curl --compressed --location --silent --show-error \
+            --max-time 45 \
+            --cookie-jar "$jar" \
+            --cookie "$jar" \
+            --header 'Accept: application/json,text/plain,*/*' \
+            --header 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.5' \
+            --header 'Referer: https://magireco.moe/wiki/%E9%A6%96%E9%A1%B5' \
+            --user-agent "$ua" \
+            --output /tmp/api \
+            --dump-header /tmp/api-headers \
+            --write-out '%{http_code}' \
+            "$url")
+          echo "HTTP $status"
+          sed -n '1,25p' /tmp/api-headers
+          head -c 1200 /tmp/api
+          echo
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('/tmp/api').read_text(encoding='utf-8-sig'))
+          site = data.get('query', {}).get('general', {}).get('sitename')
+          stats = data.get('query', {}).get('statistics', {})
+          print('site:', site)
+          print('statistics:', stats)
+          assert site
+          PY
