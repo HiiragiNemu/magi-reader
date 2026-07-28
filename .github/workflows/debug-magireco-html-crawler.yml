@@ -1,0 +1,62 @@
+name: Debug Magireco HTML Crawler
+
+on:
+  push:
+    branches: [deploy/magireco-cn-reader]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: magireco-html-crawler-debug-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: wiki-preservation
+          sparse-checkout-cone-mode: true
+          show-progress: false
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml bleach
+      - name: Run five-page crawler and capture all output
+        id: crawl
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          python wiki-preservation/scripts/build_html_snapshot.py \
+            --output wiki-preservation/debug-dist \
+            --max-pages 5 \
+            --max-requests 30 \
+            --pause 0.01 \
+            > wiki-preservation/build.log 2>&1
+          status=$?
+          echo "$status" > wiki-preservation/build-exit-code.txt
+          echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          tail -n 80 wiki-preservation/build.log || true
+          exit 0
+      - name: Upload crawler diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-html-crawler-diagnostics
+          path: |
+            wiki-preservation/build.log
+            wiki-preservation/build-exit-code.txt
+            wiki-preservation/debug-dist
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Require successful diagnostic crawl
+        shell: bash
+        run: |
+          test "$(cat wiki-preservation/build-exit-code.txt)" = "0"
