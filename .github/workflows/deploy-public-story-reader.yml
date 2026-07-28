@@ -9,6 +9,7 @@ on:
       - 'build_search_index_v6.py'
       - 'prepare_public_story_reader.py'
       - 'validate_public_story_corpus.py'
+      - 'publish_raw_story_json.py'
       - 'magireco-source-master/**'
       - 'magireco-translate-data-master/**'
       - 'magiraexedra-source-master/**'
@@ -57,16 +58,34 @@ jobs:
           python prepare_public_story_reader.py --website website
           grep -q 'PUBLIC_STORY_ARCHIVE' website/app/page.tsx
           grep -q '魔法纪录与 Magia Exedra 剧情阅读器' website/app/layout.tsx
+          grep -q 'href="/raw-json"' website/app/page.tsx
+          grep -q 'href="/raw-json"' 'website/app/reader/[id]/page.tsx'
 
       - name: Run scenario pipeline tests
         run: python -m unittest discover -s tests -p 'test_*.py'
 
-      - name: Generate and validate complete story catalogue
+      - name: Generate complete catalogue and raw JSON archive
         run: |
           python generate_story_index.py
+          python publish_raw_story_json.py --repo . --public website/public \
+            | tee public-raw-json-report.json
           python validate_public_story_corpus.py \
             --public website/public \
             --report public-story-corpus-report.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path('website/public/raw_story_json_manifest.json').read_text(encoding='utf-8'))
+          counts = manifest.get('counts') or {}
+          if manifest.get('entries', 0) <= 0:
+              raise SystemExit(f'raw JSON archive is empty: {manifest}')
+          for required in ('magireco_jp', 'magireco_cn', 'exedra_jp'):
+              if counts.get(required, 0) <= 0:
+                  raise SystemExit(f'raw JSON language tree missing: {required}: {counts}')
+          if not Path('website/app/raw-json/page.tsx').is_file():
+              raise SystemExit('raw JSON browser page is missing')
+          print('RAW_JSON_PUBLIC_ARCHIVE_OK', manifest['entries'], manifest['bytes'], counts)
+          PY
 
       - name: Install and validate website
         working-directory: website
@@ -140,24 +159,27 @@ jobs:
         working-directory: website
         run: npx opennextjs-cloudflare deploy --config .wrangler-story-public.jsonc
 
-      - name: Wait for both public story systems
+      - name: Wait for both public story systems and raw JSON
         env:
           SITE_URL: https://${{ env.STORY_WORKER_HOSTNAME }}
         shell: bash
         run: |
           set -euo pipefail
           ready=false
-          for attempt in $(seq 1 60); do
+          for attempt in $(seq 1 80); do
             home_code=$(curl -L --silent --show-error -o "$RUNNER_TEMP/story-home.html" -w '%{http_code}' "$SITE_URL/?probe=${GITHUB_RUN_ID}-$attempt")
             index_code=$(curl -L --silent --show-error -o "$RUNNER_TEMP/story-index.json" -w '%{http_code}' "$SITE_URL/story_index.json?probe=${GITHUB_RUN_ID}-$attempt")
-            if [ "$home_code" = 200 ] && [ "$index_code" = 200 ]; then
+            raw_code=$(curl -L --silent --show-error -o "$RUNNER_TEMP/raw-json-manifest.json" -w '%{http_code}' "$SITE_URL/raw_story_json_manifest.json?probe=${GITHUB_RUN_ID}-$attempt")
+            if [ "$home_code" = 200 ] && [ "$index_code" = 200 ] && [ "$raw_code" = 200 ]; then
               if python - <<'PY'
           import json, os
           from pathlib import Path
-          stories = json.loads(Path(os.environ['RUNNER_TEMP'], 'story-index.json').read_text(encoding='utf-8'))
+          root = Path(os.environ['RUNNER_TEMP'])
+          stories = json.loads((root / 'story-index.json').read_text(encoding='utf-8'))
+          raw = json.loads((root / 'raw-json-manifest.json').read_text(encoding='utf-8'))
           magireco = sum(not str(item.get('category', '')).startswith('exedra_') for item in stories)
           exedra = sum(str(item.get('category', '')).startswith('exedra_') for item in stories)
-          raise SystemExit(0 if stories and magireco and exedra else 1)
+          raise SystemExit(0 if stories and magireco and exedra and raw.get('entries', 0) > 0 else 1)
           PY
               then
                 ready=true
@@ -166,7 +188,7 @@ jobs:
             fi
             sleep 5
           done
-          [ "$ready" = true ] || { echo 'Public story reader did not expose both systems.' >&2; exit 1; }
+          [ "$ready" = true ] || { echo 'Public story reader did not expose both systems and raw JSON.' >&2; exit 1; }
 
       - name: Validate public sources and disabled management
         env:
@@ -176,7 +198,9 @@ jobs:
           import json, os, urllib.request
           from pathlib import Path
           base = os.environ['SITE_URL']
-          stories = json.loads(Path(os.environ['RUNNER_TEMP'], 'story-index.json').read_text(encoding='utf-8'))
+          root = Path(os.environ['RUNNER_TEMP'])
+          stories = json.loads((root / 'story-index.json').read_text(encoding='utf-8'))
+          raw = json.loads((root / 'raw-json-manifest.json').read_text(encoding='utf-8'))
           selected = []
           for is_exedra in (False, True):
               item = next(value for value in stories if bool(str(value.get('category', '')).startswith('exedra_')) is is_exedra and (value.get('path_cn') or value.get('path_jp')))
@@ -189,11 +213,15 @@ jobs:
                       payload = response.read()
                   if len(payload) < 10:
                       raise SystemExit(f'empty story source: {item.get("id")} {path}')
+          raw_file = next(item for item in raw['files'] if item.get('game') == 'exedra' and item.get('language') == 'jp')
+          with urllib.request.urlopen(base + raw_file['path'], timeout=60) as response:
+              raw_payload = response.read()
+          json.loads(raw_payload.decode('utf-8-sig'))
           with urllib.request.urlopen(base + '/api/proofreading/config', timeout=60) as response:
               config = json.load(response)
           if config.get('submissions_enabled') or config.get('github_admin_auth'):
               raise SystemExit(f'public archive unexpectedly enabled management: {config}')
-          print('PUBLIC_STORY_SOURCES_OK', [item.get('id') for item in selected])
+          print('PUBLIC_STORY_SOURCES_OK', [item.get('id') for item in selected], raw_file['path'])
           PY
 
       - name: Install Chromium and run browser regression
@@ -211,6 +239,7 @@ jobs:
           name: public-magia-story-reader-evidence
           path: |
             public-story-corpus-report.json
+            public-raw-json-report.json
             website/public-story-evidence
           if-no-files-found: warn
           retention-days: 14
