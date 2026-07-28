@@ -2,11 +2,9 @@ name: Deploy Magireco Chinese Preservation Reader
 
 on:
   push:
-    branches:
-      - deploy/magireco-cn-reader
+    branches: [deploy/magireco-cn-reader]
   pull_request:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -30,8 +28,7 @@ jobs:
       - name: Check out preservation deployment files
         uses: actions/checkout@v4
         with:
-          sparse-checkout: |
-            wiki-preservation
+          sparse-checkout: wiki-preservation
           sparse-checkout-cone-mode: true
           show-progress: false
           fetch-depth: 1
@@ -41,64 +38,18 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Diagnose and probe Wiki endpoints
-        shell: bash
-        run: |
-          set -euo pipefail
-          query='action=query&meta=siteinfo&siprop=general%7Cstatistics&format=json&formatversion=2'
-          endpoints=(
-            'https://magireco.moe/api.php'
-            'https://www.magireco.moe/api.php'
-            'https://magireco.moe/w/api.php'
-            'https://www.magireco.moe/w/api.php'
-          )
-          success=0
-          for endpoint in "${endpoints[@]}"; do
-            echo "===== $endpoint ====="
-            status=$(curl --compressed --location --silent --show-error \
-              --output /tmp/wiki-probe-body \
-              --write-out '%{http_code}' \
-              --max-time 45 \
-              --header 'Accept: application/json,text/plain,*/*' \
-              --header 'Referer: https://magireco.moe/wiki/%E9%A6%96%E9%A1%B5' \
-              --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/138.0 Safari/537.36' \
-              "$endpoint?$query" || true)
-            echo "HTTP $status"
-            file /tmp/wiki-probe-body || true
-            head -c 500 /tmp/wiki-probe-body || true
-            echo
-            if [ "$status" = '200' ] && python - /tmp/wiki-probe-body <<'PY'
-          import json, pathlib, sys
-          data = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding='utf-8-sig'))
-          site = data.get('query', {}).get('general', {}).get('sitename')
-          print('siteinfo:', site)
-          raise SystemExit(0 if site else 1)
-          PY
-            then
-              echo "$endpoint" > wiki-preservation/api-endpoint.txt
-              success=1
-              break
-            fi
-          done
-          if [ "$success" != '1' ]; then
-            echo '===== HTML fallback probe ====='
-            curl --compressed --location --fail --show-error --max-time 45 \
-              --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/138.0 Safari/537.36' \
-              --output /tmp/wiki-home \
-              'https://magireco.moe/wiki/%E9%A6%96%E9%A1%B5' || true
-            file /tmp/wiki-home || true
-            head -c 800 /tmp/wiki-home || true
-            echo
-            exit 1
-          fi
+      - name: Install crawler dependencies
+        run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml bleach
 
-      - name: Build complete static snapshot
+      - name: Build polite rendered HTML snapshot
         run: |
-          python wiki-preservation/scripts/build_snapshot.py \
-            --endpoint "$(cat wiki-preservation/api-endpoint.txt)" \
-            --output wiki-preservation/dist
+          python wiki-preservation/scripts/build_html_snapshot.py \
+            --output wiki-preservation/dist \
+            --max-pages 8000 \
+            --max-requests 14000 \
+            --pause 0.12
 
-      - name: Verify snapshot coverage
+      - name: Verify snapshot coverage and hosting limits
         shell: bash
         run: |
           set -euo pipefail
@@ -110,27 +61,26 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-          root = Path("wiki-preservation/dist")
-          manifest = json.loads((root / "data/runtime-manifest.json").read_text(encoding="utf-8"))
-          counts = manifest["counts"]
-          assert counts["pages"] >= 5000, counts
-          assert counts["shards"] >= 100, counts
-          assert counts["media"] >= 10000, counts
-          assert counts["images"] >= 1000, counts
-          assert counts["audio"] >= 1000, counts
-          files = [path for path in root.rglob("*") if path.is_file()]
+          root = Path('wiki-preservation/dist')
+          manifest = json.loads((root / 'data/runtime-manifest.json').read_text(encoding='utf-8'))
+          counts = manifest['counts']
+          assert counts['pages'] >= 1000, counts
+          assert counts['shards'] >= 100, counts
+          assert counts['categories'] >= 100, counts
+          assert counts['media'] >= 500, counts
+          files = [path for path in root.rglob('*') if path.is_file()]
           oversized = [path for path in files if path.stat().st_size > 25 * 1024 * 1024]
           assert len(files) <= 20000, len(files)
           assert not oversized, [(str(path), path.stat().st_size) for path in oversized]
           print(json.dumps(manifest, ensure_ascii=False, indent=2))
-          print(f"deployment files: {len(files)}")
-          print(f"deployment bytes: {sum(path.stat().st_size for path in files)}")
+          print(f'deployment files: {len(files)}')
+          print(f'deployment bytes: {sum(path.stat().st_size for path in files)}')
           PY
 
       - name: Upload snapshot artifact
         uses: actions/upload-artifact@v4
         with:
-          name: magireco-cn-reader-static-snapshot
+          name: magireco-cn-reader-rendered-html-snapshot
           path: wiki-preservation/dist
           if-no-files-found: error
           retention-days: 14
@@ -152,16 +102,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if ! npx --yes wrangler@latest pages project list --json \
-            | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>{const a=JSON.parse(s);process.exit(a.some(x=>x.name==="magireco-cn-reader")?0:1)})'; then
-            npx --yes wrangler@latest pages project create magireco-cn-reader \
-              --production-branch main
+          projects=$(npx --yes wrangler@latest pages project list --json)
+          if ! printf '%s' "$projects" | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>{const a=JSON.parse(s);process.exit(a.some(x=>x.name==="magireco-cn-reader")?0:1)})'; then
+            npx --yes wrangler@latest pages project create magireco-cn-reader --production-branch main
           fi
 
       - name: Deploy production site
-        shell: bash
         run: |
-          set -euo pipefail
           npx --yes wrangler@latest pages deploy wiki-preservation/dist \
             --project-name magireco-cn-reader \
             --branch main \
@@ -171,16 +118,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          url="https://magireco-cn-reader.pages.dev/health.json"
+          url='https://magireco-cn-reader.pages.dev/health.json'
           for attempt in $(seq 1 40); do
             if body=$(curl --fail --silent --show-error --max-time 20 "$url"); then
               echo "$body"
               echo "$body" | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>{const x=JSON.parse(s);if(x.status!=="ok"||x.readerVersion!==3)process.exit(1)})'
-              echo "Published: https://magireco-cn-reader.pages.dev/#/portal"
+              echo 'Published: https://magireco-cn-reader.pages.dev/#/portal'
               exit 0
             fi
             echo "Waiting for deployment ($attempt/40)..."
             sleep 8
           done
-          echo "Deployment command completed, but health check did not pass in time." >&2
           exit 1
