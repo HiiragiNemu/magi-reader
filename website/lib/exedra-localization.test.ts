@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  augmentExedraCnPaths,
-  exedraDynamicCnPath,
+  parseCachedExedraLocalization,
   parseExedraTxt,
+  serializeExedraSections,
 } from './exedra-localization.ts';
 
 test('Exedra TXT parser preserves exact section order and dialogue kinds', () => {
@@ -19,8 +19,12 @@ test('Exedra TXT parser preserves exact section order and dialogue kinds', () =>
   assert.equal(sections.length, 2);
   assert.equal(sections[0].number, 1);
   assert.equal(sections[0].source, 'character_iroha_1.json');
-  assert.deepEqual(sections[0].blocks.map(block => block.kind), ['dialogue', 'narration']);
+  assert.deepEqual(
+    sections[0].blocks.map(block => block.kind),
+    ['dialogue', 'narration'],
+  );
   assert.equal(sections[1].blocks[0].speaker, '七海 やちよ');
+  assert.equal(parseExedraTxt(serializeExedraSections(sections)).length, 2);
 });
 
 test('Exedra TXT parser rejects skipped section numbers', () => {
@@ -32,36 +36,23 @@ test('Exedra TXT parser rejects skipped section numbers', () => {
   ].join('\n')), /Section 编号不连续/u);
 });
 
-test('dynamic CN path is added only when Exedra has JP but no local CN', () => {
-  const values = augmentExedraCnPaths([
-    {
-      id: 'exedra_character_iroha_test',
-      game: 'exedra',
-      path_jp: '/data/exedra_character/iroha_jp.txt',
-      path_cn: '',
-      has_cn: false,
-      percent: 0,
-    },
-    {
-      id: 'exedra_character_local',
-      game: 'exedra',
-      path_jp: '/data/exedra_character/local_jp.txt',
-      path_cn: '/data/exedra_character/local_cn.txt',
-      has_cn: true,
-      percent: 100,
-    },
-    {
-      id: '310011',
-      game: 'magireco',
-      path_jp: '/data/character_story/a_jp.txt',
-      path_cn: '/data/character_story/a_cn.txt',
-      has_cn: true,
-      percent: 100,
-    },
-  ]);
-  assert.equal(values[0].path_cn, exedraDynamicCnPath('exedra_character_iroha_test'));
-  assert.equal(values[0].localization_dynamic, true);
-  assert.equal(values[1].path_cn, '/data/exedra_character/local_cn.txt');
-  assert.equal(values[1].localization_dynamic, undefined);
-  assert.equal(values[2].path_cn, '/data/character_story/a_cn.txt');
+test('trusted cache accepts Wiki records and rejects legacy machine records', () => {
+  const base = {
+    version: 1,
+    story_id: 'exedra_character_iroha_test',
+    source_identity: 'exedra:3_Character:character_iroha',
+    source_url: 'https://exedra.wiki/wiki/:Iroha_Tamaki/Story/Chinese',
+    generated_at: '2026-07-28T00:00:00.000Z',
+    jp_sha256: 'a'.repeat(64),
+    cn_sha256: 'b'.repeat(64),
+    text: '--- [Section 1] (Source: a.json) ---\n環 いろは：你好\n',
+  };
+  assert.ok(parseCachedExedraLocalization(JSON.stringify({
+    ...base,
+    provenance: 'exedra_wiki_human',
+  })));
+  assert.equal(parseCachedExedraLocalization(JSON.stringify({
+    ...base,
+    provenance: 'machine_translation',
+  })), null);
 });
