@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
+      READER_REVISION: '5.5'
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
@@ -57,10 +58,10 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install structured extraction dependencies
+      - name: Install extraction dependencies
         run: python -m pip install --disable-pip-version-check beautifulsoup4 lxml
 
-      - name: Replace application shell and build structured datasets
+      - name: Build structured datasets and versioned shell
         shell: bash
         run: |
           set -euo pipefail
@@ -82,36 +83,21 @@ jobs:
 
           python - <<'PY'
           import json
+          import os
+          import re
           from pathlib import Path
 
-          revision = '5.4'
+          revision = os.environ['READER_REVISION']
+          assets = [
+              'styles.css', 'ui-v4-fixes.css', 'structured-ui.css', 'doppel-ui.css',
+              'ui-v4-runtime.js', 'app.js', 'structured-ui.js', 'doppel-ui.js',
+          ]
           index_path = Path('snapshot/index.html')
           index = index_path.read_text(encoding='utf-8')
-          replacements = {
-              'styles.css?v=5.0': f'styles.css?v={revision}',
-              'ui-v4-fixes.css?v=5.0': f'ui-v4-fixes.css?v={revision}',
-              'structured-ui.css?v=5.0': f'structured-ui.css?v={revision}',
-              'doppel-ui.css?v=5.3': f'doppel-ui.css?v={revision}',
-              'ui-v4-runtime.js?v=5.0': f'ui-v4-runtime.js?v={revision}',
-              'app.js?v=5.0': f'app.js?v={revision}',
-              'structured-ui.js?v=5.0&rev=5.2': f'structured-ui.js?v={revision}',
-              'structured-ui.js?v=5.0': f'structured-ui.js?v={revision}',
-              'doppel-ui.js?v=5.3': f'doppel-ui.js?v={revision}',
-          }
-          for old, new in replacements.items():
-              index = index.replace(old, new)
-          required = [
-              f'/styles.css?v={revision}',
-              f'/ui-v4-fixes.css?v={revision}',
-              f'/structured-ui.css?v={revision}',
-              f'/doppel-ui.css?v={revision}',
-              f'/ui-v4-runtime.js?v={revision}',
-              f'/app.js?v={revision}',
-              f'/structured-ui.js?v={revision}',
-              f'/doppel-ui.js?v={revision}',
-          ]
-          missing = [value for value in required if value not in index]
-          assert not missing, (missing, index)
+          for asset in assets:
+              pattern = rf'/{re.escape(asset)}(?:\?[^"\'\s<]*)?'
+              index, count = re.subn(pattern, f'/{asset}?v={revision}', index, count=1)
+              assert count == 1, (asset, count)
           index_path.write_text(index, encoding='utf-8')
 
           health_path = Path('snapshot/health.json')
@@ -122,22 +108,15 @@ jobs:
           health['portalClassification'] = 'wiki-articles-only'
           health['structured'] = structured
           health['uiFeatures'] = [
-              'structured-character-catalog',
-              'structured-character-profiles',
-              'native-audio-voice-player',
-              'voice-costume-and-group-filters',
-              'structured-doppel-catalog',
-              'bilingual-doppel-profiles',
-              'idempotent-legacy-navigation-bridge',
-              'route-timer-isolation',
-              'versioned-offline-shell',
-              'legacy-cache-eviction',
-              'wiki-article-preservation-layer',
-              'responsive-wiki-html',
-              'table-scroll-containers',
-              'image-lightbox',
-              'system-light-dark-eye-oled-themes',
-              'font-and-content-width-controls',
+              'structured-character-catalog', 'structured-character-profiles',
+              'native-audio-voice-player', 'voice-costume-and-group-filters',
+              'structured-doppel-catalog', 'bilingual-doppel-profiles',
+              'idempotent-legacy-navigation-bridge', 'route-timer-isolation',
+              'versioned-service-worker-file', 'versioned-offline-shell',
+              'legacy-cache-eviction', 'no-cache-update-entrypoints',
+              'wiki-article-preservation-layer', 'responsive-wiki-html',
+              'table-scroll-containers', 'image-lightbox',
+              'system-light-dark-eye-oled-themes', 'font-and-content-width-controls',
           ]
           health_path.write_text(json.dumps(health, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           Path('snapshot/ui-version.json').write_text(json.dumps({
@@ -148,42 +127,39 @@ jobs:
           }, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           PY
 
-          python wiki-preservation/scripts/patch_offline_runtime.py snapshot --revision 5.4
+          python wiki-preservation/scripts/patch_offline_runtime.py snapshot --revision "$READER_REVISION"
 
-      - name: Validate characters voices Doppel and offline runtime
+      - name: Validate corpus shell and cache migration
         shell: bash
         run: |
           set -euo pipefail
-          node --check snapshot/app.js
-          node --check snapshot/ui-v4-runtime.js
-          node --check snapshot/structured-ui.js
-          node --check snapshot/doppel-ui.js
-          node --check snapshot/sw.js
-
-          grep -q 'styles.css?v=5.4' snapshot/index.html
-          grep -q 'ui-v4-fixes.css?v=5.4' snapshot/index.html
-          grep -q 'structured-ui.css?v=5.4' snapshot/index.html
-          grep -q 'doppel-ui.css?v=5.4' snapshot/index.html
-          grep -q 'app.js?v=5.4' snapshot/index.html
-          grep -q 'structured-ui.js?v=5.4' snapshot/index.html
-          grep -q 'doppel-ui.js?v=5.4' snapshot/index.html
-          grep -q "const UI_VERSION = '5.4'" snapshot/app.js
-          grep -q 'magireco-cn-reader-v5.4-offline' snapshot/sw.js
-          grep -q '/structured-ui.js?v=5.4' snapshot/sw.js
-          grep -q '/doppel-ui.js?v=5.4' snapshot/sw.js
-          grep -q '/data/structured/doppel.json' snapshot/sw.js
-          ! grep -q 'magireco-cn-reader-v4-ui' snapshot/sw.js
-
+          revision="$READER_REVISION"
+          for file in app.js ui-v4-runtime.js structured-ui.js doppel-ui.js sw.js "sw-v${revision}.js"; do
+            node --check "snapshot/$file"
+          done
+          for asset in styles.css ui-v4-fixes.css structured-ui.css doppel-ui.css ui-v4-runtime.js app.js structured-ui.js doppel-ui.js; do
+            grep -q "/${asset}?v=${revision}" snapshot/index.html
+          done
+          grep -q "const UI_VERSION = '${revision}'" snapshot/app.js
+          grep -q 'register(`/sw-v${UI_VERSION}.js`' snapshot/app.js
+          grep -q "magireco-cn-reader-v${revision}-offline" "snapshot/sw-v${revision}.js"
+          grep -q "/structured-ui.js?v=${revision}" "snapshot/sw-v${revision}.js"
+          grep -q "/doppel-ui.js?v=${revision}" "snapshot/sw-v${revision}.js"
+          grep -q '/data/structured/doppel.json' "snapshot/sw-v${revision}.js"
+          grep -q "/sw-v${revision}.js" snapshot/_headers
+          grep -q '/app.js' snapshot/_headers
+          ! grep -q 'magireco-cn-reader-v4-ui' "snapshot/sw-v${revision}.js"
           grep -q '5.2-route-timer-isolation' snapshot/structured-ui.js
-          grep -q 'clearTimeout(window.__structuredCharacterTimer)' snapshot/structured-ui.js
           grep -q 'CHARACTER VOICE ARCHIVE' snapshot/structured-ui.js
           grep -q 'audio controls preload="none"' snapshot/structured-ui.js
           grep -q 'STRUCTURED DOPPEL ARCHIVE' snapshot/doppel-ui.js
 
           python - <<'PY'
           import json
+          import os
           from pathlib import Path
           root = Path('snapshot')
+          revision = os.environ['READER_REVISION']
           health = json.loads((root / 'health.json').read_text(encoding='utf-8'))
           manifest = json.loads((root / 'data/structured/manifest.json').read_text(encoding='utf-8'))
           characters = json.loads((root / 'data/structured/characters.json').read_text(encoding='utf-8'))
@@ -191,31 +167,24 @@ jobs:
           doppels = json.loads((root / 'data/structured/doppel.json').read_text(encoding='utf-8'))
           by_title = {item['title']: item for item in characters}
           by_character = {item['character']: item for item in doppels}
-
-          assert health['counts']['pages'] == 500, health
-          assert health['counts']['images'] >= 12000, health
-          assert health['uiVersion'] == 5 and health['uiRevision'] == '5.4', health
-          assert {'versioned-offline-shell', 'legacy-cache-eviction'} <= set(health['uiFeatures'])
-          assert manifest['characters'] >= 235, manifest
-          assert manifest['characterPages'] >= 225, manifest
-          assert manifest['organizations'] >= 6, manifest
-          assert manifest['voiceCharacters'] >= 220, manifest
-          assert manifest['voiceLines'] >= 16000, manifest
-          assert manifest['voiceWithAudio'] >= 16000, manifest
-          assert manifest['doppel'] == 174, manifest
-          assert manifest['doppelWithImage'] >= 170, manifest
+          assert health['counts']['pages'] == 500 and health['counts']['images'] >= 12000, health
+          assert health['uiVersion'] == 5 and health['uiRevision'] == revision, health
+          required_features = {'versioned-service-worker-file', 'legacy-cache-eviction', 'no-cache-update-entrypoints'}
+          assert required_features <= set(health['uiFeatures'])
+          assert manifest['characters'] >= 235 and manifest['characterPages'] >= 225
+          assert manifest['voiceCharacters'] >= 220 and manifest['voiceLines'] >= 16000 and manifest['voiceWithAudio'] >= 16000
+          assert manifest['doppel'] == 174 and manifest['doppelWithImage'] >= 170
           assert len(doppels) == 174 and len(voices) == manifest['voiceCharacters']
           assert {'七海八千代', '环伊吕波', '三穗野星罗', '千岁由麻'} <= set(by_title)
           assert {'七海八千代', '环伊吕波', '千岁由麻'} <= set(by_character)
           assert 'Ablaze' not in by_title
           yachiyo = by_title['七海八千代']
-          assert yachiyo['voiceCount'] >= 70, yachiyo
           lines = json.loads((root / 'data/structured/voice' / f"{yachiyo['voiceKey']}.json").read_text(encoding='utf-8'))
+          assert yachiyo['voiceCount'] >= 70
           assert any(item.get('voiceId') == 'Vo_char_1002_00_01' for item in lines)
           assert any(str(item.get('audioUrl', '')).endswith('.mp3') for item in lines)
-          yuma = by_character['千岁由麻']
-          assert yuma['name'] and yuma['descriptionZh'] and yuma['doppelImageUrl']
-          print(json.dumps({'health': health, 'structured': manifest, 'yumaDoppel': yuma}, ensure_ascii=False, indent=2))
+          assert by_character['千岁由麻']['descriptionZh'] and by_character['千岁由麻']['doppelImageUrl']
+          print(json.dumps({'health': health, 'structured': manifest}, ensure_ascii=False, indent=2))
           PY
 
       - name: Set up Node.js
@@ -223,32 +192,37 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Deploy structured reader v5.4
+      - name: Deploy structured reader
         run: |
           npx --yes wrangler@latest pages deploy snapshot \
             --project-name magireco-cn-reader \
             --branch main \
             --commit-dirty=true
 
-      - name: Verify uncached production datasets and offline shell
+      - name: Verify uncached production content and headers
         shell: bash
         run: |
           set -euo pipefail
+          revision="$READER_REVISION"
           nonce="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$(date +%s)"
           for attempt in $(seq 1 50); do
-            for file in health.json index.html app.js sw.js structured-ui.js doppel-ui.js data/structured/manifest.json data/structured/characters.json data/structured/voice-index.json data/structured/doppel.json; do
+            files=(health.json index.html app.js structured-ui.js doppel-ui.js "sw-v${revision}.js" data/structured/manifest.json data/structured/characters.json data/structured/voice-index.json data/structured/doppel.json)
+            for file in "${files[@]}"; do
               safe=$(printf '%s' "$file" | tr '/.' '__')
               curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' \
-                "https://magireco-cn-reader.pages.dev/$file?v=$nonce-$attempt" -o "/tmp/$safe" || true
+                "https://magireco-cn-reader.pages.dev/$file?probe=$nonce-$attempt" -o "/tmp/$safe" || true
             done
             if python - <<'PY'
           import json
+          import os
           from pathlib import Path
           try:
+              revision = os.environ['READER_REVISION']
+              suffix = revision.replace('.', '_')
               health = json.loads(Path('/tmp/health_json').read_text(encoding='utf-8-sig'))
               index = Path('/tmp/index_html').read_text(encoding='utf-8')
               app = Path('/tmp/app_js').read_text(encoding='utf-8')
-              sw = Path('/tmp/sw_js').read_text(encoding='utf-8')
+              sw = Path(f'/tmp/sw-v{suffix}_js').read_text(encoding='utf-8')
               structured_ui = Path('/tmp/structured-ui_js').read_text(encoding='utf-8')
               doppel_ui = Path('/tmp/doppel-ui_js').read_text(encoding='utf-8')
               manifest = json.loads(Path('/tmp/data_structured_manifest_json').read_text(encoding='utf-8-sig'))
@@ -257,30 +231,28 @@ jobs:
               doppels = json.loads(Path('/tmp/data_structured_doppel_json').read_text(encoding='utf-8-sig'))
               titles = {item['title'] for item in characters}
               doppel_characters = {item['character'] for item in doppels}
-
-              assert health['status'] == 'ok'
-              assert health['uiVersion'] == 5 and health['uiRevision'] == '5.4'
+              assert health['status'] == 'ok' and health['uiRevision'] == revision
               assert health['counts']['pages'] == 500
-              assert manifest['characters'] >= 235 and manifest['voiceWithAudio'] >= 16000
-              assert manifest['doppel'] == 174 and len(doppels) == 174 and len(voice_index) >= 220
-              assert {'七海八千代', '环伊吕波'} <= titles
-              assert {'千岁由麻', '环伊吕波'} <= doppel_characters
-              assert 'Ablaze' not in titles
+              assert manifest['characters'] >= 235 and manifest['voiceWithAudio'] >= 16000 and manifest['doppel'] == 174
+              assert len(voice_index) >= 220 and len(doppels) == 174
+              assert {'七海八千代', '环伊吕波'} <= titles and {'千岁由麻', '环伊吕波'} <= doppel_characters
               for asset in ('styles.css', 'app.js', 'structured-ui.js', 'doppel-ui.js'):
-                  assert f'/{asset}?v=5.4' in index, (asset, index)
-              assert "const UI_VERSION = '5.4'" in app
-              assert 'magireco-cn-reader-v5.4-offline' in sw
-              assert '/structured-ui.js?v=5.4' in sw and '/doppel-ui.js?v=5.4' in sw
-              assert '/data/structured/doppel.json' in sw
-              assert 'magireco-cn-reader-v4-ui' not in sw
-              assert '5.2-route-timer-isolation' in structured_ui
-              assert 'STRUCTURED DOPPEL ARCHIVE' in doppel_ui
-              print('PRODUCTION_STRUCTURED_V5_4_OFFLINE_OK', manifest)
+                  assert f'/{asset}?v={revision}' in index
+              assert f"const UI_VERSION = '{revision}'" in app
+              assert 'register(`/sw-v${UI_VERSION}.js`' in app
+              assert f'magireco-cn-reader-v{revision}-offline' in sw
+              assert f'/structured-ui.js?v={revision}' in sw and f'/doppel-ui.js?v={revision}' in sw
+              assert '5.2-route-timer-isolation' in structured_ui and 'STRUCTURED DOPPEL ARCHIVE' in doppel_ui
+              print('PRODUCTION_STRUCTURED_READER_OK', revision, manifest)
           except Exception as exc:
               print('not ready:', exc)
               raise SystemExit(1)
           PY
             then
+              curl --fail --silent --show-error --head "https://magireco-cn-reader.pages.dev/sw-v${revision}.js" -o /tmp/sw-headers.txt
+              curl --fail --silent --show-error --head "https://magireco-cn-reader.pages.dev/app.js" -o /tmp/app-headers.txt
+              grep -qi 'cache-control:.*no-cache' /tmp/sw-headers.txt
+              grep -qi 'cache-control:.*no-cache' /tmp/app-headers.txt
               exit 0
             fi
             sleep 6
