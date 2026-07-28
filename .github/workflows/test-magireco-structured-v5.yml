@@ -5,10 +5,17 @@ on:
     branches: [main]
     paths:
       - 'wiki-preservation/tests/production-structured-v5.mjs'
+      - 'wiki-preservation/tests/production-offline-v54.mjs'
+      - 'wiki-preservation/static/app.js'
+      - 'wiki-preservation/static/sw.js'
       - 'wiki-preservation/static/structured-ui.js'
       - 'wiki-preservation/static/structured-ui.css'
+      - 'wiki-preservation/static/doppel-ui.js'
+      - 'wiki-preservation/static/doppel-ui.css'
       - 'wiki-preservation/scripts/extract_structured_characters.py'
+      - 'wiki-preservation/scripts/extract_structured_doppel.py'
       - 'wiki-preservation/scripts/patch_structured_runtime.py'
+      - 'wiki-preservation/scripts/patch_offline_runtime.py'
       - '.github/workflows/deploy-magireco-ui-hotfix.yml'
       - '.github/workflows/test-magireco-structured-v5.yml'
   workflow_dispatch:
@@ -23,12 +30,14 @@ concurrency:
 jobs:
   mobile-structured-reader:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
-      - name: Check out structured browser test
+      - name: Check out production browser tests
         uses: actions/checkout@v4
         with:
-          sparse-checkout: wiki-preservation/tests/production-structured-v5.mjs
+          sparse-checkout: |
+            wiki-preservation/tests/production-structured-v5.mjs
+            wiki-preservation/tests/production-offline-v54.mjs
           sparse-checkout-cone-mode: true
           show-progress: false
 
@@ -43,32 +52,37 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Prepare v5.2 production test
+      - name: Prepare v5.4 structured production test
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
           source = Path('wiki-preservation/tests/production-structured-v5.mjs').read_text(encoding='utf-8')
-          source = source.replace('structured-ui.js?v=5.0', 'structured-ui.js?v=5.2&rev=5.2')
+          source = source.replace('structured-ui.js?v=5.0', 'structured-ui.js?v=5.4')
           source = source.replace(
               'health.uiVersion === 5 && health.counts?.pages === 500',
-              "health.uiVersion === 5 && health.uiRevision === '5.2' && health.counts?.pages === 500",
+              "health.uiVersion === 5 && health.uiRevision === '5.4' && health.counts?.pages === 500",
           )
-          target = Path('wiki-preservation/tests/production-structured-v5.2.mjs')
+          target = Path('wiki-preservation/tests/production-structured-v5.4.mjs')
           target.write_text(source, encoding='utf-8')
           PY
-          grep -q 'structured-ui.js?v=5.2&rev=5.2' wiki-preservation/tests/production-structured-v5.2.mjs
-          grep -q "health.uiRevision === '5.2'" wiki-preservation/tests/production-structured-v5.2.mjs
+          grep -q 'structured-ui.js?v=5.4' wiki-preservation/tests/production-structured-v5.4.mjs
+          grep -q "health.uiRevision === '5.4'" wiki-preservation/tests/production-structured-v5.4.mjs
 
-      - name: Run structured character and voice production test
-        run: node wiki-preservation/tests/production-structured-v5.2.mjs
+      - name: Run character voice production test
+        run: node wiki-preservation/tests/production-structured-v5.4.mjs
 
-      - name: Upload structured reader evidence
+      - name: Run offline shell production test
+        run: node wiki-preservation/tests/production-offline-v54.mjs
+
+      - name: Upload structured and offline evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: magireco-structured-v5-mobile-evidence
-          path: structured-v5-evidence
+          name: magireco-structured-v54-mobile-evidence
+          path: |
+            structured-v5-evidence
+            offline-v54-evidence
           if-no-files-found: warn
           retention-days: 14
