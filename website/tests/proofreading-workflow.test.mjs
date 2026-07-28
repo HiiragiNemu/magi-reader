@@ -66,4 +66,13 @@ test('test deployment uses a dedicated KV and supports real Turnstile secrets', 
     workflow,
     /except \(OSError, UnicodeError, json\.JSONDecodeError\):\s+# A newly deployed Worker/u,
   );
+  assert.match(workflow, /fetch_ready_asset\(\)/u);
+  assert.match(
+    workflow,
+    /fetch_ready_asset\s+\\\s+"\$SITE_URL\/api\/proofreading\/config"/u,
+  );
+  assert.match(
+    workflow,
+    /json\.load\(open\(sys\.argv\[1\], encoding="utf-8"\)\)/u,
+  );
 });

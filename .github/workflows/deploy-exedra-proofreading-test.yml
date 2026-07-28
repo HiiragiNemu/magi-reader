@@ -252,11 +252,48 @@ jobs:
             echo "Deployed Worker did not expose the expected machine baseline in time." >&2
             exit 1
           fi
-          curl --fail --silent --show-error "$SITE_URL/story_index.json" -o "$RUNNER_TEMP/story-index.json"
-          curl --fail --silent --show-error "$SITE_URL/api/proofreading/config" -o "$RUNNER_TEMP/config.json"
-          curl --fail --silent --show-error "$SITE_URL/api/exedra/localization-status" -o "$RUNNER_TEMP/exedra-localization-status.json"
-          curl --fail --silent --show-error "$SITE_URL/review/submissions" -o "$RUNNER_TEMP/submissions.html"
-          curl --fail --silent --show-error "$SITE_URL/review/machine-translations" -o "$RUNNER_TEMP/machine-review.html"
+          fetch_ready_asset() {
+            local url="$1"
+            local output="$2"
+            local minimum_bytes="$3"
+            local content_kind="$4"
+            local code
+            local size
+            for attempt in $(seq 1 30); do
+              : > "$output"
+              code="$(
+                curl -L --silent --show-error \
+                  -o "$output" -w '%{http_code}' "$url" || true
+              )"
+              size="$(wc -c < "$output")"
+              if [ "$code" = 200 ] && [ "$size" -ge "$minimum_bytes" ]; then
+                if [ "$content_kind" != json ] || \
+                  python3 -c \
+                    'import json, sys; json.load(open(sys.argv[1], encoding="utf-8"))' \
+                    "$output" >/dev/null 2>&1; then
+                  return 0
+                fi
+              fi
+              sleep 2
+            done
+            echo "Deployed asset did not become ready: $url" >&2
+            return 1
+          }
+          fetch_ready_asset \
+            "$SITE_URL/story_index.json" \
+            "$RUNNER_TEMP/story-index.json" 100 json
+          fetch_ready_asset \
+            "$SITE_URL/api/proofreading/config" \
+            "$RUNNER_TEMP/config.json" 2 json
+          fetch_ready_asset \
+            "$SITE_URL/api/exedra/localization-status" \
+            "$RUNNER_TEMP/exedra-localization-status.json" 2 json
+          fetch_ready_asset \
+            "$SITE_URL/review/submissions" \
+            "$RUNNER_TEMP/submissions.html" 500 html
+          fetch_ready_asset \
+            "$SITE_URL/review/machine-translations" \
+            "$RUNNER_TEMP/machine-review.html" 500 html
           python3 - "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/exedra-wiki-smoke-assets.txt" <<'PY'
           import json
           import sys
