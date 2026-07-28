@@ -98,13 +98,44 @@ jobs:
           print('RAW_JSON_PUBLIC_ARCHIVE_OK', manifest['entries'], manifest['bytes'], counts)
           PY
 
-      - name: Install and validate website
+      - name: Install website dependencies
         working-directory: website
+        run: npm ci
+
+      - name: Run generated-site ESLint
+        working-directory: website
+        run: npm run lint
+
+      - name: Run generated-site TypeScript compiler
+        working-directory: website
+        run: npm run type-check
+
+      - name: Run generated-site unit tests
+        id: generated_node_tests
+        working-directory: website
+        shell: bash
         run: |
-          npm ci
-          npm run lint
-          npm run type-check
-          npm test
+          set +e
+          node --test --test-reporter=spec > generated-node-test-report.txt 2>&1
+          status=$?
+          cat generated-node-test-report.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload generated-site test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-story-generated-node-test-report
+          path: website/generated-node-test-report.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Require generated-site unit tests
+        if: steps.generated_node_tests.outputs.status != '0'
+        run: |
+          echo 'Generated-site Node tests failed; inspect public-story-generated-node-test-report.' >&2
+          exit 1
 
       - name: Generate matching full-text manifest
         run: |
