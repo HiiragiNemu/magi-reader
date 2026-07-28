@@ -35,8 +35,17 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
+      - name: Prepare UI v4.3 production test
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source = Path('wiki-preservation/tests/production-ui-v4.mjs')
+          target = Path('wiki-preservation/tests/production-ui-v4-run.mjs')
+          target.write_text(source.read_text(encoding='utf-8').replace('4.2', '4.3'), encoding='utf-8')
+          PY
+
       - name: Run production mobile interaction test
-        run: node wiki-preservation/tests/production-ui-v4.mjs
+        run: node wiki-preservation/tests/production-ui-v4-run.mjs
 
       - name: Upload mobile screenshots and metrics
         if: always()
