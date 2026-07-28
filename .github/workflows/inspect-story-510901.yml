@@ -1,0 +1,63 @@
+name: Inspect Story 510901
+
+on:
+  pull_request:
+    branches: [feature/portal-story-reader-v7]
+    paths:
+      - 'generate_story_index.py'
+      - 'magireco-source-master/**'
+      - 'magireco-translate-data-master/**'
+      - '.github/workflows/inspect-story-510901.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Generate catalogue
+        run: python generate_story_index.py
+      - name: Write targeted diagnostic
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('.')
+          public = root / 'website/public'
+          stories = json.loads((public / 'story_index.json').read_text(encoding='utf-8'))
+          matches = [item for item in stories if str(item.get('id')) == '510901' or str(item.get('raw_id')) == '510901']
+          files = []
+          for base in (
+              public / 'data',
+              root / 'magireco-source-master/Scenarios_full',
+              root / 'magireco-translate-data-master/Scenarios_full',
+          ):
+              if not base.exists():
+                  continue
+              for path in base.rglob('*510901*'):
+                  if path.is_file():
+                      files.append({
+                          'path': str(path),
+                          'bytes': path.stat().st_size,
+                      })
+          report = {'stories': matches, 'files': files}
+          Path('story-510901-diagnostic.json').write_text(
+              json.dumps(report, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          print(json.dumps(report, ensure_ascii=False, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: story-510901-diagnostic
+          path: story-510901-diagnostic.json
+          retention-days: 14
