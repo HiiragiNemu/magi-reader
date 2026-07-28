@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 const REPLACEMENTS: Readonly<Record<string, string>> = {
   general_voice: '语音',
@@ -29,14 +29,17 @@ const normalizeTree = (root: ParentNode) => {
 };
 
 export default function CategoryLabelNormalizer() {
-  useEffect(() => {
+  useLayoutEffect(() => {
     normalizeTree(document.body);
     const observer = new MutationObserver(records => {
       for (const record of records) {
         for (const added of record.addedNodes) {
           if (added instanceof Text) {
             normalizeTextNode(added);
-          } else if (added instanceof Element || added instanceof DocumentFragment) {
+          } else if (
+            added instanceof Element ||
+            added instanceof DocumentFragment
+          ) {
             normalizeTree(added);
           }
         }
