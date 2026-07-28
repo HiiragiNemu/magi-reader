@@ -1,0 +1,181 @@
+name: Verify Memoria Multipass Sample
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-magireco-memoria-multipass.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: magireco-memoria-multipass-sample
+  cancel-in-progress: true
+
+jobs:
+  multipass:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+    steps:
+      - name: Check out multipass extractor
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: memoria-crawl
+          sparse-checkout-cone-mode: true
+          show-progress: false
+
+      - name: Download verified fidelity snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: magireco-cn-reader-500-page-parallel-snapshot
+          path: snapshot
+          github-token: ${{ github.token }}
+          repository: HiiragiNemu/magi-reader
+          run-id: 30333056699
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+
+      - name: Deploy temporary ordinary-article proxy
+        shell: bash
+        run: |
+          set -euo pipefail
+          project="magireco-memoria-multi-${GITHUB_RUN_ID}"
+          token="$(openssl rand -hex 24)"
+          proxy="https://${project}.pages.dev"
+          mkdir -p memoria-proxy-dist memoria-multipass-evidence
+          python - <<PY
+          from pathlib import Path
+          source = Path('memoria-crawl/proxy-worker.js').read_text(encoding='utf-8')
+          assert '__PROXY_TOKEN__' in source
+          Path('memoria-proxy-dist/_worker.js').write_text(source.replace('__PROXY_TOKEN__', '${token}'), encoding='utf-8')
+          PY
+          node --check memoria-proxy-dist/_worker.js
+          echo "MEMORIA_PROXY_PROJECT=$project" >> "$GITHUB_ENV"
+          echo "MAGIRECO_FETCH_PROXY=$proxy" >> "$GITHUB_ENV"
+          echo "MAGIRECO_PROXY_TOKEN=$token" >> "$GITHUB_ENV"
+          npx --yes wrangler@latest pages project create "$project" --production-branch main \
+            2>&1 | tee memoria-multipass-evidence/project-create.log
+          npx --yes wrangler@latest pages deploy memoria-proxy-dist \
+            --project-name "$project" --branch main --commit-dirty=true \
+            2>&1 | tee memoria-multipass-evidence/proxy-deploy.log
+          for attempt in $(seq 1 40); do
+            status="$(curl --silent --show-error -o memoria-multipass-evidence/health.json -w '%{http_code}' "$proxy/health" || true)"
+            if [ "$status" = 200 ] && grep -q 'ordinary-memoria-articles-only' memoria-multipass-evidence/health.json; then
+              exit 0
+            fi
+            sleep 3
+          done
+          exit 1
+
+      - name: Run four serial crawl passes
+        shell: bash
+        run: |
+          set -euo pipefail
+          for pass in 1 2 3 4; do
+            echo "========== Memoria pass $pass =========="
+            PASS="$pass" python - <<'PY'
+          import os
+          import sys
+          from argparse import Namespace
+          from pathlib import Path
+
+          sys.path.insert(0, str(Path('memoria-crawl').resolve()))
+          import build_memoria_from_snapshot as builder
+
+          pass_number = int(os.environ['PASS'])
+          output = Path(f'memoria-passes/pass-{pass_number}')
+          manifest = builder.build(Namespace(
+              snapshot=Path('snapshot'),
+              output=output,
+              limit=20,
+              include=['1000円未満の魔法', '1000年の眠りを超えて'],
+              workers=4,
+              pause=0.45,
+              timeout=45.0,
+              retries=2,
+              max_requests=120,
+          ))
+          assert manifest['snapshotArticleMembers'] == 1042, manifest
+          assert manifest['records'] == manifest['selectedArticlePages'] >= 20, manifest
+          assert manifest['withImage'] == manifest['records'], manifest
+          PY
+            sleep 15
+          done
+
+      - name: Merge best record from every pass
+        run: |
+          python memoria-crawl/merge_memoria_passes.py \
+            --input memoria-passes/pass-1 \
+            --input memoria-passes/pass-2 \
+            --input memoria-passes/pass-3 \
+            --input memoria-passes/pass-4 \
+            --output memoria-merged-sample
+
+      - name: Validate merged reliability and known records
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('memoria-merged-sample')
+          manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))
+          records = json.loads((root / 'memoria.json').read_text(encoding='utf-8'))
+          failures = json.loads((root / 'failures.json').read_text(encoding='utf-8'))
+          by_ja = {item['nameJa']: item for item in records}
+
+          assert manifest['source'] == 'merged-ordinary-article-passes', manifest
+          assert manifest['passes'] == 4, manifest
+          assert manifest['snapshotArticleMembers'] == 1042, manifest
+          assert manifest['records'] == manifest['selectedArticlePages'] >= 20, manifest
+          assert manifest['withImage'] == manifest['records'], manifest
+          assert manifest['withChineseName'] >= 19, manifest
+          assert manifest['withStats'] >= manifest['records'] - 1, manifest
+          assert manifest['withChineseDescription'] >= manifest['records'] - 2, manifest
+          assert manifest['remainingFailures'] <= 1, (manifest, failures)
+
+          for name in ('1000円未満の魔法', '1000年の眠りを超えて'):
+              item = by_ja[name]
+              assert item['articleStatus'] == 200, item
+              assert item['articleError'] is None, item
+              assert item['number'] is not None, item
+              assert item['rarity'] in (1, 2, 3, 4), item
+              assert item['type'] and item['effect'], item
+              assert all(item[key] is not None for key in ('hpMin','hpMax','atkMin','atkMax','defMin','defMax')), item
+              assert item['descZh'], item
+
+          print(json.dumps({'manifest': manifest, 'failures': failures}, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload multipass evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-memoria-multipass-sample
+          path: |
+            memoria-passes
+            memoria-merged-sample
+            memoria-multipass-evidence
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Delete temporary proxy
+        if: always()
+        run: |
+          if [ -n "${MEMORIA_PROXY_PROJECT:-}" ]; then
+            npx --yes wrangler@latest pages project delete "$MEMORIA_PROXY_PROJECT" --yes || true
+          fi
