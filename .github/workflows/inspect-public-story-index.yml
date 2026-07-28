@@ -1,0 +1,96 @@
+name: Inspect Public Story Index
+
+on:
+  pull_request:
+    branches: [feature/portal-story-reader-v7]
+    paths:
+      - 'generate_story_index.py'
+      - 'magireco-translate-data-master/**'
+      - 'magiraexedra-source-master/**'
+      - '.github/workflows/inspect-public-story-index.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Generate story index
+        run: python generate_story_index.py
+      - name: Build diagnostic report
+        run: |
+          python - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+          from urllib.parse import unquote, urlsplit
+
+          root = Path('website/public')
+          stories = json.loads((root / 'story_index.json').read_text(encoding='utf-8'))
+          categories = Counter(str(item.get('category') or '') for item in stories)
+          prefixes = Counter()
+          suffixes = Counter()
+          missing = []
+          remote = []
+          no_source = []
+          referenced = set()
+          for item in stories:
+              paths = [item.get('path_cn'), item.get('path_jp')]
+              if not any(paths):
+                  no_source.append(item.get('id'))
+              for key, raw in zip(('path_cn', 'path_jp'), paths):
+                  if not raw:
+                      continue
+                  value = str(raw)
+                  split = urlsplit(value)
+                  if split.scheme or split.netloc:
+                      remote.append({'id': item.get('id'), 'key': key, 'path': value})
+                      continue
+                  clean = unquote(split.path.lstrip('/'))
+                  prefixes[clean.split('/', 1)[0] if clean else ''] += 1
+                  suffixes[Path(clean).suffix.lower()] += 1
+                  local = root / clean
+                  referenced.add(str(local))
+                  if not local.is_file():
+                      missing.append({
+                          'id': item.get('id'),
+                          'category': item.get('category'),
+                          'key': key,
+                          'path': value,
+                          'resolved': str(local),
+                      })
+          report = {
+              'stories': len(stories),
+              'categories': dict(categories),
+              'prefixes': dict(prefixes),
+              'suffixes': dict(suffixes),
+              'referenced': len(referenced),
+              'missing_count': len(missing),
+              'missing_sample': missing[:200],
+              'remote_count': len(remote),
+              'remote_sample': remote[:100],
+              'no_source_count': len(no_source),
+              'no_source_sample': no_source[:100],
+          }
+          Path('story-index-diagnostic.json').write_text(
+              json.dumps(report, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          print(json.dumps(report, ensure_ascii=False, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: public-story-index-diagnostic
+          path: |
+            website/public/story_index.json
+            story-index-diagnostic.json
+          retention-days: 14
