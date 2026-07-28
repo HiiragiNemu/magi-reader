@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
-      READER_REVISION: '6.0'
+      READER_REVISION: '6.1'
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
@@ -77,6 +77,9 @@ jobs:
           for file in app.js ui-v4-runtime.js structured-ui.js doppel-ui.js memoria-ui.js sw.js "sw-v${READER_REVISION}.js"; do
             node --check "snapshot/$file"
           done
+          for file in archive-index.json category-index.json portal-index.json; do
+            grep -q "/data/$file" "snapshot/sw-v${READER_REVISION}.js"
+          done
 
       - name: Deploy Reader v6 to Cloudflare Pages
         run: |
@@ -95,6 +98,9 @@ jobs:
             files=(
               health.json index.html app.js structured-ui.js doppel-ui.js memoria-ui.js
               "sw-v${revision}.js"
+              data/archive-index.json
+              data/category-index.json
+              data/portal-index.json
               data/structured/manifest.json
               data/structured/characters.json
               data/structured/voice-index.json
@@ -128,6 +134,9 @@ jobs:
               doppel_ui = Path('/tmp/doppel-ui_js').read_text(encoding='utf-8')
               memoria_ui = Path('/tmp/memoria-ui_js').read_text(encoding='utf-8')
               worker = Path(f'/tmp/sw-v{suffix}_js').read_text(encoding='utf-8')
+              archive_index = json.loads(Path('/tmp/data_archive-index_json').read_text(encoding='utf-8-sig'))
+              category_index = json.loads(Path('/tmp/data_category-index_json').read_text(encoding='utf-8-sig'))
+              portal_index = json.loads(Path('/tmp/data_portal-index_json').read_text(encoding='utf-8-sig'))
               manifest = json.loads(Path('/tmp/data_structured_manifest_json').read_text(encoding='utf-8-sig'))
               characters = json.loads(Path('/tmp/data_structured_characters_json').read_text(encoding='utf-8-sig'))
               voices = json.loads(Path('/tmp/data_structured_voice-index_json').read_text(encoding='utf-8-sig'))
@@ -138,6 +147,8 @@ jobs:
               assert health['status'] == 'ok'
               assert health['uiVersion'] == 6 and health['uiRevision'] == revision
               assert health['counts']['pages'] == 500 and health['counts']['memoria'] == 1042
+              assert isinstance(archive_index, list) and len(archive_index) == 500
+              assert isinstance(category_index, list) and isinstance(portal_index, dict)
               assert manifest['characters'] >= 235 and manifest['voiceWithAudio'] >= 16000 and manifest['doppel'] == 174
               assert len(characters) >= 235 and len(voices) >= 220 and len(doppels) == 174
               assert memoria_manifest['records'] == 1042
@@ -151,11 +162,12 @@ jobs:
               assert not any(value in visitor_text for value in forbidden)
               assert f"const UI_VERSION = '{revision}'" in app
               assert f'magireco-cn-reader-v{revision}-offline' in worker
-              assert '/data/structured/memoria-index.json' in worker
+              for path in ('/data/archive-index.json', '/data/category-index.json', '/data/portal-index.json', '/data/structured/memoria-index.json'):
+                  assert path in worker
               for shard in '0123456789abcdef':
                   value = json.loads(Path(f'/tmp/data_structured_memoria_{shard}_json').read_text(encoding='utf-8-sig'))
                   assert isinstance(value, dict) and value
-              print('PRODUCTION_READER_V6_OK', memoria_manifest)
+              print('PRODUCTION_READER_V6_1_OK', memoria_manifest)
           except Exception as exc:
               print('not ready:', exc)
               raise SystemExit(1)

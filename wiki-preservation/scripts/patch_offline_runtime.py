@@ -29,7 +29,7 @@ def unique(values: list[str]) -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("root", type=Path)
-    parser.add_argument("--revision", default="6.0")
+    parser.add_argument("--revision", default="6.1")
     args = parser.parse_args()
 
     root = args.root.resolve()
@@ -72,6 +72,9 @@ def main() -> None:
         *assets,
         "/health.json",
         "/data/runtime-manifest.json",
+        "/data/archive-index.json",
+        "/data/category-index.json",
+        "/data/portal-index.json",
         "/data/structured/manifest.json",
         "/data/structured/characters.json",
         "/data/structured/voice-index.json",
@@ -87,6 +90,9 @@ def main() -> None:
             raise RuntimeError(f"final index does not reference required asset: {path}")
 
     required_data = (
+        root / "data" / "archive-index.json",
+        root / "data" / "category-index.json",
+        root / "data" / "portal-index.json",
         root / "data" / "structured" / "memoria-index.json",
         root / "data" / "structured" / "memoria-manifest.json",
     )
