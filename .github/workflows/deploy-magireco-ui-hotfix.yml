@@ -47,6 +47,7 @@ jobs:
           cp wiki-preservation/static/index.html snapshot/index.html
           cp wiki-preservation/static/app.js snapshot/app.js
           cp wiki-preservation/static/styles.css snapshot/styles.css
+          cp wiki-preservation/static/ui-v4-fixes.css snapshot/ui-v4-fixes.css
           cp wiki-preservation/static/sw.js snapshot/sw.js
           cp wiki-preservation/static/ui-v4-runtime.js snapshot/ui-v4-runtime.js
           python - <<'PY'
@@ -55,6 +56,7 @@ jobs:
           health_path = Path('snapshot/health.json')
           health = json.loads(health_path.read_text(encoding='utf-8-sig'))
           health['uiVersion'] = 4
+          health['uiRevision'] = '4.2'
           health['uiFeatures'] = [
               'functional-portal-routing',
               'responsive-wiki-html',
@@ -63,10 +65,12 @@ jobs:
               'system-light-dark-eye-oled-themes',
               'font-and-content-width-controls',
               'explicit-mobile-display-menu',
+              'viewport-safe-display-panel',
           ]
           health_path.write_text(json.dumps(health, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           Path('snapshot/ui-version.json').write_text(json.dumps({
               'uiVersion': 4,
+              'uiRevision': '4.2',
               'name': 'mobile-reader-overhaul',
           }, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           PY
@@ -81,7 +85,9 @@ jobs:
           grep -q 'data-theme="eye"' snapshot/styles.css
           grep -q 'data-theme="oled"' snapshot/styles.css
           grep -q 'data-portal' snapshot/app.js
-          grep -q 'ui-v4-runtime.js?v=4.1' snapshot/index.html
+          grep -q 'ui-v4-runtime.js?v=4.2' snapshot/index.html
+          grep -q 'ui-v4-fixes.css?v=4.2' snapshot/index.html
+          grep -q 'backdrop-filter: none' snapshot/ui-v4-fixes.css
           python - <<'PY'
           import json
           from pathlib import Path
@@ -89,6 +95,7 @@ jobs:
           assert health['counts']['pages'] == 500, health
           assert health['counts']['images'] >= 12000, health
           assert health['uiVersion'] == 4, health
+          assert health['uiRevision'] == '4.2', health
           print(json.dumps(health, ensure_ascii=False, indent=2))
           PY
 
@@ -97,7 +104,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Deploy UI v4 over existing production snapshot
+      - name: Deploy UI v4.2 over existing production snapshot
         run: |
           npx --yes wrangler@latest pages deploy snapshot \
             --project-name magireco-cn-reader \
@@ -113,6 +120,7 @@ jobs:
             curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/health.json?ui=$nonce-$attempt" -o /tmp/health.json || true
             curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/app.js?ui=$nonce-$attempt" -o /tmp/app.js || true
             curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/ui-v4-runtime.js?ui=$nonce-$attempt" -o /tmp/runtime.js || true
+            curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/ui-v4-fixes.css?ui=$nonce-$attempt" -o /tmp/fixes.css || true
             if python - <<'PY'
           import json
           from pathlib import Path
@@ -120,12 +128,15 @@ jobs:
               h = json.loads(Path('/tmp/health.json').read_text(encoding='utf-8-sig'))
               app = Path('/tmp/app.js').read_text(encoding='utf-8')
               runtime = Path('/tmp/runtime.js').read_text(encoding='utf-8')
+              fixes = Path('/tmp/fixes.css').read_text(encoding='utf-8')
               assert h['status'] == 'ok'
               assert h['counts']['pages'] == 500
               assert h.get('uiVersion') == 4
+              assert h.get('uiRevision') == '4.2'
               assert 'const UI_VERSION = 4' in app
               assert 'stopImmediatePropagation' in runtime
-              print('PRODUCTION_UI_V4_OK', h['counts'])
+              assert 'backdrop-filter: none' in fixes
+              print('PRODUCTION_UI_V4_2_OK', h['counts'])
           except Exception as exc:
               print('not ready:', exc)
               raise SystemExit(1)
