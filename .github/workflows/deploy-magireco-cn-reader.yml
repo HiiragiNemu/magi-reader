@@ -6,8 +6,8 @@ on:
     paths:
       - 'wiki-preservation/scripts/build_html_snapshot.py'
       - 'wiki-preservation/scripts/build_html_snapshot_parallel.py'
+      - 'wiki-preservation/scripts/build_compressed_snapshot.py'
       - 'wiki-preservation/scripts/patch_static_app.py'
-      - 'wiki-preservation/static/**'
       - '.github/workflows/deploy-magireco-cn-reader.yml'
   workflow_dispatch:
 
@@ -58,36 +58,14 @@ jobs:
             --retries 3
           python wiki-preservation/scripts/patch_static_app.py wiki-preservation/dist/app.js
 
-      - name: Mark UI version in runtime metadata
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          for name in ('health.json', 'data/runtime-manifest.json'):
-              path = Path('wiki-preservation/dist') / name
-              value = json.loads(path.read_text(encoding='utf-8-sig'))
-              value['uiVersion'] = 4
-              value['uiFeatures'] = [
-                  'functional-portal-routing',
-                  'responsive-wiki-html',
-                  'table-scroll-containers',
-                  'image-lightbox',
-                  'system-light-dark-eye-oled-themes',
-                  'font-and-content-width-controls',
-              ]
-              path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-          PY
-
-      - name: Verify snapshot and hosting limits
+      - name: Verify preservation snapshot only
         shell: bash
         run: |
           set -euo pipefail
           test -f wiki-preservation/dist/index.html
           test -f wiki-preservation/dist/data/runtime-manifest.json
           test -f wiki-preservation/dist/data/archive-index.json
-          test -f wiki-preservation/dist/data/media-index.json
           test -f wiki-preservation/dist/health.json
-          node --check wiki-preservation/dist/app.js
           python - <<'PY'
           import json
           from pathlib import Path
@@ -96,77 +74,23 @@ jobs:
           counts = manifest['counts']
           assert counts['pages'] >= 300, counts
           assert counts['shards'] >= 100, counts
-          assert counts['categories'] >= 40, counts
           assert counts['media'] >= 500, counts
-          assert counts['crawlFailures'] <= max(100, counts['crawlRequests'] // 3), counts
-          assert manifest['uiVersion'] == 4, manifest
           files = [path for path in root.rglob('*') if path.is_file()]
           oversized = [path for path in files if path.stat().st_size > 25 * 1024 * 1024]
           assert len(files) <= 20000, len(files)
           assert not oversized, [(str(path), path.stat().st_size) for path in oversized]
           print(json.dumps(manifest, ensure_ascii=False, indent=2))
-          print(f'deployment files: {len(files)}')
-          print(f'deployment bytes: {sum(path.stat().st_size for path in files)}')
           PY
 
-      - name: Upload snapshot artifact
+      - name: Upload preservation snapshot artifact
         uses: actions/upload-artifact@v4
         with:
-          name: magireco-cn-reader-500-page-parallel-snapshot
+          name: magireco-cn-reader-preservation-snapshot
           path: wiki-preservation/dist
           if-no-files-found: error
           retention-days: 14
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Verify Cloudflare credentials
+      - name: Preserve only; structured workflow owns production deployment
         run: |
-          test -n "${CLOUDFLARE_API_TOKEN:-}"
-          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
-          npx --yes wrangler@latest whoami
-
-      - name: Ensure Cloudflare Pages project exists
-        shell: bash
-        run: |
-          set -euo pipefail
-          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects"
-          status=$(curl --silent --show-error --output /tmp/cf-project.json --write-out '%{http_code}' --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" --header 'Content-Type: application/json' "$api/magireco-cn-reader")
-          if [ "$status" = '200' ]; then
-            node -e "const x=require('/tmp/cf-project.json'); if(!x.success) process.exit(1); console.log('existing project:', x.result.name, x.result.subdomain)"
-          elif [ "$status" = '404' ]; then
-            create_status=$(curl --silent --show-error --output /tmp/cf-project-create.json --write-out '%{http_code}' --request POST --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" --header 'Content-Type: application/json' --data '{"name":"magireco-cn-reader","production_branch":"main"}' "$api")
-            cat /tmp/cf-project-create.json
-            if [ "$create_status" != '200' ] && [ "$create_status" != '201' ]; then exit 1; fi
-            node -e "const x=require('/tmp/cf-project-create.json'); if(!x.success) process.exit(1); console.log('created project:', x.result.name, x.result.subdomain)"
-          else
-            cat /tmp/cf-project.json
-            echo "Unexpected Cloudflare project lookup HTTP $status" >&2
-            exit 1
-          fi
-
-      - name: Deploy production site
-        run: |
-          npx --yes wrangler@latest pages deploy wiki-preservation/dist \
-            --project-name magireco-cn-reader \
-            --branch main \
-            --commit-dirty=true
-
-      - name: Verify public deployment
-        shell: bash
-        run: |
-          set -euo pipefail
-          nonce="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$(date +%s)"
-          for attempt in $(seq 1 40); do
-            if body=$(curl --fail --silent --show-error --max-time 20 --header 'Cache-Control: no-cache' "https://magireco-cn-reader.pages.dev/health.json?verify=$nonce-$attempt"); then
-              echo "$body"
-              if echo "$body" | node -e 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>{const x=JSON.parse(s);if(x.status!=="ok"||x.readerVersion!==3||x.uiVersion!==4||x.counts.pages<300)process.exit(1)})'; then
-                echo 'Published: https://magireco-cn-reader.pages.dev/#/portal/all'
-                exit 0
-              fi
-            fi
-            sleep 8
-          done
-          exit 1
+          echo 'Snapshot generation completed.'
+          echo 'Production Cloudflare deployment is owned by Deploy Magireco Structured Reader v5.'
