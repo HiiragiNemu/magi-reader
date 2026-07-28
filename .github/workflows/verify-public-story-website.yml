@@ -1,0 +1,67 @@
+name: Verify Public Story Website
+
+on:
+  pull_request:
+    branches: [feature/portal-story-reader-v7]
+    paths:
+      - 'website/**'
+      - 'prepare_public_story_reader.py'
+      - '.github/workflows/verify-public-story-website.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-public-story-website
+  cancel-in-progress: true
+
+jobs:
+  website:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      NEXT_PUBLIC_STORY_ARCHIVE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            website
+            prepare_public_story_reader.py
+          sparse-checkout-cone-mode: true
+          show-progress: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Prepare public visitor mode
+        run: |
+          python prepare_public_story_reader.py --website website
+          grep -q 'href="/raw-json"' website/app/page.tsx
+          grep -q 'href="/raw-json"' 'website/app/reader/[id]/page.tsx'
+
+      - name: Install dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: website
+        run: npm run lint
+
+      - name: Run TypeScript compiler
+        working-directory: website
+        run: npm run type-check
+
+      - name: Run unit tests
+        working-directory: website
+        run: npm test
+
+      - name: Build Next application
+        working-directory: website
+        run: npm run build
