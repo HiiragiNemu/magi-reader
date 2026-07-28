@@ -2,24 +2,42 @@
 
 目标分支：`feature/exedra-cn-and-magireco-voice`（基于 `EXEDRA-TEST`）。`main` 不参与本项目写入。
 
-## 可信度优先级
+## Exedra 中文来源政策
 
-Exedra 中文文本按以下顺序选择，低优先级来源不得覆盖高优先级来源：
+Exedra 自动机翻计划已经取消。中文文本只允许以下来源，低优先级来源不得覆盖高优先级来源：
 
-1. `local_human`：仓库中已经存在且通过现有导入报告验证的中文；保持原样，不标记机翻。
-2. `exedra_wiki_human`：Exedra Wiki 的角色中文剧情页；生成 TXT 和导入报告，但不标记机翻。
-3. `machine_translation`：仅用于前两类均不存在的日文剧情；必须进入独立 Exedra 机翻清单。
+1. `local_human`：仓库中已经存在且通过导入报告验证的人工中文；保持原样。
+2. `official_tw_human`：官方台服繁体中文，转换为简体中文后保留官方来源证明。
+3. `exedra_wiki_human`：Exedra Wiki 的人工中文剧情页；仅在 Section、文本事件数量和说话人顺序可以精确证明时导入。
 
-每个 Exedra 中文逻辑组必须记录：`story_id`、JP/CN 文件哈希、来源类型、来源 URL（Wiki 时）、导入时间、Section 映射、说话人顺序哈希和人工校验状态。
+没有上述来源的剧情保持日文，不生成占位中文，不把 `has_cn` 或进度伪装为 100%。旧 `machine_translation` KV 缓存和 Exedra 机器校验状态可从 `/review/exedra-localization` 定向清除。
 
-## 独立动态统计
+每个新增 Exedra 中文逻辑组必须记录：`story_id`、JP/CN 文件哈希、来源类型、来源 URL、导入时间、Section 映射和说话人顺序哈希。
 
-魔法纪录与 Exedra 使用两套清单和两套 KV 状态命名空间：
+## Exedra 分类显示名
 
-- `magireco`: 当前可信基线为 `main`，现有机翻 507 部、223 个目录。
-- `exedra`: 以现有本地中文和 Wiki 中文为人工基线，只把其余自动翻译标记为机翻。
+内部类别键保持稳定，界面显示名不再带来源目录数字：
 
-首页切换游戏时只显示当前游戏的：总数、已校、剩余、目录高亮和“只看待校”筛选。
+- `exedra_main` → `主线`
+- `exedra_sub` → `活动`
+- `exedra_character` → `角色`
+- `exedra_portrait` → `肖像`
+- `exedra_reaction` → `语音`
+- `exedra_namae` → `Namae`
+- `exedra_dungeon` → `过场动画字幕`
+- `exedra_battle` → `战斗`
+
+## 魔法纪录机器翻译校验
+
+机器翻译校验只适用于魔法纪录：当前可信基线为 `main`，现有清单为 507 部剧情、223 个目录。Exedra 不再拥有机器翻译清单、统计、页面高亮或 Workers AI binding。
+
+## Exedra 可信中文工具
+
+- `/review/exedra-localization`：检查角色 Exedra Wiki 人工中文、导出可信缓存、清除旧机翻缓存。
+- `tools/import_exedra_cache_export.py`：将导出的 Wiki 人工中文写入规范 JSON/TXT 和 schema-v1 导入报告；拒绝任何非 Wiki 人工缓存。
+- `tools/import_exedra_official_tw.py`：从解包后的官方台服剧情 JSON 生成简体中文 JSON/TXT 和 schema-v1 导入报告。
+
+现有人工中文默认不可覆盖。任一 Section 来源、事件数量、事件类型或说话人序列不一致时必须 fail-closed。
 
 ## 魔法纪录语音类别
 
@@ -30,18 +48,28 @@ Exedra 中文文本按以下顺序选择，低优先级来源不得覆盖高优�
 - `magireco-voice-source-master/Scenarios_full/general_voice/`
 - `magireco-voice-translate-data-master/Scenarios_full/general_voice/`
 
-导入器必须：
+`tools/import_magireco_general_voice.py` 可以直接下载 411 个中文模型语音脚本，生成原始 JSON、MagiReader TXT 和逐文件 SHA-256 manifest，不依赖 GitHub Actions。
 
-1. 保留原始脚本与来源路径；
-2. 生成可由 MagiReader 读取的聚合 TXT；
-3. 建立角色 ID、显示名、脚本和语音资源的显式映射；
-4. 不使用模糊匹配自动归属角色；
-5. 参考 `MagiaExedraLive2DViewerPersonal` 最新分支的语音看板映射，但输出独立、可审计的 manifest；
-6. 对缺失映射、重复 ID、无文本事件和未知结构 fail-closed。
+运行时目录扩展只新增 `general_voice` 条目。静态全文索引继续覆盖原有剧情；响应清单通过 `fulltext_excluded_categories: ["general_voice"]` 明确声明语音正文尚未进入全文索引。
 
-## 当前审计
+## 无 Git checkout 备用路径
+
+当前部分执行容器可能完全禁用出站网络；这种情况下 DNS、代理、`git clone`、`raw.githubusercontent.com` 和 `codeload.github.com` 都不可用，只能通过已连接的 GitHub 服务读写，无法在容器内安装 npm 依赖或完成本地构建。
+
+当环境允许 `api.github.com`、但 Git 协议或 codeload 被封锁时，使用：
+
+```powershell
+py tools/github_api_checkout.py HiiragiNemu/magi-reader `
+  --ref feature/exedra-cn-and-magireco-voice `
+  --output D:\work\magi-reader `
+  --zip D:\work\magi-reader.zip
+```
+
+该工具通过 commit → tree → blob REST 端点重建分支，校验每个 Git blob SHA-1，拒绝路径越界和 submodule，可按 `--include website` 只恢复构建所需子树。它不使用 Actions。
+
+## 当前已知基线
 
 - 魔法纪录机翻：507 部剧情 TXT，223 个目录。
-- Exedra JP：3,062 JSON，443 TXT，444 个含文件目录。
-- Exedra CN：5 JSON，5 TXT，5 个含文件目录。
-- 两个外部参考仓库均为私有仓库；GitHub Actions 默认 `GITHUB_TOKEN` 无法跨仓库读取，需使用仅对这些仓库具有 Contents: Read 的独立 fine-grained token，Secret 名称预留为 `SOURCE_REPOS_READ_TOKEN`。
+- Exedra JP：443 个逻辑组、3,061 个剧情来源 JSON、105,867 条文本事件。
+- Exedra 已有本地中文：5 个逻辑组。
+- 魔法纪录 general voice：411 个模型脚本。
