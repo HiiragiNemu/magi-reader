@@ -47,17 +47,23 @@ jobs:
           from pathlib import Path
           path = Path('wiki-preservation/scripts/build_html_snapshot.py')
           text = path.read_text(encoding='utf-8')
-          old = 'if len(crawler.records) < 1000:'
-          new = 'if len(crawler.records) < 300:'
-          if old not in text:
-              raise SystemExit('minimum-page guard not found')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          replacements = {
+              'if len(crawler.records) < 1000:': 'if len(crawler.records) < 300:',
+              'for attempt in range(1, 5):': 'for attempt in range(1, 4):',
+              'if attempt == 4:': 'if attempt == 3:',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'crawler patch target not found: {old}')
+              text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
           PY
           python wiki-preservation/scripts/build_html_snapshot.py \
             --output wiki-preservation/dist \
             --max-pages 500 \
             --max-requests 1800 \
-            --pause 0.05
+            --pause 0.04 \
+            --timeout 12
 
       - name: Verify snapshot and hosting limits
         shell: bash
