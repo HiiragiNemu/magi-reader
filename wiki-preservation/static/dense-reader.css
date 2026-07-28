@@ -176,6 +176,12 @@ body {
   font-size: .92rem;
   line-height: 1.48;
 }
+/* The site generates a responsive sidebar TOC; hide the duplicate TOC embedded in preserved Wiki HTML. */
+.wiki-document .toc,
+.wiki-document #toc,
+.wiki-document .mw-parser-output > .toc {
+  display: none !important;
+}
 .wiki-document p,
 .wiki-document li,
 .wiki-document dd { line-height: 1.52; }
