@@ -114,7 +114,7 @@ function structuredHeader(active) {
       <div class="header-primary">
         <button class="brand" data-route="characters" type="button" aria-label="返回角色图鉴">
           <span class="brand-mark">✦</span>
-          <span><strong>魔法纪录中文资料库</strong><small>STRUCTURED ARCHIVE & READER</small></span>
+          <span><strong>魔法纪录中文资料库</strong><small>MAGIA RECORD DATABASE</small></span>
         </button>
         ${structuredThemeControls()}
       </div>
@@ -124,7 +124,7 @@ function structuredHeader(active) {
 
 function structuredShell(content, active) {
   structuredApp.innerHTML = `${structuredHeader(active)}<main class="site-main structured-main">${content}</main>
-    <footer class="site-footer"><span>角色与语音来自原始人物页面的结构化提取 · Wiki正文独立保存</span><button data-route="about">来源与保存说明</button></footer>
+    <footer class="site-footer"><span>人物、语音与Wiki资料</span><button data-route="about">关于资料库</button></footer>
     <button class="to-top" type="button" data-scroll-top aria-label="返回页面顶部">↑</button>
     <dialog class="image-viewer" id="image-viewer"><button type="button" class="viewer-close" data-close-viewer aria-label="关闭图片">×</button><div class="viewer-stage"><img alt=""><p></p></div></dialog>`;
   document.documentElement.dataset.structuredView = active;
@@ -135,7 +135,7 @@ function structuredLoading(label) {
 }
 
 function structuredError(error) {
-  structuredShell(`<div class="state-panel error"><strong>结构化资料读取失败</strong><pre>${sEscape(error?.message || error)}</pre><button type="button" data-route="portal/all">转到Wiki正文</button></div>`, 'characters');
+  structuredShell(`<div class="state-panel error"><strong>资料读取失败</strong><pre>${sEscape(error?.message || error)}</pre><button type="button" data-route="portal/all">转到Wiki正文</button></div>`, 'characters');
 }
 
 function routeStructured(path) {
@@ -205,7 +205,7 @@ function characterListPage() {
   document.title = '角色图鉴 — 魔法纪录中文资料库';
   structuredShell(`
     <section class="structured-hero">
-      <div><p class="eyebrow">STRUCTURED CHARACTER ARCHIVE</p><h1>魔法少女与人物</h1><p>这里不是Wiki文章关键词筛选，而是从全部“人物信息”表直接生成的角色图鉴。活动、歌曲、目录页不会进入人物列表；组织可通过筛选单独查看。</p></div>
+      <div><p class="eyebrow">CHARACTER DATABASE</p><h1>魔法少女与人物</h1><p>按人物信息浏览中文名、日文名、声优、设定、关系与角色语音。组织资料可通过筛选单独查看。</p></div>
       <div class="coverage-grid structured-stats">
         <div><strong>${Number(manifest.characterPages).toLocaleString('zh-CN')}</strong><span>人物条目</span></div>
         <div><strong>${Number(manifest.organizations).toLocaleString('zh-CN')}</strong><span>组织条目</span></div>
@@ -218,7 +218,7 @@ function characterListPage() {
       <select id="character-kind"><option value="character" ${structuredState.characterKind === 'character' ? 'selected' : ''}>魔法少女与人物</option><option value="organization" ${structuredState.characterKind === 'organization' ? 'selected' : ''}>组织</option><option value="all" ${structuredState.characterKind === 'all' ? 'selected' : ''}>全部</option></select>
       <select id="character-voice"><option value="all" ${structuredState.characterVoice === 'all' ? 'selected' : ''}>全部语音状态</option><option value="with" ${structuredState.characterVoice === 'with' ? 'selected' : ''}>有语音</option><option value="without" ${structuredState.characterVoice === 'without' ? 'selected' : ''}>无语音</option></select>
     </section>
-    <section class="structured-result-head"><div><p class="result-kicker">结构化图鉴</p><h2>${structuredState.characterKind === 'organization' ? '魔法少女组织' : '人物列表'}</h2></div><span>${filtered.length.toLocaleString('zh-CN')} 条</span></section>
+    <section class="structured-result-head"><div><p class="result-kicker">资料图鉴</p><h2>${structuredState.characterKind === 'organization' ? '魔法少女组织' : '人物列表'}</h2></div><span>${filtered.length.toLocaleString('zh-CN')} 条</span></section>
     ${shown.length ? `<div class="character-grid">${shown.map(characterCard).join('')}</div>` : '<div class="state-panel inline"><strong>没有匹配人物</strong></div>'}
     ${pages > 1 ? `<div class="pager"><button type="button" data-character-page="${structuredState.characterPage - 1}" ${structuredState.characterPage <= 1 ? 'disabled' : ''}>上一页</button><span>第 ${structuredState.characterPage} / ${pages} 页</span><button type="button" data-character-page="${structuredState.characterPage + 1}" ${structuredState.characterPage >= pages ? 'disabled' : ''}>下一页</button></div>` : ''}
   `, 'characters');
@@ -265,9 +265,9 @@ function voiceIndexPage() {
   const shown = filtered.slice((structuredState.voicePage - 1) * size, structuredState.voicePage * size);
   document.title = '角色语音 — 魔法纪录中文资料库';
   structuredShell(`
-    <section class="structured-hero voice-hero"><div><p class="eyebrow">CHARACTER VOICE ARCHIVE</p><h1>角色语音</h1><p>从原Wiki语音组件的原始 <code>data-bind</code> 中恢复MP3地址，并保留中文译文、日文原文、服装、场景分类和语音槽位。播放器按需加载，不会在进入页面时批量下载音频。</p></div><div class="coverage-grid structured-stats"><div><strong>${structuredState.manifest.voiceCharacters}</strong><span>语音人物</span></div><div><strong>${structuredState.manifest.voiceLines.toLocaleString('zh-CN')}</strong><span>语音记录</span></div><div><strong>${structuredState.manifest.voiceWithAudio.toLocaleString('zh-CN')}</strong><span>可播放MP3</span></div><div><strong>${structuredState.manifest.voiceWithTranslation.toLocaleString('zh-CN')}</strong><span>有中文译文</span></div></div></section>
+    <section class="structured-hero voice-hero"><div><p class="eyebrow">CHARACTER VOICE ARCHIVE</p><h1>角色语音</h1><p>按人物浏览角色语音、中文译文、日文原文、服装与场景分类。音频在点击播放时加载。</p></div><div class="coverage-grid structured-stats"><div><strong>${structuredState.manifest.voiceCharacters}</strong><span>语音人物</span></div><div><strong>${structuredState.manifest.voiceLines.toLocaleString('zh-CN')}</strong><span>语音记录</span></div><div><strong>${structuredState.manifest.voiceWithAudio.toLocaleString('zh-CN')}</strong><span>可播放MP3</span></div><div><strong>${structuredState.manifest.voiceWithTranslation.toLocaleString('zh-CN')}</strong><span>有中文译文</span></div></div></section>
     <section class="toolbar"><label class="search-field"><span>⌕</span><input id="voice-character-search" type="search" value="${sAttr(structuredState.voiceQuery)}" placeholder="搜索人物、声优、服装或语音分类" autocomplete="off"></label></section>
-    <section class="structured-result-head"><div><p class="result-kicker">可播放语音档案</p><h2>按人物浏览</h2></div><span>${filtered.length}人</span></section>
+    <section class="structured-result-head"><div><p class="result-kicker">语音资料</p><h2>按人物浏览</h2></div><span>${filtered.length}人</span></section>
     <div class="voice-character-grid">${shown.map(voiceIndexCard).join('')}</div>
     ${pages > 1 ? `<div class="pager"><button type="button" data-voice-page="${structuredState.voicePage - 1}" ${structuredState.voicePage <= 1 ? 'disabled' : ''}>上一页</button><span>第 ${structuredState.voicePage} / ${pages} 页</span><button type="button" data-voice-page="${structuredState.voicePage + 1}" ${structuredState.voicePage >= pages ? 'disabled' : ''}>下一页</button></div>` : ''}
   `, 'voice');
@@ -421,7 +421,7 @@ const structuredObserver = new MutationObserver(() => {
     queueMicrotask(() => void renderStructuredRoute());
   }
 });
-structuredObserver.observe(structuredApp, { childList: true, subtree: true });
+structuredObserver.observe(structuredApp, { childList: true, subtree: false });
 
 patchLegacyNavigation();
 setTimeout(() => void renderStructuredRoute(), 0);
