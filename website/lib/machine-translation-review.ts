@@ -90,7 +90,10 @@ export const machineTranslationSystemForStory = (
 export const machineTranslationStateKey = (
   storyId: string,
   _system: MachineTranslationSystem = 'magireco',
-): string => `${STATE_PREFIX}${storyId}`;
+): string => {
+  void _system;
+  return `${STATE_PREFIX}${storyId}`;
+};
 
 export const parseMachineTranslationReviewState = (
   raw: string | null,
@@ -130,6 +133,7 @@ export const getMachineTranslationReviewState = async (
   storyId: string,
   _system: MachineTranslationSystem = 'magireco',
 ): Promise<MachineTranslationReviewState | null> => {
+  void _system;
   const current = parseMachineTranslationReviewState(
     await kv.get(machineTranslationStateKey(storyId)),
   );
@@ -145,6 +149,7 @@ export const setMachineTranslationReviewState = async (
   state: MachineTranslationReviewState,
   _system: MachineTranslationSystem = 'magireco',
 ): Promise<void> => {
+  void _system;
   if (!MACHINE_TRANSLATION_ID_SET.has(storyId)) {
     throw new Error('STORY_NOT_IN_MACHINE_TRANSLATION_MANIFEST');
   }
@@ -155,6 +160,7 @@ export const listMachineTranslationReviewStates = async (
   kv: SubmissionKvNamespace,
   _system: MachineTranslationSystem = 'magireco',
 ): Promise<Record<string, MachineTranslationReviewState>> => {
+  void _system;
   const result: Record<string, MachineTranslationReviewState> = {};
   let cursor: string | undefined;
   do {
@@ -192,6 +198,7 @@ export const machineTranslationSystemSummary = async (
   kv: SubmissionKvNamespace | undefined,
   _system: MachineTranslationSystem = 'magireco',
 ) => {
+  void _system;
   const states = kv ? await listMachineTranslationReviewStates(kv) : {};
   const verifiedIds = MACHINE_TRANSLATION_MANIFEST.entries
     .filter(entry => states[entry.story_id]?.verified === true)

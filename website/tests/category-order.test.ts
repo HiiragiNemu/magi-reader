@@ -18,6 +18,7 @@ test('Magia Record categories preserve the production site navigation order', ()
     'costume_story',
     'scene0_main',
     'login_story',
+    'general_voice',
   ];
   assert.deepEqual(
     shuffled.sort((left, right) => categoryOrder(left) - categoryOrder(right)),

@@ -1,252 +1,302 @@
-# 2026-07-28 Exedra 中文 JSON/TXT 与人工校验交接
+# 2026-07-29 Exedra 中文 JSON/TXT、魔法纪录语音与人工校验交接
 
-> 本文件是下一位 AI 的权威交接入口。若其他旧文档与本文件或用户最新指令冲突，以本文件和最新用户指令为准。
+> 本文件记录当前本地工作树的实际状态。若旧聊天或旧文档与本文件冲突，以用户最新指令、代码和可复现报告为准。
 
-## 1. 工作分支与保护边界
+## 1. 仓库、分支与当前发布状态
 
+- 本地工作目录：`D:\magia\MyProducts\magi-reader-exedra-test`
 - 仓库：`HiiragiNemu/magi-reader`
-- 长期开发分支：`feature/exedra-cn-and-magireco-voice`
-- 基线分支：`EXEDRA-TEST`
+- 开发分支：`feature/exedra-cn-and-magireco-voice`
+- 基线与最终合并目标：`EXEDRA-TEST`
 - `main` 不得修改。
-- 当前长期分支相对 `EXEDRA-TEST` 为纯前进关系；最近审计为 ahead 111、behind 0。
-- 当前差异只包含代码、工具、测试、文档、0728 包审计元数据和两个空的 `general_voice` 目标目录；没有修改既有魔法纪录/Exedra 剧情 JSON、TXT 或人工中文语料。
-- 当前测试站 `https://magireader-exedra-cn-test.crynetsystemscell.workers.dev/` 尚未部署本长期分支的最新代码。
+- 当前大批数据、代码和文档改动仍在本地工作树中，尚未完成最终提交、推送、PR、合并。
+- `https://magireader-exedra-cn-test.crynetsystemscell.workers.dev/` 尚未部署本轮最终版本。
+- 生产 Worker `magireader`、生产 KV 和 `main` 不在本项目的写入范围内。
 
-## 2. 已经落盘到长期分支的研究和生产文件
+不得把“本地生成/本地构建成功”表述成“已上线”，也不得在最终检查通过前合并。
 
-### Exedra 可信中文与 JSON/TXT 管线
+## 2. 不可改变的来源政策
 
-- `website/lib/exedra-localization.ts`
-- `website/lib/exedra-wiki-exact.ts`
-- `website/app/api/exedra/localized/[id]/route.ts`
-- `website/app/api/exedra/localization-status/route.ts`
-- `website/app/api/admin/exedra-localize/route.ts`
-- `website/app/api/admin/exedra-localize/export/route.ts`
-- `website/app/review/exedra-localization/page.tsx`
-- `tools/import_exedra_official_tw.py`
-- `tools/import_exedra_cache_export.py`
-- `tests/test_exedra_import_tools.py`
+Exedra 自动机翻计划已经取消。只允许以下人工来源：
 
-### 魔法纪录 general voice 管线
+1. 仓库既有中文：保持原样，不覆盖。
+2. 能与同角色 `/Story/Japanese` 精确对齐的 Exedra Wiki `/Story/Chinese`。
+3. `圆哆啦文本0728.rar` 中的人工文本，仅补充 Wiki 没有可靠覆盖的部分。
+4. Exedra Wiki `/Voice/zh` 中能以日文正文或音频文件名精确匹配的中文语音。
 
-- `website/lib/general-voice-source.ts`
-- `website/lib/general-voice-runtime.ts`
-- `website/proxy.ts`
-- `tools/import_magireco_general_voice.py`
-- `magireco-voice-source-master/Scenarios_full/general_voice/.gitkeep`
-- `magireco-voice-translate-data-master/Scenarios_full/general_voice/.gitkeep`
+核心优先级为：
 
-### 构建、恢复与直接部署
+```text
+仓库既有中文 > Exedra Wiki 精确匹配中文 > 0728 人工文本
+```
 
-- `tools/github_api_checkout.py`
-- `tools/run_python_checks.py`
-- `website/scripts/run-python-checks.mjs`
-- `website/scripts/validate-feature-policy.mjs`
-- `website/scripts/cloudflare-direct-deploy-utils.mjs`
-- `website/scripts/cloudflare-direct-deploy-utils.test.mjs`
-- `website/scripts/deploy-direct-test.mjs`
-- `docs/DIRECT_EXEDRA_TEST_DEPLOYMENT.md`
-- `docs/FEATURE_REVIEW_CHECKLIST.md`
+- Wiki 和 0728 都属于人工文本，不得标记为机器翻译。
+- Exedra 没有可信中文时继续显示日文，不生成占位中文。
+- 禁止 LCS、模糊文件名、模糊角色名、重排或“数量差不多”的强行套用。
+- 魔法纪录原有 507 部机器翻译人工校验清单保持独立；Exedra 不进入该清单。
 
-### 0728 包审计元数据
+## 3. 0728 包审计与使用结果
 
-- `artifacts/source-archives/rounddora-text-0728.manifest.json`
+本地源文件：
 
-该 manifest 已记录：
+```text
+D:\magia\MyProducts\圆哆啦文本0728.rar
+```
 
-- 原文件名：`圆哆啦文本0728.rar`
-- 文件大小：2,452,430 字节
+审计结果：
+
+- RAR5，2,452,430 字节。
 - SHA-256：`2f55e92bd8ceb310ba37c7a7b5dd94dffe5849d1266017021ff52366595b572c`
-- 格式：RAR5
-- 条目：642
-- 文件：640
-- 目录：2
-- 文件扩展名：640 个 `.ass`
-- 解压后总大小：6,132,347 字节
-- 分类：人工翻译，永不标记为机器翻译
+- 642 个归档条目：640 个 `.ass` 文件和 2 个目录。
+- 解压后总大小：6,132,347 字节。
+- 逐文件路径、大小、SHA-256、编码、行数和对白数已写入：
+  `artifacts/source-archives/rounddora-text-0728.files.json`
+- 原始 RAR 没有提交进 Git。
 
-原始 RAR 本体没有提交进 Git。
+当前精确导入实际选择了 181 个唯一 ASS；其余 459 个不能简单称为“错误”或“全部未匹配”，其中包括被更高优先级 Wiki 覆盖的文本和不属于当前安全映射范围的文本。
 
-## 3. 已确定的产品决策
+## 4. Exedra 当前中文覆盖
 
-### Exedra 分类显示
+Exedra 日文基线：
 
-- `exedra_main` → `主线`
-- `exedra_sub` → `活动`
-- `exedra_character` → `角色`
-- `exedra_portrait` → `肖像`
-- `exedra_reaction` → `语音`
-- `exedra_namae` → `Namae`
-- `exedra_dungeon` → `过场动画字幕`
-- `exedra_battle` → `战斗`
+- 443 个逻辑剧情组。
+- 3,061 个来源 JSON。
+- 105,867 条可读文本事件。
 
-数字前缀不得再显示。
+当前生成后的目录：
 
-### 机器翻译政策
+- 中文逻辑组：124 / 443。
+- 仍无中文：319 / 443。
+- 其中 119 个新生成组具备经验证的中文 JSON、规范 TXT、导入报告和 provenance。
+- 5 个旧有本地中文组保留原状，以历史 TXT 兼容方式继续工作，没有被本轮改写。
+- 新生成 Exedra 中文 JSON：1,390 个。
+- 新生成 JSON 内文本事件：20,990 条。
+- `story_index.json` 为 119 个 JSON 支持组发布 `json_paths_cn`。
 
-- Exedra 自动机翻计划已经取消。
-- 不得调用 Workers AI 或其他模型自动填充 Exedra 缺失中文。
-- 魔法纪录现有 507 部机翻人工校验体系保持独立。
-- Exedra 的人工/Wiki/0728 文本不得标记为机器翻译。
+124 个中文组全部位于当前“角色”和“语音”范围：
 
-## 4. 下一阶段中文来源优先级
+| 范围 | 已中文 | 总数 | 仍缺 |
+|---|---:|---:|---:|
+| 角色剧情 | 51 | 61 | 10 |
+| Exedra 语音 | 73 | 86 | 13 |
+| 全部 Exedra | 124 | 443 | 319 |
 
-用户最新指令要求：
+### 4.1 角色剧情来源分布
 
-1. **仓库现有已中文化 Exedra 内容**：保持原样，不进一步改动，不覆盖，不标记机翻。
-2. **Exedra Wiki 角色中文剧情页**：优先于 0728 包。存在 Wiki 中文且能严格映射时，使用 Wiki 中文，不标记机翻。
-3. **`圆哆啦文本0728.rar`**：仅用于 Wiki 没有覆盖的 Exedra 剧情/语音。它属于人工剧情/语音文本，不标记机翻。
-4. 前三者均无可信文本时，保持日文，不制造占位中文。
+51 个角色组由以下部分组成：
 
-当前分支还保留官方台服繁中导入工具，但尚未实际导入任何台服数据。下一位 AI 不得让该工具覆盖仓库既有中文、Wiki 中文或 0728 人工文本；若要重新定义它在最终优先级中的位置，必须先与用户确认。
+- 5 个旧有本地中文组；
+- 6 个纯 Wiki 组；
+- 15 个纯 0728 组；
+- 25 个 Wiki + 0728 混合组。
 
-## 5. 0728 压缩包状态
+按实际 JSON 来源计数：
 
-原始 RAR 当前只存在于用户上传环境，**没有提交到 GitHub 分支，也没有生成稳定 Release 资产**。仓库已落盘的是审计 manifest，而不是 640 个 ASS 的原始内容。
+- Wiki：187 个 JSON、9,048 条事件、覆盖 31 个角色组；
+- 0728：181 个 JSON、9,004 条事件、覆盖 40 个角色组；
+- 两种来源在 25 个组内按 Episode/Section 精确混合，因此组数不能直接相加。
 
-下一位 AI 必须：
+角色剧情采用同角色 `/Story/Japanese` 作为锚点，对显示文本执行 NFKC、显示/注音规范化和唯一顺序匹配。只有可以证明为唯一的 1↔N 顺序映射才导入；没有模糊匹配和重排。
 
-1. 重新取得 RAR；
-2. 验证 SHA-256 必须等于 `2f55e92bd8ceb310ba37c7a7b5dd94dffe5849d1266017021ff52366595b572c`；
-3. 解包并逐个清点 640 个 `.ass`；
-4. 建立路径、编码、文件大小、内容哈希、行数和 Exedra 映射清单；
-5. 不得根据文件名或本交接文档臆造 ASS 内容。
-
-若新会话无法取得上传附件，必须让用户重新上传，或先把它放入受控的私有 Release/对象存储并记录校验值。
-
-## 6. 下一位 AI 的核心目标
-
-### A. 解析与映射 0728 文本
-
-1. 解包并建立完整清单：路径、编码、文件大小、SHA-256、文本行数。
-2. 识别角色剧情、活动、语音及其他文本类型。
-3. 将文本映射到 `magiraexedra-source-master/Scenarios_full/exedra_manifest.json` 的 443 个逻辑组和 3,061 个来源 JSON。
-4. 映射必须依赖明确 ID、Section、Episode、事件顺序和角色身份，不得使用模糊文件名猜测。
-5. 生成来源侧车，至少记录：来源文件、来源哈希、目标 group、Section 映射和文本事件数量。
-
-### B. 继续抓取 Exedra Wiki 人工中文
-
-1. 对每个 Exedra 角色组查找 `/Story/Chinese` 页面，例如 `:Iroha_Tamaki/Story/Chinese`。
-2. Wiki 中文优先于 0728 文本。
-3. 必须验证角色身份、Section/Episode、文本事件数量、旁白/对白类型和说话人序列。
-4. 无法精确证明时拒绝导入，不得通过 LCS、模糊匹配或重排强行套用。
-5. 记录 Wiki URL、抓取时间、页面/正文哈希和映射证明。
-
-### C. 先生产可播放中文 JSON，再生成 TXT
-
-所有新增 Exedra 中文必须遵循：
-
-1. 以日文 JSON 为结构基准。
-2. 保留所有非文本字段、动作、资源 ID、角色 ID、分支、等待、镜头、音频及其他播放器字段。
-3. 只替换经过证明的文本字段；不得把 TXT 反向粗暴覆盖整个 JSON。
-4. 每个来源 JSON 都必须能通过解析、schema、事件顺序和播放器兼容验证。
-5. 中文 JSON 验证通过后，再由 JSON 生成规范 `<groupKey>_cn.txt`。
-6. TXT 必须保留规范 Section/Source 头、事件数量和说话人顺序。
-7. 为每个逻辑组生成 schema-v1 导入报告和 provenance 侧车。
-8. 任一组验证失败时 fail-closed，不留下半成品。
-
-### D. 魔法纪录与 Exedra 人工校验界面必须生成双产物
-
-当前社区校对体系仍以完整 TXT 投稿和单 TXT PR 为主，尚未完成“批准后 JSON + TXT 双产物”。下一位 AI 必须改造：
-
-1. 魔法纪录校验批准后，生成与目标剧情对应的全部中文 JSON，并由已验证 JSON 再生成 TXT。
-2. Exedra 校验批准后，同样生成全部中文 JSON，再生成 TXT。
-3. PR 不得只修改 TXT；必须包含相应 JSON、TXT、来源/审核元数据和验证报告。
-4. 批准前重新校验基准 SHA-256，阻止旧投稿覆盖新版本。
-5. 验证 Section、Branch、Scene0、选项、动作和角色顺序。
-6. CI/本地质量门必须确认产物可以被现有播放器实际解析和播放。
-7. 未通过 JSON 播放验证的投稿不得取消“待校”状态或进入正式分支。
-
-### E. 中日对照布局选项
-
-阅读器和“协助汉化/人工校验”页面都需要统一布局选择：
-
-- 保留当前手机端中日对照格式，并将其作为可选模式，而不是仅由设备自动决定。
-- PC 端增加中日在上下方向排列的模式。
-- 布局选择应同时作用于普通阅读页和汉化编辑页。
-- 需要持久化用户选择，并在手机/PC 上都允许手动切换。
-- 不得因布局变化破坏输入框、Section 定位、差异高亮或提交内容。
-
-### F. 客户端可信 Exedra 中文目录接入
-
-新公共 API `/api/exedra/localization-status` 已落盘，但客户端 `loadStoryIndex` 尚未完成合并可信 Wiki/人工中文状态。下一位 AI 需要：
-
-1. 加载静态 story index。
-2. 加载可信中文状态 API。
-3. 只对 `story_id + source_identity` 精确匹配的可信记录注入 `/api/exedra/localized/<id>`。
-4. 状态 API 失败时回退原始目录。
-5. 不得把未命中可信来源的 Exedra 剧情伪装成有中文或 100%。
-
-### G. 魔法纪录语音落盘与页面接入
-
-1. 运行 `tools/import_magireco_general_voice.py`，实际生成 411 个模型的 JSON、TXT 和 manifest。
-2. 验证角色映射、模型 ID、语音资源键、事件顺序和 TXT 格式。
-3. 将 `general_voice` 纳入目录、播放器和搜索策略。
-4. 当前运行时上游代理只能作为过渡方案；最终应优先使用仓库内落盘文件。
-
-## 7. 完成前必须执行的验证和部署
-
-在具备 npm、GitHub 和 Cloudflare 网络的环境：
-
-```powershell
-cd website
-npm ci
-npm run check
-npm run build:worker
-npm run deploy:test:direct -- --dry-run
-npm run deploy:test:direct
-```
-
-测试 Worker 固定为：
+仍被安全拒绝的 10 个角色组：
 
 ```text
-magireader-exedra-cn-test
+character_darc
+character_felicia
+character_hanna
+character_kush
+character_kyoko
+character_mami
+character_meru
+character_nagisa
+character_reira
+character_sayaka
 ```
 
-测试 KV 固定名称：
+这些拒绝是安全边界的一部分，不得为了提高数字强行填充。
+
+### 4.2 Exedra Wiki 中文语音
+
+已审计：
+
+- 158 个 `/Voice/zh` 页面；
+- 2,990 行 Wiki 语音；
+- 2,987 个唯一音频文件名；
+- 成功生成 73 / 86 个 Exedra reaction 语音组；
+- 1,022 个 JSON、2,938 条事件。
+
+`Lux☆Magica/Voice/zh`：
+
+- 页面提供 62 个可信行；
+- 其中 14 行被 `cv_100101` 精确使用；
+- 使用日文正文/音频文件名匹配，不以中文行数硬套；
+- 已支持经过证明的 `cv_100803 → cv_100805` 文件身份别名。
+
+13 个拒绝组及原因：
+
+- Wiki 对应中文行为空：`cv_100106`、`cv_100301`、`cv_100403`、`cv_111501`、`cv_111601`、`cv_111701`、`cv_113301`、`cv_113801`。
+- 找不到完全一致的音频文件名：`cv_113401`、`cv_113501`、`cv_113601`、`cv_114801`。
+- 日文正文不完全一致：`cv_100401` 的 `聴けて` / `聞けて`。
+
+报告：
+
+- `artifacts/exedra_wiki_voice_import_report.json`
+- `artifacts/exedra_wiki_voice_character_match_report.json`
+- `artifacts/exedra_human_text_import_report.json`
+
+## 5. 可播放 JSON 必须先于 TXT
+
+所有新 Exedra 中文遵守同一规则：
+
+1. 日文 JSON 是结构模板。
+2. 只替换已经证明对应的玩家可见文本。
+3. 保留动作、资源 ID、角色 ID、音频、等待、镜头、分支、sheet/row 和全部非文本字段。
+4. 校验来源文件名、事件数、`ActionType`、说话人顺序、结构哈希和中文来源证明。
+5. 中文 JSON 全部通过后，再从 JSON 生成规范 `<groupKey>_cn.txt`。
+6. 生成 schema-v1 导入报告和 provenance。
+7. 任一组失败时事务回滚，不留下半成品。
+
+`generate_story_index.py` 在发布中文 JSON 时再次校验：
+
+- Exedra manifest 中的完整 `source_names`；
+- 导入报告的来源顺序、哈希和事件数；
+- JP/CN 可读事件数、`ActionType` 和说话人顺序；
+- 公开 JSON 路径必须安全且唯一。
+
+当前 `website/public/story_index.json`：
+
+- 总条目：3,012。
+- Exedra：443，其中中文 124。
+- 为 119 个新 Exedra 中文组发布 JSON 路径。
+- 为 410 个魔法纪录 general voice 条目发布 JSON 路径。
+- 公开中文 JSON 总数：1,800（Exedra 1,390 + general voice 410）。
+
+## 6. 魔法纪录 general voice
+
+新分类：
 
 ```text
-magi-submissions-exedra-cn-test
+general_voice → 语音
 ```
 
-部署后必须检查：
+已经静态落盘并纳入目录：
 
-- 分类名称；
-- 手机/PC 中日布局选择；
-- Magia Record 语音目录和 TXT；
-- Wiki 与 0728 Exedra 中文 JSON/TXT；
-- 两套人工校验批准后的 JSON/TXT 双产物 PR；
-- Exedra 无机翻标记；
-- 魔法纪录 507 部机翻清单不受影响；
-- 生产 `main` 和生产 Worker 未变化。
+- 410 个有效模型；上游 `xxxx.json` 无效占位文件被拒绝。
+- 16,753 个语音组。
+- manifest 中 18,233 条语音。
+- 9,107 个 `textHome` 文本事件。
+- 8,727 个可编辑组：
+  - 8,412 个单 `textHome`；
+  - 315 个多 `textHome`，现在按一个事件一行处理。
+- 8,026 个没有 `textHome` 的资源/动作组保持只读，不伪造中文文本。
 
-## 8. 完成后汇报指标
+多 `textHome` 修复重建了 26 个模型 TXT。源清单与中文清单内容一致，SHA-256 都是：
 
-至少报告：
+```text
+260fe3d38df77e9d220d20c23e63081fcc146389e4d8a5f7dbad5da76e49f89d
+```
 
-- Exedra 443 组中：既有本地中文、Wiki 中文、0728 人工中文、官方台服中文、仍无中文的数量；
-- 各来源 JSON 数、TXT 数、事件数；
-- 成功/失败/需人工映射的组；
-- Wiki 页面命中与拒绝原因；
-- 0728 文件命中与未映射清单；
-- 可播放 JSON 验证结果；
-- 魔法纪录 general voice 角色/模型/语音数量；
-- 校验界面产生的 JSON/TXT/PR 数量；
-- 测试站部署提交 SHA 和线上烟雾测试结果。
+每个模型发布：
 
-## 9. 明确未完成状态
+```text
+/data/general_voice/<modelId>/<modelId>_cn.txt
+/data/general_voice/<modelId>/<modelId>_cn.json
+```
 
-截至本交接：
+## 7. 人工校验的 JSON + TXT 双产物
 
-- 0728 RAR 审计 manifest 已落盘，但原始 RAR 和 640 个 ASS 内容未进 Git，尚未完成内容清单与 Exedra 映射。
-- Wiki 尚未完成全角色抓取与实际导入统计。
-- 0728/Wiki Exedra 中文 JSON/TXT 尚未批量生产。
-- 魔法纪录与 Exedra 校验批准后的 JSON/TXT 双产物尚未实现。
-- 中日对照布局选项尚未实现。
-- 客户端可信 Exedra 中文状态尚未接入 story index。
-- 411 个 general voice JSON/TXT 尚未实际提交。
-- 完整 npm/TypeScript/OpenNext 构建未执行。
-- 最新长期分支尚未部署到测试站。
-- 未合并到 `EXEDRA-TEST`，更未修改 `main`。
+魔法纪录剧情、魔法纪录 general voice 和 Exedra 都已接入同一 fail-closed 物化器：
 
-下一位 AI 应从本文件开始读取，再检查 `docs/FEATURE_REVIEW_CHECKLIST.md` 和 `docs/DIRECT_EXEDRA_TEST_DEPLOYMENT.md`，不要从旧聊天描述推断完成状态。
+```text
+scripts/materialize_proofreading_assets.py
+```
+
+重要语义：
+
+- 审核后的 TXT 只是人工输入文档，不是结构来源。
+- 物化器从目标分支的中文 JSON或日文 JSON读取结构模板。
+- 只更新可见文本和经过允许的显示名。
+- 先生成并验证可播放 JSON，再从该 JSON 重新生成规范 TXT。
+- 使用 `--base-ref` 时，结构模板从 PR 基线读取，防止投稿夹带未审核 JSON 结构改动。
+- 产物和报告作为一个可回滚事务写入。
+
+`scripts/apply_proofreading_submission.py` 已在应用投稿时直接调用物化器。社区校对 PR 的流程是：
+
+1. 初始 PR 只允许一个规范 TXT 输入；
+2. CI 验证改动范围；
+3. 物化可播放 JSON；
+4. 从 JSON 重建规范 TXT；
+5. 生成校验报告，并在 general voice 情况下同步两个 manifest 哈希；
+6. 将严格限定的产物提交回同一个 PR；
+7. 再运行 Python、目录生成、机翻清单、Lint、TypeScript、网站测试、搜索构建和 Worker 构建。
+
+general voice 的校验变更严格限制为 5 个文件：模型 JSON、模型 TXT、校验报告、源 manifest、中文 manifest。
+
+## 8. 中日对照布局
+
+阅读器与“协助汉化”共用：
+
+```text
+magi-reader-bilingual-layout-v1
+```
+
+可选项：
+
+- `左右排列`
+- `上下排列`
+
+两种模式在手机和 PC 上都允许手动选择，并写入 `localStorage`。该选择同时作用于普通阅读和编辑输入行，不改变 Section、差异高亮或投稿文本结构。
+
+本地浏览器已经确认：
+
+- 设置面板显示两种排列选项；
+- Magia Record 侧栏出现“语音”；
+- Exedra 分类显示为 `主线、活动、角色、肖像、语音、Namae、过场动画字幕、战斗`；
+- 分类没有数字前缀；
+- Exedra 角色目录显示 51 / 61 个有中文；
+- 修复后静态 Exedra 中文直接读取经验证的 public TXT，不再错误依赖本地不可用的 Cloudflare KV API；
+- 环彩羽 Exedra 中文/日文内容可以在本地阅读器中加载。
+
+最后一次“上下排列 + 协助汉化”点击验收和完整质量门重跑已经完成。
+
+## 9. 本地验证记录
+
+已经完成：
+
+- 完整 `generate_story_index.py` 生成。
+- Python 检查：143 通过，2 跳过。
+- `npm ci`。
+- 最终 `npm run check`：feature policy 97 项、Python 143 通过/2 跳过、ESLint、TypeScript、83 个 Node 测试、生产依赖审计全部通过。
+- 搜索生成和一致性校验：3,012 个目录条目、5,242 个搜索条目。
+- 最后一次静态 Exedra 中文路由修复后，OpenNext Worker 构建和 Cloudflare 输出验证通过。
+- 本地浏览器完成主要目录、分类、中文加载、左右/上下排列、普通阅读、汉化编辑和 general voice 烟雾测试。
+
+未完成：
+
+- 提交、推送、PR、合并；
+- 测试 Worker 真实部署和线上烟雾测试。
+
+## 10. 搜索索引现状
+
+本地搜索内容已生成并验证：
+
+- 搜索条目：5,242。
+- payload：79,001,794 字节。
+- 对象键：
+  `search/0858dda73a7395000bfb0a60eb102bad8e7838e488d3bae64aa81765d91a7341.json`
+
+当前 Cloudflare 凭据没有 R2 权限，因此该对象尚未上传。目录、标题搜索和剧情阅读不依赖此次 R2 上传；全文正文搜索是否可用必须在部署后单独报告，不得误报。
+
+## 11. 最终发布顺序
+
+1. 完成本地上下排列/编辑模式点击验收。
+2. 重跑完整检查、Worker 构建与直接部署 dry-run。
+3. 审计 Git 差异，确认没有秘密、临时文件、既有人工语料覆盖或生产配置。
+4. 提交并推送 `feature/exedra-cn-and-magireco-voice`。
+5. 建立目标为 `EXEDRA-TEST` 的 PR，等待全部 CI。
+6. 以 squash 方式合并，避免把长期开发分支的历史噪音带入目标分支。
+7. 部署固定测试 Worker `magireader-exedra-cn-test`。
+8. 在线验证目录、124 个 Exedra 中文组、410 个 general voice、JSON/TXT、布局、校验 API 和魔法纪录 507 部机翻清单。
+9. 确认 `main` SHA、生产 Worker 和生产 KV 均未变化。
+
+当前文档不得勾选第 4～9 步为完成。

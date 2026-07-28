@@ -1,0 +1,535 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-28T17:37:12.771867+00:00",
+  "writeMode": true,
+  "policy": "existing_then_exact_japanese_anchored_wiki_then_exact_japanese_anchored_rounddora_0728",
+  "machineTranslation": false,
+  "inventory": {
+    "fileCount": 640,
+    "totalBytes": 6132347
+  },
+  "wiki": {
+    "pageCount": 40,
+    "japaneseAnchorPageCount": 56,
+    "errors": {
+      "character_kush": [
+        ":Kush_Irnam/Story/Japanese:RuntimeError:missingtitle",
+        ":Kush_Irnam/Story/Chinese:RuntimeError:missingtitle",
+        ":Kush/Story/Japanese:RuntimeError:missingtitle",
+        ":Kush/Story/Chinese:RuntimeError:missingtitle"
+      ],
+      "character_meru": [
+        ":Meru_Anna/Story/Japanese:RuntimeError:missingtitle",
+        ":Meru_Anna/Story/Chinese:RuntimeError:missingtitle"
+      ],
+      "character_fuka": [
+        ":Fuka_Higurashi/Story/Japanese:RuntimeError:missingtitle",
+        ":Fuka_Higurashi/Story/Chinese:RuntimeError:missingtitle"
+      ],
+      "character_melissa": [
+        ":Melissa/Story/Japanese:RuntimeError:missingtitle",
+        ":Melissa/Story/Chinese:RuntimeError:missingtitle"
+      ],
+      "character_reira": [
+        ":Leila_Ibuki/Story/Japanese:RuntimeError:missingtitle",
+        ":Leila_Ibuki/Story/Chinese:RuntimeError:missingtitle"
+      ],
+      "character_senpai": [
+        ":Madoka_Senpai/Story/Japanese:RuntimeError:missingtitle",
+        ":Madoka_Senpai/Story/Chinese:RuntimeError:missingtitle"
+      ],
+      "character_liz": [
+        ":Riz_Hawkwood/Story/Japanese:RuntimeError:missingtitle",
+        ":Riz_Hawkwood/Story/Chinese:RuntimeError:missingtitle"
+      ],
+      "character_sumire": [
+        ":Sumire_Yomeiji/Story/Japanese:RuntimeError:missingtitle",
+        ":Sumire_Yomeiji/Story/Chinese:RuntimeError:missingtitle"
+      ],
+      "character_mannenzakura": [
+        ":Rumor_of_the_Ten-Thousand-Year_Sakura/Story/Japanese:RuntimeError:missingtitle",
+        ":Rumor_of_the_Ten-Thousand-Year_Sakura/Story/Chinese:RuntimeError:missingtitle"
+      ],
+      "character_darc": [
+        ":Tart/Story/Japanese:RuntimeError:missingtitle",
+        ":Tart/Story/Chinese:RuntimeError:missingtitle"
+      ]
+    }
+  },
+  "counts": {
+    "existing_local": 45,
+    "ready": 0,
+    "imported": 6,
+    "rejected": 10,
+    "failed": 0
+  },
+  "results": [
+    {
+      "groupKey": "character_arina",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_ashley",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_asuka",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_ayame",
+      "status": "imported",
+      "jsonCount": 8,
+      "eventCount": 445,
+      "provenances": [
+        "exedra_wiki_human",
+        "rounddora_0728_human"
+      ]
+    },
+    {
+      "groupKey": "character_corbeau",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_darc",
+      "status": "rejected",
+      "reasons": [
+        {
+          "episode": 1,
+          "source": "character_darc_1.json",
+          "jsonEvents": 51,
+          "wikiEvents": null,
+          "japaneseWikiEvents": 51,
+          "assFile": "Tart1.ass",
+          "assEvents": 50,
+          "alignmentErrors": [
+            "ass:ASS 缺口不能由逐项精确匹配的静默标点事件解释"
+          ]
+        },
+        {
+          "episode": 2,
+          "source": "character_darc_2.json",
+          "jsonEvents": 53,
+          "wikiEvents": null,
+          "japaneseWikiEvents": 53,
+          "assFile": "Tart2.ass",
+          "assEvents": 52,
+          "alignmentErrors": [
+            "ass:ASS 的静默标点缺口存在多个等价位置，拒绝猜测"
+          ]
+        }
+      ]
+    },
+    {
+      "groupKey": "character_felicia",
+      "status": "rejected",
+      "reasons": [
+        {
+          "episode": 4,
+          "source": "character_felicia_4.json",
+          "jsonEvents": 65,
+          "wikiEvents": 64,
+          "japaneseWikiEvents": 65,
+          "assFile": "MitsukiFelicia4.ass",
+          "assEvents": 64,
+          "alignmentErrors": [
+            "wiki:中文 Wiki 行无法按说话人结构锚定日文 Wiki",
+            "ass:ASS 缺口不能由逐项精确匹配的静默标点事件解释"
+          ]
+        }
+      ]
+    },
+    {
+      "groupKey": "character_fuka",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_hanna",
+      "status": "rejected",
+      "reasons": [
+        {
+          "episode": 7,
+          "source": "character_hanna_7.json",
+          "jsonEvents": 89,
+          "wikiEvents": 88,
+          "japaneseWikiEvents": 89,
+          "assFile": "SarasaHanna7.ass",
+          "assEvents": 84,
+          "alignmentErrors": [
+            "wiki:中文 Wiki 与日文 Wiki 存在多个结构对齐，拒绝猜测",
+            "ass:ASS 缺口不能由逐项精确匹配的静默标点事件解释"
+          ]
+        }
+      ]
+    },
+    {
+      "groupKey": "character_hazuki",
+      "status": "imported",
+      "jsonCount": 8,
+      "eventCount": 445,
+      "provenances": [
+        "exedra_wiki_human"
+      ]
+    },
+    {
+      "groupKey": "character_himika",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_homura",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_iroha",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_kaede",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_kako",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_kanae",
+      "status": "imported",
+      "jsonCount": 8,
+      "eventCount": 407,
+      "provenances": [
+        "rounddora_0728_human"
+      ]
+    },
+    {
+      "groupKey": "character_karin",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_kirika",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_koito",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_kokoro",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_konoha",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_kush",
+      "status": "rejected",
+      "reasons": [
+        {
+          "episode": 1,
+          "source": "character_kush_1.json",
+          "jsonEvents": 69,
+          "wikiEvents": null,
+          "japaneseWikiEvents": null,
+          "assFile": "IrinaKushu1.ass",
+          "assEvents": 61,
+          "alignmentErrors": [
+            "ass:数量不等且缺少日文 Wiki 锚点，禁止调整"
+          ]
+        },
+        {
+          "episode": 3,
+          "source": "character_kush_3.json",
+          "jsonEvents": 63,
+          "wikiEvents": null,
+          "japaneseWikiEvents": null,
+          "assFile": "IrinaKushu3.ass",
+          "assEvents": 62,
+          "alignmentErrors": [
+            "ass:数量不等且缺少日文 Wiki 锚点，禁止调整"
+          ]
+        },
+        {
+          "episode": 7,
+          "source": "character_kush_7.json",
+          "jsonEvents": 79,
+          "wikiEvents": null,
+          "japaneseWikiEvents": null,
+          "assFile": "IrinaKushu7.ass",
+          "assEvents": 78,
+          "alignmentErrors": [
+            "ass:数量不等且缺少日文 Wiki 锚点，禁止调整"
+          ]
+        }
+      ]
+    },
+    {
+      "groupKey": "character_kyoko",
+      "status": "rejected",
+      "reasons": [
+        {
+          "episode": 7,
+          "source": "character_kyoko_7.json",
+          "jsonEvents": 62,
+          "wikiEvents": null,
+          "japaneseWikiEvents": 62,
+          "assFile": "SakuraKyoko7.ass",
+          "assEvents": 61,
+          "alignmentErrors": [
+            "ass:ASS 的静默标点缺口存在多个等价位置，拒绝猜测"
+          ]
+        }
+      ]
+    },
+    {
+      "groupKey": "character_liz",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_mabayu",
+      "status": "imported",
+      "jsonCount": 8,
+      "eventCount": 751,
+      "provenances": [
+        "rounddora_0728_human"
+      ]
+    },
+    {
+      "groupKey": "character_madoka",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_mami",
+      "status": "rejected",
+      "reasons": [
+        {
+          "episode": 2,
+          "source": "character_mami_2.json",
+          "jsonEvents": 63,
+          "wikiEvents": null,
+          "japaneseWikiEvents": 63,
+          "assFile": "TomoeMami2.ass",
+          "assEvents": 62,
+          "alignmentErrors": [
+            "ass:ASS 的静默标点缺口存在多个等价位置，拒绝猜测"
+          ]
+        }
+      ]
+    },
+    {
+      "groupKey": "character_mannenzakura",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_masara",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_mayoi",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_meiyui",
+      "status": "imported",
+      "jsonCount": 8,
+      "eventCount": 376,
+      "provenances": [
+        "exedra_wiki_human",
+        "rounddora_0728_human"
+      ]
+    },
+    {
+      "groupKey": "character_melissa",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_meru",
+      "status": "rejected",
+      "reasons": [
+        {
+          "episode": 1,
+          "source": "character_meru_1.json",
+          "jsonEvents": 40,
+          "wikiEvents": null,
+          "japaneseWikiEvents": null,
+          "assFile": "AnnaMeru1.ass",
+          "assEvents": 39,
+          "alignmentErrors": [
+            "ass:数量不等且缺少日文 Wiki 锚点，禁止调整"
+          ]
+        },
+        {
+          "episode": 5,
+          "source": "character_meru_5.json",
+          "jsonEvents": 35,
+          "wikiEvents": null,
+          "japaneseWikiEvents": null,
+          "assFile": "AnnaMeru5.ass",
+          "assEvents": 34,
+          "alignmentErrors": [
+            "ass:数量不等且缺少日文 Wiki 锚点，禁止调整"
+          ]
+        }
+      ]
+    },
+    {
+      "groupKey": "character_mifuyu",
+      "status": "imported",
+      "jsonCount": 8,
+      "eventCount": 367,
+      "provenances": [
+        "rounddora_0728_human"
+      ]
+    },
+    {
+      "groupKey": "character_mitama",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_mito",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_momoko",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_nagisa",
+      "status": "rejected",
+      "reasons": [
+        {
+          "episode": 1,
+          "source": "character_nagisa_1.json",
+          "jsonEvents": 60,
+          "wikiEvents": null,
+          "japaneseWikiEvents": 60,
+          "assFile": "MomoeNagisa1.ass",
+          "assEvents": 72,
+          "alignmentErrors": [
+            "ass:ASS 数量无法由日文 Wiki 精确锚点证明：ASS 72 / Wiki 60 / JSON 60"
+          ]
+        }
+      ]
+    },
+    {
+      "groupKey": "character_nanaka",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_natsuki",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_nemu",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_oriko",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_reira",
+      "status": "rejected",
+      "reasons": [
+        {
+          "episode": 6,
+          "source": "character_reira_6.json",
+          "jsonEvents": 60,
+          "wikiEvents": 59,
+          "japaneseWikiEvents": 60,
+          "assFile": "IbukiReira6.ass",
+          "assEvents": 53,
+          "alignmentErrors": [
+            "wiki:中文 Wiki 与日文 Wiki 存在多个结构对齐，拒绝猜测",
+            "ass:ASS 缺口不能由逐项精确匹配的静默标点事件解释"
+          ]
+        }
+      ]
+    },
+    {
+      "groupKey": "character_ren",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_rena",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_rika",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_riko",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_sana",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_sayaka",
+      "status": "rejected",
+      "reasons": [
+        {
+          "episode": 5,
+          "source": "character_sayaka_5.json",
+          "jsonEvents": 60,
+          "wikiEvents": null,
+          "japaneseWikiEvents": 60,
+          "assFile": "MikiSayaka5.ass",
+          "assEvents": 61,
+          "alignmentErrors": [
+            "ass:ASS 数量无法由日文 Wiki 精确锚点证明：ASS 61 / Wiki 60 / JSON 60"
+          ]
+        }
+      ]
+    },
+    {
+      "groupKey": "character_seika",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_senpai",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_shinobu",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_sumire",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_touka",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_tsukasa",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_tsukuyo",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_tsuruno",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_ui",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_yachiyo",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_yotsugi",
+      "status": "existing_local"
+    },
+    {
+      "groupKey": "character_yuma",
+      "status": "existing_local"
+    }
+  ]
+}

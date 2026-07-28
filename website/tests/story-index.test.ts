@@ -11,6 +11,9 @@ test('story index validation rejects paths outside the public data boundary', as
     has_cn: false,
     has_jp: true,
     path_jp: '/data/exedra_main/main_demo/main_demo_jp.txt',
+    json_paths_cn: [
+      '/data/exedra_main/main_demo/main_demo_0.json',
+    ],
     game: 'exedra',
   };
 
@@ -28,6 +31,24 @@ test('story index validation rejects paths outside the public data boundary', as
       () => parseStoryIndex([{ ...validStory, path_jp: unsafePath }]),
       /path|路径|data/i,
       unsafePath,
+    );
+  }
+
+  for (const unsafeJsonPaths of [
+    [],
+    ['/data/exedra_main/main_demo/main_demo_0.txt'],
+    ['/data/../api/submit.json'],
+    [
+      '/data/exedra_main/main_demo/main_demo_0.json',
+      '/DATA/EXEDRA_MAIN/MAIN_DEMO/MAIN_DEMO_0.JSON',
+    ],
+  ]) {
+    assert.throws(
+      () =>
+        parseStoryIndex([
+          { ...validStory, json_paths_cn: unsafeJsonPaths },
+        ]),
+      /json_paths_cn/i,
     );
   }
 });
@@ -125,10 +146,11 @@ test('reader derives deterministic Exedra paths for direct route visits', async 
       '/data/stale/path.txt',
     ),
     {
-      pathCn: '/data/exedra_character/character_rena/character_rena_cn.txt',
+      pathCn:
+        '/api/exedra/localized/exedra_character_character_rena_939abf8f5b',
       pathJp: '/data/exedra_character/character_rena/character_rena_jp.txt',
       optionalCn: true,
-      kind: 'exedra-derived',
+      kind: 'exedra-trusted-runtime',
     },
   );
   assert.equal(
@@ -202,8 +224,18 @@ test('story index shares one request while aborted consumers can reattach', asyn
   const originalFetch = globalThis.fetch;
   let fetchCalls = 0;
   let resolveResponse: ((response: Response) => void) | undefined;
-  globalThis.fetch = (() => {
+  globalThis.fetch = ((input: string | URL | Request) => {
     fetchCalls += 1;
+    if (String(input) === '/api/exedra/localization-status') {
+      return Promise.resolve(
+        Response.json({
+          version: 1,
+          total: 0,
+          entries: [],
+          database_configured: false,
+        }),
+      );
+    }
     return new Promise<Response>((resolve) => {
       resolveResponse = resolve;
     });
@@ -237,7 +269,7 @@ test('story index shares one request while aborted consumers can reattach', asyn
     );
     const loaded = await second;
     assert.equal(loaded.stories[0]?.id, story.id);
-    assert.equal(fetchCalls, 1);
+    assert.equal(fetchCalls, 2);
 
     const alreadyAborted = new AbortController();
     alreadyAborted.abort();
@@ -247,5 +279,150 @@ test('story index shares one request while aborted consumers can reattach', asyn
     );
   } finally {
     globalThis.fetch = originalFetch;
+  }
+});
+
+test('trusted Exedra status requires exact story and source identities', async () => {
+  const {
+    mergeTrustedExedraLocalizations,
+    parseStoryIndex,
+    parseTrustedExedraLocalizationStatus,
+  } = await import('../lib/story-index.ts');
+  const untranslated = {
+    id: 'exedra_character_character_iroha_1234567890',
+    category: 'exedra_character',
+    folder: 'character_iroha',
+    percent: 0,
+    has_cn: false,
+    has_jp: true,
+    path_jp:
+      '/data/exedra_character/character_iroha/character_iroha_jp.txt',
+    game: 'exedra',
+    source_identity: 'exedra:3_Character:character_iroha',
+  };
+  const staticChinese = {
+    ...untranslated,
+    id: 'exedra_character_character_rena_1234567890',
+    source_identity: 'exedra:3_Character:character_rena',
+    percent: 100,
+    has_cn: true,
+    path_cn:
+      '/data/exedra_character/character_rena/character_rena_cn.txt',
+  };
+  const stories = parseStoryIndex([untranslated, staticChinese]);
+  const status = parseTrustedExedraLocalizationStatus({
+    version: 1,
+    total: 3,
+    database_configured: true,
+    entries: [
+      {
+        story_id: untranslated.id,
+        source_identity: untranslated.source_identity,
+      },
+      {
+        story_id: staticChinese.id,
+        source_identity: staticChinese.source_identity,
+      },
+      {
+        story_id: 'exedra_character_character_other_1234567890',
+        source_identity: 'exedra:3_Character:character_other',
+      },
+    ],
+  });
+  const merged = mergeTrustedExedraLocalizations(stories, status);
+  assert.deepEqual(merged[0], {
+    ...untranslated,
+    percent: 100,
+    has_cn: true,
+    path_cn: `/api/exedra/localized/${untranslated.id}`,
+  });
+  assert.deepEqual(merged[1], staticChinese);
+
+  const mismatched = mergeTrustedExedraLocalizations(
+    stories,
+    parseTrustedExedraLocalizationStatus({
+      version: 1,
+      total: 1,
+      database_configured: true,
+      entries: [{
+        story_id: untranslated.id,
+        source_identity: 'exedra:3_Character:character_wrong',
+      }],
+    }),
+  );
+  assert.deepEqual(mismatched, stories);
+});
+
+test('trusted Exedra status rejects malformed and duplicate entries', async () => {
+  const { parseTrustedExedraLocalizationStatus } = await import(
+    '../lib/story-index.ts'
+  );
+  assert.throws(
+    () => parseTrustedExedraLocalizationStatus({
+      version: 1,
+      total: 2,
+      database_configured: true,
+      entries: [{
+        story_id: 'same',
+        source_identity: 'exedra:3_Character:a',
+      }, {
+        story_id: 'same',
+        source_identity: 'exedra:3_Character:b',
+      }],
+    }),
+    /身份无效/u,
+  );
+  assert.throws(
+    () => parseTrustedExedraLocalizationStatus({
+      version: 1,
+      total: 2,
+      database_configured: true,
+      entries: [],
+    }),
+    /条目数无效/u,
+  );
+});
+
+test('trusted Exedra status failures safely preserve the static catalog', async () => {
+  const {
+    applyTrustedExedraLocalizationStatus,
+    parseStoryIndex,
+  } = await import('../lib/story-index.ts');
+  const stories = parseStoryIndex([{
+    id: 'exedra_character_character_iroha_1234567890',
+    category: 'exedra_character',
+    folder: 'character_iroha',
+    percent: 0,
+    has_cn: false,
+    has_jp: true,
+    path_jp:
+      '/data/exedra_character/character_iroha/character_iroha_jp.txt',
+    game: 'exedra',
+    source_identity: 'exedra:3_Character:character_iroha',
+  }]);
+  const originalWarn = console.warn;
+  console.warn = () => {};
+  try {
+    const unavailableFetch: typeof fetch = () =>
+      Promise.resolve(new Response('unavailable', { status: 503 }));
+    const httpFailure = await applyTrustedExedraLocalizationStatus(
+      stories,
+      unavailableFetch,
+    );
+    assert.deepEqual(httpFailure, stories);
+
+    const malformedFetch: typeof fetch = () => Promise.resolve(Response.json({
+      version: 1,
+      total: 1,
+      database_configured: true,
+      entries: [],
+    }));
+    const malformed = await applyTrustedExedraLocalizationStatus(
+      stories,
+      malformedFetch,
+    );
+    assert.deepEqual(malformed, stories);
+  } finally {
+    console.warn = originalWarn;
   }
 });

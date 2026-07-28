@@ -334,7 +334,8 @@ export const listCachedExedraLocalizations = async (
     for (const key of page.keys) {
       const record = parseCachedExedraLocalization(await kv.get(key.name));
       if (!record) continue;
-      const { text: _text, ...metadata } = record;
+      const { text, ...metadata } = record;
+      void text;
       records.push(metadata);
     }
     cursor = page.list_complete ? undefined : page.cursor;

@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
   parseNamespaceList,
+  resolveNpmInvocation,
   rewriteTestConfig,
 } from './cloudflare-direct-deploy-utils.mjs';
 
@@ -22,8 +23,22 @@ const config = `{
       "binding": "SUBMISSIONS_KV",
       "id": "${ID}"
     }
-  ]
+  ],
+  "vars": {
+    "EXEDRA_WIKI_BASE_URL": "https://exedra.wiki"
+  }
 }`;
+
+const rewriteOptions = {
+  source: config,
+  workerName: 'magireader-exedra-cn-test',
+  namespaceId: ID,
+  hostname: 'magireader-exedra-cn-test.example.workers.dev',
+  targetBranch: 'EXEDRA-TEST',
+  sourceCommit: '1'.repeat(40),
+  githubRepo: 'HiiragiNemu/magi-reader',
+  turnstileSiteKey: '1x00000000000000000000AA',
+};
 
 test('namespace parser accepts Wrangler JSON output', () => {
   const output = JSON.stringify([
@@ -53,22 +68,61 @@ test('namespace parser rejects ambiguous exact matches', () => {
 });
 
 test('test config rewrites both Worker and self-reference without changing KV', () => {
-  const output = rewriteTestConfig({
-    source: config,
-    workerName: 'magireader-exedra-cn-test',
-    namespaceId: ID,
-  });
+  const output = rewriteTestConfig(rewriteOptions);
   assert.match(output, /"name": "magireader-exedra-cn-test"/u);
   assert.match(output, /"service": "magireader-exedra-cn-test"/u);
   assert.match(output, new RegExp(ID, 'u'));
   assert.doesNotMatch(output, /"name": "magireader"/u);
+  assert.match(
+    output,
+    /"PROOFREADING_TARGET_BRANCH": "EXEDRA-TEST"/u,
+  );
+  assert.match(
+    output,
+    /"PROOFREADING_SOURCE_COMMIT": "1111111111111111111111111111111111111111"/u,
+  );
+  assert.match(
+    output,
+    /"TURNSTILE_ALLOWED_HOSTNAMES": "magireader-exedra-cn-test\.example\.workers\.dev"/u,
+  );
+});
+
+test('Windows npm invocation uses the current Node process without cmd.exe', () => {
+  const invocation = resolveNpmInvocation({
+    platform: 'win32',
+    nodeExecutable: 'C:\\node\\node.exe',
+    npmExecPath: 'C:\\node\\node_modules\\npm\\bin\\npm-cli.js',
+  });
+  assert.deepEqual(invocation, {
+    command: 'C:\\node\\node.exe',
+    prefixArgs: ['C:\\node\\node_modules\\npm\\bin\\npm-cli.js'],
+  });
+});
+
+test('Windows npm invocation rejects missing or relative npm CLI paths', () => {
+  assert.throws(
+    () => resolveNpmInvocation({
+      platform: 'win32',
+      nodeExecutable: 'C:\\node\\node.exe',
+      npmExecPath: '',
+    }),
+    /必须通过 npm run 启动/u,
+  );
+  assert.throws(
+    () => resolveNpmInvocation({
+      platform: 'win32',
+      nodeExecutable: 'C:\\node\\node.exe',
+      npmExecPath: 'npm-cli.js',
+    }),
+    /绝对路径/u,
+  );
 });
 
 test('test config rejects the placeholder KV ID', () => {
   assert.throws(
     () => rewriteTestConfig({
+      ...rewriteOptions,
       source: config.replace(ID, '0'.repeat(32)),
-      workerName: 'magireader-exedra-cn-test',
       namespaceId: '0'.repeat(32),
     }),
     /全零占位值/u,

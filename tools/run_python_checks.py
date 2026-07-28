@@ -16,6 +16,9 @@ CRITICAL_FILES = (
     ROOT / "tools/import_magireco_general_voice.py",
     ROOT / "tools/import_exedra_official_tw.py",
     ROOT / "tools/import_exedra_cache_export.py",
+    ROOT / "tools/import_exedra_human_text.py",
+    ROOT / "tools/import_exedra_wiki_voice.py",
+    ROOT / "scripts/materialize_proofreading_assets.py",
 )
 TEST_ROOT = ROOT / "tests"
 

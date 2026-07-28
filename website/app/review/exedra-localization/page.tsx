@@ -88,16 +88,16 @@ export default function ExedraLocalizationPage() {
     let next: number | null = cursor;
     try {
       while (next !== null && !stopRef.current) {
-        const response = await fetch('/api/admin/exedra-localize', {
+        const response: Response = await fetch('/api/admin/exedra-localize', {
           method: 'POST',
           headers: { ...headers(), 'Content-Type': 'application/json' },
           body: JSON.stringify({ cursor: next, limit: 1 }),
         });
-        const payload = await json<BatchResult>(response);
+        const payload: BatchResult = await json<BatchResult>(response);
         if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
         setStatus(payload.summary);
         setLog(previous => [
-          ...payload.processed.map(item => {
+          ...payload.processed.map((item: BatchResult['processed'][number]) => {
             if (!item.success) return `${item.story_id}: 错误 - ${item.error}`;
             if (item.outcome === 'wiki_found') return `${item.story_id}: 找到 Wiki 人工中文`;
             if (item.outcome === 'cached') return `${item.story_id}: 已有可信缓存`;
@@ -107,7 +107,9 @@ export default function ExedraLocalizationPage() {
         ].slice(0, 300));
         next = payload.next_cursor;
         setCursor(next ?? payload.summary.wiki_candidates);
-        if (payload.processed.some(item => !item.success)) {
+        if (payload.processed.some(
+          (item: BatchResult['processed'][number]) => !item.success,
+        )) {
           setMessage('遇到读取错误，已停止。修复后可从当前游标继续。');
           break;
         }

@@ -23,7 +23,7 @@
     "preview": "npm run build:worker && opennextjs-cloudflare preview",
     "deploy:worker": "npm run verify:cloudflare-config && npm run build:worker && opennextjs-cloudflare deploy",
     "predeploy:test:direct": "npm run validate:feature && npm run test:python",
-    "deploy:test:direct": "node scripts/deploy-direct-test.mjs"
+    "deploy:test:direct": "node scripts/deploy-direct.mjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.7",

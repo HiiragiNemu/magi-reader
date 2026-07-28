@@ -110,6 +110,15 @@ export const proofreadingRepositoryPath = (
       `magiraexedra-translate-data-master/Scenarios_full/${rawCategory}/${group}/${group}_cn.txt`,
     );
   }
+  const generalVoice = record.source_identity.match(
+    /^general_voice\/(\d{6})$/u,
+  );
+  if (generalVoice) {
+    const modelId = generalVoice[1];
+    return safePath(
+      `magireco-voice-translate-data-master/Scenarios_full/general_voice/${modelId}/${modelId}_cn.txt`,
+    );
+  }
   if (record.source_identity.includes(':')) {
     throw new ProofreadingPullRequestError('剧情来源身份格式无效', 'invalid');
   }
@@ -289,7 +298,10 @@ export const createProofreadingPullRequest = async (
             `- 源文件：\`${path}\`\n` +
             `- 编辑基准：\`${record.base_sha256}\`\n` +
             `- 修订哈希：\`${record.content_sha256}\`${note}\n\n` +
-            '该 PR 由审阅后台在人工批准后创建。合并前仍需通过完整数据管线与网站构建检查。',
+            '该 PR 由审阅后台在人工批准后创建。首次提交的 TXT 仅作为校对输入；' +
+            '受信 CI 会以目标分支 JSON 为结构模板，先生成可播放中文 JSON，' +
+            '再从生成后的 JSON 回生规范 TXT，并附加结构证明。' +
+            '合并前仍需通过完整数据管线与网站构建检查。',
           maintainer_can_modify: true,
         },
       },

@@ -6,7 +6,10 @@ import {
   type GeneralVoiceScript,
 } from '@/lib/general-voice-source';
 
-const EXPECTED_CN_MODELS = 411;
+// The upstream source tree has 411 JSON files, but `xxxx.json` is an invalid
+// placeholder (non-numeric id and a misspelled `gropu_2` key).  The immutable
+// viewer manifest intentionally publishes the 410 playable model scripts.
+const EXPECTED_CN_MODELS = 410;
 const MANIFEST_FRESH_MS = 15 * 60 * 1000;
 const SCRIPT_FRESH_MS = 60 * 60 * 1000;
 const MAX_SCRIPT_CACHE = 32;

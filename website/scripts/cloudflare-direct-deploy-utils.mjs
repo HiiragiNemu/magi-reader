@@ -1,5 +1,43 @@
+import path from 'node:path';
+
 const ID_RE = /^[a-f0-9]{32}$/iu;
 const PLACEHOLDER_ID = '00000000000000000000000000000000';
+
+export const resolveNpmInvocation = ({
+  platform,
+  nodeExecutable,
+  npmExecPath,
+}) => {
+  const npmCli = String(npmExecPath ?? '').trim();
+  if (npmCli) {
+    if (
+      !path.isAbsolute(npmCli) ||
+      /[\0\r\n]/u.test(npmCli) ||
+      !/npm-cli\.(?:c?js|mjs)$/iu.test(path.basename(npmCli))
+    ) {
+      throw new Error('npm_execpath 不是安全的 npm CLI 绝对路径');
+    }
+    if (
+      !path.isAbsolute(nodeExecutable) ||
+      /[\0\r\n]/u.test(nodeExecutable)
+    ) {
+      throw new Error('Node 可执行文件路径无效');
+    }
+    return {
+      command: nodeExecutable,
+      prefixArgs: [npmCli],
+    };
+  }
+  if (platform === 'win32') {
+    throw new Error(
+      'Windows 直接部署必须通过 npm run 启动，以取得 npm_execpath',
+    );
+  }
+  return {
+    command: 'npm',
+    prefixArgs: [],
+  };
+};
 
 export const stripAnsi = (value) =>
   value.replace(/\u001b\[[0-9;]*m/gu, '');
@@ -120,12 +158,33 @@ export const rewriteTestConfig = ({
   source,
   workerName,
   namespaceId,
+  hostname,
+  targetBranch,
+  sourceCommit,
+  githubRepo,
+  turnstileSiteKey,
+  turnstileTestMode = true,
 }) => {
   if (!/^[a-z0-9][a-z0-9-]{0,62}$/u.test(workerName)) {
     throw new Error(`测试 Worker 名称无效：${workerName}`);
   }
   if (!ID_RE.test(namespaceId) || namespaceId === PLACEHOLDER_ID) {
     throw new Error('测试 KV ID 无效或仍为全零占位值');
+  }
+  if (!/^[a-z0-9.-]+$/iu.test(hostname)) {
+    throw new Error('测试 Worker hostname 无效');
+  }
+  if (!targetBranch || /[\r\n]/u.test(targetBranch)) {
+    throw new Error('校对目标分支无效');
+  }
+  if (!/^[a-f0-9]{40}$/iu.test(sourceCommit)) {
+    throw new Error('部署来源提交必须是 40 位 Git SHA');
+  }
+  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/u.test(githubRepo)) {
+    throw new Error('GitHub 仓库名无效');
+  }
+  if (!turnstileSiteKey || /[\r\n]/u.test(turnstileSiteKey)) {
+    throw new Error('Turnstile site key 无效');
   }
 
   let result = replaceExactlyOnce(
@@ -146,5 +205,21 @@ export const rewriteTestConfig = ({
   if (!result.includes(namespaceId)) {
     throw new Error('生成配置没有包含解析出的测试 KV ID');
   }
+  const vars = {
+    EXEDRA_WIKI_BASE_URL: 'https://exedra.wiki',
+    TURNSTILE_SITE_KEY: turnstileSiteKey,
+    TURNSTILE_ALLOWED_HOSTNAMES: hostname,
+    PROOFREADING_TARGET_BRANCH: targetBranch,
+    PROOFREADING_SOURCE_COMMIT: sourceCommit.toLowerCase(),
+    PROOFREADING_GITHUB_REPO: githubRepo,
+    PROOFREADING_ALLOW_GITHUB_ADMIN: 'true',
+    PROOFREADING_TURNSTILE_TEST_MODE: String(Boolean(turnstileTestMode)),
+  };
+  result = replaceExactlyOnce(
+    result,
+    /"vars"\s*:\s*\{[^{}]*\}/su,
+    `"vars": ${JSON.stringify(vars, null, 2)}`,
+    'Worker vars',
+  );
   return result;
 };

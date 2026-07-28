@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -222,6 +223,27 @@ class PipelineBuildTests(unittest.TestCase):
             ],
             "mismatches": [],
         }
+        source_json: list[dict[str, object]] = []
+        for jp_section in jp_sections:
+            source_name = jp_section.source_name
+            jp_json = self.exedra / category / group_key / source_name
+            cn_json = self.exedra_cn / category / group_key / source_name
+            if not cn_json.exists():
+                continue
+            jp_rows = generate._strict_exedra_json_rows(jp_json)
+            cn_rows = generate._strict_exedra_json_rows(cn_json)
+            self.assertEqual(len(jp_rows), len(cn_rows))
+            source_json.append(
+                {
+                    "source": source_name,
+                    "jpSha256": generate._sha256_file(jp_json),
+                    "cnSha256": generate._sha256_file(cn_json),
+                    "eventCount": len(cn_rows),
+                }
+            )
+        if source_json:
+            self.assertEqual(len(source_json), len(jp_sections))
+            report["sourceJson"] = source_json
         report_path = cn_path.with_name(
             f"{group_key}_cn.import-report.json"
         )
@@ -289,6 +311,22 @@ class PipelineBuildTests(unittest.TestCase):
         )
         self._write_valid_exedra_cn_report()
 
+    def _write_main_cn_json(self) -> Path:
+        path = (
+            self.exedra_cn
+            / "1_Main"
+            / "main_demo"
+            / "main_demo_1.json"
+        )
+        write_json(
+            path,
+            exedra_json(
+                [["Talk", "鹿目まどか", "秀恩爱", "", ""]]
+            ),
+        )
+        self._write_valid_exedra_cn_report()
+        return path
+
     def test_unclassified_legacy_folder_is_preserved_in_public_path(self) -> None:
         write_text(
             self.cn / "special" / "special-chapter-info.txt",
@@ -316,6 +354,103 @@ class PipelineBuildTests(unittest.TestCase):
                 / "special-chapter-info_cn.txt"
             ).is_file()
         )
+
+    def test_general_voice_snapshot_is_published_without_network(self) -> None:
+        model_id = "100100"
+        source_root = self.root / "voice-source"
+        cn_root = self.root / "voice-cn"
+        source_json = source_root / model_id / f"{model_id}.json"
+        source_txt = cn_root / model_id / f"{model_id}_cn.txt"
+        write_json(
+            source_json,
+            {
+                "story": {
+                    "group_1": [
+                        {
+                            "chara": [
+                                {
+                                    "voice": "vo_test",
+                                    "textHome": "中文语音",
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "version": 3,
+            },
+        )
+        write_text(
+            source_txt,
+            f"--- [Section 1] (Source: {model_id}.json) ---\n"
+            "环彩羽：【vo_test｜1秒】中文语音\n",
+        )
+        manifest = {
+            "version": 1,
+            "modelCount": 1,
+            "models": [
+                {
+                    "id": model_id,
+                    "charId": "1001",
+                    "char": {"cn": "环彩羽", "jp": "環 いろは"},
+                    "costume": {"cn": "环彩羽"},
+                    "groups": 1,
+                    "voices": 1,
+                    "jsonSha256": hashlib.sha256(
+                        source_json.read_bytes()
+                    ).hexdigest(),
+                    "txtSha256": hashlib.sha256(
+                        source_txt.read_bytes()
+                    ).hexdigest(),
+                }
+            ],
+        }
+        write_json(
+            source_root / generate.GENERAL_VOICE_MANIFEST_NAME,
+            manifest,
+        )
+        write_json(
+            cn_root / generate.GENERAL_VOICE_MANIFEST_NAME,
+            manifest,
+        )
+        data = self.stage / "data"
+        data.mkdir()
+        stories: dict[str, dict] = {}
+        stats = Counter()
+        audit = generate.SourceAudit()
+
+        with mock.patch.object(generate, "GENERAL_VOICE_EXPECTED_MODELS", 1):
+            generate.scan_general_voice_sources(
+                source_dir=source_root,
+                cn_dir=cn_root,
+                staging_data_dir=data,
+                story_map=stories,
+                stats=stats,
+                source_audit=audit,
+            )
+
+        story = stories[f"voice_{model_id}"]
+        self.assertEqual(story["category"], "general_voice")
+        self.assertEqual(
+            story["source_identity"], f"general_voice/{model_id}"
+        )
+        self.assertEqual(
+            story["cn_path"],
+            f"/data/general_voice/{model_id}/{model_id}_cn.txt",
+        )
+        self.assertEqual(
+            story["json_paths_cn"],
+            [f"/data/general_voice/{model_id}/{model_id}_cn.json"],
+        )
+        self.assertTrue(
+            (
+                data
+                / "general_voice"
+                / model_id
+                / f"{model_id}_cn.json"
+            ).is_file()
+        )
+        self.assertEqual(stats["general_voice_models"], 1)
+        audit.validate_manifest(generate.finalize_story_list(stories))
 
     @unittest.skipUnless(os.name == "nt", "Windows junction semantics")
     def test_manifest_rejects_organized_directory_junction(self) -> None:
@@ -1299,6 +1434,144 @@ class PipelineBuildTests(unittest.TestCase):
         )
         self.assertTrue(main_group["has_cn"])
         self.assertEqual(stats["exedra_cn_groups"], 1)
+        self.assertNotIn("json_paths_cn", main_group)
+
+    def test_valid_cn_json_is_published_and_indexed(self) -> None:
+        self._make_sources()
+        cn_json = self._write_main_cn_json()
+
+        stories, stats = generate.build_story_catalog(
+            staging_public_dir=self.stage,
+            jp_dir=self.jp,
+            cn_dir=self.cn,
+            exedra_jp_dir=self.exedra,
+            exedra_cn_dir=self.exedra_cn,
+            titles_path=self.titles,
+        )
+
+        main_group = next(
+            story
+            for story in stories
+            if story.get("source_identity") == "exedra:1_Main:main_demo"
+        )
+        expected_web_path = (
+            "/data/exedra_main/main_demo/main_demo_1.json"
+        )
+        self.assertEqual(
+            main_group["json_paths_cn"],
+            [expected_web_path],
+        )
+        published = (
+            self.stage
+            / "data"
+            / "exedra_main"
+            / "main_demo"
+            / "main_demo_1.json"
+        )
+        self.assertEqual(published.read_bytes(), cn_json.read_bytes())
+        self.assertEqual(stats["exedra_cn_json_files"], 1)
+
+    def test_partial_cn_json_set_is_rejected(self) -> None:
+        self._make_sources()
+        self._write_main_cn_json()
+        groups = generate.load_exedra_manifest(
+            self.exedra,
+            stats=Counter(),
+        )
+        original = next(
+            group for group in groups if group.group_key == "main_demo"
+        )
+        incomplete = generate.OrganizedExedraGroup(
+            manifest_id=original.manifest_id,
+            raw_category=original.raw_category,
+            category=original.category,
+            group_key=original.group_key,
+            output_dir=original.output_dir,
+            text_file=original.text_file,
+            source_paths=(
+                *original.source_paths,
+                "1_Main/main_demo_2/main_demo_2.json",
+            ),
+            source_names=(
+                *original.source_names,
+                "main_demo_2.json",
+            ),
+            title=original.title,
+        )
+        cn_txt = (
+            self.exedra_cn
+            / "1_Main"
+            / "main_demo"
+            / "main_demo_cn.txt"
+        )
+        with self.assertRaisesRegex(
+            generate.PipelineError,
+            "不是完整一一对应",
+        ):
+            generate._find_exedra_cn_json_sources(
+                self.exedra_cn,
+                [incomplete],
+                {incomplete.manifest_id: cn_txt},
+            )
+
+    def test_cn_json_report_hash_mismatch_is_rejected(self) -> None:
+        self._make_sources()
+        self._write_main_cn_json()
+        report_path = (
+            self.exedra_cn
+            / "1_Main"
+            / "main_demo"
+            / "main_demo_cn.import-report.json"
+        )
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        report["sourceJson"][0]["cnSha256"] = "0" * 64
+        write_json(report_path, report)
+
+        with self.assertRaisesRegex(
+            generate.PipelineError,
+            "sourceJson.cnSha256",
+        ):
+            generate.build_story_catalog(
+                staging_public_dir=self.stage,
+                jp_dir=self.jp,
+                cn_dir=self.cn,
+                exedra_jp_dir=self.exedra,
+                exedra_cn_dir=self.exedra_cn,
+                titles_path=self.titles,
+            )
+
+    def test_cn_json_action_or_speaker_reordering_is_rejected(self) -> None:
+        self._make_sources()
+        cn_json = self._write_main_cn_json()
+        data = json.loads(cn_json.read_text(encoding="utf-8"))
+        data["sheetList"][0]["contentRowList"][0]["cellList"][0] = (
+            "Narration"
+        )
+        write_json(cn_json, data)
+        report_path = (
+            self.exedra_cn
+            / "1_Main"
+            / "main_demo"
+            / "main_demo_cn.import-report.json"
+        )
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        report["sourceJson"][0]["cnSha256"] = generate._sha256_file(
+            cn_json
+        )
+        write_json(report_path, report)
+
+        with self.assertRaisesRegex(
+            generate.PipelineError,
+            "ActionType/说话人顺序",
+        ):
+            generate.build_story_catalog(
+                staging_public_dir=self.stage,
+                jp_dir=self.jp,
+                cn_dir=self.cn,
+                exedra_jp_dir=self.exedra,
+                exedra_cn_dir=self.exedra_cn,
+                titles_path=self.titles,
+            )
 
     def test_tampered_cn_file_is_rejected_by_report_hash(self) -> None:
         self._make_sources()

@@ -66,6 +66,26 @@ test('general voice TXT is ordered numerically and preserves canonical sections'
   assert.match(txt, /环彩羽：【vo_char_1001_00_03｜1\.2秒】小忧她／总能让大家微笑。/u);
 });
 
+test('general voice TXT preserves every textHome as an independent editable line', () => {
+  const multi = parseGeneralVoiceScript({
+    story: {
+      group_1: [
+        {
+          autoTurnFirst: 2,
+          chara: [{ voice: 'voice_1', textHome: '第一句@后半\n末尾' }],
+        },
+        {
+          chara: [{ textHome: '第二句' }],
+        },
+      ],
+    },
+  });
+  const txt = generalVoiceScriptToTxt(multi, manifest.models[0]);
+  assert.match(txt, /【voice_1｜2秒｜文本 1\/2】第一句／后半／末尾/u);
+  assert.match(txt, /【voice_1｜2秒｜文本 2\/2】第二句/u);
+  assert.doesNotMatch(txt, /第一句／后半 第二句/u);
+});
+
 test('general voice parser rejects duplicate or unsafe model ids', () => {
   assert.throws(() => parseGeneralVoiceManifest({
     version: 1,
@@ -74,4 +94,20 @@ test('general voice parser rejects duplicate or unsafe model ids', () => {
       { id: '../100100', charId: '1001', langs: { cn: { groups: 1, voices: 1 } } },
     ],
   }));
+});
+
+test('general voice parser repairs the audited gropu key typo without collisions', () => {
+  const repaired = parseGeneralVoiceScript({
+    story: {
+      group_1: [],
+      gropu_2: [{ chara: [{ voice: 'vo_char_3900_00_03' }] }],
+    },
+  });
+  assert.deepEqual(Object.keys(repaired.story), ['group_1', 'group_2']);
+  assert.throws(() => parseGeneralVoiceScript({
+    story: {
+      group_2: [],
+      gropu_2: [],
+    },
+  }), /语音分组无效/u);
 });

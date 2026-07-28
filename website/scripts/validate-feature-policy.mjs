@@ -84,11 +84,18 @@ const finalLabels = [
 ];
 const sidebarPath = 'website/components/Sidebar.tsx';
 const sidebar = read(sidebarPath);
+const homePath = 'website/app/page.tsx';
+const home = read(homePath);
 for (const [category, label] of finalLabels) {
   requireIncludes(
     sidebar,
     `${category}: { label: '${label}'`,
     sidebarPath,
+  );
+  requireIncludes(
+    home,
+    `${category}: { label: '${label}'`,
+    homePath,
   );
 }
 for (const forbidden of [
@@ -102,6 +109,7 @@ for (const forbidden of [
   "exedra_battle: { label: '10 战斗'",
 ]) {
   requireExcludes(sidebar, forbidden, sidebarPath);
+  requireExcludes(home, forbidden, homePath);
 }
 
 const categoryNormalizerPath = 'website/components/CategoryLabelNormalizer.tsx';
@@ -188,7 +196,7 @@ const voiceSourcePath = 'website/lib/general-voice-source.ts';
 const voiceSource = read(voiceSourcePath);
 requireIncludes(
   voiceSource,
-  "'196f4bfcfa28c446539b4611e4cce7992b0c40d1'",
+  "'6d921b630f41341a1c5aba66ec355ef9017e778d'",
   voiceSourcePath,
 );
 requireIncludes(
@@ -198,8 +206,36 @@ requireIncludes(
 );
 const voiceRuntimePath = 'website/lib/general-voice-runtime.ts';
 const voiceRuntime = read(voiceRuntimePath);
-requireIncludes(voiceRuntime, 'const EXPECTED_CN_MODELS = 411', voiceRuntimePath);
+requireIncludes(voiceRuntime, 'const EXPECTED_CN_MODELS = 410', voiceRuntimePath);
 requireIncludes(voiceRuntime, '继续使用旧缓存', voiceRuntimePath);
+const generatorPath = 'generate_story_index.py';
+const generator = read(generatorPath);
+requireIncludes(
+  generator,
+  'def scan_general_voice_sources(',
+  generatorPath,
+);
+requireIncludes(
+  generator,
+  'GENERAL_VOICE_EXPECTED_MODELS = 410',
+  generatorPath,
+);
+requireCondition(
+  !existsSync(path.resolve(repositoryRoot, 'website/proxy.ts')),
+  '已落盘的语音不得再由 proxy 动态覆盖或依赖上游网络',
+);
+const voiceManifest = parseJson(
+  'magireco-voice-source-master/Scenarios_full/general_voice/general_voice_manifest.json',
+);
+if (voiceManifest) {
+  requireCondition(
+    voiceManifest.version === 1 &&
+      voiceManifest.modelCount === 410 &&
+      Array.isArray(voiceManifest.models) &&
+      voiceManifest.models.length === 410,
+    '本地语音清单必须完整包含 410 个可播放模型',
+  );
+}
 
 const packagePath = 'website/package.json';
 const packageJson = parseJson(packagePath);
@@ -219,7 +255,7 @@ if (packageJson) {
   );
   requireCondition(
     packageJson.scripts?.['deploy:test:direct'] ===
-      'node scripts/deploy-direct-test.mjs',
+      'node scripts/deploy-direct.mjs',
     '必须保留隔离测试 Worker 的直接部署命令',
   );
 }
@@ -237,9 +273,15 @@ for (const tool of [
   'tools/import_magireco_general_voice.py',
   'tools/import_exedra_official_tw.py',
   'tools/import_exedra_cache_export.py',
+  'tools/import_exedra_human_text.py',
+  'tools/import_exedra_wiki_voice.py',
   'tools/github_api_checkout.py',
   'tools/run_python_checks.py',
+  'scripts/materialize_proofreading_assets.py',
   'tests/test_exedra_import_tools.py',
+  'tests/test_import_exedra_human_text.py',
+  'tests/test_import_exedra_wiki_voice.py',
+  'tests/test_materialize_proofreading_assets.py',
 ]) {
   requireCondition(
     existsSync(path.resolve(repositoryRoot, tool)),

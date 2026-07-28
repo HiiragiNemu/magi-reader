@@ -1,5 +1,5 @@
 export const GENERAL_VOICE_SOURCE_COMMIT =
-  '196f4bfcfa28c446539b4611e4cce7992b0c40d1';
+  '6d921b630f41341a1c5aba66ec355ef9017e778d';
 
 export const GENERAL_VOICE_UPSTREAM_BASES = [
   'https://566b00b8.magiaexedralive2dviewer.pages.dev/story/general',
@@ -166,10 +166,17 @@ export const parseGeneralVoiceScript = (value: unknown): GeneralVoiceScript => {
   }
   const result: Record<string, GeneralVoiceTurn[]> = {};
   for (const [key, turns] of Object.entries(story as Record<string, unknown>)) {
-    if (!/^group_\d+$/u.test(key) || !Array.isArray(turns) || turns.length > 1_000) {
+    const typoMatch = key.match(/^gropu_(\d+)$/u);
+    const canonicalKey = typoMatch ? `group_${typoMatch[1]}` : key;
+    if (
+      !/^group_\d+$/u.test(canonicalKey) ||
+      canonicalKey in result ||
+      !Array.isArray(turns) ||
+      turns.length > 1_000
+    ) {
       throw new Error(`语音分组无效：${key}`);
     }
-    result[key] = turns as GeneralVoiceTurn[];
+    result[canonicalKey] = turns as GeneralVoiceTurn[];
   }
   if (Object.keys(result).length === 0) throw new Error('语音脚本没有分组');
   return { story: result };
@@ -212,14 +219,27 @@ export const generalVoiceScriptToTxt = (
         if (!rawChara || typeof rawChara !== 'object' || Array.isArray(rawChara)) continue;
         const chara = rawChara as GeneralVoiceChara;
         const voice = cleanText(chara.voice, 256);
-        const text = cleanText(chara.textHome, 20_000).replace(/@+/gu, '／');
+        const rawText = typeof chara.textHome === 'string'
+          ? chara.textHome.replace(/\r\n?|\n/gu, '@')
+          : chara.textHome;
+        const text = cleanText(rawText, 20_000).replace(/@/gu, '／');
         if (voice) voices.push(voice);
         if (text) texts.push(text);
       }
     }
     const voiceLabel = [...new Set(voices)].join(', ') || groupKey;
-    const body = texts.join(' ').trim() || `语音资源：${voiceLabel}`;
-    lines.push(`${speaker}：【${voiceLabel}｜${Math.round(duration * 10) / 10}秒】${body}`);
+    const durationLabel = `${Math.round(duration * 10) / 10}秒`;
+    if (texts.length === 0) {
+      lines.push(`${speaker}：【${voiceLabel}｜${durationLabel}】语音资源：${voiceLabel}`);
+    } else if (texts.length === 1) {
+      lines.push(`${speaker}：【${voiceLabel}｜${durationLabel}】${texts[0]}`);
+    } else {
+      texts.forEach((text, index) => {
+        lines.push(
+          `${speaker}：【${voiceLabel}｜${durationLabel}｜文本 ${index + 1}/${texts.length}】${text}`,
+        );
+      });
+    }
     lines.push('');
   });
   return `${lines.join('\n').trim()}\n`;

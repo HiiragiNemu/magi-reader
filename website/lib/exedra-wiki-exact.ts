@@ -196,7 +196,7 @@ const readJsonBounded = async (response: Response): Promise<unknown> => {
 };
 
 const pageHtml = async (base: string, title: string): Promise<string | null> => {
-  const api = `${base.replace(/\/$/u, '')}/api.php`;
+  const api = `${base.replace(/\/$/u, '')}/w/api.php`;
   const url = new URL(api);
   url.search = new URLSearchParams({
     action: 'parse',

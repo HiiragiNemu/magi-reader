@@ -31,15 +31,26 @@ test('approved reviews create a scoped GitHub pull request', () => {
   assert.match(github, /community-proofreading\//u);
   assert.match(github, /base_sha256/u);
   assert.match(github, /Section\/Branch 结构/u);
+  assert.match(github, /const generalVoice/u);
+  assert.match(github, /magireco-voice-translate-data-master/u);
   assert.match(github, /\/pulls/u);
 });
 
-test('community proofreading PR CI enforces a single TXT source change', () => {
+test('community proofreading PR CI materializes playable JSON before TXT', () => {
   const workflow = read('../.github/workflows/community-proofreading-pr.yml');
   assert.match(workflow, /branches:\s*\[EXEDRA-TEST\]/u);
-  assert.match(workflow, /must change exactly one file/u);
+  assert.match(workflow, /exactly one canonical TXT/u);
   assert.match(workflow, /magireco-translate-data-master/u);
+  assert.match(workflow, /magireco-voice-translate-data-master/u);
+  assert.match(workflow, /magireco-voice-source-master/u);
+  assert.match(workflow, /voice_source_manifest/u);
+  assert.match(workflow, /voice_cn_manifest/u);
+  assert.match(workflow, /Disallowed general-voice proofreading path/u);
   assert.match(workflow, /magiraexedra-translate-data-master/u);
+  assert.match(workflow, /materialize_proofreading_assets\.py/u);
+  assert.match(workflow, /Materialize playable JSON before canonical TXT/u);
+  assert.match(workflow, /PROOFREADING_GITHUB_TOKEN/u);
+  assert.match(workflow, /TARGET_REPO_TOKEN/u);
   assert.match(workflow, /npm run build:worker/u);
 });
 
@@ -50,4 +61,9 @@ test('test deployment uses a dedicated KV and supports real Turnstile secrets', 
   assert.match(workflow, /TURNSTILE_SECRET_KEY/u);
   assert.match(workflow, /PROOFREADING_TARGET_BRANCH/u);
   assert.match(workflow, /EXEDRA-TEST/u);
+  assert.match(workflow, /for attempt in \$\(seq 1 30\)/u);
+  assert.match(
+    workflow,
+    /except \(OSError, UnicodeError, json\.JSONDecodeError\):\s+# A newly deployed Worker/u,
+  );
 });
