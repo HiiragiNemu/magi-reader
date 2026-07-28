@@ -1,0 +1,97 @@
+name: Normalize Story Generator Empty Sources
+
+on:
+  push:
+    branches: [feature/story-reader-public-deploy]
+    paths:
+      - 'generate_story_index.py'
+      - '.github/workflows/normalize-story-generator.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: normalize-story-generator-empty-sources
+  cancel-in-progress: false
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/story-reader-public-deploy
+          fetch-depth: 0
+          show-progress: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Reject empty Magia Record TXT during source collection
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('generate_story_index.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''        if "WEBSITE_DATA" in relative.parts:
+              continue
+
+          identity_key, parent_parts, file_stem = magireco_source_identity(
+          '''.replace('          ', '')
+          new = '''        if "WEBSITE_DATA" in relative.parts:
+              continue
+          try:
+              source_size = source_path.stat().st_size
+          except OSError as error:
+              raise PipelineError(
+                  f"无法读取 Magia Record TXT 大小: {source_path}: {error}"
+              ) from error
+          if source_size <= 0:
+              stats[f"magireco_{lang_key}_empty_txt"] += 1
+              continue
+
+          identity_key, parent_parts, file_stem = magireco_source_identity(
+          '''.replace('          ', '')
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif new not in text:
+              raise RuntimeError('Magia Record TXT collection marker changed')
+          path.write_text(text, encoding='utf-8')
+          PY
+          python -m py_compile generate_story_index.py
+
+      - name: Verify 510901 no longer advertises empty Chinese
+        run: |
+          python generate_story_index.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          stories = json.loads(Path('website/public/story_index.json').read_text(encoding='utf-8'))
+          item = next(value for value in stories if str(value.get('id')) == '510901')
+          assert item.get('has_jp') is True, item
+          assert item.get('path_jp'), item
+          assert item.get('has_cn') is False, item
+          assert not item.get('path_cn'), item
+          assert all(
+              path.stat().st_size > 0
+              for path in Path('website/public/data').rglob('*.txt')
+              if path.is_file()
+          )
+          print('EMPTY_STORY_SOURCES_REJECTED', item)
+          PY
+
+      - name: Commit generator fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- generate_story_index.py; then
+            echo 'Generator already rejects empty TXT sources.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add generate_story_index.py
+          git commit -m '拒绝将空TXT标记为可用剧情语言源'
+          git push origin HEAD:feature/story-reader-public-deploy
