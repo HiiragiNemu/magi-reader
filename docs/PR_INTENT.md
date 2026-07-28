@@ -1,0 +1,1 @@
+This branch is intended to be reviewed against `EXEDRA-TEST`, never directly against `main`. It remains unmergeable until the unchecked deployment items in `docs/FEATURE_REVIEW_CHECKLIST.md` pass on the isolated Cloudflare test Worker.
