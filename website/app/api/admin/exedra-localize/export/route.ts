@@ -4,7 +4,7 @@ import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { authenticateProofreadingAdmin } from '@/lib/admin-auth';
 import {
   EXEDRA_CACHE_PREFIX,
-  findExedraStory,
+  loadExedraStories,
   parseCachedExedraLocalization,
 } from '@/lib/exedra-localization';
 
@@ -29,6 +29,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const stories = await loadExedraStories({ request, env });
+  const storiesById = new Map(stories.map(story => [story.id, story]));
   const records: Array<Record<string, unknown>> = [];
   let cursor: string | undefined;
   do {
@@ -42,7 +44,7 @@ export async function GET(request: NextRequest) {
         await env.SUBMISSIONS_KV.get(key.name),
       );
       if (!value) continue;
-      const story = findExedraStory(value.story_id);
+      const story = storiesById.get(value.story_id);
       if (!story || value.source_identity !== story.source_identity) continue;
       records.push({
         ...value,
