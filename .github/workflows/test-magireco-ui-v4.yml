@@ -1,0 +1,48 @@
+name: Test Magireco Reader UI v4
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: magireco-cn-reader-ui-browser-test
+  cancel-in-progress: true
+
+jobs:
+  mobile-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out browser test only
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: wiki-preservation/tests
+          sparse-checkout-cone-mode: true
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Playwright and Chromium
+        run: |
+          npm init -y
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Run production mobile interaction test
+        run: node wiki-preservation/tests/production-ui-v4.mjs
+
+      - name: Upload mobile screenshots and metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-reader-ui-v4-mobile-evidence
+          path: ui-test-output
+          if-no-files-found: warn
+          retention-days: 14
