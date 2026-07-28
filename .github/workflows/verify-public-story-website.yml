@@ -29,7 +29,10 @@ jobs:
           sparse-checkout: |
             website
             prepare_public_story_reader.py
-          sparse-checkout-cone-mode: true
+            .github/workflows/deploy.yml
+            .github/workflows/community-proofreading-pr.yml
+            .github/workflows/deploy-exedra-proofreading-test.yml
+          sparse-checkout-cone-mode: false
           show-progress: false
       - uses: actions/setup-python@v5
         with:
