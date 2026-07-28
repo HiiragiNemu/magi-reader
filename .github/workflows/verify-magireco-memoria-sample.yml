@@ -1,0 +1,97 @@
+name: Verify Magireco Memoria Sample
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'memoria-crawl/**'
+      - '.github/workflows/verify-magireco-memoria-sample.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: magireco-memoria-sample
+  cancel-in-progress: true
+
+jobs:
+  sample:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out crawler
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: memoria-crawl
+          sparse-checkout-cone-mode: true
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install parser dependencies
+        run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+
+      - name: Crawl and parse representative sample
+        run: |
+          python memoria-crawl/build_memoria_snapshot.py \
+            --output memoria-sample \
+            --limit 20 \
+            --include '1000円未満の魔法' \
+            --include '1000年の眠りを超えて' \
+            --workers 4 \
+            --pause 0.25 \
+            --timeout 18 \
+            --retries 3 \
+            --max-requests 180
+
+      - name: Validate parsed fields and coverage
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('memoria-sample')
+          manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))
+          records = json.loads((root / 'memoria.json').read_text(encoding='utf-8'))
+          failures = json.loads((root / 'failures.json').read_text(encoding='utf-8'))
+          by_ja = {item['nameJa']: item for item in records}
+
+          assert manifest['discoveredTemplatePages'] >= 1200, manifest
+          assert manifest['records'] >= 19, manifest
+          assert manifest['withStats'] >= 16, manifest
+          assert manifest['withImage'] >= 16, manifest
+          assert manifest['withChineseName'] >= 16, manifest
+          assert len(failures) <= 5, failures
+
+          for title in ('1000円未満の魔法', '1000年の眠りを超えて'):
+              assert title in by_ja, (title, sorted(by_ja)[:30])
+              item = by_ja[title]
+              assert item['rarity'] in (1, 2, 3, 4), item
+              assert item['type'], item
+              assert item['effect'], item
+              assert item['templateUrl'].startswith('https://magireco.moe/'), item
+
+          under_1000 = by_ja['1000円未満の魔法']
+          assert under_1000['nameZh'], under_1000
+          assert under_1000['defMax'] and under_1000['defMax'] >= under_1000['defMin'], under_1000
+          assert 'Accele' in under_1000['effect'] or 'A盘' in under_1000['effectDetail'], under_1000
+
+          print(json.dumps({
+              'manifest': manifest,
+              'known': {key: by_ja[key] for key in ('1000円未満の魔法', '1000年の眠りを超えて')},
+              'failures': failures,
+          }, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload sample evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-memoria-sample
+          path: memoria-sample
+          if-no-files-found: warn
+          retention-days: 14
