@@ -1,0 +1,51 @@
+.portal-card[data-portal="doppel"] { display: none; }
+.doppel-toolbar { grid-template-columns: minmax(0, 1fr) minmax(13rem, auto); }
+.doppel-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
+.doppel-card { display: grid; grid-template-columns: 6rem minmax(0, 1fr) auto; align-items: center; gap: .85rem; min-width: 0; min-height: 7.2rem; padding: .65rem .8rem; border: 1px solid var(--line); border-radius: 1rem; background: var(--paper-2); cursor: pointer; text-align: left; transition: border-color .16s ease, transform .16s ease, box-shadow .16s ease; }
+.doppel-card:hover, .doppel-card:focus-visible { transform: translateY(-1px); border-color: var(--plum); box-shadow: var(--shadow); }
+.doppel-card > b { color: var(--plum); font-size: 1.5rem; }
+.doppel-card-image { display: grid; width: 6rem; height: 6rem; place-items: center; overflow: hidden; border-radius: .8rem; background: color-mix(in srgb, var(--plum-soft) 38%, var(--paper)); }
+.doppel-card-image img { width: 100%; height: 100%; object-fit: contain; }
+.doppel-card-copy { min-width: 0; }
+.doppel-card-copy small, .doppel-card-copy strong, .doppel-card-copy span { display: block; }
+.doppel-card-copy small { color: var(--muted); font-size: .72rem; }
+.doppel-card-copy strong { margin-top: .2rem; overflow-wrap: anywhere; font-size: 1rem; }
+.doppel-card-copy span { margin-top: .45rem; overflow: hidden; color: var(--muted); font-size: .72rem; text-overflow: ellipsis; white-space: nowrap; }
+.doppel-detail { width: min(1060px, 100%); margin: 0 auto; }
+.doppel-detail-head { display: grid; grid-template-columns: minmax(15rem, 23rem) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 3.5rem); align-items: start; padding: 1rem 0 2rem; border-bottom: 1px solid var(--line); }
+.doppel-detail-head h1 { margin: 0; font-size: clamp(2rem, 5vw, 4rem); line-height: 1.08; letter-spacing: -.04em; }
+.doppel-detail-image img { display: block; width: 100%; max-height: 36rem; object-fit: contain; border-radius: 1rem; background: var(--paper-2); }
+.doppel-detail-image small { display: block; margin-top: .55rem; color: var(--muted); line-height: 1.55; }
+.doppel-owner { color: var(--muted); }
+.doppel-owner button { display: inline; padding: 0; border: 0; background: transparent; color: var(--plum); cursor: pointer; font: inherit; text-decoration: underline; text-underline-offset: .18em; }
+.doppel-badges { display: flex; flex-wrap: wrap; gap: .4rem; margin: .8rem 0; }
+.doppel-badges span { padding: .3rem .62rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .74rem; }
+.doppel-note { padding: .75rem .9rem; border-inline-start: .25rem solid var(--gold); background: color-mix(in srgb, var(--gold) 9%, transparent); color: var(--muted); line-height: 1.7; }
+.doppel-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; margin: 1.3rem 0; }
+.doppel-facts > div { padding: .8rem .9rem; border: 1px solid var(--line); border-radius: .8rem; background: var(--paper-2); }
+.doppel-facts span, .doppel-facts strong { display: block; }
+.doppel-facts span { color: var(--muted); font-size: .72rem; }
+.doppel-facts strong { margin-top: .25rem; overflow-wrap: anywhere; }
+.doppel-description { margin-top: 1rem; padding: 1.1rem; border: 1px solid var(--line); border-radius: 1rem; background: color-mix(in srgb, var(--paper-2) 94%, transparent); }
+.doppel-description h2 { margin: 0 0 .6rem; }
+.doppel-description p { margin: 0; line-height: 1.9; overflow-wrap: anywhere; }
+
+@media (max-width: 1050px) {
+  .doppel-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .doppel-toolbar { grid-template-columns: 1fr; }
+  .doppel-grid { grid-template-columns: 1fr; gap: .55rem; }
+  .doppel-card { grid-template-columns: 5rem minmax(0, 1fr) auto; min-height: 6.3rem; padding: .55rem .65rem; }
+  .doppel-card-image { width: 5rem; height: 5rem; }
+  .doppel-detail-head { grid-template-columns: 1fr; gap: 1rem; }
+  .doppel-detail-image { width: min(23rem, 100%); margin: 0 auto; }
+  .doppel-facts { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 420px) {
+  .doppel-card { grid-template-columns: 4.35rem minmax(0, 1fr) auto; }
+  .doppel-card-image { width: 4.35rem; height: 4.35rem; }
+  .doppel-card-copy span { display: -webkit-box; white-space: normal; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+}
