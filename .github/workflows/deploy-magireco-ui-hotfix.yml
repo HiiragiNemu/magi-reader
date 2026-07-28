@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
-      READER_REVISION: '6.1'
+      READER_REVISION: '6.2'
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
@@ -80,6 +80,8 @@ jobs:
           for file in archive-index.json category-index.json portal-index.json; do
             grep -q "/data/$file" "snapshot/sw-v${READER_REVISION}.js"
           done
+          grep -q 'reader-version-cache-bootstrap' snapshot/index.html
+          grep -q 'NETWORK_FIRST_PATHS' "snapshot/sw-v${READER_REVISION}.js"
 
       - name: Deploy Reader v6 to Cloudflare Pages
         run: |
@@ -148,7 +150,7 @@ jobs:
               assert health['uiVersion'] == 6 and health['uiRevision'] == revision
               assert health['counts']['pages'] == 500 and health['counts']['memoria'] == 1042
               assert isinstance(archive_index, list) and len(archive_index) == 500
-              assert isinstance(category_index, list) and isinstance(portal_index, dict)
+              assert isinstance(category_index, list) and isinstance(portal_index, list)
               assert manifest['characters'] >= 235 and manifest['voiceWithAudio'] >= 16000 and manifest['doppel'] == 174
               assert len(characters) >= 235 and len(voices) >= 220 and len(doppels) == 174
               assert memoria_manifest['records'] == 1042
@@ -160,14 +162,21 @@ jobs:
               forbidden = ('把原 Wiki', '不会删减', '这里不是', '以保存快照', '来源与保存说明', '本站用于研究', '兼容性开发')
               visitor_text = '\n'.join((index, app, structured_ui, doppel_ui, memoria_ui))
               assert not any(value in visitor_text for value in forbidden)
+              assert 'reader-version-cache-bootstrap' in index
               assert f"const UI_VERSION = '{revision}'" in app
               assert f'magireco-cn-reader-v{revision}-offline' in worker
-              for path in ('/data/archive-index.json', '/data/category-index.json', '/data/portal-index.json', '/data/structured/memoria-index.json'):
+              assert 'NETWORK_FIRST_PATHS' in worker
+              for path in (
+                  '/app.js', '/structured-ui.js', '/doppel-ui.js', '/memoria-ui.js',
+                  '/styles.css', '/dense-reader.css', '/dense-reader-compact.css',
+                  '/data/archive-index.json', '/data/category-index.json',
+                  '/data/portal-index.json', '/data/structured/memoria-index.json',
+              ):
                   assert path in worker
               for shard in '0123456789abcdef':
                   value = json.loads(Path(f'/tmp/data_structured_memoria_{shard}_json').read_text(encoding='utf-8-sig'))
                   assert isinstance(value, dict) and value
-              print('PRODUCTION_READER_V6_1_OK', memoria_manifest)
+              print('PRODUCTION_READER_V6_2_OK', memoria_manifest)
           except Exception as exc:
               print('not ready:', exc)
               raise SystemExit(1)
