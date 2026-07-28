@@ -26,6 +26,9 @@ try {
     }
   }
 
+  const rawJsonLink = page.getByRole('link', { name: '原始JSON' });
+  if (await rawJsonLink.count() !== 1) throw new Error('raw JSON entry missing from homepage');
+
   const magirecoLinks = page.locator('a[href^="/reader/"]');
   if (await magirecoLinks.count() < 1) throw new Error('Magia Record stories missing');
   await page.screenshot({ path: 'public-story-evidence/01-magireco-home.png' });
@@ -43,7 +46,27 @@ try {
   if (readerText.length < 20 || readerText.includes('无法打开这段剧情')) {
     throw new Error('Exedra reader content failed');
   }
+  const readerRawLink = page.getByRole('link', { name: 'JSON' });
+  if (await readerRawLink.count() !== 1) throw new Error('raw JSON entry missing from reader');
   await page.screenshot({ path: 'public-story-evidence/03-exedra-reader.png' });
+
+  await page.goto(`${base}/raw-json?probe=${Date.now()}`, {
+    waitUntil: 'networkidle',
+    timeout: 120_000,
+  });
+  await page.getByRole('heading', { name: '原始剧情 JSON' }).waitFor({ timeout: 60_000 });
+  await page.getByText('原始JSON文件', { exact: true }).waitFor();
+  const rawBody = await page.locator('body').innerText();
+  if (!rawBody.includes('24,367') || !rawBody.includes('固定提交')) {
+    throw new Error('raw JSON manifest summary is incomplete');
+  }
+  const rawFileLinks = page.getByRole('link', { name: '打开 / 下载' });
+  if (await rawFileLinks.count() < 1) throw new Error('raw JSON file links missing');
+  const firstRawUrl = await rawFileLinks.first().getAttribute('href');
+  if (!firstRawUrl?.startsWith('https://raw.githubusercontent.com/')) {
+    throw new Error(`raw JSON link is not immutable GitHub raw URL: ${firstRawUrl}`);
+  }
+  await page.screenshot({ path: 'public-story-evidence/04-raw-json-index.png' });
 } finally {
   await fs.writeFile(
     'public-story-evidence/result.json',
