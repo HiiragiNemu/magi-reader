@@ -16,7 +16,8 @@
     "check": "npm run lint && npm run type-check && npm test && npm run audit:prod",
     "build:worker": "node scripts/verify-cloudflare-output.mjs --build",
     "preview": "npm run build:worker && opennextjs-cloudflare preview",
-    "deploy:worker": "npm run verify:cloudflare-config && npm run build:worker && opennextjs-cloudflare deploy"
+    "deploy:worker": "npm run verify:cloudflare-config && npm run build:worker && opennextjs-cloudflare deploy",
+    "deploy:test:direct": "node scripts/deploy-direct-test.mjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.7",
