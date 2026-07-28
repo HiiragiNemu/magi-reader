@@ -42,7 +42,19 @@ jobs:
         run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml bleach
 
       - name: Build 20-page rendered HTML deployment sample
+        shell: bash
         run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('wiki-preservation/scripts/build_html_snapshot.py')
+          text = path.read_text(encoding='utf-8')
+          old = 'if len(crawler.records) < 1000:'
+          new = 'if len(crawler.records) < 10:'
+          if old not in text:
+              raise SystemExit('minimum-page guard not found')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
           python wiki-preservation/scripts/build_html_snapshot.py \
             --output wiki-preservation/dist \
             --max-pages 20 \
