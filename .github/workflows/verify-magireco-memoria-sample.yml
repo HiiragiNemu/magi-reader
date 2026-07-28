@@ -43,44 +43,77 @@ jobs:
       - name: Install parser dependencies
         run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
 
-      - name: Deploy temporary allow-listed edge proxy
+      - name: Prepare temporary allow-listed edge proxy
         shell: bash
         run: |
           set -euo pipefail
           project="magireco-memoria-${GITHUB_RUN_ID}"
           token="$(openssl rand -hex 24)"
           proxy="https://${project}.pages.dev"
-          mkdir -p memoria-proxy-dist
+          mkdir -p memoria-proxy-dist proxy-diagnostic
           python - <<PY
           from pathlib import Path
           source = Path('memoria-crawl/proxy-worker.js').read_text(encoding='utf-8')
           token = '${token}'
           assert '__PROXY_TOKEN__' in source
-          Path('memoria-proxy-dist/_worker.js').write_text(source.replace('__PROXY_TOKEN__', token), encoding='utf-8')
+          rendered = source.replace('__PROXY_TOKEN__', token)
+          Path('memoria-proxy-dist/_worker.js').write_text(rendered, encoding='utf-8')
           PY
+          node --check memoria-proxy-dist/_worker.js
           echo "MEMORIA_PROXY_PROJECT=$project" >> "$GITHUB_ENV"
           echo "MAGIRECO_FETCH_PROXY=$proxy" >> "$GITHUB_ENV"
           echo "MAGIRECO_PROXY_TOKEN=$token" >> "$GITHUB_ENV"
-          npx --yes wrangler@latest pages project create "$project" --production-branch main
-          npx --yes wrangler@latest pages deploy memoria-proxy-dist \
-            --project-name "$project" \
-            --branch main \
-            --commit-dirty=true
 
+      - name: Create temporary Pages project
+        id: create_proxy_project
+        shell: bash
+        run: |
+          set +e
+          npx --yes wrangler@latest pages project create "$MEMORIA_PROXY_PROJECT" --production-branch main \
+            > proxy-diagnostic/wrangler-project-create.log 2>&1
+          code=$?
+          cat proxy-diagnostic/wrangler-project-create.log
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit "$code"
+
+      - name: Deploy temporary Pages Worker
+        id: deploy_proxy_worker
+        if: steps.create_proxy_project.outcome == 'success'
+        shell: bash
+        run: |
+          set +e
+          npx --yes wrangler@latest pages deploy memoria-proxy-dist \
+            --project-name "$MEMORIA_PROXY_PROJECT" \
+            --branch main \
+            --commit-dirty=true \
+            > proxy-diagnostic/wrangler-pages-deploy.log 2>&1
+          code=$?
+          cat proxy-diagnostic/wrangler-pages-deploy.log
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit "$code"
+
+      - name: Wait for temporary proxy
+        if: steps.deploy_proxy_worker.outcome == 'success'
+        shell: bash
+        run: |
+          set +e
           for attempt in $(seq 1 40); do
-            if curl --fail --silent --show-error "$proxy/health" | grep -q 'magireco-rendered-pages-only'; then
+            status="$(curl --silent --show-error -o proxy-diagnostic/health.json -w '%{http_code}' "$MAGIRECO_FETCH_PROXY/health" || true)"
+            printf '%s\n' "$status" > proxy-diagnostic/health-status.txt
+            if [ "$status" = 200 ] && grep -q 'magireco-rendered-pages-only' proxy-diagnostic/health.json; then
               exit 0
             fi
             sleep 3
           done
-          echo 'temporary proxy did not become ready' >&2
+          cat proxy-diagnostic/health-status.txt || true
+          cat proxy-diagnostic/health.json || true
           exit 1
 
       - name: Probe source paths through edge proxy
+        if: steps.deploy_proxy_worker.outcome == 'success'
         shell: bash
         run: |
           set -uo pipefail
-          mkdir -p proxy-diagnostic
           probe() {
             name="$1"
             target="$2"
@@ -135,6 +168,7 @@ jobs:
           retention-days: 7
 
       - name: Require at least one readable template route
+        if: steps.deploy_proxy_worker.outcome == 'success'
         run: |
           python - <<'PY'
           import json
@@ -145,6 +179,7 @@ jobs:
           PY
 
       - name: Crawl and parse representative sample
+        if: steps.deploy_proxy_worker.outcome == 'success'
         run: |
           python memoria-crawl/run_resilient_memoria.py \
             --output memoria-sample \
@@ -159,6 +194,7 @@ jobs:
             --max-requests 220
 
       - name: Validate parsed fields and Wiki-layer coverage
+        if: steps.deploy_proxy_worker.outcome == 'success'
         run: |
           python - <<'PY'
           import json
