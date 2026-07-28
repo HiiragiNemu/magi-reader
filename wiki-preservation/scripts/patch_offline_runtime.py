@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Synchronize the production shell with a versioned Service Worker file.
 
-Cloudflare Pages may retain a static ``/sw.js`` response at the edge even when a
-query string changes. A browser could therefore register an old v4 body under a
-new query URL. This patch uses a genuinely versioned filename, updates app.js,
-derives pre-cache URLs from the final index, writes both worker files, and emits
-Cloudflare Pages ``_headers`` rules which prevent caching update entry points.
+Cloudflare Pages may retain fixed application assets at the edge even when a
+query string changes. A browser could therefore load an old application body
+from a nominally new URL and register the obsolete worker. This patch uses a
+genuinely versioned worker filename, updates app.js registration, derives the
+pre-cache URLs from the final index, writes compatibility and versioned worker
+files, and emits no-cache rules for every application update entry point.
 """
 
 from __future__ import annotations
@@ -36,7 +37,7 @@ def unique(values: list[str]) -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("root", type=Path)
-    parser.add_argument("--revision", default="5.4")
+    parser.add_argument("--revision", default="5.5")
     args = parser.parse_args()
 
     root = args.root.resolve()
@@ -179,29 +180,34 @@ self.addEventListener('message', (event) => {{
     versioned_sw_path.write_text(source, encoding="utf-8")
 
     no_cache = "Cache-Control: no-cache, no-store, must-revalidate"
-    headers = f"""/
-  {no_cache}
-
-/index.html
-  {no_cache}
-
-/health.json
-  {no_cache}
-
-/sw.js
-  {no_cache}
-  Service-Worker-Allowed: /
-
-/{versioned_sw_name}
-  {no_cache}
-  Service-Worker-Allowed: /
-"""
+    update_paths = [
+        "/",
+        "/index.html",
+        "/health.json",
+        "/app.js",
+        "/ui-v4-runtime.js",
+        "/structured-ui.js",
+        "/doppel-ui.js",
+        "/styles.css",
+        "/ui-v4-fixes.css",
+        "/structured-ui.css",
+        "/doppel-ui.css",
+    ]
+    blocks = [f"{path}\n  {no_cache}" for path in update_paths]
+    blocks.extend(
+        [
+            f"/sw.js\n  {no_cache}\n  Service-Worker-Allowed: /",
+            f"/{versioned_sw_name}\n  {no_cache}\n  Service-Worker-Allowed: /",
+        ]
+    )
+    headers = "\n\n".join(blocks) + "\n"
     (root / "_headers").write_text(headers, encoding="utf-8")
 
     print(json.dumps({
         "revision": args.revision,
         "version": version,
         "worker": f"/{versioned_sw_name}",
+        "noCachePaths": update_paths + ["/sw.js", f"/{versioned_sw_name}"],
         "core": core,
     }, ensure_ascii=False, indent=2))
 
