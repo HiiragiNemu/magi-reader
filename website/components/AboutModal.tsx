@@ -1,6 +1,6 @@
 "use client";
-import { useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useDialog } from '@/lib/use-dialog';
 
 const LINKS =[
   {
@@ -32,30 +32,30 @@ const LINKS =[
 
 export default function AboutModal({ isOpen, onClose, theme }: { isOpen: boolean; onClose: () => void; theme: string }) {
   const isDark = theme === 'dark';
-
-  useEffect(() => {
-    if (isOpen) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = '';
-    return () => { document.body.style.overflow = ''; };
-  }, [isOpen]);
+  const dialogRef = useDialog<HTMLDivElement>(isOpen, onClose);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4" onMouseDown={onClose}>
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="about-dialog-title"
+        tabIndex={-1}
         className={`w-full md:max-w-md md:rounded-2xl rounded-t-2xl overflow-hidden max-h-[85vh] flex flex-col shadow-2xl border transition-all animate-in slide-in-from-bottom-8 duration-300
           ${isDark ? 'bg-gray-900 border-gray-700 text-gray-100' : 'bg-white border-gray-200 text-gray-900'}`}
-        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="md:hidden flex justify-center pt-3 pb-1"><div className={`w-10 h-1.5 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-300'}`} /></div>
         <div className={`flex items-center justify-between px-6 py-4 border-b flex-shrink-0 ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
-          <h2 className="text-lg font-black bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent">我的其他工具和动态</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg opacity-50 hover:opacity-100 transition-colors"><X size={20} /></button>
+          <h2 id="about-dialog-title" className="text-lg font-black bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent">我的其他工具和动态</h2>
+          <button type="button" aria-label="关闭关于窗口" onClick={onClose} className="p-1.5 rounded-lg opacity-50 hover:opacity-100 transition-colors"><X size={20} /></button>
         </div>
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-2.5">
-          {LINKS.map((link, i) => (
-            <a key={i} href={link.href} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-3.5 px-4 py-3.5 rounded-xl transition-all active:scale-[0.98] border group ${isDark ? 'bg-white/[0.03] border-white/[0.05] hover:bg-white/[0.08]' : 'bg-gray-50 border-gray-100 hover:bg-white hover:shadow-md hover:border-gray-200'}`}>
+          {LINKS.map((link) => (
+            <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-3.5 px-4 py-3.5 rounded-xl transition-all active:scale-[0.98] border group ${isDark ? 'bg-white/[0.03] border-white/[0.05] hover:bg-white/[0.08]' : 'bg-gray-50 border-gray-100 hover:bg-white hover:shadow-md hover:border-gray-200'}`}>
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-black flex-shrink-0 bg-gradient-to-br ${link.iconClass} shadow-lg shadow-current/20`}>{link.icon}</div>
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-sm truncate">{link.title}</div>

@@ -1,21 +1,28 @@
 {
-  "$schema": "https://developers.cloudflare.com/workers/configuration/schema.json",
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "magireader",
-  "pages_build_output_dir": ".open-next/assets",
+  "main": ".open-next/worker.js",
   "compatibility_date": "2026-02-14",
   "compatibility_flags": [
-    "nodejs_compat"
+    "nodejs_compat",
+    "global_fetch_strictly_public"
   ],
-  "r2_buckets": [
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
     {
-      "binding": "NEXT_CACHE_BUCKET",
-      "bucket_name": "magi-assets"
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "magireader"
     }
   ],
   "kv_namespaces": [
     {
-      "binding": "NEXT_CACHE_WORKERS_KV",
-      "id": "e6546f3eebf94393b6ca3e85b5536d7b"
+      "binding": "SUBMISSIONS_KV",
+      // Required: replace this all-zero placeholder with a dedicated namespace ID.
+      // The deployment verifier rejects this placeholder.
+      "id": "00000000000000000000000000000000"
     }
   ]
 }

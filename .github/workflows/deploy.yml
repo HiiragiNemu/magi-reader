@@ -1,12 +1,20 @@
 
-name: Deploy to Cloudflare Pages
+name: Deploy to Cloudflare Workers
 
 on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
 jobs:
   deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -19,24 +27,65 @@ jobs:
         with:
           node-version: 22
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
       - name: Install
-        run: npm install
+        run: npm ci
 
-      - name: Create env file
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Test
+        run: npm test
+
+      - name: Test data pipeline
+        working-directory: .
+        run: python -m unittest discover -s tests -p "test_*.py"
+
+      - name: Generate deployable story catalogue
+        working-directory: .
+        run: python generate_story_index.py
+
+      - name: Build and validate search index
+        id: search
+        shell: bash
         run: |
-          cat > .env.production << EOF
-          CF_API_TOKEN=${{ secrets.CF_API_TOKEN }}
-          CF_ACCOUNT_ID=${{ secrets.CF_ACCOUNT_ID }}
-          KV_NAMESPACE_ID=${{ secrets.KV_NAMESPACE_ID }}
-          EOF
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/magi-reader-search"
+          payload="$RUNNER_TEMP/magi-reader-search/search_content.json"
+          python ../build_search_index_v6.py             --output "$payload"
+          python ../build_search_index_v6.py             --output "$payload"             --validate-only
+          object_key="$(node --input-type=module -e "import fs from 'node:fs'; const manifest = JSON.parse(fs.readFileSync('public/search_index_manifest.json', 'utf8')); if (!/^search\/[a-f0-9]{64}\.json$/.test(manifest.object_key)) process.exit(1); process.stdout.write(manifest.object_key);")"
+          echo "object_key=$object_key" >> "$GITHUB_OUTPUT"
 
-      - name: Build and Deploy
+      - name: Build Cloudflare Worker
+        run: npm run build:worker
+
+      - name: Prepare deployment bindings
+        env:
+          SUBMISSIONS_KV_NAMESPACE_ID: ${{ secrets.SUBMISSIONS_KV_NAMESPACE_ID }}
+        run: node scripts/verify-cloudflare-config.mjs --output .wrangler-deploy.jsonc
+
+      - name: Upload content-addressed search index
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          KV_NAMESPACE_ID: ${{ secrets.KV_NAMESPACE_ID }}
-        run: |
-          rm -rf .next .open-next
-          npm run deploy:pages -- --project-name=magireader
+        run: >-
+          npx wrangler r2 object put
+          "magi-assets/${{ steps.search.outputs.object_key }}"
+          --file "$RUNNER_TEMP/magi-reader-search/search_content.json"
+          --content-type "application/json; charset=utf-8"
+          --cache-control "public, max-age=31536000, immutable"
+          --remote
+          --force
+
+      - name: Deploy Worker with search manifest
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: npx opennextjs-cloudflare deploy --config .wrangler-deploy.jsonc

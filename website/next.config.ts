@@ -1,4 +1,7 @@
 import type { NextConfig } from 'next';
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
+
+initOpenNextCloudflareForDev();
 
 const nextConfig: NextConfig = {
   images: {
@@ -8,13 +11,6 @@ const nextConfig: NextConfig = {
 
   experimental: {
     optimizePackageImports: ['lucide-react'],
-  },
-
-  // 将环境变量注入到运行时
-  env: {
-    CF_API_TOKEN: process.env.CF_API_TOKEN || '',
-    CF_ACCOUNT_ID: process.env.CF_ACCOUNT_ID || '',
-    KV_NAMESPACE_ID: process.env.KV_NAMESPACE_ID || '',
   },
 
   webpack: (config) => {
