@@ -42,6 +42,12 @@ def patch_home(path: Path) -> None:
     text = replace_once(text, "MagiReader", "剧情阅读器", "public reader brand")
     text = replace_once(text, "Archive v3.0", "Magia Record + Magia Exedra", "public reader subtitle")
     text = replace_once(text, "关于我们", "相关项目", "public related projects label")
+    text = replace_once(
+        text,
+        "                相关项目\n              </button>\n              <button\n                type=\"button\"\n                onClick={switchStorySystem}",
+        "                相关项目\n              </button>\n              <Link\n                href=\"/raw-json\"\n                className={`px-2.5 py-1 rounded border text-xs font-bold whitespace-nowrap transition-all ${\n                  theme === 'dark'\n                    ? 'border-purple-800 bg-purple-900/30 text-purple-300 hover:bg-purple-800'\n                    : 'border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100'\n                }`}\n              >\n                原始JSON\n              </Link>\n              <button\n                type=\"button\"\n                onClick={switchStorySystem}",
+        "home raw JSON link",
+    )
     path.write_text(text, encoding="utf-8")
 
 
@@ -61,6 +67,12 @@ def patch_reader(path: Path) -> None:
         "public local-edit notice",
     )
     text = replace_once(text, "🔗 我的工具与动态", "相关项目", "reader related projects label")
+    text = replace_once(
+        text,
+        "          <div className=\"flex shrink-0 items-center gap-2\">\n            <button",
+        "          <div className=\"flex shrink-0 items-center gap-2\">\n            <Link\n              href=\"/raw-json\"\n              title=\"浏览全部原始剧情JSON\"\n              className=\"rounded-full bg-purple-100 px-3 py-1.5 text-xs font-bold text-purple-700 transition hover:bg-purple-200\"\n            >\n              JSON\n            </Link>\n            <button",
+        "reader raw JSON link",
+    )
     path.write_text(text, encoding="utf-8")
 
 
