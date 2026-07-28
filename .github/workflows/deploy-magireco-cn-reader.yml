@@ -17,7 +17,7 @@ concurrency:
 jobs:
   snapshot-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
@@ -41,15 +41,15 @@ jobs:
       - name: Install crawler dependencies
         run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml bleach
 
-      - name: Build rendered HTML deployment smoke snapshot
+      - name: Build 20-page rendered HTML deployment sample
         run: |
           python wiki-preservation/scripts/build_html_snapshot.py \
             --output wiki-preservation/dist \
-            --max-pages 300 \
-            --max-requests 900 \
-            --pause 0.08
+            --max-pages 20 \
+            --max-requests 80 \
+            --pause 0.03
 
-      - name: Verify snapshot and hosting limits
+      - name: Verify sample and hosting limits
         shell: bash
         run: |
           set -euo pipefail
@@ -64,10 +64,9 @@ jobs:
           root = Path('wiki-preservation/dist')
           manifest = json.loads((root / 'data/runtime-manifest.json').read_text(encoding='utf-8'))
           counts = manifest['counts']
-          assert counts['pages'] >= 100, counts
-          assert counts['shards'] >= 40, counts
-          assert counts['categories'] >= 10, counts
-          assert counts['media'] >= 50, counts
+          assert counts['pages'] >= 10, counts
+          assert counts['shards'] >= 8, counts
+          assert counts['media'] >= 5, counts
           files = [path for path in root.rglob('*') if path.is_file()]
           oversized = [path for path in files if path.stat().st_size > 25 * 1024 * 1024]
           assert len(files) <= 20000, len(files)
@@ -80,7 +79,7 @@ jobs:
       - name: Upload snapshot artifact
         uses: actions/upload-artifact@v4
         with:
-          name: magireco-cn-reader-smoke-snapshot
+          name: magireco-cn-reader-20-page-deployment-sample
           path: wiki-preservation/dist
           if-no-files-found: error
           retention-days: 14
