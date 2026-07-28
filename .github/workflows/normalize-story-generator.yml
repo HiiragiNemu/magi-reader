@@ -41,29 +41,23 @@ jobs:
           from pathlib import Path
           path = Path('generate_story_index.py')
           text = path.read_text(encoding='utf-8')
-          old = '''        if "WEBSITE_DATA" in relative.parts:
-              continue
-
-          identity_key, parent_parts, file_stem = magireco_source_identity(
-          '''
-          new = '''        if "WEBSITE_DATA" in relative.parts:
-              continue
-          try:
-              source_size = source_path.stat().st_size
-          except OSError as error:
-              raise PipelineError(
-                  f"无法读取 Magia Record TXT 大小: {source_path}: {error}"
-              ) from error
-          if source_size <= 0:
-              stats[f"magireco_{lang_key}_empty_txt"] += 1
-              continue
-
-          identity_key, parent_parts, file_stem = magireco_source_identity(
-          '''
-          if old in text:
-              text = text.replace(old, new, 1)
-          elif new not in text:
-              raise RuntimeError('Magia Record TXT collection marker changed')
+          anchor = '        if "WEBSITE_DATA" in relative.parts:\n            continue\n\n'
+          payload = (
+              '        try:\n'
+              '            source_size = source_path.stat().st_size\n'
+              '        except OSError as error:\n'
+              '            raise PipelineError(\n'
+              '                f"无法读取 Magia Record TXT 大小: {source_path}: {error}"\n'
+              '            ) from error\n'
+              '        if source_size <= 0:\n'
+              '            stats[f"magireco_{lang_key}_empty_txt"] += 1\n'
+              '            continue\n\n'
+          )
+          marker = 'magireco_{lang_key}_empty_txt'
+          if marker not in text:
+              if text.count(anchor) != 1:
+                  raise RuntimeError(f'Magia Record TXT anchor count: {text.count(anchor)}')
+              text = text.replace(anchor, anchor + payload, 1)
           path.write_text(text, encoding='utf-8')
           PY
           python -m py_compile generate_story_index.py
