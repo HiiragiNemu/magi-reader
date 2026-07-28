@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Patch structured-ui.js to make legacy-navigation upgrades idempotent.
+"""Apply deterministic runtime fixes to structured-ui.js.
 
-Assigning ``textContent`` inside a MutationObserver callback creates another
-mutation even when the visible string is unchanged.  The original v5 bridge
-therefore kept its observer busy indefinitely.  This build-time patch changes
-those writes into guarded, idempotent updates.
+The structured layer coexists with the preservation reader.  The patch makes
+legacy navigation upgrades idempotent, cancels stale debounced list renders
+when leaving a route, and renders a structured destination immediately after
+changing the hash instead of relying solely on listener ordering.
 """
 
 from __future__ import annotations
@@ -25,6 +25,7 @@ def main() -> None:
     args = parser.parse_args()
     path = args.path.resolve()
     value = path.read_text(encoding="utf-8")
+
     value = replace_once(
         value,
         "if (wiki && wiki.closest('nav')) wiki.textContent = 'Wiki正文';",
@@ -35,11 +36,16 @@ def main() -> None:
         "if (people) {\n    people.dataset.route = 'characters';\n    people.textContent = '人物';\n  }",
         "if (people) {\n    if (people.dataset.route !== 'characters') people.dataset.route = 'characters';\n    if (people.textContent !== '人物') people.textContent = '人物';\n  }",
     )
+    value = replace_once(
+        value,
+        "function routeStructured(path) {\n  const next = `#/${String(path).replace(/^\\/+/, '')}`;\n  if (location.hash === next) void renderStructuredRoute();\n  else location.hash = next;\n  scrollTo({ top: 0, behavior: 'smooth' });\n}",
+        "function routeStructured(path) {\n  clearTimeout(window.__structuredCharacterTimer);\n  clearTimeout(window.__structuredVoiceTimer);\n  clearTimeout(window.__structuredLineTimer);\n  const next = `#/${String(path).replace(/^\\/+/, '')}`;\n  if (location.hash === next) {\n    void renderStructuredRoute();\n  } else {\n    location.hash = next;\n    queueMicrotask(() => void renderStructuredRoute());\n  }\n  scrollTo({ top: 0, behavior: 'smooth' });\n}",
+    )
     marker = "const STRUCTURED_UI_VERSION = '5.0';"
     value = replace_once(
         value,
         marker,
-        marker + "\nconst STRUCTURED_RUNTIME_REVISION = '5.1-idempotent-navigation';",
+        marker + "\nconst STRUCTURED_RUNTIME_REVISION = '5.2-route-timer-isolation';",
     )
     path.write_text(value, encoding="utf-8")
 
