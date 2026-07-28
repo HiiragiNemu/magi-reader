@@ -40,9 +40,23 @@ const lineContainsExactTitle = (line, title) => {
   return false;
 };
 
+const uniqueNamespaceId = (matches, exactTitle) => {
+  const unique = [...new Set(matches.map(value => value.toLowerCase()))];
+  if (unique.length === 0) {
+    throw new Error(
+      `Wrangler 返回中没有找到名称完全等于 ${JSON.stringify(exactTitle)} 的 KV namespace。`,
+    );
+  }
+  if (unique.length !== 1) {
+    throw new Error(
+      `KV namespace 名称 ${JSON.stringify(exactTitle)} 对应多个 ID：${unique.join(', ')}`,
+    );
+  }
+  return unique[0];
+};
+
 export const parseNamespaceList = (raw, exactTitle) => {
   const output = stripAnsi(String(raw)).trim();
-  const matches = [];
   const jsonCandidates = [output];
 
   const firstArray = output.indexOf('[');
@@ -56,35 +70,32 @@ export const parseNamespaceList = (raw, exactTitle) => {
     jsonCandidates.push(output.slice(firstObject, lastObject + 1));
   }
 
+  let parsedStructuredOutput = false;
+  const structuredMatches = [];
   for (const candidate of jsonCandidates) {
     try {
-      for (const item of collectNamespaceObjects(JSON.parse(candidate))) {
-        if (item.title === exactTitle) matches.push(item.id.toLowerCase());
+      const objects = collectNamespaceObjects(JSON.parse(candidate));
+      if (objects.length > 0) parsedStructuredOutput = true;
+      for (const item of objects) {
+        if (item.title === exactTitle) structuredMatches.push(item.id);
       }
     } catch {
-      // Wrangler versions differ; fall through to table/text parsing.
+      // Wrangler versions differ; use table/text parsing only if no structured
+      // namespace list was parsed at all.
     }
   }
+  if (parsedStructuredOutput) {
+    return uniqueNamespaceId(structuredMatches, exactTitle);
+  }
 
+  const textMatches = [];
   for (const line of output.split(/\r?\n/gu)) {
     if (!lineContainsExactTitle(line, exactTitle)) continue;
     for (const match of line.matchAll(/[a-f0-9]{32}/giu)) {
-      matches.push(match[0].toLowerCase());
+      textMatches.push(match[0]);
     }
   }
-
-  const unique = [...new Set(matches)];
-  if (unique.length === 0) {
-    throw new Error(
-      `Wrangler 返回中没有找到名称完全等于 ${JSON.stringify(exactTitle)} 的 KV namespace。`,
-    );
-  }
-  if (unique.length !== 1) {
-    throw new Error(
-      `KV namespace 名称 ${JSON.stringify(exactTitle)} 对应多个 ID：${unique.join(', ')}`,
-    );
-  }
-  return unique[0];
+  return uniqueNamespaceId(textMatches, exactTitle);
 };
 
 export const replaceExactlyOnce = (
