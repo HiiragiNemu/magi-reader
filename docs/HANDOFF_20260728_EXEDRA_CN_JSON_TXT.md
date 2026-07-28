@@ -8,8 +8,8 @@
 - 长期开发分支：`feature/exedra-cn-and-magireco-voice`
 - 基线分支：`EXEDRA-TEST`
 - `main` 不得修改。
-- 当前长期分支相对 `EXEDRA-TEST` 为纯前进关系；截至本交接前的审计结果为 ahead 105、behind 0。
-- 当前差异只包含代码、工具、测试、文档和两个空的 `general_voice` 目标目录；没有修改既有魔法纪录/Exedra 剧情 JSON、TXT 或人工中文语料。
+- 当前长期分支相对 `EXEDRA-TEST` 为纯前进关系；最近审计为 ahead 111、behind 0。
+- 当前差异只包含代码、工具、测试、文档、0728 包审计元数据和两个空的 `general_voice` 目标目录；没有修改既有魔法纪录/Exedra 剧情 JSON、TXT 或人工中文语料。
 - 当前测试站 `https://magireader-exedra-cn-test.crynetsystemscell.workers.dev/` 尚未部署本长期分支的最新代码。
 
 ## 2. 已经落盘到长期分支的研究和生产文件
@@ -48,6 +48,25 @@
 - `docs/DIRECT_EXEDRA_TEST_DEPLOYMENT.md`
 - `docs/FEATURE_REVIEW_CHECKLIST.md`
 
+### 0728 包审计元数据
+
+- `artifacts/source-archives/rounddora-text-0728.manifest.json`
+
+该 manifest 已记录：
+
+- 原文件名：`圆哆啦文本0728.rar`
+- 文件大小：2,452,430 字节
+- SHA-256：`2f55e92bd8ceb310ba37c7a7b5dd94dffe5849d1266017021ff52366595b572c`
+- 格式：RAR5
+- 条目：642
+- 文件：640
+- 目录：2
+- 文件扩展名：640 个 `.ass`
+- 解压后总大小：6,132,347 字节
+- 分类：人工翻译，永不标记为机器翻译
+
+原始 RAR 本体没有提交进 Git。
+
 ## 3. 已确定的产品决策
 
 ### Exedra 分类显示
@@ -83,15 +102,17 @@
 
 ## 5. 0728 压缩包状态
 
-用户上传文件名：`圆哆啦文本0728.rar`。
+原始 RAR 当前只存在于用户上传环境，**没有提交到 GitHub 分支，也没有生成稳定 Release 资产**。仓库已落盘的是审计 manifest，而不是 640 个 ASS 的原始内容。
 
-重要：该压缩包目前只存在于本次会话的上传环境，**没有提交到 GitHub 分支，也没有生成稳定 Release 资产**。分支中只有处理管线，没有 0728 原始文本内容。
+下一位 AI 必须：
 
-若下一位 AI 在新会话或新执行环境继续工作，必须：
+1. 重新取得 RAR；
+2. 验证 SHA-256 必须等于 `2f55e92bd8ceb310ba37c7a7b5dd94dffe5849d1266017021ff52366595b572c`；
+3. 解包并逐个清点 640 个 `.ass`；
+4. 建立路径、编码、文件大小、内容哈希、行数和 Exedra 映射清单；
+5. 不得根据文件名或本交接文档臆造 ASS 内容。
 
-- 重新获得该 RAR 文件；或
-- 先把它上传到受控的私有 Release/对象存储，并记录 SHA-256；
-- 不得根据本交接文档臆造压缩包内容。
+若新会话无法取得上传附件，必须让用户重新上传，或先把它放入受控的私有 Release/对象存储并记录校验值。
 
 ## 6. 下一位 AI 的核心目标
 
@@ -217,7 +238,7 @@ magi-submissions-exedra-cn-test
 
 截至本交接：
 
-- 0728 RAR 尚未解析或落盘仓库。
+- 0728 RAR 审计 manifest 已落盘，但原始 RAR 和 640 个 ASS 内容未进 Git，尚未完成内容清单与 Exedra 映射。
 - Wiki 尚未完成全角色抓取与实际导入统计。
 - 0728/Wiki Exedra 中文 JSON/TXT 尚未批量生产。
 - 魔法纪录与 Exedra 校验批准后的 JSON/TXT 双产物尚未实现。
