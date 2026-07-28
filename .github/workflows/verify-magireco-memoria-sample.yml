@@ -37,17 +37,17 @@ jobs:
 
       - name: Crawl and parse representative sample
         run: |
-          python memoria-crawl/build_memoria_snapshot.py \
+          python memoria-crawl/run_resilient_memoria.py \
             --output memoria-sample \
             --limit 20 \
             --include '1000円未満の魔法' \
             --include '1000年の眠りを超えて' \
             --minimum-discovered 1 \
-            --workers 4 \
-            --pause 0.25 \
-            --timeout 18 \
-            --retries 3 \
-            --max-requests 180
+            --workers 2 \
+            --pause 0.8 \
+            --timeout 20 \
+            --retries 4 \
+            --max-requests 260
 
       - name: Validate parsed fields and Wiki-layer coverage
         run: |
@@ -61,9 +61,9 @@ jobs:
           failures = json.loads((root / 'failures.json').read_text(encoding='utf-8'))
           by_ja = {item['nameJa']: item for item in records}
 
-          # 私库的1404条包括客户端补全；Wiki模板层真实规模约为一千条，
-          # 不能再把1404误设为Wiki页面发现门槛。
-          assert manifest['discoveredTemplatePages'] >= 900, manifest
+          # Wiki dump中同时存在手写条目和批量导入副本；完整模板发现数
+          # 应显著超过第一页的约167条。
+          assert manifest['discoveredTemplatePages'] >= 1200, manifest
           assert manifest['records'] >= 19, manifest
           assert manifest['withStats'] >= 16, manifest
           assert manifest['withImage'] >= 14, manifest
