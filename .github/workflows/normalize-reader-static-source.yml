@@ -1,0 +1,101 @@
+name: Normalize Reader Static Source
+
+on:
+  push:
+    branches: [fix/visitor-copy-source-v63]
+    paths:
+      - 'wiki-preservation/static/**'
+      - 'wiki-preservation/scripts/patch_dense_reader.py'
+      - '.github/workflows/normalize-reader-static-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: normalize-reader-static-source
+  cancel-in-progress: false
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/visitor-copy-source-v63
+          fetch-depth: 0
+          show-progress: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Make visitor-copy patch idempotent
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('wiki-preservation/scripts/patch_dense_reader.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''def replace_once(text: str, old: str, new: str, label: str) -> str:
+              count = text.count(old)
+              if count != 1:
+                  raise RuntimeError(f"{label}: expected one occurrence, found {count}")
+              return text.replace(old, new, 1)
+          '''.replace('          ', '')
+          new = '''def replace_once(text: str, old: str, new: str, label: str) -> str:
+              old_count = text.count(old)
+              new_count = text.count(new)
+              if old_count == 1:
+                  return text.replace(old, new, 1)
+              if old_count == 0 and new_count >= 1:
+                  return text
+              raise RuntimeError(
+                  f"{label}: expected one old occurrence or an already-normalized value; "
+                  f"found old={old_count}, new={new_count}"
+              )
+          '''.replace('          ', '')
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif new not in text:
+              raise RuntimeError('replace_once implementation is neither legacy nor normalized')
+          text = text.replace(
+              'The static sources intentionally keep extraction terminology for engineering\ntraceability. Production pages should present the archive itself, not the\noperator\'s implementation instructions.',
+              'Static sources and production output both use visitor-facing copy. The patch\nremains idempotent so verified sources can be assembled repeatedly without\nreintroducing implementation instructions.',
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Apply production visitor and performance patches to source
+        run: |
+          python wiki-preservation/scripts/patch_dense_reader.py wiki-preservation/static
+          node --check wiki-preservation/static/app.js
+          node --check wiki-preservation/static/structured-ui.js
+          node --check wiki-preservation/static/doppel-ui.js
+          node --check wiki-preservation/static/memoria-ui.js
+          ! grep -R -E 'STATIC PRESERVATION READER|把原 Wiki|不会删减底层|这里不是Wiki文章关键词筛选|这里不是正文关键词筛选|这里不是Wiki正文关键词筛选|以保存快照中的普通记忆结晶目录为成员基准|来源与保存说明|本站用于研究|兼容性开发' \
+            wiki-preservation/static/index.html \
+            wiki-preservation/static/app.js \
+            wiki-preservation/static/structured-ui.js \
+            wiki-preservation/static/doppel-ui.js \
+            wiki-preservation/static/memoria-ui.js
+          grep -q 'MAGIA RECORD DATABASE' wiki-preservation/static/app.js
+          grep -q '浏览角色、剧情、记忆结晶、Doppel、媒体与Wiki条目' wiki-preservation/static/app.js
+          grep -q 'requestIdleCallback' wiki-preservation/static/app.js
+          grep -q 'subtree: false' wiki-preservation/static/structured-ui.js
+          grep -q 'subtree: false' wiki-preservation/static/doppel-ui.js
+          grep -q 'subtree: false' wiki-preservation/static/memoria-ui.js
+
+      - name: Commit normalized static sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'Static sources are already normalized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add wiki-preservation/static wiki-preservation/scripts/patch_dense_reader.py
+          git commit -m '将Reader静态源改为最终访客文案与高密度运行时'
+          git push origin HEAD:fix/visitor-copy-source-v63

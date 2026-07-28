@@ -88,7 +88,7 @@ function dHeader() {
       <div class="header-primary">
         <button class="brand" data-route="doppel" type="button" aria-label="返回Doppel图鉴">
           <span class="brand-mark">✦</span>
-          <span><strong>魔法纪录中文资料库</strong><small>STRUCTURED ARCHIVE & READER</small></span>
+          <span><strong>魔法纪录中文资料库</strong><small>MAGIA RECORD DATABASE</small></span>
         </button>
         ${dThemeControls()}
       </div>
@@ -98,7 +98,7 @@ function dHeader() {
 
 function dShell(content) {
   doppelApp.innerHTML = `${dHeader()}<main class="site-main structured-main doppel-main">${content}</main>
-    <footer class="site-footer"><span>174条Doppel来自人物页面原始信息表 · 可读图鉴与Wiki正文并存</span><button data-route="about">来源与保存说明</button></footer>
+    <footer class="site-footer"><span>174条Doppel资料</span><button data-route="about">关于资料库</button></footer>
     <button class="to-top" type="button" data-scroll-top aria-label="返回页面顶部">↑</button>
     <dialog class="image-viewer" id="image-viewer"><button type="button" class="viewer-close" data-close-viewer aria-label="关闭图片">×</button><div class="viewer-stage"><img alt=""><p></p></div></dialog>`;
   document.documentElement.dataset.structuredView = 'doppel';
@@ -179,7 +179,7 @@ function doppelListPage() {
   document.title = 'Doppel图鉴 — 魔法纪录中文资料库';
   dShell(`
     <section class="structured-hero doppel-hero">
-      <div><p class="eyebrow">STRUCTURED DOPPEL ARCHIVE</p><h1>Doppel图鉴</h1><p>从174个人物页面的Doppel信息表直接提取，保留角色、名称、魔女文字、感情称号、姿态、原案/监修以及中日双语说明。这里不是正文关键词筛选。</p></div>
+      <div><p class="eyebrow">DOPPEL DATABASE</p><h1>Doppel图鉴</h1><p>浏览174条Doppel资料，包括关联角色、名称、魔女文字、感情称号、姿态、原案/监修与中日说明。</p></div>
       <div class="coverage-grid structured-stats">
         <div><strong>${Number(doppelState.manifest.doppel || catalog.length).toLocaleString('zh-CN')}</strong><span>Doppel条目</span></div>
         <div><strong>${Number(doppelState.manifest.doppelWithImage || 0).toLocaleString('zh-CN')}</strong><span>带图像</span></div>
@@ -191,7 +191,7 @@ function doppelListPage() {
       <label class="search-field"><span>⌕</span><input id="doppel-search" type="search" value="${dAttr(doppelState.query)}" placeholder="搜索角色、Doppel名称、感情、姿态、魔女文字或说明" autocomplete="off"></label>
       <select id="doppel-credit"><option value="all">全部原案/监修</option>${credits.map((value) => `<option value="${dAttr(value)}" ${doppelState.credit === value ? 'selected' : ''}>${dEscape(value)}</option>`).join('')}</select>
     </section>
-    <section class="structured-result-head"><div><p class="result-kicker">结构化图鉴</p><h2>Doppel列表</h2></div><span>${filtered.length.toLocaleString('zh-CN')}条</span></section>
+    <section class="structured-result-head"><div><p class="result-kicker">Doppel资料</p><h2>Doppel列表</h2></div><span>${filtered.length.toLocaleString('zh-CN')}条</span></section>
     ${shown.length ? `<div class="doppel-grid">${shown.map(doppelCard).join('')}</div>` : '<div class="state-panel inline"><strong>没有匹配Doppel</strong></div>'}
     ${pages > 1 ? `<div class="pager"><button type="button" data-doppel-page="${doppelState.page - 1}" ${doppelState.page <= 1 ? 'disabled' : ''}>上一页</button><span>第 ${doppelState.page} / ${pages} 页</span><button type="button" data-doppel-page="${doppelState.page + 1}" ${doppelState.page >= pages ? 'disabled' : ''}>下一页</button></div>` : ''}
   `);
@@ -295,7 +295,7 @@ const doppelObserver = new MutationObserver(() => {
     queueMicrotask(() => void renderDoppelRoute());
   }
 });
-doppelObserver.observe(doppelApp, { childList: true, subtree: true });
+doppelObserver.observe(doppelApp, { childList: true, subtree: false });
 
 patchDoppelNavigation();
 setTimeout(() => void renderDoppelRoute(), 0);

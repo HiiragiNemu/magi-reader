@@ -166,7 +166,7 @@ function header(active = 'portal') {
       <div class="header-primary">
         <button class="brand" data-route="portal/all" type="button" aria-label="返回知识门户">
           <span class="brand-mark">✦</span>
-          <span><strong>魔法纪录中文资料库</strong><small>STATIC PRESERVATION READER</small></span>
+          <span><strong>魔法纪录中文资料库</strong><small>MAGIA RECORD DATABASE</small></span>
         </button>
         ${themeControls()}
       </div>
@@ -176,7 +176,7 @@ function header(active = 'portal') {
 
 function shell(content, active = 'portal') {
   app.innerHTML = `${header(active)}<main class="site-main">${content}</main>
-    <footer class="site-footer"><span>只读静态资料库 · 可读页面与原始渲染HTML并存</span><button data-route="about">来源与保存说明</button></footer>
+    <footer class="site-footer"><span>魔法纪录中文资料库</span><button data-route="about">关于资料库</button></footer>
     <button class="to-top" type="button" data-scroll-top aria-label="返回页面顶部">↑</button>
     <dialog class="image-viewer" id="image-viewer"><button type="button" class="viewer-close" data-close-viewer aria-label="关闭图片">×</button><div class="viewer-stage"><img alt=""><p></p></div></dialog>`;
   applyPreferences();
@@ -226,14 +226,14 @@ function portalPage(forcedPortal = '') {
   const shown = filtered.slice((state.page - 1) * PAGE_SIZE, state.page * PAGE_SIZE);
   const counts = state.manifest.counts || {};
   const cards = [
-    { id: 'all', title: '全部保存内容', count: state.archive.length, description: '浏览全部正文、Game、模板、模块、分类和项目资料', short: '全部' },
+    { id: 'all', title: '全部保存内容', count: state.archive.length, description: '正文、Game、模板、模块、分类与项目资料', short: '全部' },
     ...state.portals.map((item) => ({ ...item, ...(portalCopy[item.id] ? { title: portalCopy[item.id][0], description: portalCopy[item.id][1], short: portalCopy[item.id][2] } : {}) })),
   ];
   const activeTitle = active?.title || (selectedPortal === 'all' ? '知识门户' : portalCopy[selectedPortal]?.[0]) || '知识门户';
   setDocumentTitle(activeTitle);
   shell(`
     <section class="portal-hero">
-      <div><p class="eyebrow">MAGIA RECORD · PRESERVATION</p><h1>${escapeHtml(activeTitle)}</h1><p>把原 Wiki 的正文、章节、分类、重定向与媒体索引重组为无需账号和数据库的静态资料站。主题入口只负责筛选，不会删减底层内容。</p></div>
+      <div><p class="eyebrow">MAGIA RECORD · PRESERVATION</p><h1>${escapeHtml(activeTitle)}</h1><p>浏览角色、剧情、记忆结晶、Doppel、媒体与Wiki条目。可通过标题、分类和章节快速检索。</p></div>
       <div class="coverage-grid">
         <div><strong>${Number(counts.pages || 0).toLocaleString('zh-CN')}</strong><span>归档页面</span></div>
         <div><strong>${Number(counts.categories || 0).toLocaleString('zh-CN')}</strong><span>分类</span></div>
@@ -274,15 +274,28 @@ function articleFallback(record) {
 function enhanceArticle() {
   const body = document.querySelector('.wiki-document');
   if (!body) return;
-  body.querySelectorAll('table').forEach((table) => {
+  const tables = [...body.querySelectorAll('table')];
+  const images = [...body.querySelectorAll('img')];
+  const widthNodes = [...body.querySelectorAll('[width]')];
+  let tableIndex = 0;
+  let imageIndex = 0;
+  let widthIndex = 0;
+
+  const schedule = (callback) => {
+    if ('requestIdleCallback' in window) requestIdleCallback(callback, { timeout: 220 });
+    else setTimeout(() => callback({ timeRemaining: () => 8, didTimeout: true }), 0);
+  };
+
+  const processTable = (table) => {
     table.removeAttribute('width');
     if (table.parentElement?.classList.contains('table-viewport')) return;
     const wrapper = document.createElement('div');
     wrapper.className = 'table-viewport';
     table.parentNode?.insertBefore(wrapper, table);
     wrapper.appendChild(table);
-  });
-  body.querySelectorAll('img').forEach((image) => {
+  };
+
+  const processImage = (image) => {
     image.removeAttribute('width');
     image.removeAttribute('height');
     image.removeAttribute('style');
@@ -296,8 +309,27 @@ function enhanceArticle() {
     };
     if (image.complete) classify(); else image.addEventListener('load', classify, { once: true });
     image.addEventListener('error', () => image.classList.add('image-failed'), { once: true });
-  });
-  body.querySelectorAll('[width]').forEach((node) => node.removeAttribute('width'));
+  };
+
+  const work = (deadline) => {
+    let processed = 0;
+    while ((deadline.timeRemaining() > 2 || deadline.didTimeout) && processed < 36) {
+      if (tableIndex < tables.length) processTable(tables[tableIndex++]);
+      else if (imageIndex < images.length) processImage(images[imageIndex++]);
+      else if (widthIndex < widthNodes.length) widthNodes[widthIndex++].removeAttribute('width');
+      else {
+        body.dataset.enhanced = 'true';
+        return;
+      }
+      processed += 1;
+    }
+    schedule(work);
+  };
+
+  /* Process the first visible items synchronously, then yield the main thread. */
+  tables.slice(0, 6).forEach((table) => { processTable(table); tableIndex += 1; });
+  images.slice(0, 10).forEach((image) => { processImage(image); imageIndex += 1; });
+  schedule(work);
 }
 
 async function articlePage(id) {
@@ -321,7 +353,7 @@ async function articlePage(id) {
     <article class="article-page">
       <div class="reading-bar"><button class="back-button" type="button" data-route="portal/${attr(state.portal || 'all')}">← 返回列表</button><span>${escapeHtml(item.namespaceLabel)}</span><button type="button" data-scroll-toc>目录</button></div>
       <header class="article-header">
-        <p class="eyebrow">PRESERVED WIKI ARTICLE</p>
+        <p class="eyebrow">WIKI ARTICLE</p>
         <h1>${escapeHtml(item.title)}</h1>
         <div class="category-strip article-tags">${(item.categories || []).map((value) => `<button type="button" class="chip" data-category-jump="${attr(value)}">${escapeHtml(value)}</button>`).join('')}</div>
         <details class="technical-meta"><summary>页面信息与校验</summary><div><span>${escapeHtml(item.namespaceLabel)}</span><span>${formatBytes(item.textBytes)}</span><span>修订 ${escapeHtml(item.revision || '—')}</span><span>SHA-256 ${escapeHtml(item.sha256.slice(0, 20))}…</span>${item.redirectTo ? `<span>重定向至 ${escapeHtml(item.redirectTo)}</span>` : ''}</div></details>
@@ -331,7 +363,7 @@ async function articlePage(id) {
         <div class="article-body"><div class="wiki-document">${content}</div></div>
         ${outline.length ? `<details class="article-toc" id="article-toc" ${tocOpen ? 'open' : ''}><summary>本页目录 <span>${outline.length}</span></summary><ol>${outline.map((entry) => `<li style="--toc-depth:${Math.max(0, entry.level - 2)}"><a href="#${attr(entry.id)}">${escapeHtml(entry.text)}</a></li>`).join('')}</ol></details>` : ''}
       </div>
-      <details class="raw-details"><summary>查看完整原始渲染HTML（保真层）</summary><pre class="raw-source"><code>${escapeHtml(record.rawHtml || '（空页面）')}</code></pre></details>
+      <details class="raw-details"><summary>原始页面HTML</summary><pre class="raw-source"><code>${escapeHtml(record.rawHtml || '（空页面）')}</code></pre></details>
     </article>
   `, 'article');
   enhanceArticle();
@@ -368,8 +400,8 @@ async function mediaPage() {
 function aboutPage() {
   const source = state.manifest.source || {};
   const counts = state.manifest.counts || {};
-  setDocumentTitle('关于数据');
-  shell(`<article class="about-page"><p class="eyebrow">DATA & PROVENANCE</p><h1>关于数据与长期保存</h1><section><h2>保存方式</h2><p>本站从公开文章与分类链接图生成不可编辑的静态快照。构建后只需要普通静态文件托管，不依赖PHP、数据库、账号系统或原Wiki服务器程序。</p></section><section><h2>当前快照</h2><dl class="definition-grid"><div><dt>生成时间</dt><dd>${escapeHtml(state.manifest.generatedAt)}</dd></div><div><dt>来源</dt><dd>${escapeHtml(source.base || 'https://magireco.moe')}</dd></div><div><dt>页面</dt><dd>${Number(counts.pages || 0).toLocaleString('zh-CN')}</dd></div><div><dt>正文数据</dt><dd>${formatBytes(counts.contentBytes)}</dd></div><div><dt>图片记录</dt><dd>${Number(counts.images || 0).toLocaleString('zh-CN')}</dd></div><div><dt>抓取失败</dt><dd>${Number(counts.crawlFailures || 0).toLocaleString('zh-CN')}</dd></div></dl></section><section><h2>不衰减原则</h2><p>每个页面同时保存经过安全处理的可读HTML和完整原始渲染HTML。界面重排、移动端适配和主题切换不会删除底层正文。</p></section><section><h2>阅读设置</h2><p>右上角“外观”菜单提供跟随系统、日间、夜间、护眼和纯黑五种主题，以及四级字号和三档正文宽度。</p></section><section><h2>权利说明</h2><p>本站用于研究、保存、检索和兼容性开发。游戏文本、图像、音频、角色、商标及其他第三方内容的权利归各自权利人所有；Wiki编辑文本和译文的使用条件以原站声明为准。</p></section></article>`, 'about');
+  setDocumentTitle('关于资料库');
+  shell(`<article class="about-page"><p class="eyebrow">DATA & PROVENANCE</p><h1>关于资料库</h1><section><h2>资料形式</h2><p>本站提供魔法纪录中文Wiki条目、角色、语音、Doppel与媒体资料的只读浏览。</p></section><section><h2>当前快照</h2><dl class="definition-grid"><div><dt>生成时间</dt><dd>${escapeHtml(state.manifest.generatedAt)}</dd></div><div><dt>来源</dt><dd>${escapeHtml(source.base || 'https://magireco.moe')}</dd></div><div><dt>页面</dt><dd>${Number(counts.pages || 0).toLocaleString('zh-CN')}</dd></div><div><dt>正文数据</dt><dd>${formatBytes(counts.contentBytes)}</dd></div><div><dt>图片记录</dt><dd>${Number(counts.images || 0).toLocaleString('zh-CN')}</dd></div><div><dt>抓取失败</dt><dd>${Number(counts.crawlFailures || 0).toLocaleString('zh-CN')}</dd></div></dl></section><section><h2>页面内容</h2><p>Wiki条目保留可读正文、分类、章节、来源与原始页面HTML。</p></section><section><h2>阅读设置</h2><p>右上角“外观”菜单提供跟随系统、日间、夜间、护眼和纯黑五种主题，以及四级字号和三档正文宽度。</p></section><section><h2>权利说明</h2><p>游戏文本、图像、音频、角色、商标及其他第三方内容的权利归各自权利人所有；Wiki编辑文本和译文的使用条件以原站声明为准。</p></section></article>`, 'about');
   scheduleScroll('top');
 }
 

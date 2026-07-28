@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Apply visitor-facing copy, dense-layout and long-page performance patches.
 
-The static sources intentionally keep extraction terminology for engineering
-traceability. Production pages should present the archive itself, not the
-operator's implementation instructions. This patch also replaces the eager
+Static sources and production output both use visitor-facing copy. The patch
+remains idempotent so verified sources can be assembled repeatedly without
+reintroducing implementation instructions. This patch also replaces the eager
 whole-document enhancer with an idle-chunked implementation and limits legacy
 MutationObservers to root-level application swaps.
 """
@@ -16,10 +16,16 @@ from pathlib import Path
 
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
-    count = text.count(old)
-    if count != 1:
-        raise RuntimeError(f"{label}: expected one occurrence, found {count}")
-    return text.replace(old, new, 1)
+    old_count = text.count(old)
+    new_count = text.count(new)
+    if old_count == 1:
+        return text.replace(old, new, 1)
+    if old_count == 0 and new_count >= 1:
+        return text
+    raise RuntimeError(
+        f"{label}: expected one old occurrence or an already-normalized value; "
+        f"found old={old_count}, new={new_count}"
+    )
 
 
 def patch_app(path: Path) -> None:

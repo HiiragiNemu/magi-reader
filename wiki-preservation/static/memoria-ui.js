@@ -104,7 +104,7 @@ function mHeader() {
       <div class="header-primary">
         <button class="brand" data-route="memoria" type="button" aria-label="返回记忆结晶图鉴">
           <span class="brand-mark">✦</span>
-          <span><strong>魔法纪录中文资料库</strong><small>STRUCTURED ARCHIVE & READER</small></span>
+          <span><strong>魔法纪录中文资料库</strong><small>MAGIA RECORD DATABASE</small></span>
         </button>
         ${mThemeControls()}
       </div>
@@ -114,7 +114,7 @@ function mHeader() {
 
 function mShell(content) {
   memoriaApp.innerHTML = `${mHeader()}<main class="site-main structured-main memoria-main">${content}</main>
-    <footer class="site-footer"><span>记忆结晶目录、数值、效果与中日简介 · 不完整记录明确标记</span><button data-route="about">来源与保存说明</button></footer>
+    <footer class="site-footer"><span>记忆结晶资料</span><button data-route="about">关于资料库</button></footer>
     <button class="to-top" type="button" data-scroll-top aria-label="返回页面顶部">↑</button>
     <dialog class="image-viewer" id="image-viewer"><button type="button" class="viewer-close" data-close-viewer aria-label="关闭图片">×</button><div class="viewer-stage"><img alt=""><p></p></div></dialog>`;
   document.documentElement.dataset.structuredView = 'memoria';
@@ -125,7 +125,7 @@ function mLoading(label = '正在载入记忆结晶图鉴……') {
 }
 
 function mError(error) {
-  mShell(`<div class="state-panel error"><strong>记忆结晶资料读取失败</strong><pre>${mEscape(error?.message || error)}</pre><button type="button" data-route="portal/all">转到Wiki正文</button></div>`);
+  mShell(`<div class="state-panel error"><strong>资料读取失败</strong><pre>${mEscape(error?.message || error)}</pre><button type="button" data-route="portal/all">转到Wiki正文</button></div>`);
 }
 
 function currentMemoriaRoute() {
@@ -201,7 +201,7 @@ function memoriaListPage() {
   document.title = '记忆结晶图鉴 — 魔法纪录中文资料库';
   mShell(`
     <section class="structured-hero memoria-hero">
-      <div><p class="eyebrow">STRUCTURED MEMORIA ARCHIVE</p><h1>记忆结晶图鉴</h1><p>以保存快照中的普通记忆结晶目录为成员基准，按需载入数值、普通/满破效果、冷却、装备限制、画师及中日双语简介。这里不是Wiki正文关键词筛选。</p></div>
+      <div><p class="eyebrow">MEMORIA DATABASE</p><h1>记忆结晶图鉴</h1><p>按名称、编号、稀有度、类型、效果、画师与实装来源浏览记忆结晶。</p></div>
       <div class="coverage-grid structured-stats">
         <div><strong>${Number(manifest.records || catalog.length).toLocaleString('zh-CN')}</strong><span>目录条目</span></div>
         <div><strong>${Number(manifest.uniqueNumbers || 0).toLocaleString('zh-CN')}</strong><span>有效编号</span></div>
@@ -262,7 +262,7 @@ function memoriaDetailPage(item) {
       ${textBlock('中文简介', item.descZh)}
       ${textBlock('日文简介', item.descJa, 'japanese')}
       ${item.notes ? textBlock('数据说明', item.notes, 'notes') : ''}
-      <section class="profile-section"><h2>来源与保存状态</h2><div class="category-strip">${(item.sourceTabs || []).map((value) => `<span class="chip">${mEscape(value)}</span>`).join('')}${item.rawTableSha256 ? `<span class="chip">表格 SHA-256 ${mEscape(item.rawTableSha256.slice(0, 16))}…</span>` : ''}</div></section>
+      <section class="profile-section"><h2>来源信息</h2><div class="category-strip">${(item.sourceTabs || []).map((value) => `<span class="chip">${mEscape(value)}</span>`).join('')}${item.rawTableSha256 ? `<span class="chip">表格 SHA-256 ${mEscape(item.rawTableSha256.slice(0, 16))}…</span>` : ''}</div></section>
     </article>
   `);
 }
@@ -375,7 +375,7 @@ const memoriaObserver = new MutationObserver(() => {
     queueMicrotask(() => void renderMemoriaRoute());
   }
 });
-memoriaObserver.observe(memoriaApp, { childList: true, subtree: true });
+memoriaObserver.observe(memoriaApp, { childList: true, subtree: false });
 
 patchMemoriaNavigation();
 setTimeout(() => void renderMemoriaRoute(), 0);
