@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: magireco-memoria-sample
@@ -18,17 +19,26 @@ concurrency:
 jobs:
   sample:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
     steps:
-      - name: Check out crawler and restricted proxy
+      - name: Check out ordinary-article extractor and restricted proxy
         uses: actions/checkout@v4
         with:
           sparse-checkout: memoria-crawl
           sparse-checkout-cone-mode: true
           show-progress: false
+
+      - name: Download verified 500-page fidelity snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: magireco-cn-reader-500-page-parallel-snapshot
+          path: snapshot
+          github-token: ${{ github.token }}
+          repository: HiiragiNemu/magi-reader
+          run-id: 30333056699
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -56,145 +66,68 @@ jobs:
           source = Path('memoria-crawl/proxy-worker.js').read_text(encoding='utf-8')
           token = '${token}'
           assert '__PROXY_TOKEN__' in source
-          rendered = source.replace('__PROXY_TOKEN__', token)
-          Path('memoria-proxy-dist/_worker.js').write_text(rendered, encoding='utf-8')
+          Path('memoria-proxy-dist/_worker.js').write_text(source.replace('__PROXY_TOKEN__', token), encoding='utf-8')
           PY
           node --check memoria-proxy-dist/_worker.js
           echo "MEMORIA_PROXY_PROJECT=$project" >> "$GITHUB_ENV"
           echo "MAGIRECO_FETCH_PROXY=$proxy" >> "$GITHUB_ENV"
           echo "MAGIRECO_PROXY_TOKEN=$token" >> "$GITHUB_ENV"
 
-      - name: Create temporary Pages project
-        id: create_proxy_project
+      - name: Create and deploy temporary Pages Worker
         shell: bash
         run: |
-          set +e
+          set -euo pipefail
           npx --yes wrangler@latest pages project create "$MEMORIA_PROXY_PROJECT" --production-branch main \
-            > proxy-diagnostic/wrangler-project-create.log 2>&1
-          code=$?
-          cat proxy-diagnostic/wrangler-project-create.log
-          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
-          exit "$code"
-
-      - name: Deploy temporary Pages Worker
-        id: deploy_proxy_worker
-        if: steps.create_proxy_project.outcome == 'success'
-        shell: bash
-        run: |
-          set +e
+            2>&1 | tee proxy-diagnostic/wrangler-project-create.log
           npx --yes wrangler@latest pages deploy memoria-proxy-dist \
             --project-name "$MEMORIA_PROXY_PROJECT" \
             --branch main \
             --commit-dirty=true \
-            > proxy-diagnostic/wrangler-pages-deploy.log 2>&1
-          code=$?
-          cat proxy-diagnostic/wrangler-pages-deploy.log
-          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
-          exit "$code"
-
-      - name: Wait for temporary proxy
-        if: steps.deploy_proxy_worker.outcome == 'success'
-        shell: bash
-        run: |
-          set +e
+            2>&1 | tee proxy-diagnostic/wrangler-pages-deploy.log
           for attempt in $(seq 1 40); do
             status="$(curl --silent --show-error -o proxy-diagnostic/health.json -w '%{http_code}' "$MAGIRECO_FETCH_PROXY/health" || true)"
-            printf '%s\n' "$status" > proxy-diagnostic/health-status.txt
-            if [ "$status" = 200 ] && grep -q 'magireco-rendered-pages-only' proxy-diagnostic/health.json; then
+            if [ "$status" = 200 ] && grep -q 'ordinary-memoria-articles-only' proxy-diagnostic/health.json; then
               exit 0
             fi
             sleep 3
           done
-          cat proxy-diagnostic/health-status.txt || true
-          cat proxy-diagnostic/health.json || true
           exit 1
 
-      - name: Probe source paths through edge proxy
-        if: steps.deploy_proxy_worker.outcome == 'success'
+      - name: Verify one ordinary Memoria article through proxy
         shell: bash
         run: |
-          set -uo pipefail
-          probe() {
-            name="$1"
-            target="$2"
-            encoded="$(python -c 'import sys,urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$target")"
-            status="$(curl --silent --show-error \
-              -D "proxy-diagnostic/${name}.headers.txt" \
-              -o "proxy-diagnostic/${name}.body.html" \
-              -w '%{http_code}' \
-              -H "x-magireco-proxy-token: $MAGIRECO_PROXY_TOKEN" \
-              "$MAGIRECO_FETCH_PROXY/?url=$encoded" || true)"
-            printf '%s\n' "$status" > "proxy-diagnostic/${name}.status.txt"
-          }
-          probe home 'https://magireco.moe/wiki/首页'
-          probe character 'https://magireco.moe/wiki/七海八千代'
-          probe category 'https://magireco.moe/wiki/Category:数据模板'
-          probe template_wiki 'https://magireco.moe/wiki/Template:记忆数据表/1000円未満の魔法'
-          probe template_index 'https://magireco.moe/index.php?title=Template:记忆数据表/1000円未満の魔法'
-
-          direct_status="$(curl --silent --show-error \
-            -o proxy-diagnostic/direct-template.body.html \
-            -D proxy-diagnostic/direct-template.headers.txt \
+          set -euo pipefail
+          target='https://magireco.moe/wiki/记忆结晶/1000円未満の魔法'
+          encoded="$(python -c 'import sys,urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$target")"
+          status="$(curl --silent --show-error \
+            -D proxy-diagnostic/article.headers.txt \
+            -o proxy-diagnostic/article.body.html \
             -w '%{http_code}' \
-            'https://magireco.moe/wiki/Template:记忆数据表/1000円未満の魔法' || true)"
-          printf '%s\n' "$direct_status" > proxy-diagnostic/direct-template.status.txt
+            -H "x-magireco-proxy-token: $MAGIRECO_PROXY_TOKEN" \
+            "$MAGIRECO_FETCH_PROXY/?url=$encoded")"
+          printf '%s\n' "$status" > proxy-diagnostic/article.status.txt
+          test "$status" = 200
+          grep -q 'mw-content-text' proxy-diagnostic/article.body.html
+          grep -q '1000' proxy-diagnostic/article.body.html
+          grep -q 'HP' proxy-diagnostic/article.body.html
+          grep -q 'ATK' proxy-diagnostic/article.body.html
+          grep -q 'DEF' proxy-diagnostic/article.body.html
 
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          root = Path('proxy-diagnostic')
-          summary = {}
-          for path in sorted(root.glob('*.status.txt')):
-              name = path.name.removesuffix('.status.txt')
-              body = root / f'{name}.body.html'
-              headers = root / f'{name}.headers.txt'
-              summary[name] = {
-                  'status': path.read_text(encoding='utf-8').strip(),
-                  'bytes': body.stat().st_size if body.exists() else 0,
-                  'hasContent': 'mw-content-text' in body.read_text(encoding='utf-8', errors='replace') if body.exists() else False,
-                  'headers': headers.read_text(encoding='utf-8', errors='replace')[:3000] if headers.exists() else '',
-              }
-          (root / 'summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-          print(json.dumps(summary, ensure_ascii=False, indent=2))
-          PY
-
-      - name: Upload proxy diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: magireco-memoria-proxy-diagnostic
-          path: proxy-diagnostic
-          if-no-files-found: warn
-          retention-days: 7
-
-      - name: Require at least one readable template route
-        if: steps.deploy_proxy_worker.outcome == 'success'
+      - name: Parse representative ordinary-article sample
         run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          summary = json.loads(Path('proxy-diagnostic/summary.json').read_text(encoding='utf-8'))
-          candidates = [summary.get('template_wiki', {}), summary.get('template_index', {})]
-          assert any(item.get('status') == '200' and item.get('hasContent') for item in candidates), summary
-          PY
-
-      - name: Crawl and parse representative sample
-        if: steps.deploy_proxy_worker.outcome == 'success'
-        run: |
-          python memoria-crawl/run_resilient_memoria.py \
+          python memoria-crawl/build_memoria_from_snapshot.py \
+            --snapshot snapshot \
             --output memoria-sample \
             --limit 20 \
             --include '1000円未満の魔法' \
             --include '1000年の眠りを超えて' \
-            --minimum-discovered 1 \
-            --workers 4 \
-            --pause 0.25 \
+            --workers 3 \
+            --pause 0.45 \
             --timeout 25 \
-            --retries 3 \
-            --max-requests 220
+            --retries 4 \
+            --max-requests 180
 
-      - name: Validate parsed fields and Wiki-layer coverage
-        if: steps.deploy_proxy_worker.outcome == 'success'
+      - name: Validate snapshot membership and parsed fields
         run: |
           python - <<'PY'
           import json
@@ -206,39 +139,42 @@ jobs:
           failures = json.loads((root / 'failures.json').read_text(encoding='utf-8'))
           by_ja = {item['nameJa']: item for item in records}
 
-          assert manifest['discoveredTemplatePages'] >= 1200, manifest
-          assert manifest['records'] >= 19, manifest
+          assert manifest['source'] == 'verified-snapshot-membership-and-ordinary-article-pages', manifest
+          assert manifest['snapshotArticleMembers'] >= 1040, manifest
+          assert manifest['records'] >= 20, manifest
           assert manifest['withStats'] >= 16, manifest
-          assert manifest['withImage'] >= 14, manifest
-          assert manifest['withChineseName'] >= 14, manifest
-          assert len(failures) <= 7, failures
+          assert manifest['withImage'] == manifest['records'], manifest
+          assert manifest['withChineseName'] >= 16, manifest
+          assert len(failures) <= 4, failures
 
           for title in ('1000円未満の魔法', '1000年の眠りを超えて'):
               assert title in by_ja, (title, sorted(by_ja)[:30])
               item = by_ja[title]
+              assert item['articleTitle'].startswith('记忆结晶/'), item
+              assert item['articleUrl'].startswith('https://magireco.moe/'), item
               assert item['rarity'] in (1, 2, 3, 4), item
               assert item['type'], item
               assert item['effect'], item
-              assert item['templateUrl'].startswith('https://magireco.moe/'), item
+              assert item['hpMin'] is not None and item['hpMax'] is not None, item
 
           under_1000 = by_ja['1000円未満の魔法']
           assert under_1000['nameZh'], under_1000
           assert under_1000['defMax'] and under_1000['defMax'] >= under_1000['defMin'], under_1000
           assert 'Accele' in under_1000['effect'] or 'A盘' in under_1000['effectDetail'], under_1000
 
-          print(json.dumps({
-              'manifest': manifest,
-              'known': {key: by_ja[key] for key in ('1000円未満の魔法', '1000年の眠りを超えて')},
-              'failures': failures,
-          }, ensure_ascii=False, indent=2))
+          print(json.dumps({'manifest': manifest, 'known': {
+              key: by_ja[key] for key in ('1000円未満の魔法', '1000年の眠りを超えて')
+          }, 'failures': failures}, ensure_ascii=False, indent=2))
           PY
 
-      - name: Upload sample evidence
+      - name: Upload sample and proxy evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: magireco-memoria-sample
-          path: memoria-sample
+          name: magireco-memoria-ordinary-article-sample
+          path: |
+            memoria-sample
+            proxy-diagnostic
           if-no-files-found: warn
           retention-days: 14
 
