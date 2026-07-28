@@ -21,9 +21,9 @@ concurrency:
 jobs:
   production-browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     env:
-      READER_REVISION: '6.1'
+      READER_REVISION: '6.2'
     steps:
       - name: Check out v6 production test
         uses: actions/checkout@v4
@@ -42,25 +42,53 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Prepare Reader v6.1 production regression
+      - name: Wait for Reader v6.2 production revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 80); do
+            if curl --fail --silent --show-error --location \
+              --header 'Cache-Control: no-cache' \
+              "https://magireco-cn-reader.pages.dev/health.json?revision=${READER_REVISION}-${GITHUB_RUN_ID}-$attempt" \
+              -o /tmp/health.json; then
+              if python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          value = json.loads(Path('/tmp/health.json').read_text(encoding='utf-8-sig'))
+          raise SystemExit(0 if value.get('uiRevision') == os.environ['READER_REVISION'] else 1)
+          PY
+              then
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo "Reader ${READER_REVISION} did not propagate before browser validation." >&2
+          exit 1
+
+      - name: Prepare current production regression
         run: |
           python - <<'PY'
+          import os
           from pathlib import Path
           source = Path('wiki-preservation/tests/production-reader-v6.mjs')
-          target = source.with_name('production-reader-v61.mjs')
+          target = source.with_name('production-reader-current.mjs')
           text = source.read_text(encoding='utf-8')
           old = "const revision = '6.0';"
           assert text.count(old) == 1
-          target.write_text(text.replace(old, "const revision = '6.1';", 1), encoding='utf-8')
+          revision = os.environ['READER_REVISION']
+          target.write_text(text.replace(old, f"const revision = '{revision}';", 1), encoding='utf-8')
           PY
 
-      - name: Run Reader v6.1 production regression
-        run: node wiki-preservation/tests/production-reader-v61.mjs
+      - name: Run current Reader production regression
+        run: node wiki-preservation/tests/production-reader-current.mjs
 
       - name: Require clean offline core-index startup
         run: |
           python - <<'PY'
           import json
+          import os
           from pathlib import Path
           result = json.loads(Path('reader-v6-evidence/result.json').read_text(encoding='utf-8'))
           forbidden = ('/data/archive-index.json', '/data/category-index.json', '/data/portal-index.json')
@@ -71,14 +99,15 @@ jobs:
           ]
           assert not failures, failures
           registration = result.get('registration', {})
-          assert '/sw-v6.1.js' in registration.get('active', ''), registration
+          expected = f"/sw-v{os.environ['READER_REVISION']}.js"
+          assert expected in registration.get('active', ''), registration
           PY
 
       - name: Upload production evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: magireco-reader-v61-production-evidence
+          name: magireco-reader-v62-production-evidence
           path: reader-v6-evidence
           if-no-files-found: warn
           retention-days: 14
