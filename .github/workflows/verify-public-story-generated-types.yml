@@ -8,6 +8,7 @@ on:
       - 'generate_story_index.py'
       - 'publish_raw_story_json.py'
       - 'prepare_public_story_reader.py'
+      - 'prepare_public_story_support.py'
       - '.github/workflows/verify-public-story-generated-types.yml'
   workflow_dispatch:
 
@@ -49,6 +50,10 @@ jobs:
             --public website/public \
             --repository "${{ github.repository }}" \
             --commit "$STORY_SOURCE_COMMIT"
+          python prepare_public_story_support.py \
+            --public website/public \
+            --commit "$STORY_SOURCE_COMMIT"
+          test -s website/public/data/machine_translation_manifest.generated.json
 
       - name: Install dependencies
         working-directory: website
