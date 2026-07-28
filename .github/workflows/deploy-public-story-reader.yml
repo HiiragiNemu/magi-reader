@@ -1,0 +1,274 @@
+name: Deploy Public Magia Story Reader
+
+on:
+  pull_request:
+    branches: [feature/portal-story-reader-v7]
+    paths:
+      - 'website/**'
+      - 'generate_story_index.py'
+      - 'build_search_index_v6.py'
+      - 'prepare_public_story_reader.py'
+      - 'magireco-translate-data-master/**'
+      - 'magiraexedra-source-master/**'
+      - '.github/workflows/deploy-public-story-reader.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-public-magia-story-reader
+  cancel-in-progress: true
+
+jobs:
+  build-deploy-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      NEXT_PUBLIC_STORY_ARCHIVE: '1'
+      STORY_WORKER_NAME: magireco-exedra-story-reader
+      STORY_WORKER_HOSTNAME: magireco-exedra-story-reader.crynetsystemscell.workers.dev
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+
+    steps:
+      - name: Check out complete story corpus
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          show-progress: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Prepare public archive source
+        run: |
+          python prepare_public_story_reader.py --website website
+          grep -q 'PUBLIC_STORY_ARCHIVE' website/app/page.tsx
+          grep -q '魔法纪录与 Magia Exedra 剧情阅读器' website/app/layout.tsx
+          ! grep -q '机器翻译人工校验清单' <(sed -n '/PUBLIC_STORY_ARCHIVE/,$p' website/app/page.tsx) || true
+
+      - name: Validate scenario pipeline
+        run: |
+          python -m unittest discover -s tests -p 'test_*.py'
+          python generate_story_index.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          stories = json.loads(Path('website/public/story_index.json').read_text(encoding='utf-8'))
+          if not isinstance(stories, list) or len(stories) < 4000:
+              raise SystemExit(f'incomplete story index: {len(stories) if isinstance(stories, list) else type(stories)}')
+          magireco = [item for item in stories if not str(item.get('category', '')).startswith('exedra_')]
+          exedra = [item for item in stories if str(item.get('category', '')).startswith('exedra_')]
+          if not magireco or not exedra:
+              raise SystemExit(f'missing system: magireco={len(magireco)} exedra={len(exedra)}')
+          for item in stories:
+              for key in ('path_cn', 'path_jp'):
+                  path = item.get(key)
+                  if path and not str(path).startswith('/data/'):
+                      raise SystemExit(f'unsafe source path: {item.get("id")} {key}={path}')
+          print(f'STORY_INDEX_OK total={len(stories)} magireco={len(magireco)} exedra={len(exedra)}')
+          PY
+
+      - name: Install and validate website
+        working-directory: website
+        run: |
+          npm ci
+          npm run lint
+          npm run type-check
+          npm test
+
+      - name: Generate matching full-text manifest
+        run: |
+          payload="$RUNNER_TEMP/search_content.json"
+          python build_search_index_v6.py --output "$payload"
+          python build_search_index_v6.py --output "$payload" --validate-only
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          story = json.loads(Path('website/public/story_index.manifest.json').read_text(encoding='utf-8'))
+          search = json.loads(Path('website/public/search_index_manifest.json').read_text(encoding='utf-8'))
+          if search.get('story_index_sha256') != story.get('sha256'):
+              raise SystemExit('search manifest does not match story index')
+          print('SEARCH_MANIFEST_OK', search.get('entries'), search.get('bytes'))
+          PY
+
+      - name: Build OpenNext Worker
+        working-directory: website
+        run: npm run build:worker
+
+      - name: Prepare isolated public Worker configuration
+        working-directory: website
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > .wrangler-story-bootstrap.jsonc <<EOF
+          {
+            "name": "$STORY_WORKER_NAME",
+            "main": ".wrangler-story-bootstrap.mjs",
+            "compatibility_date": "2026-02-14",
+            "workers_dev": true
+          }
+          EOF
+          cat > .wrangler-story-bootstrap.mjs <<'EOF'
+          export default { fetch() { return new Response('Preparing story reader deployment.'); } };
+          EOF
+          cat > .wrangler-story-public.jsonc <<EOF
+          {
+            "\$schema": "node_modules/wrangler/config-schema.json",
+            "name": "$STORY_WORKER_NAME",
+            "main": ".open-next/worker.js",
+            "compatibility_date": "2026-02-14",
+            "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+            "workers_dev": true,
+            "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+            "services": [
+              { "binding": "WORKER_SELF_REFERENCE", "service": "$STORY_WORKER_NAME" }
+            ],
+            "vars": {
+              "PROOFREADING_TARGET_BRANCH": "feature/portal-story-reader-v7",
+              "PROOFREADING_SOURCE_COMMIT": "${{ github.sha }}",
+              "PROOFREADING_GITHUB_REPO": "${{ github.repository }}",
+              "PROOFREADING_ALLOW_GITHUB_ADMIN": "false",
+              "PROOFREADING_TURNSTILE_TEST_MODE": "false"
+            }
+          }
+          EOF
+
+      - name: Create Worker service shell
+        working-directory: website
+        run: npx wrangler deploy --config .wrangler-story-bootstrap.jsonc
+
+      - name: Deploy complete public story reader
+        working-directory: website
+        run: npx opennextjs-cloudflare deploy --config .wrangler-story-public.jsonc
+
+      - name: Wait for complete public corpus
+        env:
+          SITE_URL: https://${{ env.STORY_WORKER_HOSTNAME }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ready=false
+          for attempt in $(seq 1 60); do
+            home_code=$(curl -L --silent --show-error -o "$RUNNER_TEMP/story-home.html" -w '%{http_code}' "$SITE_URL/?probe=${GITHUB_RUN_ID}-$attempt")
+            index_code=$(curl -L --silent --show-error -o "$RUNNER_TEMP/story-index.json" -w '%{http_code}' "$SITE_URL/story_index.json?probe=${GITHUB_RUN_ID}-$attempt")
+            if [ "$home_code" = 200 ] && [ "$index_code" = 200 ]; then
+              if python - <<'PY'
+          import json
+          from pathlib import Path
+          stories = json.loads(Path('/home/runner/work/_temp/story-index.json').read_text(encoding='utf-8'))
+          magireco = sum(not str(item.get('category', '')).startswith('exedra_') for item in stories)
+          exedra = sum(str(item.get('category', '')).startswith('exedra_') for item in stories)
+          raise SystemExit(0 if len(stories) >= 4000 and magireco and exedra else 1)
+          PY
+              then
+                ready=true
+                break
+              fi
+            fi
+            sleep 5
+          done
+          if [ "$ready" != true ]; then
+            echo 'Public story reader did not expose the complete corpus.' >&2
+            exit 1
+          fi
+
+      - name: Validate public source files and disabled admin mode
+        env:
+          SITE_URL: https://${{ env.STORY_WORKER_HOSTNAME }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+          from pathlib import Path
+          base = os.environ['SITE_URL']
+          stories = json.loads(Path(os.environ['RUNNER_TEMP'], 'story-index.json').read_text(encoding='utf-8'))
+          selected = []
+          for exedra in (False, True):
+              item = next(
+                  value for value in stories
+                  if bool(str(value.get('category', '')).startswith('exedra_')) is exedra
+                  and (value.get('path_cn') or value.get('path_jp'))
+              )
+              selected.append(item)
+          for item in selected:
+              for key in ('path_cn', 'path_jp'):
+                  path = item.get(key)
+                  if not path:
+                      continue
+                  with urllib.request.urlopen(base + path, timeout=60) as response:
+                      payload = response.read()
+                  if len(payload) < 10:
+                      raise SystemExit(f'empty story source: {item.get("id")} {path}')
+                  if path.lower().endswith('.json'):
+                      json.loads(payload.decode('utf-8-sig'))
+          with urllib.request.urlopen(base + '/api/proofreading/config', timeout=60) as response:
+              config = json.load(response)
+          if config.get('submissions_enabled') or config.get('github_admin_auth'):
+              raise SystemExit(f'public archive unexpectedly enabled management: {config}')
+          print('PUBLIC_STORY_SOURCES_OK', [item.get('id') for item in selected])
+          PY
+
+      - name: Install Chromium for public browser test
+        working-directory: website
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Magia Record and Exedra browser regression
+        working-directory: website
+        env:
+          SITE_URL: https://${{ env.STORY_WORKER_HOSTNAME }}
+        run: |
+          cat > public-story-smoke.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs/promises';
+          const base = process.env.SITE_URL;
+          await fs.mkdir('public-story-evidence', { recursive: true });
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, locale: 'zh-CN' });
+          const errors = [];
+          page.on('pageerror', error => errors.push(String(error.stack || error)));
+          await page.goto(`${base}/?probe=${Date.now()}`, { waitUntil: 'networkidle', timeout: 120000 });
+          await page.getByRole('heading', { name: '剧情阅读器' }).waitFor();
+          const body = await page.locator('body').innerText();
+          if (body.includes('机器翻译人工校验清单') || body.includes('管理机器校验标记') || body.includes('投稿审核')) {
+            throw new Error('review management leaked into public homepage');
+          }
+          const magirecoLinks = page.locator('a[href^="/reader/"]');
+          if (await magirecoLinks.count() < 1) throw new Error('Magia Record stories missing');
+          await page.screenshot({ path: 'public-story-evidence/01-magireco-home.png' });
+          await page.getByRole('button', { name: '切换到 Magia Exedra 剧情' }).click();
+          await page.waitForTimeout(500);
+          const exedraLinks = page.locator('a[href^="/reader/"]');
+          if (await exedraLinks.count() < 1) throw new Error('Magia Exedra stories missing');
+          await page.screenshot({ path: 'public-story-evidence/02-exedra-home.png' });
+          await exedraLinks.first().click();
+          await page.waitForURL(/\/reader\//, { timeout: 60000 });
+          await page.getByRole('button', { name: '显示中日双语' }).waitFor({ timeout: 60000 });
+          const readerText = await page.locator('main').innerText();
+          if (readerText.length < 20 || readerText.includes('无法打开这段剧情')) throw new Error('Exedra reader content failed');
+          await page.screenshot({ path: 'public-story-evidence/03-exedra-reader.png' });
+          await fs.writeFile('public-story-evidence/result.json', JSON.stringify({ errors, url: page.url() }, null, 2));
+          await browser.close();
+          if (errors.length) throw new Error(errors.join('\n'));
+          console.log('PUBLIC_MAGIA_STORY_READER_OK');
+          JS
+          node public-story-smoke.mjs
+
+      - name: Upload public story reader evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-magia-story-reader-evidence
+          path: website/public-story-evidence
+          if-no-files-found: warn
+          retention-days: 14
