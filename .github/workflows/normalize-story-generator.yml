@@ -6,6 +6,11 @@ on:
     paths:
       - 'generate_story_index.py'
       - '.github/workflows/normalize-story-generator.yml'
+  pull_request:
+    branches: [feature/portal-story-reader-v7]
+    paths:
+      - 'generate_story_index.py'
+      - '.github/workflows/normalize-story-generator.yml'
   workflow_dispatch:
 
 permissions:
@@ -17,8 +22,9 @@ concurrency:
 
 jobs:
   normalize:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -54,9 +60,6 @@ jobs:
 
           identity_key, parent_parts, file_stem = magireco_source_identity(
           '''
-          # YAML block indentation is removed before Python sees this script;
-          # the strings above therefore match the eight/twelve-space source
-          # indentation exactly.
           if old in text:
               text = text.replace(old, new, 1)
           elif new not in text:
