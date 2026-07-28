@@ -58,9 +58,32 @@ jobs:
         working-directory: website
         run: npm run type-check
 
-      - name: Run unit tests
+      - name: Run unit tests with persistent report
+        id: node_tests
         working-directory: website
-        run: npm test
+        shell: bash
+        run: |
+          set +e
+          node --test --test-reporter=spec > node-test-report.txt 2>&1
+          status=$?
+          cat node-test-report.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload Node test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-story-node-test-report
+          path: website/node-test-report.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Require unit tests to pass
+        if: steps.node_tests.outputs.status != '0'
+        run: |
+          echo "Node unit tests failed; see public-story-node-test-report artifact." >&2
+          exit 1
 
       - name: Build Next application
         working-directory: website
