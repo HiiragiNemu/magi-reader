@@ -18,9 +18,12 @@ concurrency:
 jobs:
   sample:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
     steps:
-      - name: Check out crawler
+      - name: Check out crawler and restricted proxy
         uses: actions/checkout@v4
         with:
           sparse-checkout: memoria-crawl
@@ -32,8 +35,59 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Install parser dependencies
         run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+
+      - name: Deploy temporary allow-listed edge proxy
+        shell: bash
+        run: |
+          set -euo pipefail
+          project="magireco-memoria-${GITHUB_RUN_ID}"
+          token="$(openssl rand -hex 24)"
+          proxy="https://${project}.pages.dev"
+          mkdir -p memoria-proxy-dist
+          python - <<PY
+          from pathlib import Path
+          source = Path('memoria-crawl/proxy-worker.js').read_text(encoding='utf-8')
+          token = '${token}'
+          assert '__PROXY_TOKEN__' in source
+          Path('memoria-proxy-dist/_worker.js').write_text(source.replace('__PROXY_TOKEN__', token), encoding='utf-8')
+          PY
+          echo "MEMORIA_PROXY_PROJECT=$project" >> "$GITHUB_ENV"
+          echo "MAGIRECO_FETCH_PROXY=$proxy" >> "$GITHUB_ENV"
+          echo "MAGIRECO_PROXY_TOKEN=$token" >> "$GITHUB_ENV"
+          npx --yes wrangler@latest pages project create "$project" --production-branch main
+          npx --yes wrangler@latest pages deploy memoria-proxy-dist \
+            --project-name "$project" \
+            --branch main \
+            --commit-dirty=true
+
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent --show-error "$proxy/health" | grep -q 'magireco-rendered-pages-only'; then
+              exit 0
+            fi
+            sleep 3
+          done
+          echo 'temporary proxy did not become ready' >&2
+          exit 1
+
+      - name: Verify proxy can read a protected template page
+        shell: bash
+        run: |
+          set -euo pipefail
+          target='https://magireco.moe/wiki/Template:%E8%AE%B0%E5%BF%86%E6%95%B0%E6%8D%AE%E8%A1%A8%2F1000%E5%86%86%E6%9C%AA%E6%BA%80%E3%81%AE%E9%AD%94%E6%B3%95'
+          encoded="$(python -c 'import sys,urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$target")"
+          curl --fail --silent --show-error \
+            -H "x-magireco-proxy-token: $MAGIRECO_PROXY_TOKEN" \
+            "$MAGIRECO_FETCH_PROXY/?url=$encoded" \
+            -o /tmp/memoria-template.html
+          grep -q 'mw-content-text' /tmp/memoria-template.html
+          grep -q '1000' /tmp/memoria-template.html
 
       - name: Crawl and parse representative sample
         run: |
@@ -43,11 +97,11 @@ jobs:
             --include '1000円未満の魔法' \
             --include '1000年の眠りを超えて' \
             --minimum-discovered 1 \
-            --workers 2 \
-            --pause 0.8 \
-            --timeout 20 \
-            --retries 4 \
-            --max-requests 260
+            --workers 4 \
+            --pause 0.25 \
+            --timeout 25 \
+            --retries 3 \
+            --max-requests 220
 
       - name: Validate parsed fields and Wiki-layer coverage
         run: |
@@ -61,8 +115,6 @@ jobs:
           failures = json.loads((root / 'failures.json').read_text(encoding='utf-8'))
           by_ja = {item['nameJa']: item for item in records}
 
-          # Wiki dump中同时存在手写条目和批量导入副本；完整模板发现数
-          # 应显著超过第一页的约167条。
           assert manifest['discoveredTemplatePages'] >= 1200, manifest
           assert manifest['records'] >= 19, manifest
           assert manifest['withStats'] >= 16, manifest
@@ -98,3 +150,11 @@ jobs:
           path: memoria-sample
           if-no-files-found: warn
           retention-days: 14
+
+      - name: Delete temporary edge proxy
+        if: always()
+        shell: bash
+        run: |
+          if [ -n "${MEMORIA_PROXY_PROJECT:-}" ]; then
+            npx --yes wrangler@latest pages project delete "$MEMORIA_PROXY_PROJECT" --yes || true
+          fi
