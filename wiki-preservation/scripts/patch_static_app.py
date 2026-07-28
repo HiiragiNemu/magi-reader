@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-"""Apply deployment-mode fixes to the copied static application bundle."""
+"""Validate or upgrade the copied preservation reader application bundle.
+
+UI v4 natively understands rendered-HTML snapshot records, so new builds do
+not require destructive string replacement. Legacy bundles are still upgraded
+when their old markers are present.
+"""
 
 from __future__ import annotations
 
 import argparse
 from pathlib import Path
-
-
-def replace_once(text: str, old: str, new: str) -> str:
-    if old not in text:
-        raise RuntimeError(f"static app patch target not found: {old[:120]}")
-    return text.replace(old, new, 1)
 
 
 def main() -> None:
@@ -20,47 +19,46 @@ def main() -> None:
     path = args.app.resolve()
     text = path.read_text(encoding="utf-8")
 
-    text = replace_once(
-        text,
-        "const outline = (item.headings || []).filter((entry) => entry.level <= 4);",
-        "const outline = (item.headings || []).filter((entry) => entry.level <= 4 && entry.id);",
+    if "const UI_VERSION = 4" in text:
+        required = (
+            "record.html || articleFallback(record)",
+            "data-theme=",
+            "data-portal=",
+            "enhanceArticle()",
+        )
+        missing = [marker for marker in required if marker not in text]
+        if missing:
+            raise RuntimeError(f"UI v4 bundle is incomplete: {missing}")
+        print("UI v4 bundle is already native; no legacy patch required.")
+        return
+
+    replacements = (
+        (
+            "${renderWikitext(record.wikitext)}",
+            "${record.html || renderWikitext(record.wikitext)}",
+        ),
+        (
+            "record.wikitext || '（空页面）'",
+            "record.rawHtml || record.wikitext || '（空页面）'",
+        ),
+        (
+            "record.wikitext || ''",
+            "record.rawHtml || record.wikitext || ''",
+        ),
+        ("复制原始 wikitext", "复制原始渲染HTML"),
+        ("查看完整原始 wikitext（保真层）", "查看完整原始渲染HTML（保真层）"),
     )
-    text = replace_once(
-        text,
-        "href=\"#section-${index}-${attr(plain(entry.text).replace(/\\s+/g, '-'))}\"",
-        "href=\"#${attr(entry.id)}\"",
-    )
-    text = replace_once(
-        text,
-        "if (!target) return;\n    const routeButton = target.closest('[data-route]');",
-        "if (!target) return;\n"
-        "    const tocLink = target.closest('.toc a[href^=\"#\"]');\n"
-        "    if (tocLink) {\n"
-        "      event.preventDefault();\n"
-        "      const id = tocLink.getAttribute('href')?.slice(1);\n"
-        "      if (id) document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });\n"
-        "      return;\n"
-        "    }\n"
-        "    const routeButton = target.closest('[data-route]');",
-    )
-    text = text.replace(
-        "MediaWiki API生成不可编辑的静态快照",
-        "公开文章与分类链接图生成不可编辑的静态快照",
-    )
-    text = text.replace(
-        "${escapeHtml(source.api)}",
-        "${escapeHtml(source.base || source.api || 'https://magireco.moe')}",
-    )
-    text = text.replace(
-        "每个页面均保留完整 wikitext、修订号、时间、字节数和 SHA-256",
-        "每个页面均保留完整原始渲染HTML、修订号、来源地址、字节数和 SHA-256",
-    )
-    text = text.replace(
-        "尚未解释的复杂模板仍以模板参数块展示，并可在页面底部展开完整源代码",
-        "模板展开后的实际访客内容被直接保存，并可在页面底部展开完整原始HTML",
-    )
+    changed = False
+    for old, new in replacements:
+        if old in text:
+            text = text.replace(old, new)
+            changed = True
+
+    if not changed:
+        raise RuntimeError("Unknown static application bundle: neither UI v4 nor a supported legacy bundle")
 
     path.write_text(text, encoding="utf-8")
+    print("Legacy application bundle upgraded for rendered-HTML records.")
 
 
 if __name__ == "__main__":
