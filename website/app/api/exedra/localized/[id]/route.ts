@@ -24,8 +24,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { env } = await getCloudflareContext({ async: true });
     const { id } = await params;
-    const entry = findExedraStory(decodeURIComponent(id));
+    const entry = await findExedraStory(decodeURIComponent(id), {
+      request,
+      env,
+    });
     if (!entry) {
       return new Response('没有找到该 Exedra 剧情。', {
         status: 404,
@@ -36,7 +40,6 @@ export async function GET(
       return Response.redirect(new URL(entry.path_cn, request.url), 307);
     }
 
-    const { env } = await getCloudflareContext({ async: true });
     const jpText = await readExedraJapaneseText({ request, env, entry });
     const jpSha256 = await sha256ExedraText(jpText);
     const cached = await getTrustedCachedExedraLocalization({
@@ -44,7 +47,11 @@ export async function GET(
       entry,
       jpSha256,
     });
-    const initial = cached ?? await tryExactWikiLocalization({ env, entry, jpText });
+    const initial = cached ?? await tryExactWikiLocalization({
+      env,
+      entry,
+      jpText,
+    });
     if (!initial) {
       return new Response(
         '该剧情目前没有本地人工中文、官方台服中文或已验证的 Exedra Wiki 中文。',
