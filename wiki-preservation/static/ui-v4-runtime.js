@@ -1,5 +1,5 @@
 (() => {
-  const RUNTIME_REVISION = '4.3-image-viewer-routing';
+  const RUNTIME_REVISION = '4.4-all-structured-reader-images';
   document.documentElement.dataset.uiRuntime = RUNTIME_REVISION;
 
   const closeMenu = (except = null) => {
@@ -28,7 +28,7 @@
     const target = event.target instanceof Element ? event.target : null;
     if (!target) return;
 
-    const image = target.closest('.wiki-document img, .media-grid .reader-image');
+    const image = target.closest('.wiki-document img, .reader-image');
     if (image && openImage(image)) {
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -52,7 +52,7 @@
 
   document.addEventListener('keydown', (event) => {
     const target = event.target instanceof Element ? event.target : null;
-    if ((event.key === 'Enter' || event.key === ' ') && target?.matches('.wiki-document img, .media-grid .reader-image')) {
+    if ((event.key === 'Enter' || event.key === ' ') && target?.matches('.wiki-document img, .reader-image')) {
       if (openImage(target)) {
         event.preventDefault();
         event.stopImmediatePropagation();
