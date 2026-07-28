@@ -1,0 +1,134 @@
+name: Deploy Magireco Reader UI v4
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: magireco-cn-reader-ui-v4
+  cancel-in-progress: true
+
+jobs:
+  deploy-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+    steps:
+      - name: Check out UI files only
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: wiki-preservation/static
+          sparse-checkout-cone-mode: true
+          show-progress: false
+
+      - name: Download verified 500-page production snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: magireco-cn-reader-500-page-parallel-snapshot
+          path: snapshot
+          github-token: ${{ github.token }}
+          repository: HiiragiNemu/magi-reader
+          run-id: 30333056699
+
+      - name: Replace application shell without rebuilding data
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp wiki-preservation/static/index.html snapshot/index.html
+          cp wiki-preservation/static/app.js snapshot/app.js
+          cp wiki-preservation/static/styles.css snapshot/styles.css
+          cp wiki-preservation/static/sw.js snapshot/sw.js
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          health_path = Path('snapshot/health.json')
+          health = json.loads(health_path.read_text(encoding='utf-8-sig'))
+          health['uiVersion'] = 4
+          health['uiFeatures'] = [
+              'functional-portal-routing',
+              'responsive-wiki-html',
+              'table-scroll-containers',
+              'image-lightbox',
+              'system-light-dark-eye-oled-themes',
+              'font-and-content-width-controls',
+          ]
+          health_path.write_text(json.dumps(health, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          Path('snapshot/ui-version.json').write_text(json.dumps({
+              'uiVersion': 4,
+              'name': 'mobile-reader-overhaul',
+          }, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Validate UI and retained corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check snapshot/app.js
+          grep -q 'const UI_VERSION = 4' snapshot/app.js
+          grep -q 'data-theme="eye"' snapshot/styles.css
+          grep -q 'data-theme="oled"' snapshot/styles.css
+          grep -q 'data-portal' snapshot/app.js
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          health = json.loads(Path('snapshot/health.json').read_text(encoding='utf-8'))
+          assert health['counts']['pages'] == 500, health
+          assert health['counts']['images'] >= 12000, health
+          assert health['uiVersion'] == 4, health
+          print(json.dumps(health, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Deploy UI v4 over existing production snapshot
+        run: |
+          npx --yes wrangler@latest pages deploy snapshot \
+            --project-name magireco-cn-reader \
+            --branch main \
+            --commit-dirty=true
+
+      - name: Verify uncached production UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          nonce="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$(date +%s)"
+          for attempt in $(seq 1 40); do
+            curl --fail --silent --show-error --location \
+              --header 'Cache-Control: no-cache' \
+              "https://magireco-cn-reader.pages.dev/health.json?ui=$nonce-$attempt" \
+              -o /tmp/health.json || true
+            curl --fail --silent --show-error --location \
+              --header 'Cache-Control: no-cache' \
+              "https://magireco-cn-reader.pages.dev/app.js?ui=$nonce-$attempt" \
+              -o /tmp/app.js || true
+            if python - <<'PY'
+          import json
+          from pathlib import Path
+          try:
+              h = json.loads(Path('/tmp/health.json').read_text(encoding='utf-8-sig'))
+              js = Path('/tmp/app.js').read_text(encoding='utf-8')
+              assert h['status'] == 'ok'
+              assert h['counts']['pages'] == 500
+              assert h.get('uiVersion') == 4
+              assert 'const UI_VERSION = 4' in js
+              print('PRODUCTION_UI_V4_OK', h['counts'])
+          except Exception as exc:
+              print('not ready:', exc)
+              raise SystemExit(1)
+          PY
+            then
+              exit 0
+            fi
+            sleep 6
+          done
+          exit 1
