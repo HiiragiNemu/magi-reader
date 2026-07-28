@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import py_compile
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -30,17 +31,28 @@ def main() -> int:
             print(f"missing critical Python file: {path}", file=sys.stderr)
         return 2
 
-    for path in CRITICAL_FILES:
-        try:
-            py_compile.compile(str(path), doraise=True)
-        except py_compile.PyCompileError as error:
-            print(error.msg, file=sys.stderr)
-            return 2
-        print(f"compiled: {path.relative_to(ROOT).as_posix()}")
+    with tempfile.TemporaryDirectory(prefix="magi-reader-pycompile-") as temporary:
+        compile_root = Path(temporary)
+        for index, path in enumerate(CRITICAL_FILES):
+            output = compile_root / f"{index:02d}-{path.stem}.pyc"
+            try:
+                py_compile.compile(
+                    str(path),
+                    cfile=str(output),
+                    doraise=True,
+                )
+            except py_compile.PyCompileError as error:
+                print(error.msg, file=sys.stderr)
+                return 2
+            print(f"compiled: {path.relative_to(ROOT).as_posix()}")
 
     if not TEST_ROOT.is_dir():
         print(f"missing test directory: {TEST_ROOT}", file=sys.stderr)
         return 2
+
+    # Imports performed during unittest discovery must not create __pycache__
+    # inside a clean checkout.
+    sys.dont_write_bytecode = True
     suite = unittest.defaultTestLoader.discover(
         str(TEST_ROOT),
         pattern="test_*.py",
