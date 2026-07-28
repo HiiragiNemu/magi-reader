@@ -8,6 +8,7 @@ on:
       - 'generate_story_index.py'
       - 'build_search_index_v6.py'
       - 'prepare_public_story_reader.py'
+      - 'prepare_public_story_support.py'
       - 'validate_public_story_corpus.py'
       - 'publish_raw_story_json.py'
       - 'magireco-source-master/**'
@@ -74,9 +75,13 @@ jobs:
             --repository "${{ github.repository }}" \
             --commit "$STORY_SOURCE_COMMIT" \
             | tee public-raw-json-report.json
+          python prepare_public_story_support.py \
+            --public website/public \
+            --commit "$STORY_SOURCE_COMMIT"
           python validate_public_story_corpus.py \
             --public website/public \
             --report public-story-corpus-report.json
+          test -s website/public/data/machine_translation_manifest.generated.json
           python - <<'PY'
           import json
           import os
@@ -95,6 +100,9 @@ jobs:
               raise SystemExit('raw JSON manifest contains invalid immutable URLs')
           if not Path('website/app/raw-json/page.tsx').is_file():
               raise SystemExit('raw JSON browser page is missing')
+          support = json.loads(Path('website/public/data/machine_translation_manifest.generated.json').read_text(encoding='utf-8'))
+          if support.get('total') != 0 or support.get('entries') != []:
+              raise SystemExit(f'public machine review manifest is not empty: {support}')
           print('RAW_JSON_PUBLIC_ARCHIVE_OK', manifest['entries'], manifest['bytes'], counts)
           PY
 
@@ -128,7 +136,7 @@ jobs:
         with:
           name: public-story-generated-node-test-report
           path: website/generated-node-test-report.txt
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
 
       - name: Require generated-site unit tests
