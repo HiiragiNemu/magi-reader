@@ -1,0 +1,192 @@
+name: Verify Deployed Public Story Reader
+
+on:
+  pull_request:
+    branches: [feature/portal-story-reader-v7]
+    paths:
+      - '.github/workflows/verify-deployed-public-story-reader.yml'
+      - 'website/**'
+      - 'prepare_public_story_reader.py'
+      - 'prepare_public_story_support.py'
+      - 'publish_raw_story_json.py'
+      - '.github/workflows/deploy-public-story-reader.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-deployed-public-story-reader
+  cancel-in-progress: true
+
+jobs:
+  endpoints:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SITE_URL: https://magireco-exedra-story-reader.crynetsystemscell.workers.dev
+    steps:
+      - name: Probe every public endpoint
+        shell: bash
+        run: |
+          set +e
+          python - <<'PY' > deployed-story-reader-report.json
+          import json
+          import os
+          import time
+          import urllib.error
+          import urllib.request
+
+          base = os.environ['SITE_URL'].rstrip('/')
+          report = {'base': base, 'probes': [], 'errors': []}
+
+          def get(url, *, binary=False):
+              started = time.monotonic()
+              item = {'url': url}
+              try:
+                  request = urllib.request.Request(
+                      url,
+                      headers={
+                          'Cache-Control': 'no-cache',
+                          'User-Agent': 'magi-reader-deployment-verifier/1.0',
+                      },
+                  )
+                  with urllib.request.urlopen(request, timeout=60) as response:
+                      payload = response.read()
+                      item.update({
+                          'status': response.status,
+                          'content_type': response.headers.get('content-type', ''),
+                          'bytes': len(payload),
+                          'elapsed': round(time.monotonic() - started, 3),
+                      })
+                      if not binary:
+                          item['text_sample'] = payload[:500].decode('utf-8-sig', errors='replace')
+                      report['probes'].append(item)
+                      return payload, item
+              except Exception as error:
+                  item.update({
+                      'status': getattr(error, 'code', None),
+                      'error': repr(error),
+                      'elapsed': round(time.monotonic() - started, 3),
+                  })
+                  report['probes'].append(item)
+                  report['errors'].append(item)
+                  return None, item
+
+          nonce = str(time.time_ns())
+          home_payload, home_probe = get(f'{base}/?probe={nonce}')
+          stories_payload, stories_probe = get(f'{base}/story_index.json?probe={nonce}')
+          raw_payload, raw_probe = get(f'{base}/raw_story_json_manifest.json?probe={nonce}')
+          config_payload, config_probe = get(f'{base}/api/proofreading/config?probe={nonce}')
+
+          stories = None
+          raw = None
+          config = None
+          try:
+              stories = json.loads(stories_payload.decode('utf-8-sig')) if stories_payload else None
+          except Exception as error:
+              report['errors'].append({'stage': 'parse_story_index', 'error': repr(error)})
+          try:
+              raw = json.loads(raw_payload.decode('utf-8-sig')) if raw_payload else None
+          except Exception as error:
+              report['errors'].append({'stage': 'parse_raw_manifest', 'error': repr(error)})
+          try:
+              config = json.loads(config_payload.decode('utf-8-sig')) if config_payload else None
+          except Exception as error:
+              report['errors'].append({'stage': 'parse_config', 'error': repr(error)})
+
+          if isinstance(stories, list):
+              magireco = [item for item in stories if not str(item.get('category', '')).startswith('exedra_')]
+              exedra = [item for item in stories if str(item.get('category', '')).startswith('exedra_')]
+              report['story_summary'] = {
+                  'total': len(stories),
+                  'magireco': len(magireco),
+                  'exedra': len(exedra),
+              }
+              for label, values in (('magireco', magireco), ('exedra', exedra)):
+                  item = next((value for value in values if value.get('path_cn') or value.get('path_jp')), None)
+                  if not item:
+                      report['errors'].append({'stage': f'select_{label}_story', 'error': 'no source'})
+                      continue
+                  report[f'{label}_sample'] = {
+                      key: item.get(key)
+                      for key in ('id', 'category', 'title', 'path_cn', 'path_jp')
+                  }
+                  for key in ('path_cn', 'path_jp'):
+                      path = item.get(key)
+                      if path:
+                          get(base + path)
+          else:
+              report['errors'].append({'stage': 'story_index_contract', 'error': type(stories).__name__})
+
+          if isinstance(raw, dict):
+              files = raw.get('files') or []
+              report['raw_summary'] = {
+                  'entries': raw.get('entries'),
+                  'bytes': raw.get('bytes'),
+                  'commit': raw.get('commit'),
+                  'file_count': len(files),
+              }
+              item = next(
+                  (
+                      value for value in files
+                      if value.get('game') == 'exedra'
+                      and value.get('language') == 'jp'
+                      and value.get('url')
+                  ),
+                  None,
+              )
+              if item:
+                  report['raw_sample'] = {
+                      key: item.get(key)
+                      for key in ('name', 'repositoryPath', 'url', 'bytes', 'sha256')
+                  }
+                  payload, probe = get(item['url'])
+                  if payload:
+                      try:
+                          json.loads(payload.decode('utf-8-sig'))
+                      except Exception as error:
+                          report['errors'].append({'stage': 'parse_raw_sample', 'error': repr(error)})
+              else:
+                  report['errors'].append({'stage': 'select_raw_sample', 'error': 'no Exedra JP JSON'})
+          else:
+              report['errors'].append({'stage': 'raw_manifest_contract', 'error': type(raw).__name__})
+
+          report['config'] = config
+          if not isinstance(config, dict):
+              report['errors'].append({'stage': 'config_contract', 'error': type(config).__name__})
+          elif config.get('submissions_enabled') or config.get('github_admin_auth'):
+              report['errors'].append({'stage': 'public_management_disabled', 'config': config})
+
+          if not home_payload or b'剧情阅读器' not in home_payload:
+              report['errors'].append({'stage': 'homepage_brand', 'error': 'public heading missing'})
+          if report.get('story_summary') != {'total': 2602, 'magireco': 2171, 'exedra': 431}:
+              report['errors'].append({'stage': 'story_counts', 'value': report.get('story_summary')})
+          if report.get('raw_summary', {}).get('entries') != 24367:
+              report['errors'].append({'stage': 'raw_count', 'value': report.get('raw_summary')})
+
+          print(json.dumps(report, ensure_ascii=False, indent=2))
+          PY
+          status=$?
+          cat deployed-story-reader-report.json
+          exit $status
+
+      - name: Require clean endpoint report
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('deployed-story-reader-report.json').read_text(encoding='utf-8'))
+          if report.get('errors'):
+              raise SystemExit(json.dumps(report['errors'], ensure_ascii=False, indent=2))
+          print('DEPLOYED_PUBLIC_STORY_ENDPOINTS_OK')
+          PY
+
+      - name: Upload endpoint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-public-story-reader-report
+          path: deployed-story-reader-report.json
+          if-no-files-found: error
+          retention-days: 14
