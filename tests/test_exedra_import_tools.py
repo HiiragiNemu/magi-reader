@@ -11,6 +11,7 @@ TOOLS = ROOT / "tools"
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(TOOLS))
 
+import github_api_checkout as api_checkout  # noqa: E402
 import import_exedra_cache_export as wiki_import  # noqa: E402
 import import_exedra_official_tw as tw_import  # noqa: E402
 
@@ -26,7 +27,10 @@ class TwSourceIndexTests(unittest.TestCase):
             first.write_text("{}", encoding="utf-8")
             second.write_text("{}", encoding="utf-8")
             index = tw_import.TwSourceIndex(root)
-            self.assertEqual(index.resolve("1_Main/chapter_a/shared.json"), first.resolve())
+            self.assertEqual(
+                index.resolve("1_Main/chapter_a/shared.json"),
+                first.resolve(),
+            )
             with self.assertRaisesRegex(RuntimeError, "basename 匹配不唯一"):
                 index.resolve("missing/shared.json")
 
@@ -59,7 +63,10 @@ class TextStructureTests(unittest.TestCase):
             sections = tw_import.parse_txt(path)
             self.assertEqual(len(sections), 1)
             self.assertEqual(sections[0].source, "story_1.json")
-            self.assertEqual([line.kind for line in sections[0].lines], ["dialogue", "narration"])
+            self.assertEqual(
+                [line.kind for line in sections[0].lines],
+                ["dialogue", "narration"],
+            )
 
     def test_row_alignment_rejects_reordered_rows(self) -> None:
         section = tw_import.Section(
@@ -86,7 +93,12 @@ class TextStructureTests(unittest.TestCase):
             }
         ]
         with self.assertRaisesRegex(RuntimeError, "行位置不同"):
-            tw_import.validate_row_alignment("story_1.json", jp_rows, tw_rows, section)
+            tw_import.validate_row_alignment(
+                "story_1.json",
+                jp_rows,
+                tw_rows,
+                section,
+            )
 
 
 class WikiExportTests(unittest.TestCase):
@@ -112,9 +124,11 @@ class WikiExportTests(unittest.TestCase):
             "generated_at": "2026-07-28T00:00:00+00:00",
             "jp_sha256": "a" * 64,
             "cn_sha256": "b" * 64,
-            "text": "--- [Section 1] (Source: a.json) ---\n環 いろは：你好\n",
+            "text": (
+                "--- [Section 1] (Source: a.json) ---\n"
+                "環 いろは：你好\n"
+            ),
         }
-        # Correct the declared CN hash for the fixture.
         base_record["cn_sha256"] = __import__("hashlib").sha256(
             base_record["text"].encode("utf-8")
         ).hexdigest()
@@ -149,8 +163,78 @@ class TransactionTests(unittest.TestCase):
             (target / "a.txt").write_text("old", encoding="utf-8")
             with self.assertRaisesRegex(RuntimeError, "拒绝覆盖"):
                 tw_import.commit_staged_group(stage, target)
-            self.assertEqual((target / "a.txt").read_text(encoding="utf-8"), "old")
-            self.assertEqual((stage / "a.txt").read_text(encoding="utf-8"), "new")
+            self.assertEqual(
+                (target / "a.txt").read_text(encoding="utf-8"),
+                "old",
+            )
+            self.assertEqual(
+                (stage / "a.txt").read_text(encoding="utf-8"),
+                "new",
+            )
+
+
+class GitHubApiCheckoutTests(unittest.TestCase):
+    def test_api_root_requires_https_without_credentials(self) -> None:
+        self.assertEqual(
+            api_checkout.validate_api_root("https://api.github.com/"),
+            "https://api.github.com",
+        )
+        for value in (
+            "http://api.github.com",
+            "https://user@api.github.com",
+            "https://api.github.com:8443",
+            "https://api.github.com?token=secret",
+        ):
+            with self.subTest(value=value):
+                with self.assertRaises(api_checkout.CheckoutError):
+                    api_checkout.validate_api_root(value)
+
+    def test_windows_preflight_rejects_reserved_and_case_colliding_paths(self) -> None:
+        sha = "a" * 40
+        with self.assertRaisesRegex(
+            api_checkout.CheckoutError,
+            "Windows reserved",
+        ):
+            api_checkout.preflight_entries(
+                [api_checkout.TreeEntry("CON.txt", "100644", "blob", sha, 1)],
+                "windows",
+            )
+        with self.assertRaisesRegex(
+            api_checkout.CheckoutError,
+            "path collision",
+        ):
+            api_checkout.preflight_entries(
+                [
+                    api_checkout.TreeEntry("Readme.md", "100644", "blob", sha, 1),
+                    api_checkout.TreeEntry("README.md", "100644", "blob", "b" * 40, 1),
+                ],
+                "windows",
+            )
+
+    def test_symlink_backslash_target_is_rejected_before_creation(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "link"
+            with self.assertRaisesRegex(
+                api_checkout.CheckoutError,
+                "Unsafe symlink target",
+            ):
+                api_checkout.write_symlink(
+                    path,
+                    b"..\\outside",
+                    "windows",
+                )
+            self.assertFalse(path.exists())
+
+    def test_zip_output_cannot_be_inside_checkout(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "checkout"
+            root.mkdir()
+            (root / "a.txt").write_text("a", encoding="utf-8")
+            with self.assertRaisesRegex(
+                api_checkout.CheckoutError,
+                "must not be inside",
+            ):
+                api_checkout.zip_tree(root, root / "checkout.zip")
 
 
 if __name__ == "__main__":
