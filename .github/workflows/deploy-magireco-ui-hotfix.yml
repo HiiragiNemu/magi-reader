@@ -5,13 +5,7 @@ on:
     branches: [main]
     paths:
       - 'wiki-preservation/static/**'
-      - 'wiki-preservation/scripts/reclassify_portals.py'
-      - 'wiki-preservation/scripts/extract_structured_characters.py'
-      - 'wiki-preservation/scripts/extract_structured_doppel.py'
-      - 'wiki-preservation/scripts/patch_structured_runtime.py'
-      - 'wiki-preservation/scripts/prepare_memoria_runtime.py'
-      - 'wiki-preservation/scripts/patch_dense_reader.py'
-      - 'wiki-preservation/scripts/patch_offline_runtime.py'
+      - 'wiki-preservation/scripts/**'
       - '.github/workflows/deploy-magireco-ui-hotfix.yml'
   workflow_dispatch:
 
@@ -26,30 +20,23 @@ concurrency:
 jobs:
   deploy-reader-v6:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     env:
       READER_REVISION: '6.0'
-      MEMORIA_RUN_ID: '30374756663'
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
     steps:
-      - name: Check out v6 UI and extractors
+      - name: Check out Reader v6 sources
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
             wiki-preservation/static
-            wiki-preservation/scripts/reclassify_portals.py
-            wiki-preservation/scripts/extract_structured_characters.py
-            wiki-preservation/scripts/extract_structured_doppel.py
-            wiki-preservation/scripts/patch_structured_runtime.py
-            wiki-preservation/scripts/prepare_memoria_runtime.py
-            wiki-preservation/scripts/patch_dense_reader.py
-            wiki-preservation/scripts/patch_offline_runtime.py
+            wiki-preservation/scripts
           sparse-checkout-cone-mode: true
           show-progress: false
 
-      - name: Download verified 500-page fidelity snapshot
+      - name: Download verified 500-page Wiki snapshot
         uses: actions/download-artifact@v4
         with:
           name: magireco-cn-reader-500-page-parallel-snapshot
@@ -58,14 +45,14 @@ jobs:
           repository: HiiragiNemu/magi-reader
           run-id: 30333056699
 
-      - name: Download complete Memoria catalog
+      - name: Download final 1042-record Memoria corpus
         uses: actions/download-artifact@v4
         with:
           name: magireco-memoria-full-1042
           path: memoria-source
           github-token: ${{ github.token }}
           repository: HiiragiNemu/magi-reader
-          run-id: ${{ env.MEMORIA_RUN_ID }}
+          run-id: 30378346952
 
       - uses: actions/setup-python@v5
         with:
@@ -74,205 +61,112 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install extraction dependencies
+      - name: Install build dependencies
         run: python -m pip install --disable-pip-version-check beautifulsoup4 lxml
 
-      - name: Build all structured datasets and dense shell
+      - name: Assemble and validate production Reader v6
         shell: bash
         run: |
           set -euo pipefail
-          for file in index.html app.js styles.css ui-v4-fixes.css ui-v4-runtime.js structured-ui.js structured-ui.css doppel-ui.js doppel-ui.css memoria-ui.js memoria-ui.css dense-reader.css dense-reader-compact.css sw.js; do
-            cp "wiki-preservation/static/$file" "snapshot/$file"
-          done
-
-          python wiki-preservation/scripts/patch_structured_runtime.py snapshot/structured-ui.js
-          python wiki-preservation/scripts/reclassify_portals.py snapshot
-          python wiki-preservation/scripts/extract_structured_characters.py snapshot
-          python wiki-preservation/scripts/extract_structured_doppel.py snapshot
-          python wiki-preservation/scripts/prepare_memoria_runtime.py \
-            --source memoria-source \
-            --output snapshot/data/structured \
-            --archive-index snapshot/data/archive-index.json
-          python wiki-preservation/scripts/patch_dense_reader.py snapshot
-
-          python - <<'PY'
-          import json
-          import os
-          import re
-          from pathlib import Path
-
-          revision = os.environ['READER_REVISION']
-          assets = [
-              'styles.css', 'ui-v4-fixes.css', 'structured-ui.css', 'doppel-ui.css',
-              'memoria-ui.css', 'dense-reader.css', 'dense-reader-compact.css',
-              'ui-v4-runtime.js', 'app.js', 'structured-ui.js', 'doppel-ui.js', 'memoria-ui.js',
-          ]
-          index_path = Path('snapshot/index.html')
-          index = index_path.read_text(encoding='utf-8')
-          for asset in assets:
-              pattern = rf'/{re.escape(asset)}(?:\?[^"\'\s<]*)?'
-              index, count = re.subn(pattern, f'/{asset}?v={revision}', index, count=1)
-              assert count == 1, (asset, count)
-          index_path.write_text(index, encoding='utf-8')
-
-          health_path = Path('snapshot/health.json')
-          health = json.loads(health_path.read_text(encoding='utf-8-sig'))
-          structured = json.loads(Path('snapshot/data/structured/manifest.json').read_text(encoding='utf-8'))
-          memoria = json.loads(Path('snapshot/data/structured/memoria-manifest.json').read_text(encoding='utf-8'))
-          structured['memoria'] = memoria
-          health['uiVersion'] = 6
-          health['uiRevision'] = revision
-          health['portalClassification'] = 'wiki-and-structured-catalogs'
-          health['structured'] = structured
-          health['counts']['memoria'] = memoria['records']
-          health['uiFeatures'] = [
-              'dense-wiki-desktop-layout', 'restored-desktop-infobox-floats',
-              'idle-chunked-article-enhancement', 'root-only-runtime-observers',
-              'structured-character-catalog', 'native-audio-voice-player',
-              'structured-doppel-catalog', 'structured-memoria-catalog',
-              'on-demand-memoria-detail-shards', 'versioned-service-worker-file',
-              'legacy-cache-eviction', 'offline-structured-indexes',
-              'system-light-dark-eye-oled-themes', 'font-and-content-width-controls',
-          ]
-          health_path.write_text(json.dumps(health, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-          Path('snapshot/ui-version.json').write_text(json.dumps({
-              'uiVersion': 6,
-              'uiRevision': revision,
-              'name': 'dense-structured-magireco-database',
-              'structured': structured,
-          }, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-          PY
-
-          python wiki-preservation/scripts/patch_offline_runtime.py snapshot --revision "$READER_REVISION"
-
-      - name: Validate v6 corpus layout copy and offline shell
-        shell: bash
-        run: |
-          set -euo pipefail
-          revision="$READER_REVISION"
-          for file in app.js ui-v4-runtime.js structured-ui.js doppel-ui.js memoria-ui.js sw.js "sw-v${revision}.js"; do
+          python wiki-preservation/scripts/assemble_reader_v6.py \
+            --snapshot snapshot \
+            --static wiki-preservation/static \
+            --scripts wiki-preservation/scripts \
+            --memoria memoria-source \
+            --revision "$READER_REVISION"
+          for file in app.js ui-v4-runtime.js structured-ui.js doppel-ui.js memoria-ui.js sw.js "sw-v${READER_REVISION}.js"; do
             node --check "snapshot/$file"
           done
-          assets=(styles.css ui-v4-fixes.css structured-ui.css doppel-ui.css memoria-ui.css dense-reader.css dense-reader-compact.css ui-v4-runtime.js app.js structured-ui.js doppel-ui.js memoria-ui.js)
-          for asset in "${assets[@]}"; do grep -q "/${asset}?v=${revision}" snapshot/index.html; done
 
-          ! grep -R -E '把原 Wiki|不会删减底层|这里不是Wiki文章关键词筛选|这里不是正文关键词筛选|这里不是Wiki正文关键词筛选|以保存快照中的普通记忆结晶目录为成员基准' \
-            snapshot/index.html snapshot/app.js snapshot/structured-ui.js snapshot/doppel-ui.js snapshot/memoria-ui.js
-          grep -q 'requestIdleCallback' snapshot/app.js
-          grep -q 'subtree: false' snapshot/structured-ui.js
-          grep -q 'subtree: false' snapshot/doppel-ui.js
-          grep -q 'subtree: false' snapshot/memoria-ui.js
-          grep -q -- '--site-max: 1760px' snapshot/dense-reader.css
-          grep -q 'repeat(4, minmax(0, 1fr))' snapshot/dense-reader-compact.css
-
-          grep -q "const UI_VERSION = '${revision}'" snapshot/app.js
-          grep -q 'register(`/sw-v${UI_VERSION}.js`' snapshot/app.js
-          grep -q "magireco-cn-reader-v${revision}-offline" "snapshot/sw-v${revision}.js"
-          grep -q '/data/structured/memoria-index.json' "snapshot/sw-v${revision}.js"
-          grep -q '/data/structured/memoria-manifest.json' "snapshot/sw-v${revision}.js"
-          grep -q "/sw-v${revision}.js" snapshot/_headers
-          grep -q '/memoria-ui.js' snapshot/_headers
-
-          python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-          root = Path('snapshot')
-          revision = os.environ['READER_REVISION']
-          health = json.loads((root / 'health.json').read_text(encoding='utf-8'))
-          manifest = json.loads((root / 'data/structured/manifest.json').read_text(encoding='utf-8'))
-          characters = json.loads((root / 'data/structured/characters.json').read_text(encoding='utf-8'))
-          voices = json.loads((root / 'data/structured/voice-index.json').read_text(encoding='utf-8'))
-          doppels = json.loads((root / 'data/structured/doppel.json').read_text(encoding='utf-8'))
-          memoria_manifest = json.loads((root / 'data/structured/memoria-manifest.json').read_text(encoding='utf-8'))
-          memoria_index = json.loads((root / 'data/structured/memoria-index.json').read_text(encoding='utf-8'))
-          by_title = {item['title']: item for item in characters}
-          by_character = {item['character']: item for item in doppels}
-
-          assert health['counts']['pages'] == 500 and health['counts']['images'] >= 12000, health
-          assert health['uiVersion'] == 6 and health['uiRevision'] == revision, health
-          assert health['counts']['memoria'] == 1042
-          assert manifest['characters'] >= 235 and manifest['characterPages'] >= 225
-          assert manifest['voiceCharacters'] >= 220 and manifest['voiceLines'] >= 16000 and manifest['voiceWithAudio'] >= 16000
-          assert manifest['doppel'] == 174 and manifest['doppelWithImage'] >= 170
-          assert len(doppels) == 174 and len(voices) == manifest['voiceCharacters']
-          assert memoria_manifest['records'] == 1042 and len(memoria_index) == 1042
-          assert memoria_manifest['withImage'] == 1042
-          assert memoria_manifest['withChineseName'] >= 1030
-          assert memoria_manifest['complete'] >= 1000
-          assert memoria_manifest['shards'] == 16
-          assert {'七海八千代', '环伊吕波', '三穗野星罗', '千岁由麻'} <= set(by_title)
-          assert {'七海八千代', '环伊吕波', '千岁由麻'} <= set(by_character)
-          assert 'Ablaze' not in by_title
-          yachiyo = by_title['七海八千代']
-          lines = json.loads((root / 'data/structured/voice' / f"{yachiyo['voiceKey']}.json").read_text(encoding='utf-8'))
-          assert any(item.get('voiceId') == 'Vo_char_1002_00_01' for item in lines)
-          assert {'1000円未満の魔法', '1000年の眠りを超えて'} <= {item['nameJa'] for item in memoria_index}
-          for shard in '0123456789abcdef':
-              assert (root / 'data/structured/memoria' / f'{shard}.json').exists(), shard
-          print(json.dumps({'health': health, 'structured': manifest, 'memoria': memoria_manifest}, ensure_ascii=False, indent=2))
-          PY
-
-      - name: Deploy Reader v6
+      - name: Deploy Reader v6 to Cloudflare Pages
         run: |
           npx --yes wrangler@latest pages deploy snapshot \
             --project-name magireco-cn-reader \
             --branch main \
             --commit-dirty=true
 
-      - name: Verify uncached production v6
+      - name: Verify uncached production Reader v6
         shell: bash
         run: |
           set -euo pipefail
           revision="$READER_REVISION"
           nonce="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$(date +%s)"
           for attempt in $(seq 1 60); do
-            files=(health.json index.html app.js structured-ui.js doppel-ui.js memoria-ui.js "sw-v${revision}.js" data/structured/manifest.json data/structured/characters.json data/structured/voice-index.json data/structured/doppel.json data/structured/memoria-manifest.json data/structured/memoria-index.json)
-            for shard in 0 1 2 3 4 5 6 7 8 9 a b c d e f; do files+=("data/structured/memoria/${shard}.json"); done
+            files=(
+              health.json index.html app.js structured-ui.js doppel-ui.js memoria-ui.js
+              "sw-v${revision}.js"
+              data/structured/manifest.json
+              data/structured/characters.json
+              data/structured/voice-index.json
+              data/structured/doppel.json
+              data/structured/memoria-manifest.json
+              data/structured/memoria-index.json
+            )
+            for shard in 0 1 2 3 4 5 6 7 8 9 a b c d e f; do
+              files+=("data/structured/memoria/${shard}.json")
+            done
             for file in "${files[@]}"; do
               safe=$(printf '%s' "$file" | tr '/.' '__')
-              curl --fail --silent --show-error --location --header 'Cache-Control: no-cache' \
-                "https://magireco-cn-reader.pages.dev/$file?probe=$nonce-$attempt" -o "/tmp/$safe" || true
+              curl --fail --silent --show-error --location \
+                --header 'Cache-Control: no-cache' \
+                "https://magireco-cn-reader.pages.dev/$file?probe=$nonce-$attempt" \
+                -o "/tmp/$safe" || true
             done
+
             if python - <<'PY'
           import json
           import os
           from pathlib import Path
+
+          revision = os.environ['READER_REVISION']
+          suffix = revision.replace('.', '_')
           try:
-              revision = os.environ['READER_REVISION']
-              suffix = revision.replace('.', '_')
               health = json.loads(Path('/tmp/health_json').read_text(encoding='utf-8-sig'))
               index = Path('/tmp/index_html').read_text(encoding='utf-8')
               app = Path('/tmp/app_js').read_text(encoding='utf-8')
-              sw = Path(f'/tmp/sw-v{suffix}_js').read_text(encoding='utf-8')
+              structured_ui = Path('/tmp/structured-ui_js').read_text(encoding='utf-8')
+              doppel_ui = Path('/tmp/doppel-ui_js').read_text(encoding='utf-8')
               memoria_ui = Path('/tmp/memoria-ui_js').read_text(encoding='utf-8')
+              worker = Path(f'/tmp/sw-v{suffix}_js').read_text(encoding='utf-8')
               manifest = json.loads(Path('/tmp/data_structured_manifest_json').read_text(encoding='utf-8-sig'))
               characters = json.loads(Path('/tmp/data_structured_characters_json').read_text(encoding='utf-8-sig'))
               voices = json.loads(Path('/tmp/data_structured_voice-index_json').read_text(encoding='utf-8-sig'))
               doppels = json.loads(Path('/tmp/data_structured_doppel_json').read_text(encoding='utf-8-sig'))
               memoria_manifest = json.loads(Path('/tmp/data_structured_memoria-manifest_json').read_text(encoding='utf-8-sig'))
               memoria_index = json.loads(Path('/tmp/data_structured_memoria-index_json').read_text(encoding='utf-8-sig'))
-              assert health['status'] == 'ok' and health['uiVersion'] == 6 and health['uiRevision'] == revision
+
+              assert health['status'] == 'ok'
+              assert health['uiVersion'] == 6 and health['uiRevision'] == revision
               assert health['counts']['pages'] == 500 and health['counts']['memoria'] == 1042
               assert manifest['characters'] >= 235 and manifest['voiceWithAudio'] >= 16000 and manifest['doppel'] == 174
               assert len(characters) >= 235 and len(voices) >= 220 and len(doppels) == 174
-              assert memoria_manifest['records'] == 1042 and memoria_manifest['complete'] >= 1000 and len(memoria_index) == 1042
+              assert memoria_manifest['records'] == 1042
+              assert memoria_manifest['complete'] == 1042 and memoria_manifest['partial'] == 0
+              assert memoria_manifest['withImage'] == 1042 and memoria_manifest['withChineseName'] == 1042
+              assert len(memoria_index) == 1042
               for asset in ('styles.css', 'app.js', 'structured-ui.js', 'doppel-ui.js', 'memoria-ui.js', 'dense-reader.css', 'dense-reader-compact.css'):
                   assert f'/{asset}?v={revision}' in index
+              forbidden = ('把原 Wiki', '不会删减', '这里不是', '以保存快照', '来源与保存说明', '本站用于研究', '兼容性开发')
+              visitor_text = '\n'.join((index, app, structured_ui, doppel_ui, memoria_ui))
+              assert not any(value in visitor_text for value in forbidden)
               assert f"const UI_VERSION = '{revision}'" in app
-              assert f'magireco-cn-reader-v{revision}-offline' in sw
-              assert 'MEMORIA DATABASE' in memoria_ui and '这里不是' not in memoria_ui
+              assert f'magireco-cn-reader-v{revision}-offline' in worker
+              assert '/data/structured/memoria-index.json' in worker
               for shard in '0123456789abcdef':
                   value = json.loads(Path(f'/tmp/data_structured_memoria_{shard}_json').read_text(encoding='utf-8-sig'))
-                  assert isinstance(value, dict)
+                  assert isinstance(value, dict) and value
               print('PRODUCTION_READER_V6_OK', memoria_manifest)
           except Exception as exc:
               print('not ready:', exc)
               raise SystemExit(1)
           PY
             then
-              curl --fail --silent --show-error --head "https://magireco-cn-reader.pages.dev/sw-v${revision}.js" -o /tmp/sw-headers.txt
-              curl --fail --silent --show-error --head "https://magireco-cn-reader.pages.dev/app.js" -o /tmp/app-headers.txt
+              curl --fail --silent --show-error --head \
+                "https://magireco-cn-reader.pages.dev/sw-v${revision}.js" \
+                -o /tmp/sw-headers.txt
+              curl --fail --silent --show-error --head \
+                "https://magireco-cn-reader.pages.dev/app.js" \
+                -o /tmp/app-headers.txt
               grep -qi 'cache-control:.*no-cache' /tmp/sw-headers.txt
               grep -qi 'cache-control:.*no-cache' /tmp/app-headers.txt
               exit 0
