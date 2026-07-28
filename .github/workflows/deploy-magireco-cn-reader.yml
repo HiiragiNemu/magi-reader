@@ -1,35 +1,22 @@
-name: Deploy Magireco Chinese Preservation Reader
+name: Build Legacy Magireco Preservation Snapshot
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'wiki-preservation/scripts/build_html_snapshot.py'
-      - 'wiki-preservation/scripts/build_html_snapshot_parallel.py'
-      - 'wiki-preservation/scripts/build_compressed_snapshot.py'
-      - 'wiki-preservation/scripts/patch_static_app.py'
-      - '.github/workflows/deploy-magireco-cn-reader.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: magireco-cn-reader-cloudflare
+  group: magireco-cn-reader-legacy-snapshot
   cancel-in-progress: true
 
 jobs:
-  snapshot-and-deploy:
+  snapshot-only:
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-      CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
     steps:
-      - name: Check out preservation deployment files
+      - name: Check out preservation snapshot files
         uses: actions/checkout@v4
         with:
           sparse-checkout: wiki-preservation
@@ -90,7 +77,8 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Preserve only; structured workflow owns production deployment
+      - name: Confirm non-production ownership
         run: |
-          echo 'Snapshot generation completed.'
-          echo 'Production Cloudflare deployment is owned by Deploy Magireco Structured Reader v5.'
+          echo 'Legacy snapshot generation completed.'
+          echo 'No Cloudflare deployment is performed here.'
+          echo 'Production deployment is exclusively owned by Deploy Magireco Structured Reader v5.'
