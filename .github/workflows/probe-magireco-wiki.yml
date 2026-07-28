@@ -2,11 +2,9 @@ name: Probe Magireco Wiki Endpoints
 
 on:
   push:
-    branches:
-      - deploy/magireco-cn-reader
+    branches: [deploy/magireco-cn-reader]
   pull_request:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -17,56 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Warm browser session then probe API
+      - name: Force uncached homepage proof then request API
         shell: bash
         run: |
           set -euo pipefail
           ua='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/138.0 Safari/537.36'
-          jar=/tmp/magireco-cookies.txt
-          rm -f "$jar"
-
-          echo '===== warm ordinary homepage ====='
-          curl --compressed --location --fail --show-error \
-            --max-time 45 \
-            --cookie-jar "$jar" \
-            --cookie "$jar" \
-            --header 'Accept: text/html,application/xhtml+xml,*/*' \
-            --header 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.5' \
-            --user-agent "$ua" \
-            --output /tmp/home \
-            --dump-header /tmp/home-headers \
-            'https://magireco.moe/wiki/%E9%A6%96%E9%A1%B5'
-          sed -n '1,25p' /tmp/home-headers
-          echo 'cookie jar:'
-          cat "$jar"
-          echo 'homepage bytes:'
-          wc -c /tmp/home
-
-          echo '===== API after homepage ====='
-          url='https://magireco.moe/api.php?action=query&meta=siteinfo&siprop=general%7Cstatistics&format=json&formatversion=2'
-          status=$(curl --compressed --location --silent --show-error \
-            --max-time 45 \
-            --cookie-jar "$jar" \
-            --cookie "$jar" \
-            --header 'Accept: application/json,text/plain,*/*' \
-            --header 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.5' \
-            --header 'Referer: https://magireco.moe/wiki/%E9%A6%96%E9%A1%B5' \
-            --user-agent "$ua" \
-            --output /tmp/api \
-            --dump-header /tmp/api-headers \
-            --write-out '%{http_code}' \
-            "$url")
-          echo "HTTP $status"
-          sed -n '1,25p' /tmp/api-headers
-          head -c 1200 /tmp/api
+          jar=/tmp/cookies
+          nonce="$(date +%s)-$RANDOM"
+          home="https://magireco.moe/index.php?title=%E9%A6%96%E9%A1%B5&proof=$nonce"
+          api='https://magireco.moe/api.php?action=query&meta=siteinfo&siprop=general%7Cstatistics&format=json&formatversion=2'
+          home_status=$(curl -L -sS --compressed -c "$jar" -b "$jar" -A "$ua" -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' -o /tmp/home -w '%{http_code}' "$home")
+          api_status=$(curl -L -sS --compressed -c "$jar" -b "$jar" -A "$ua" -H 'Accept: application/json' -H 'Cache-Control: no-cache' -e "$home" -o /tmp/api -w '%{http_code}' "$api")
+          echo "home_status=$home_status home_bytes=$(wc -c </tmp/home) api_status=$api_status api_bytes=$(wc -c </tmp/api) cookies=$(grep -vc '^#' "$jar" || true)"
+          head -c 1600 /tmp/api
           echo
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          data = json.loads(Path('/tmp/api').read_text(encoding='utf-8-sig'))
-          site = data.get('query', {}).get('general', {}).get('sitename')
-          stats = data.get('query', {}).get('statistics', {})
-          print('site:', site)
-          print('statistics:', stats)
-          assert site
-          PY
+          python -c "import json; d=json.load(open('/tmp/api',encoding='utf-8-sig')); print(d.get('query',{}).get('general',{}).get('sitename')); assert d.get('query',{}).get('general',{}).get('sitename')"
