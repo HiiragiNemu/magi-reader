@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Run the memoria crawler with resilient direct or edge-proxied fetching.
+"""Run Memoria crawling with resilient direct or restricted edge fetching.
 
-Direct GitHub-hosted runners may receive HTTP 403 from the Wiki after the first
-category request.  When ``MAGIRECO_FETCH_PROXY`` is present, every approved
-source URL is sent through a temporary token-protected Cloudflare Pages Worker;
-otherwise the proven per-thread home-page warm-up strategy is used directly.
+Direct GitHub-hosted runners may receive HTTP 403 after category traversal. When
+``MAGIRECO_FETCH_PROXY`` is present, approved ordinary Memoria article URLs are
+sent through a temporary token-protected Cloudflare Pages Worker. Proxy mode is
+always globally serialised and starts requests no faster than once per 1.4
+seconds, regardless of the caller's worker count, to avoid overloading the Wiki.
 """
 
 from __future__ import annotations
@@ -28,15 +29,18 @@ M.USER_AGENT = (
 
 
 class ResilientPoliteFetcher(M.PoliteFetcher):
-    """PoliteFetcher with per-thread warm-up, 403 recovery and optional proxy."""
+    """Polite fetcher with direct warm-up or serial edge-proxy transport."""
 
     def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self._warm_lock = threading.Lock()
         self.proxy = os.environ.get("MAGIRECO_FETCH_PROXY", "").rstrip("/")
         self.proxy_token = os.environ.get("MAGIRECO_PROXY_TOKEN", "")
         if bool(self.proxy) != bool(self.proxy_token):
             raise RuntimeError("MAGIRECO_FETCH_PROXY and MAGIRECO_PROXY_TOKEN must be supplied together")
+        if self.proxy:
+            kwargs["pause"] = max(float(kwargs.get("pause", 0.0)), 1.4)
+        super().__init__(**kwargs)
+        self._warm_lock = threading.Lock()
+        self._proxy_lock = threading.Lock()
 
     def _request(self, session: requests.Session, source_url: str) -> requests.Response:
         request_url = source_url
@@ -44,6 +48,16 @@ class ResilientPoliteFetcher(M.PoliteFetcher):
         if self.proxy:
             request_url = f"{self.proxy}/?url={quote(source_url, safe='')}"
             headers["x-magireco-proxy-token"] = self.proxy_token
+            # Hold the lock for the complete HTTP request, not only request
+            # scheduling. This prevents several slow origin retries from
+            # overlapping inside separate Worker invocations.
+            with self._proxy_lock:
+                return session.get(
+                    request_url,
+                    timeout=self.timeout,
+                    allow_redirects=True,
+                    headers=headers,
+                )
         return session.get(
             request_url,
             timeout=self.timeout,
@@ -51,10 +65,13 @@ class ResilientPoliteFetcher(M.PoliteFetcher):
             headers=headers,
         )
 
-    def _source_url(self, response: requests.Response, fallback: str) -> str:
+    @staticmethod
+    def _source_url(response: requests.Response, fallback: str) -> str:
         return response.headers.get("x-magireco-source-url") or fallback
 
     def _warm_session(self, session: requests.Session, *, force: bool = False) -> None:
+        if self.proxy:
+            return
         if not force and getattr(self._local, "warmed", False):
             return
         with self._warm_lock:
@@ -71,7 +88,8 @@ class ResilientPoliteFetcher(M.PoliteFetcher):
 
     def fetch(self, url: str) -> M.FetchResult:
         session = self._session()
-        self._warm_session(session)
+        if not self.proxy:
+            self._warm_session(session)
         last_status: int | None = None
         last_error: str | None = None
         final_url = url
@@ -87,14 +105,14 @@ class ResilientPoliteFetcher(M.PoliteFetcher):
                 if response.status_code == 200 and "text/html" in content_type:
                     self._local.warmed = True
                     return M.FetchResult(final_url, response.status_code, response.text, None)
-                if response.status_code == 403:
+                if response.status_code == 403 and not self.proxy:
                     self._local.warmed = False
                     self._warm_session(session, force=True)
                 if response.status_code not in M.RETRYABLE:
                     return M.FetchResult(final_url, response.status_code, None, None)
             except requests.RequestException as exc:
                 last_error = str(exc)
-            time.sleep(min(8.0, 1.0 * (2 ** (attempt - 1))))
+            time.sleep(min(16.0, 2.0 * (2 ** (attempt - 1))))
 
         return M.FetchResult(final_url, last_status, None, last_error)
 
