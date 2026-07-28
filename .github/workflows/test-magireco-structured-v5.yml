@@ -1,0 +1,55 @@
+name: Test Magireco Structured Reader v5
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'wiki-preservation/tests/production-structured-v5.mjs'
+      - 'wiki-preservation/static/structured-ui.js'
+      - 'wiki-preservation/static/structured-ui.css'
+      - 'wiki-preservation/scripts/extract_structured_characters.py'
+      - '.github/workflows/deploy-magireco-ui-hotfix.yml'
+      - '.github/workflows/test-magireco-structured-v5.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: magireco-structured-v5-browser-test
+  cancel-in-progress: true
+
+jobs:
+  mobile-structured-reader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out structured browser test
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: wiki-preservation/tests/production-structured-v5.mjs
+          sparse-checkout-cone-mode: true
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Playwright and Chromium
+        run: |
+          npm init -y
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Run structured character and voice production test
+        run: node wiki-preservation/tests/production-structured-v5.mjs
+
+      - name: Upload structured reader evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-structured-v5-mobile-evidence
+          path: structured-v5-evidence
+          if-no-files-found: warn
+          retention-days: 14
