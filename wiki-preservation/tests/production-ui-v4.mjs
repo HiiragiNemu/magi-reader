@@ -22,10 +22,10 @@ const check = (condition, message) => {
 };
 
 try {
-  await page.goto(`${base}?ui-test=${Date.now()}#/portal/all`, { waitUntil: 'networkidle', timeout: 90_000 });
+  await page.goto(`${base}?ui-test=${Date.now()}#/portal/all`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
   await page.waitForSelector('.portal-card', { timeout: 30_000 });
   check(await page.locator('.portal-card').count() >= 8, '主题入口卡片数量不足');
-  await page.screenshot({ path: `${output}/01-portal-all-mobile.png`, fullPage: true });
+  await page.screenshot({ path: `${output}/01-portal-all-mobile.png` });
 
   const characterCard = page.getByRole('button', { name: /魔法少女与人物/ }).first();
   await characterCard.scrollIntoViewIfNeeded();
@@ -34,20 +34,23 @@ try {
   await page.waitForSelector('#portal-results .article-row', { timeout: 15_000 });
   check((await page.locator('#portal-results .article-row').count()) > 0, '人物入口点击后没有结果');
   check((await page.locator('.portal-card.active').innerText()).includes('魔法少女与人物'), '人物入口没有选中反馈');
-  await page.screenshot({ path: `${output}/02-characters-results-mobile.png`, fullPage: true });
+  await page.locator('#portal-results').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: `${output}/02-characters-results-mobile.png` });
 
   await page.locator('#portal-results .article-row').first().click();
-  await page.waitForSelector('.article-page .wiki-document', { timeout: 20_000 });
-  await page.waitForTimeout(1200);
+  await page.waitForSelector('.article-page .wiki-document', { timeout: 30_000 });
+  await page.waitForTimeout(800);
 
   const metrics = await page.evaluate(() => {
     const viewport = document.documentElement.clientWidth;
     const images = [...document.querySelectorAll('.wiki-document img')];
     const tables = [...document.querySelectorAll('.wiki-document table')];
+    const bodyRect = document.querySelector('.wiki-document')?.getBoundingClientRect();
     return {
       viewport,
       documentScrollWidth: document.documentElement.scrollWidth,
       bodyScrollWidth: document.body.scrollWidth,
+      articleWidth: bodyRect?.width || 0,
       oversizedImages: images.filter((img) => img.getBoundingClientRect().width > viewport + 1).length,
       unwrappedTables: tables.filter((table) => !table.parentElement?.classList.contains('table-viewport')).length,
       imageCount: images.length,
@@ -56,6 +59,7 @@ try {
   });
   check(metrics.documentScrollWidth <= metrics.viewport + 2, `页面横向溢出：${JSON.stringify(metrics)}`);
   check(metrics.bodyScrollWidth <= metrics.viewport + 2, `body横向溢出：${JSON.stringify(metrics)}`);
+  check(metrics.articleWidth <= metrics.viewport, `正文宽度超出视口：${JSON.stringify(metrics)}`);
   check(metrics.oversizedImages === 0, `存在超出视口图片：${JSON.stringify(metrics)}`);
   check(metrics.unwrappedTables === 0, `存在未包裹表格：${JSON.stringify(metrics)}`);
 
@@ -66,10 +70,11 @@ try {
     check(await page.locator('html').getAttribute('data-theme') === id, `主题切换失败：${label}`);
     if (label !== '纯黑') await page.locator('.display-menu > summary').click();
   }
-  await page.screenshot({ path: `${output}/03-article-oled-mobile.png`, fullPage: true });
+  await page.screenshot({ path: `${output}/03-article-oled-mobile.png` });
 
-  const image = page.locator('.wiki-document img').first();
+  const image = page.locator('.wiki-document img:not(.image-failed)').first();
   if (await image.count()) {
+    await image.scrollIntoViewIfNeeded();
     await image.click();
     check(await page.locator('#image-viewer').evaluate((node) => node.open), '图片全屏查看器没有打开');
     await page.screenshot({ path: `${output}/04-image-viewer-mobile.png` });
