@@ -9,19 +9,20 @@ async function waitForProduction() {
   for (let attempt = 1; attempt <= 50; attempt += 1) {
     const nonce = `${Date.now()}-${attempt}`;
     try {
-      const [healthResponse, manifestResponse, uiResponse] = await Promise.all([
+      const [healthResponse, manifestResponse, uiResponse, indexResponse] = await Promise.all([
         fetch(`${base}health.json?v5=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
         fetch(`${base}data/structured/manifest.json?v5=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
         fetch(`${base}structured-ui.js?v5=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
+        fetch(`${base}?v5=${nonce}`, { headers: { 'Cache-Control': 'no-cache' } }),
       ]);
-      const [health, manifest, ui] = await Promise.all([
-        healthResponse.json(), manifestResponse.json(), uiResponse.text(),
+      const [health, manifest, ui, index] = await Promise.all([
+        healthResponse.json(), manifestResponse.json(), uiResponse.text(), indexResponse.text(),
       ]);
       if (
-        healthResponse.ok && manifestResponse.ok && uiResponse.ok &&
+        healthResponse.ok && manifestResponse.ok && uiResponse.ok && indexResponse.ok &&
         health.uiVersion === 5 && health.counts?.pages === 500 &&
         manifest.characters >= 235 && manifest.voiceWithAudio >= 16000 &&
-        ui.includes('CHARACTER VOICE ARCHIVE')
+        ui.includes('CHARACTER VOICE ARCHIVE') && index.includes('structured-ui.js?v=5.0')
       ) return { health, manifest };
     } catch {}
     await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -41,12 +42,40 @@ const context = await browser.newContext({
 });
 const page = await context.newPage();
 const failures = [];
+const browserEvents = [];
 const check = (condition, message) => { if (!condition) failures.push(message); };
+page.on('console', (message) => browserEvents.push({ type: `console:${message.type()}`, text: message.text() }));
+page.on('pageerror', (error) => browserEvents.push({ type: 'pageerror', text: String(error.stack || error) }));
+page.on('requestfailed', (request) => browserEvents.push({ type: 'requestfailed', url: request.url(), text: request.failure()?.errorText || '' }));
+
+async function captureState(stage, error = null) {
+  const state = await page.evaluate(() => ({
+    href: location.href,
+    hash: location.hash,
+    readyState: document.readyState,
+    structuredView: document.documentElement.dataset.structuredView || null,
+    appText: document.querySelector('#app')?.textContent?.replace(/\s+/g, ' ').trim().slice(0, 2000) || '',
+    appHtml: document.querySelector('#app')?.innerHTML?.slice(0, 4000) || '',
+    characterCards: document.querySelectorAll('.character-grid .character-card').length,
+    legacyRows: document.querySelectorAll('.article-list .article-row').length,
+    statePanels: [...document.querySelectorAll('.state-panel')].map((node) => node.textContent?.replace(/\s+/g, ' ').trim()),
+    scripts: [...document.scripts].map((node) => ({ src: node.src, type: node.type, defer: node.defer })),
+    styles: [...document.querySelectorAll('link[rel="stylesheet"]')].map((node) => node.href),
+    structuredManifestRequestable: Boolean(document.querySelector('script[src*="structured-ui"]')),
+  })).catch((evaluationError) => ({ evaluationError: String(evaluationError) }));
+  await fs.writeFile(`${output}/diagnostic-${stage}.json`, JSON.stringify({ production, state, browserEvents, error: error ? String(error.stack || error) : null }, null, 2));
+  await page.screenshot({ path: `${output}/${stage}.png` }).catch(() => {});
+  return state;
+}
 
 try {
   await page.goto(`${base}?structured-test=${Date.now()}#/characters`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
-  await page.waitForSelector('.character-grid .character-card', { timeout: 30_000 });
-  await page.waitForFunction(() => document.querySelectorAll('.character-grid .character-card').length >= 40);
+  await page.waitForTimeout(8000);
+  const initialState = await captureState('00-character-boot');
+  if (initialState.characterCards < 1) {
+    throw new Error(`结构化人物卡未渲染：${JSON.stringify(initialState)}`);
+  }
+  await page.waitForFunction(() => document.querySelectorAll('.character-grid .character-card').length >= 40, null, { timeout: 20_000 });
 
   const firstPageTitles = await page.locator('.character-card-title strong').allTextContents();
   check(firstPageTitles.length >= 40, `人物首页数量过少：${firstPageTitles.length}`);
@@ -121,13 +150,14 @@ try {
     audioHttpStatus: audioResponse.status(),
     audioContentType: contentType,
     metrics,
+    browserEvents,
   };
   await fs.writeFile(`${output}/result.json`, JSON.stringify(result, null, 2));
   if (failures.filter(Boolean).length) throw new Error(failures.filter(Boolean).join('\n'));
   console.log('PRODUCTION_STRUCTURED_V5_BROWSER_OK', JSON.stringify(result));
 } catch (error) {
+  await captureState('99-failure-mobile', error);
   await fs.writeFile(`${output}/failure.txt`, String(error?.stack || error));
-  await page.screenshot({ path: `${output}/99-failure-mobile.png` }).catch(() => {});
   throw error;
 } finally {
   await browser.close();
