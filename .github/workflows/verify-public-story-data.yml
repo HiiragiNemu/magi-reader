@@ -1,0 +1,112 @@
+name: Verify Public Story Data
+
+on:
+  pull_request:
+    branches: [feature/portal-story-reader-v7]
+    paths:
+      - 'generate_story_index.py'
+      - 'validate_public_story_corpus.py'
+      - 'publish_raw_story_json.py'
+      - 'magireco-source-master/**'
+      - 'magireco-translate-data-master/**'
+      - 'magiraexedra-source-master/**'
+      - 'magiraexedra-translate-data-master/**'
+      - '.github/workflows/verify-public-story-data.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-public-story-data
+  cancel-in-progress: true
+
+jobs:
+  data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      STORY_SOURCE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          show-progress: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Generate stable TXT story catalogue
+        run: |
+          set -euxo pipefail
+          python generate_story_index.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          stories = json.loads(Path('website/public/story_index.json').read_text(encoding='utf-8'))
+          print('GENERATED_STORIES', len(stories))
+          assert stories
+          PY
+
+      - name: Index every raw scenario JSON
+        run: |
+          set -euxo pipefail
+          python publish_raw_story_json.py \
+            --repo . \
+            --public website/public \
+            --repository "${{ github.repository }}" \
+            --commit "$STORY_SOURCE_COMMIT" \
+            | tee public-raw-json-report.json
+          test -s website/public/raw_story_json_manifest.json
+
+      - name: Validate complete story corpus
+        run: |
+          set -euxo pipefail
+          python validate_public_story_corpus.py \
+            --public website/public \
+            --report public-story-corpus-report.json
+          test -s public-story-corpus-report.json
+
+      - name: Validate raw manifest contract
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          manifest = json.loads(Path('website/public/raw_story_json_manifest.json').read_text(encoding='utf-8'))
+          stories = json.loads(Path('website/public/story_index.json').read_text(encoding='utf-8'))
+          counts = manifest.get('counts') or {}
+          assert manifest.get('schemaVersion') == 2, manifest
+          assert manifest.get('commit') == os.environ['STORY_SOURCE_COMMIT'], manifest.get('commit')
+          assert manifest.get('entries') == len(manifest.get('files') or []), manifest
+          assert manifest.get('entries') == 24367, manifest.get('entries')
+          assert manifest.get('bytes') == 1174953243, manifest.get('bytes')
+          assert counts == {
+              'exedra_jp': 3061,
+              'magireco_cn': 10907,
+              'magireco_jp': 10399,
+          }, counts
+          assert manifest.get('associatedStories') == 2449, manifest.get('associatedStories')
+          assert manifest.get('associatedFiles') == 21546, manifest.get('associatedFiles')
+          assert len(stories) == 2602, len(stories)
+          files = manifest['files']
+          assert all(item['url'].startswith('https://raw.githubusercontent.com/') for item in files)
+          assert all(len(item['sha256']) == 64 for item in files)
+          assert any(item.get('raw_json_jp') for item in stories), 'story raw JSON backlinks missing'
+          print('PUBLIC_STORY_DATA_OK', len(stories), manifest['entries'], manifest['bytes'])
+          PY
+
+      - name: Upload data evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-story-data-evidence
+          path: |
+            public-raw-json-report.json
+            public-story-corpus-report.json
+            website/public/story_index.manifest.json
+          if-no-files-found: warn
+          retention-days: 14
