@@ -1,0 +1,272 @@
+/* Dense reader v6.2: structured catalog and table-density overrides. */
+html[data-reader-width="narrow"] { --article-max: 1180px; }
+html[data-reader-width="comfortable"] { --article-max: 1540px; }
+html[data-reader-width="wide"] { --article-max: 1760px; }
+
+html[data-structured-view] .site-main {
+  width: min(var(--site-max), calc(100% - 1.25rem));
+}
+html[data-structured-view] .structured-page,
+html[data-structured-view] .doppel-detail,
+html[data-structured-view] .memoria-detail {
+  width: min(1480px, 100%);
+  max-width: 1480px;
+}
+
+/* Four actual children: namespace, title/summary, size, arrow. */
+.article-row {
+  grid-template-columns: 7rem minmax(0, 1fr) 5rem 1.5rem;
+}
+.article-row small { max-width: none; }
+
+/* Do not reserve hundreds of synthetic 320px blocks on long articles. */
+.wiki-document > h2,
+.wiki-document > h2 ~ * {
+  content-visibility: visible;
+  contain-intrinsic-size: none;
+}
+.wiki-document .gallery,
+.wiki-document figure,
+.table-viewport {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+
+/* Large inline art remains available in the viewer without occupying entire screens. */
+@media (min-width: 1001px) {
+  .reader-image:not(.reader-icon):not(.table-image),
+  .wiki-document img:not(.reader-icon):not(.table-image) {
+    max-width: min(100%, 58rem) !important;
+    max-height: 32rem;
+  }
+  .wiki-document .floatright img,
+  .wiki-document .tright img,
+  .wiki-document .infobox img {
+    max-width: 100% !important;
+    max-height: 28rem;
+  }
+}
+
+/* Structured list pages: use the full desktop width and shorter rows. */
+.structured-hero {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.25rem;
+  margin-bottom: .75rem;
+  padding-bottom: .7rem;
+  border-bottom: 1px solid var(--line);
+}
+.structured-hero .eyebrow { display: none; }
+.structured-hero h1 {
+  font-size: clamp(2rem, 3vw, 3.4rem);
+  line-height: 1;
+}
+.structured-hero p:not(.eyebrow) {
+  max-width: 58rem;
+  margin: .5rem 0 0;
+  line-height: 1.5;
+  font-size: .88rem;
+}
+.structured-result-head { margin: .75rem 0 .45rem; }
+.structured-result-head h2 { font-size: 1.25rem; }
+
+.character-grid,
+.voice-character-grid,
+.doppel-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .45rem;
+}
+.character-card,
+.voice-character-card,
+.doppel-card {
+  min-height: 0;
+  padding: .45rem .55rem;
+  border-radius: .5rem;
+  gap: .55rem;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.character-card { grid-template-columns: 4.2rem minmax(0, 1fr) auto; }
+.character-portrait { width: 4.2rem; height: 4.2rem; border-radius: .4rem; }
+.voice-character-card { grid-template-columns: 3.8rem minmax(0, 1fr) auto; }
+.voice-character-image { width: 3.8rem; height: 3.8rem; border-radius: .4rem; }
+.doppel-card { grid-template-columns: 4.5rem minmax(0, 1fr) auto; }
+.doppel-card-image { width: 4.5rem; height: 4.5rem; border-radius: .4rem; }
+.character-card-copy small,
+.character-card-meta,
+.voice-character-card small,
+.voice-character-card span,
+.doppel-card-copy small,
+.doppel-card-copy span { font-size: .64rem; }
+.character-card-meta,
+.doppel-card-copy span { margin-top: .2rem; }
+
+/* Memoria has over one thousand entries: use a denser five-column catalog. */
+.memoria-toolbar {
+  grid-template-columns: minmax(20rem, 1fr) repeat(4, minmax(8rem, auto));
+  gap: .4rem;
+}
+.memoria-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: .42rem;
+}
+.memoria-card {
+  grid-template-columns: 4.1rem minmax(0, 1fr) auto;
+  gap: .48rem;
+  min-height: 0;
+  padding: .4rem .48rem;
+  border-radius: .48rem;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.memoria-card-image {
+  width: 4.1rem;
+  height: 5rem;
+  border-radius: .35rem;
+}
+.memoria-card-copy { gap: .14rem; }
+.memoria-card-copy strong { font-size: .75rem; line-height: 1.32; }
+.memoria-card-copy > span:not(.memoria-card-meta):not(.memoria-status),
+.memoria-card-meta small,
+.memoria-status { font-size: .58rem; }
+.memoria-status { padding: .1rem .35rem; }
+.memoria-card > b { font-size: .85rem; }
+
+/* Details resemble a dense Wiki infobox + content layout instead of a landing page. */
+.character-detail-head,
+.doppel-detail-head,
+.memoria-detail-head {
+  grid-template-columns: minmax(13rem, 18rem) minmax(0, 1fr);
+  gap: 1.25rem;
+  margin: .35rem 0 .8rem;
+  padding: 0;
+}
+.character-detail-head h1,
+.doppel-detail-head h1,
+.memoria-detail-head h1,
+.voice-detail-head h1 {
+  font-size: clamp(1.8rem, 2.7vw, 3rem);
+}
+.character-detail-image img,
+.doppel-detail-image img,
+.memoria-detail-image img { max-height: 24rem; border-radius: .45rem; }
+.memoria-detail-image {
+  min-height: 15rem;
+  border-radius: .5rem;
+  box-shadow: none;
+}
+.character-summary,
+.doppel-note { line-height: 1.55; }
+.character-actions { margin: .55rem 0; }
+.character-actions button,
+.character-actions a { padding: .42rem .65rem; border-radius: .45rem; }
+.profile-section,
+.doppel-description {
+  margin-top: .65rem;
+  padding: .65rem .75rem;
+  border-radius: .5rem;
+}
+.profile-section h2,
+.doppel-description h2 { margin-bottom: .35rem; font-size: 1.15rem; }
+.profile-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+.profile-fields > div {
+  grid-template-columns: minmax(6rem, 8rem) minmax(0, 1fr);
+  gap: .55rem;
+  padding: .38rem 0;
+}
+.profile-fields dd { line-height: 1.5; }
+.doppel-facts {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .4rem;
+  margin: .7rem 0;
+}
+.doppel-facts > div { padding: .5rem .6rem; border-radius: .45rem; }
+.doppel-description p { line-height: 1.55; }
+
+.memoria-badges { margin-top: .55rem; }
+.memoria-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: .65rem 0 0;
+  border-radius: .45rem;
+}
+.memoria-summary > div { padding: .48rem .55rem; }
+.memoria-summary dd { margin-top: .16rem; font-size: .68rem; line-height: 1.42; }
+.memoria-stats { gap: .4rem; margin: .65rem 0; }
+.memoria-stats > div { padding: .5rem .6rem; border-radius: .45rem; }
+.memoria-stats strong { margin-top: .2rem; font-size: .86rem; }
+.memoria-effect-panel,
+.memoria-text { margin-top: .75rem; padding-top: .65rem; }
+.memoria-effect-panel h2,
+.memoria-text h2 { margin-bottom: .4rem; font-size: 1.15rem; }
+.memoria-effect-grid { gap: .45rem; }
+.memoria-effect-grid article {
+  padding: .65rem .75rem;
+  border-left-width: 3px;
+  border-radius: .45rem;
+}
+.memoria-effect-grid strong { margin-top: .25rem; font-size: .82rem; line-height: 1.45; }
+.memoria-effect-grid p,
+.memoria-effect-grid small { margin-top: .35rem; line-height: 1.5; }
+.memoria-text p { line-height: 1.55; }
+
+.voice-detail-head {
+  grid-template-columns: 5.8rem minmax(0, 1fr);
+  gap: .8rem;
+  padding: .4rem 0 .7rem;
+}
+.voice-detail-head > img { width: 5.8rem; height: 5.8rem; border-radius: .45rem; }
+.voice-line-list { gap: .4rem; }
+.voice-line {
+  padding: .55rem .65rem;
+  border-radius: .5rem;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 130px;
+}
+.voice-line > header { grid-template-columns: minmax(0, 1fr) minmax(15rem, .55fr); gap: .65rem; }
+.voice-translation { margin-top: .45rem; padding-top: .45rem; line-height: 1.5; }
+
+@media (max-width: 1540px) {
+  .memoria-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 1280px) {
+  .character-grid,
+  .voice-character-grid,
+  .doppel-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .memoria-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .memoria-toolbar { grid-template-columns: minmax(16rem, 1fr) repeat(2, minmax(8rem, 1fr)); }
+}
+
+@media (max-width: 1000px) {
+  html[data-structured-view] .site-main { width: min(100% - 1rem, 920px); }
+  .character-grid,
+  .voice-character-grid,
+  .doppel-grid,
+  .memoria-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .profile-fields { grid-template-columns: 1fr; }
+  .doppel-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .memoria-detail-head { grid-template-columns: minmax(11rem, 15rem) minmax(0, 1fr); }
+  .memoria-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .structured-hero { grid-template-columns: 1fr; }
+  .character-grid,
+  .voice-character-grid,
+  .doppel-grid,
+  .memoria-grid { grid-template-columns: 1fr; }
+  .character-detail-head,
+  .doppel-detail-head,
+  .memoria-detail-head { grid-template-columns: 1fr; }
+  .doppel-facts { grid-template-columns: 1fr 1fr; }
+  .memoria-toolbar { grid-template-columns: 1fr; }
+  .memoria-card { grid-template-columns: 4.6rem minmax(0, 1fr) auto; }
+  .memoria-card-image { width: 4.6rem; height: 5.6rem; }
+  .memoria-summary { grid-template-columns: 1fr 1fr; }
+  .memoria-effect-grid { grid-template-columns: 1fr; }
+  .reader-image:not(.reader-icon):not(.table-image),
+  .wiki-document img:not(.reader-icon):not(.table-image) { max-height: 54dvh; }
+}

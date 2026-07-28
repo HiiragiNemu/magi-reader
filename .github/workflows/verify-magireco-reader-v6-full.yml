@@ -1,0 +1,187 @@
+name: Verify Complete Magireco Reader v6
+
+on:
+  pull_request:
+    branches: [deploy/magireco-cn-reader]
+    paths:
+      - 'wiki-preservation/static/**'
+      - 'wiki-preservation/scripts/**'
+      - 'wiki-preservation/tests/production-reader-v6.mjs'
+      - '.github/workflows/verify-magireco-reader-v6-full.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: verify-complete-magireco-reader-v6
+  cancel-in-progress: true
+
+jobs:
+  complete-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      READER_REVISION: '6.0'
+    steps:
+      - name: Check out complete v6 builder
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            wiki-preservation/static
+            wiki-preservation/scripts
+          sparse-checkout-cone-mode: true
+          show-progress: false
+
+      - name: Download verified 500-page snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: magireco-cn-reader-500-page-parallel-snapshot
+          path: snapshot
+          github-token: ${{ github.token }}
+          repository: HiiragiNemu/magi-reader
+          run-id: 30333056699
+
+      - name: Download final 1042-record Memoria corpus
+        uses: actions/download-artifact@v4
+        with:
+          name: magireco-memoria-full-1042
+          path: memoria-source
+          github-token: ${{ github.token }}
+          repository: HiiragiNemu/magi-reader
+          run-id: 30378346952
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install build dependencies
+        run: python -m pip install --disable-pip-version-check beautifulsoup4 lxml
+
+      - name: Assemble and validate production-equivalent site
+        shell: bash
+        run: |
+          set -euo pipefail
+          python wiki-preservation/scripts/assemble_reader_v6.py \
+            --snapshot snapshot \
+            --static wiki-preservation/static \
+            --scripts wiki-preservation/scripts \
+            --memoria memoria-source \
+            --revision "$READER_REVISION" \
+            | tee reader-v6-build-report.json
+          for file in app.js ui-v4-runtime.js structured-ui.js doppel-ui.js memoria-ui.js sw.js "sw-v${READER_REVISION}.js"; do
+            node --check "snapshot/$file"
+          done
+          test -f snapshot/data/structured/memoria-index.json
+          test -f snapshot/data/structured/memoria-manifest.json
+          test -f snapshot/data/structured/memoria/0.json
+          test -f snapshot/data/structured/memoria/f.json
+
+      - name: Install Playwright Chromium
+        run: |
+          npm init -y
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Run local complete Reader v6 browser test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 4173 --directory snapshot >/tmp/reader-v6-server.log 2>&1 &
+          echo $! > /tmp/reader-v6-server.pid
+          for attempt in $(seq 1 40); do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          cat > verify-reader-v6-local.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs/promises';
+          await fs.mkdir('reader-v6-local-evidence', { recursive: true });
+          const browser = await chromium.launch({ headless: true });
+          const failures = [];
+          const events = [];
+          const check = (value, message) => { if (!value) failures.push(message); };
+
+          const desktop = await browser.newContext({ viewport: { width: 2048, height: 1060 }, locale: 'zh-CN' });
+          const desk = await desktop.newPage();
+          desk.on('pageerror', error => events.push({ scope: 'desktop', error: String(error.stack || error) }));
+          await desk.goto('http://127.0.0.1:4173/#/portal/all', { waitUntil: 'networkidle', timeout: 90_000 });
+          await desk.waitForSelector('.article-row');
+          const portal = await desk.evaluate(() => ({
+            mainWidth: document.querySelector('.site-main')?.getBoundingClientRect().width || 0,
+            maxCardHeight: Math.max(...[...document.querySelectorAll('.portal-card')].map(node => node.getBoundingClientRect().height)),
+            overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+            forbidden: /把原 Wiki|不会删减|这里不是|以保存快照|来源与保存说明|本站用于研究|兼容性开发/.test(document.body.innerText),
+          }));
+          check(portal.mainWidth >= 1650, `desktop width: ${JSON.stringify(portal)}`);
+          check(portal.maxCardHeight <= 100, `portal cards: ${JSON.stringify(portal)}`);
+          check(portal.overflow <= 2, `portal overflow: ${JSON.stringify(portal)}`);
+          check(!portal.forbidden, 'internal development copy leaked');
+          await desk.screenshot({ path: 'reader-v6-local-evidence/01-portal-desktop.png' });
+
+          const archive = await (await desktop.request.get('http://127.0.0.1:4173/data/archive-index.json')).json();
+          const article = archive.find(item => item.title === '魔女化身' && item.namespace === 0)
+            || archive.find(item => item.title === '千岁由麻' && item.namespace === 0);
+          check(Boolean(article), 'long Wiki article missing');
+          if (article) {
+            await desk.goto(`http://127.0.0.1:4173/#/article/${encodeURIComponent(article.id)}`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
+            await desk.waitForSelector('.wiki-document');
+            await desk.waitForTimeout(2200);
+            const articleMetrics = await desk.evaluate(() => ({
+              pageWidth: document.querySelector('.article-page')?.getBoundingClientRect().width || 0,
+              bodyWidth: document.querySelector('.wiki-document')?.getBoundingClientRect().width || 0,
+              overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+              duplicateTocVisible: [...document.querySelectorAll('.wiki-document .toc, .wiki-document #toc')].some(node => getComputedStyle(node).display !== 'none'),
+              maxImageHeight: Math.max(0, ...[...document.querySelectorAll('.wiki-document img')].map(node => node.getBoundingClientRect().height)),
+            }));
+            check(articleMetrics.pageWidth >= 1450, `article width: ${JSON.stringify(articleMetrics)}`);
+            check(articleMetrics.bodyWidth >= 1150, `article body: ${JSON.stringify(articleMetrics)}`);
+            check(articleMetrics.overflow <= 2, `article overflow: ${JSON.stringify(articleMetrics)}`);
+            check(!articleMetrics.duplicateTocVisible, 'duplicate embedded Wiki TOC visible');
+            check(articleMetrics.maxImageHeight <= 650, `article image too tall: ${JSON.stringify(articleMetrics)}`);
+            await desk.screenshot({ path: 'reader-v6-local-evidence/02-article-desktop.png' });
+          }
+
+          const mobile = await browser.newContext({ viewport: { width: 393, height: 852 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'zh-CN' });
+          const page = await mobile.newPage();
+          page.on('pageerror', error => events.push({ scope: 'mobile', error: String(error.stack || error) }));
+          await page.goto('http://127.0.0.1:4173/#/characters', { waitUntil: 'networkidle', timeout: 90_000 });
+          await page.waitForSelector('.character-card');
+          check((await page.locator('.character-card').count()) >= 40, 'character cards missing');
+          check((await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)) <= 2, 'character mobile overflow');
+
+          await page.goto('http://127.0.0.1:4173/#/memoria', { waitUntil: 'networkidle', timeout: 90_000 });
+          await page.waitForSelector('.memoria-card');
+          check((await page.locator('.memoria-card').count()) === 48, 'Memoria first page should contain 48 cards');
+          const total = await page.locator('.structured-stats').innerText();
+          check(total.includes('1,042') || total.includes('1042'), `Memoria total incorrect: ${total}`);
+          await page.locator('#memoria-search').fill('1000円未満の魔法');
+          await page.waitForFunction(() => [...document.querySelectorAll('.memoria-card')].some(node => node.textContent.includes('1000円未満の魔法')));
+          await page.locator('.memoria-card').filter({ hasText: '1000円未満の魔法' }).first().click();
+          await page.waitForSelector('.memoria-detail');
+          const detail = await page.locator('.memoria-detail').innerText();
+          check(/HP/.test(detail) && /ATK/.test(detail) && /DEF/.test(detail), 'Memoria stats missing');
+          check(detail.includes('资料完整'), 'known complete Memoria marked partial');
+          check(detail.includes('能力效果'), 'Memoria effects missing');
+          check((await page.locator('.memoria-detail .reader-image').count()) === 1, 'Memoria detail image missing');
+          check((await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)) <= 2, 'Memoria mobile overflow');
+          await page.screenshot({ path: 'reader-v6-local-evidence/03-memoria-mobile.png' });
+
+          await fs.writeFile('reader-v6-local-evidence/result.json', JSON.stringify({ portal, failures, events }, null, 2));
+          await browser.close();
+          if (failures.length) throw new Error(failures.join('\n'));
+          console.log('COMPLETE_READER_V6_LOCAL_OK');
+          JS
+          node verify-reader-v6-local.mjs
+
+      - name: Upload complete build evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: complete-reader-v6-build-evidence
+          path: |
+            reader-v6-build-report.json
+            reader-v6-local-evidence
+          if-no-files-found: warn
+          retention-days: 14

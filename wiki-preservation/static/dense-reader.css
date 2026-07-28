@@ -1,0 +1,289 @@
+/* Dense reader v6: compact desktop information architecture inspired by MediaWiki. */
+:root {
+  --site-max: 1760px;
+  --article-max: 1540px;
+  --content-gutter: clamp(.8rem, 2vw, 2.2rem);
+}
+
+body {
+  line-height: 1.48;
+  background-image: none;
+}
+
+.site-header {
+  grid-template-columns: minmax(18rem, auto) minmax(0, 1fr);
+  padding: max(.45rem, env(safe-area-inset-top)) var(--content-gutter) .45rem;
+}
+
+.site-main {
+  width: min(var(--site-max), calc(100% - 1.25rem));
+  padding: clamp(.7rem, 1.5vw, 1.4rem) 0 3rem;
+}
+
+.site-footer {
+  padding-block: .75rem;
+}
+
+/* Portal: replace presentation-like hero/cards with a compact reference index. */
+.portal-hero {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin: 0 0 .75rem;
+  padding: .35rem 0 .8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.portal-hero > div:first-child { min-width: 0; }
+.portal-hero .eyebrow { display: none; }
+.portal-hero h1 {
+  font-size: clamp(2rem, 3vw, 3.5rem);
+  line-height: 1;
+}
+.portal-hero p:not(.eyebrow) {
+  max-width: 58rem;
+  margin: .5rem 0 0;
+  line-height: 1.48;
+  font-size: .9rem;
+}
+
+.coverage-grid {
+  flex: 0 0 auto;
+  display: flex;
+  gap: .35rem;
+}
+.coverage-grid div {
+  min-width: 7.2rem;
+  padding: .48rem .6rem;
+  border-radius: .45rem;
+}
+.coverage-grid strong { font-size: .95rem; }
+.coverage-grid span { font-size: .62rem; }
+
+.portal-toolbar { margin: .65rem 0; }
+.search-field,
+.toolbar select { min-height: 2.45rem; border-radius: .45rem; }
+
+.portal-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0;
+  margin: .65rem 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+  background: var(--paper-2);
+}
+.portal-card {
+  min-height: 0;
+  padding: .6rem .72rem;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.portal-card:hover,
+.portal-card.active { background: var(--plum-soft); }
+.portal-card strong { font-size: .88rem; }
+.portal-card small {
+  display: block;
+  margin-top: .15rem;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: .69rem;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.portal-card > span:last-child {
+  margin-top: .22rem;
+  font-size: .63rem;
+}
+.portal-card-top b { font-size: .8rem; }
+
+.category-strip { margin: .55rem 0 .8rem; }
+.chip,
+.namespace-badge { min-height: 1.5rem; padding: .12rem .45rem; font-size: .62rem; }
+.section-heading { margin: .7rem 0 .45rem; }
+.section-heading h2 { font-size: 1.3rem; }
+
+.article-list {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+}
+.article-row {
+  display: grid;
+  grid-template-columns: 7rem minmax(16rem, 1.2fr) minmax(20rem, 2fr) 5rem 1.5rem;
+  min-height: 0;
+  gap: .55rem;
+  padding: .43rem .6rem;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+.article-row:last-child { border-bottom: 0; }
+.article-row strong { font-size: .82rem; }
+.article-row small {
+  margin: 0;
+  font-size: .65rem;
+  line-height: 1.35;
+}
+.article-row:hover { background: color-mix(in srgb, var(--plum-soft) 38%, var(--paper-2)); }
+
+/* Article: use the available desktop width and preserve the original Wiki's dense structure. */
+.article-page {
+  width: min(var(--article-max), 100%);
+}
+.reading-bar {
+  top: 3.5rem;
+  margin: 0 0 .45rem;
+  padding: .25rem;
+  border-radius: .4rem;
+}
+.reading-bar button { min-height: 2rem; }
+.article-header {
+  padding: .2rem 0 .55rem;
+}
+.article-header .eyebrow { display: none; }
+.article-header h1 {
+  font-size: clamp(1.8rem, 2.3vw, 2.7rem);
+  line-height: 1.08;
+}
+.article-tags { margin: .35rem 0; }
+.technical-meta { margin-top: .3rem; }
+.article-actions { margin: .45rem 0 .6rem; }
+
+.rendered-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 15rem);
+  gap: 1rem;
+}
+.article-toc {
+  top: 6.4rem;
+  border-radius: .45rem;
+  font-size: .68rem;
+}
+.article-toc > summary { padding: .55rem; }
+.article-toc ol { padding: 0 .55rem .6rem; }
+
+.wiki-document {
+  font-size: .92rem;
+  line-height: 1.48;
+}
+/* The site generates a responsive sidebar TOC; hide the duplicate TOC embedded in preserved Wiki HTML. */
+.wiki-document .toc,
+.wiki-document #toc,
+.wiki-document .mw-parser-output > .toc {
+  display: none !important;
+}
+.wiki-document p,
+.wiki-document li,
+.wiki-document dd { line-height: 1.52; }
+.wiki-document p { margin-block: .55rem; }
+.wiki-document h2 {
+  margin: 1.2rem 0 .5rem;
+  padding-bottom: .22rem;
+  font-size: 1.35rem;
+}
+.wiki-document h3 { margin: .95rem 0 .38rem; font-size: 1.16rem; }
+.wiki-document h4 { margin: .8rem 0 .3rem; font-size: 1.02rem; }
+
+/* Restore desktop Wiki floats instead of stacking every infobox/image vertically. */
+@media (min-width: 1001px) {
+  .wiki-document .floatright,
+  .wiki-document .tright,
+  .wiki-document .infobox {
+    float: right !important;
+    clear: right;
+    width: min(31rem, 42%) !important;
+    max-width: 42% !important;
+    margin: 0 0 .8rem 1rem !important;
+  }
+  .wiki-document .floatleft,
+  .wiki-document .tleft {
+    float: left !important;
+    clear: left;
+    width: min(28rem, 38%) !important;
+    max-width: 38% !important;
+    margin: 0 1rem .8rem 0 !important;
+  }
+  .wiki-document::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+  .wiki-document .thumbinner { width: 100% !important; }
+  .wiki-document .floatright img,
+  .wiki-document .tright img,
+  .wiki-document .infobox img { max-height: 38rem; }
+}
+
+.reader-image,
+.wiki-document img {
+  margin: .4rem auto;
+  max-height: min(64vh, 40rem);
+}
+.table-viewport {
+  margin: .55rem 0;
+  border-radius: .35rem;
+  contain: layout paint;
+}
+.table-viewport table { font-size: .82em; }
+.table-viewport th,
+.table-viewport td { padding: .35rem .45rem !important; }
+.raw-details { margin-top: 1rem; }
+
+/* Long preserved pages: skip layout/paint for off-screen sections until needed. */
+.wiki-document > h2,
+.wiki-document > h2 ~ * {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}
+.wiki-document img[loading="lazy"] { content-visibility: auto; }
+
+@media (max-width: 1000px) {
+  :root { --article-max: 100%; }
+  .site-main { width: min(100% - 1rem, 920px); }
+  .portal-hero { display: block; }
+  .coverage-grid { margin-top: .65rem; overflow-x: auto; }
+  .article-list { display: grid; }
+  .article-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: .58rem .65rem;
+    border: 1px solid var(--line);
+    border-radius: .55rem;
+  }
+  .article-row .namespace-badge,
+  .article-row .row-size { display: none; }
+}
+
+@media (max-width: 760px) {
+  .site-main { width: calc(100% - .7rem); padding-top: .55rem; }
+  .portal-hero h1 { font-size: 2rem; }
+  .portal-hero p:not(.eyebrow) { font-size: .82rem; }
+  .coverage-grid { display: grid; grid-template-columns: repeat(2, 1fr); }
+  .coverage-grid div { min-width: 0; }
+  .portal-cards {
+    display: grid;
+    grid-auto-flow: initial;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-inline: 0;
+    padding: 0;
+    overflow: hidden;
+    scroll-snap-type: none;
+  }
+  .portal-card { min-height: 0; }
+  .portal-card small { white-space: normal; }
+  .wiki-document { font-size: .92rem; }
+  .wiki-document h2 { margin-top: 1.1rem; }
+}
+
+@media (max-width: 430px) {
+  .portal-cards { grid-template-columns: 1fr; }
+}
