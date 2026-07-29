@@ -1,0 +1,55 @@
+name: Probe Private Media Repository Access
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TOKEN_GH_PAT: ${{ secrets.GH_PAT }}
+      TOKEN_GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+      TOKEN_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      TOKEN_REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+      TOKEN_PRIVATE_REPO_TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
+      TOKEN_MAGIWIKI_TOKEN: ${{ secrets.MAGIWIKI_TOKEN }}
+      TOKEN_GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    steps:
+      - name: Check available token aliases without exposing values
+        shell: bash
+        run: |
+          set -euo pipefail
+          found=0
+          for name in TOKEN_GH_PAT TOKEN_GITHUB_PAT TOKEN_PERSONAL_ACCESS_TOKEN TOKEN_REPO_TOKEN TOKEN_PRIVATE_REPO_TOKEN TOKEN_MAGIWIKI_TOKEN TOKEN_GH_TOKEN; do
+            value="${!name:-}"
+            if [ -z "$value" ]; then
+              echo "$name: absent"
+              continue
+            fi
+            found=1
+            status=$(curl --silent --output /tmp/repo.json --write-out '%{http_code}' \
+              --header "Authorization: Bearer $value" \
+              --header 'Accept: application/vnd.github+json' \
+              https://api.github.com/repos/HiiragiNemu/magiWiki)
+            if [ "$status" = 200 ]; then
+              echo "$name: present and can read HiiragiNemu/magiWiki"
+              python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('/tmp/repo.json').read_text())
+          print({'full_name':x.get('full_name'),'private':x.get('private'),'size':x.get('size'),'default_branch':x.get('default_branch')})
+          PY
+              exit 0
+            fi
+            echo "$name: present but private repository returned HTTP $status"
+          done
+          if [ "$found" = 0 ]; then
+            echo 'No reusable private-repository token aliases are configured.'
+          fi
+          exit 1
