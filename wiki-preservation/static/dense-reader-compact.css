@@ -1,4 +1,4 @@
-/* Dense reader v6.2: structured catalog and table-density overrides. */
+/* Dense reader v6.4: structured catalog and table-density overrides. */
 html[data-reader-width="narrow"] { --article-max: 1180px; }
 html[data-reader-width="comfortable"] { --article-max: 1540px; }
 html[data-reader-width="wide"] { --article-max: 1760px; }
@@ -241,6 +241,33 @@ html[data-structured-view] .memoria-detail {
 }
 
 @media (max-width: 1000px) {
+  /* This file loads after dense-reader.css, so it must be the final authority
+     for narrow screens. Keeping the desktop TOC column here leaves only about
+     126px for the article on a 393px phone. */
+  .rendered-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "toc"
+      "body" !important;
+    gap: .75rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .article-body,
+  .wiki-document {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  .toc {
+    position: static !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 15rem;
+  }
+
   html[data-structured-view] .site-main { width: min(100% - 1rem, 920px); }
   .character-grid,
   .voice-character-grid,
