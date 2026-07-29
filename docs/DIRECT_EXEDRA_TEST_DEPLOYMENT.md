@@ -5,7 +5,7 @@
 ## 固定边界
 
 - 本地仓库：`D:\magia\MyProducts\magi-reader-exedra-test`
-- 开发分支：`feature/exedra-cn-and-magireco-voice`
+- 开发分支：`feature/exedra-voice-playback-human-localization`
 - 合并目标：`EXEDRA-TEST`
 - 测试 Worker：`magireader-exedra-cn-test`
 - 测试域名：`magireader-exedra-cn-test.crynetsystemscell.workers.dev`
@@ -19,9 +19,9 @@
 必须先确认生成结果：
 
 - `story_index.json` 总条目为 3,012；
-- Exedra 为 443 组，中文 124，仍缺 319；
-- 119 个新 Exedra 中文组具有 `json_paths_cn`；
-- Exedra 中文 JSON 为 1,390 个；
+- Exedra 为 443 组，中文 142，仍缺 301；
+- 137 个新 Exedra 中文组具有 `json_paths_cn`；
+- Exedra 中文 JSON 为 1,484 个；
 - general voice 为 410 个模型，全部有 TXT/JSON；
 - 魔法纪录机翻清单仍为 507；
 - Exedra provenance 中没有 `machine_translation`。
@@ -49,13 +49,13 @@ npm run verify:cloudflare-output
 npm run deploy:test:direct -- --dry-run
 ```
 
-当前历史验证记录：
+当前验证记录：
 
-- Python：143 通过，2 跳过；
-- Node：83 / 83；
+- Python：167 通过，2 跳过；
+- Node：120 / 120；
 - ESLint、TypeScript、feature policy、生产依赖审计通过；
 - OpenNext Worker 构建和 Cloudflare 输出验证通过；
-- 搜索目录 3,012、搜索条目 5,242。
+- 搜索目录 3,012、搜索条目 5,260。
 
 静态 Exedra 中文路由修复后，本节的 `npm run check`、Worker 构建、输出验证和 dry-run 已在干净工作树通过；Wrangler 已确认 9,029 个静态资源以及隔离测试 Worker/KV 绑定。
 
@@ -65,7 +65,7 @@ npm run deploy:test:direct -- --dry-run
 
 1. 审计所有改动，不提交 `.wrangler` 临时配置、秘密、缓存或生成备份。
 2. 确认没有修改既有可信人工文本，也没有生产 Worker 配置。
-3. 提交并推送 `feature/exedra-cn-and-magireco-voice`。
+3. 提交并推送 `feature/exedra-voice-playback-human-localization`。
 4. 建立以 `EXEDRA-TEST` 为目标的 PR。
 5. 等待全部 CI；失败时修复，不绕过。
 6. 使用 squash merge，避免长期开发分支历史污染目标分支。
@@ -163,7 +163,7 @@ Invoke-WebRequest "$Base/api/exedra/localization-status" -UseBasicParsing
 
 - 首页和所有上述资源返回 200；
 - `story_index.json` 为 3,012 条；
-- Exedra 443 / 中文 124 / general voice 410；
+- Exedra 443 / 中文 142 / general voice 410；
 - 魔法纪录机翻总数为 507；
 - Exedra 状态 API 不返回 `machine_translation`；
 - 分类为 `主线、活动、角色、肖像、语音、Namae、过场动画字幕、战斗`，没有数字；
@@ -175,13 +175,13 @@ Invoke-WebRequest "$Base/api/exedra/localization-status" -UseBasicParsing
 
 ## 7. 搜索 R2 限制
 
-本地已验证的全文 payload 为 79,001,794 字节，对象键：
+本地已验证的全文 payload 为 79,334,357 字节，对象键：
 
 ```text
-search/0858dda73a7395000bfb0a60eb102bad8e7838e488d3bae64aa81765d91a7341.json
+search/21cfaee1042d0e21eb5a03ca666f6f84f2b79cb7c16632465f7f40c4ded518d2.json
 ```
 
-当前 Cloudflare Token 没有 R2 权限，所以该对象尚未上传。直接部署会避免把超限文件塞进 Worker 静态资产。目录浏览、标题检索和剧情阅读仍可验收；全文正文搜索要单独标为未恢复。
+测试站部署流程不会上传这个新 R2 对象，也不会把超限文件塞进 Worker 静态资产。目录浏览、标题检索和剧情阅读仍可验收；除非线上已存在相同内容寻址对象，全文正文搜索要单独标为未恢复。
 
 ## 8. 禁止合并/部署条件
 
@@ -192,7 +192,7 @@ search/0858dda73a7395000bfb0a60eb102bad8e7838e488d3bae64aa81765d91a7341.json
 - 工作树不干净；
 - 既有人工中文被覆盖或删除；
 - Exedra 出现机翻来源、机翻统计或 AI 入口；
-- 124 个 Exedra 中文组或 410 个语音模型数量漂移且没有审计解释；
+- 142 个 Exedra 中文组或 410 个语音模型数量漂移且没有审计解释；
 - JSON 与 TXT 不能往返验证；
 - Worker/KV/域名指向生产资源；
 - 目标分支不是 `EXEDRA-TEST`。

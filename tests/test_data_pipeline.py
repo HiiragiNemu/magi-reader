@@ -1731,6 +1731,19 @@ class PipelineBuildTests(unittest.TestCase):
 
         self.assertEqual(manifest["bytes"], output_path.stat().st_size)
         self.assertEqual(manifest["entries"], 6)
+        self.assertEqual(manifest["version"], 2)
+        self.assertEqual(
+            manifest["chunk_bytes"],
+            search.SEARCH_INDEX_CHUNK_BYTES,
+        )
+        self.assertEqual(
+            sum(chunk["bytes"] for chunk in manifest["chunks"]),
+            manifest["bytes"],
+        )
+        self.assertEqual(
+            manifest["chunks"][0]["sha256"],
+            hashlib.sha256(output_path.read_bytes()).hexdigest(),
+        )
         self.assertEqual(
             manifest["object_key"],
             f"search/{manifest['sha256']}.json",
@@ -1742,6 +1755,21 @@ class PipelineBuildTests(unittest.TestCase):
             entry_count=6,
             story_index_bytes=story_index_bytes,
         )
+        altered_manifest = dict(loaded_manifest)
+        altered_manifest["chunks"] = [
+            *loaded_manifest["chunks"][:-1],
+            {
+                **loaded_manifest["chunks"][-1],
+                "sha256": "0" * 64,
+            },
+        ]
+        with self.assertRaisesRegex(search.PipelineError, "chunks"):
+            search.validate_search_manifest(
+                altered_manifest,
+                payload=output_path.read_bytes(),
+                entry_count=6,
+                story_index_bytes=story_index_bytes,
+            )
 
         source_to_change = self.stage / stories[0]["path_jp"].lstrip("/")
         source_to_change.write_text(
@@ -1781,6 +1809,35 @@ class PipelineBuildTests(unittest.TestCase):
                     entry_count=1,
                     story_index_bytes=b"[]",
                 )
+
+    def test_manifest_v2_records_fixed_chunks_without_changing_payload(self) -> None:
+        payload = '["跨块✨\\\\\\"内容"]'.encode("utf-8")
+        with mock.patch.object(search, "SEARCH_INDEX_CHUNK_BYTES", 7):
+            manifest = search.build_search_manifest(
+                payload,
+                entry_count=1,
+                story_index_bytes=b"[]",
+            )
+            self.assertEqual(manifest["version"], 2)
+            self.assertEqual(manifest["chunk_bytes"], 7)
+            self.assertEqual(
+                [chunk["bytes"] for chunk in manifest["chunks"]],
+                [
+                    min(7, len(payload) - offset)
+                    for offset in range(0, len(payload), 7)
+                ],
+            )
+            self.assertEqual(
+                [chunk["sha256"] for chunk in manifest["chunks"]],
+                [
+                    hashlib.sha256(payload[offset : offset + 7]).hexdigest()
+                    for offset in range(0, len(payload), 7)
+                ],
+            )
+            self.assertEqual(
+                manifest["sha256"],
+                hashlib.sha256(payload).hexdigest(),
+            )
 
     def test_header_only_source_keeps_one_search_slot(self) -> None:
         source = self.jp / "main_story" / "header-only" / "101001_1.txt"

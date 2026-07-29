@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import json
+import tempfile
 import unittest
+from pathlib import Path
 
 from tools import import_exedra_wiki_voice as voice
 
@@ -81,6 +84,181 @@ class ExedraWikiVoiceImportTests(unittest.TestCase):
                 "cv_100101_other_evo_fee_01",
                 ["前半", "後半"],
             )
+
+    def test_japanese_anchor_recovers_unique_row_on_verified_character_page(self) -> None:
+        record = self.record(
+            page="Lux☆Magica/Voice/zh",
+            file_name="legacy_voice_number.ogg",
+            text_jp="前 半\n後半",
+        )
+        selected = voice.select_voice_by_japanese_anchor(
+            voice.index_records_by_japanese([record]),
+            "cv_100101_other_evo_fee_01",
+            ["前半", "後半"],
+            voice.VerifiedPageIdentity(
+                pages=("Lux☆Magica/Voice/zh",),
+                exact_source_count=2,
+            ),
+        )
+        self.assertEqual(selected.record, record)
+        self.assertEqual(
+            selected.match_method,
+            "verified_page_unique_japanese_exact",
+        )
+        self.assertEqual(
+            selected.verified_pages,
+            ("Lux☆Magica/Voice/zh",),
+        )
+
+    def test_japanese_anchor_rejects_unverified_or_wrong_character_page(self) -> None:
+        record = self.record(
+            page="Other Character/Voice/zh",
+            file_name="legacy_voice_number.ogg",
+        )
+        index = voice.index_records_by_japanese([record])
+        with self.assertRaisesRegex(RuntimeError, "缺少角色页面身份证明"):
+            voice.select_voice_by_japanese_anchor(
+                index,
+                "cv_100101_other_evo_fee_01",
+                ["前半", "後半"],
+                voice.VerifiedPageIdentity(
+                    pages=(),
+                    exact_source_count=0,
+                ),
+            )
+        with self.assertRaisesRegex(RuntimeError, "没有整段日文精确候选"):
+            voice.select_voice_by_japanese_anchor(
+                index,
+                "cv_100101_other_evo_fee_01",
+                ["前半", "後半"],
+                voice.VerifiedPageIdentity(
+                    pages=("Lux☆Magica/Voice/zh",),
+                    exact_source_count=2,
+                ),
+            )
+
+    def test_japanese_anchor_rejects_two_file_identities_even_with_same_text(self) -> None:
+        first = self.record(
+            file_name="legacy_voice_one.ogg",
+        )
+        second = self.record(
+            file_name="legacy_voice_two.ogg",
+        )
+        with self.assertRaisesRegex(RuntimeError, "候选不唯一"):
+            voice.select_voice_by_japanese_anchor(
+                voice.index_records_by_japanese([first, second]),
+                "cv_100101_other_evo_fee_01",
+                ["前半", "後半"],
+                voice.VerifiedPageIdentity(
+                    pages=("Lux☆Magica/Voice/zh",),
+                    exact_source_count=2,
+                ),
+            )
+
+    def test_japanese_anchor_does_not_accept_partial_or_near_japanese(self) -> None:
+        record = self.record(
+            file_name="legacy_voice_number.ogg",
+            text_jp="前半聞く",
+        )
+        with self.assertRaisesRegex(RuntimeError, "没有整段日文精确候选"):
+            voice.select_voice_by_japanese_anchor(
+                voice.index_records_by_japanese([record]),
+                "cv_100101_other_evo_fee_01",
+                ["前半聴く"],
+                voice.VerifiedPageIdentity(
+                    pages=("Lux☆Magica/Voice/zh",),
+                    exact_source_count=2,
+                ),
+            )
+
+    def test_japanese_anchor_audit_keeps_structured_remaining_reasons(self) -> None:
+        audit = voice.build_japanese_anchor_audit(
+            [
+                {
+                    "groupKey": "cv_missing",
+                    "status": "rejected",
+                    "reasons": [
+                        {
+                            "source": "cv_missing_1.json",
+                            "groupPageIdentityExactSourceCount": 0,
+                            "verifiedWikiPages": [],
+                            "verifiedPageExactJapaneseCandidateCount": 0,
+                        }
+                    ],
+                },
+                {
+                    "groupKey": "cv_recovered",
+                    "status": "ready",
+                    "japaneseAnchorFallbackCount": 1,
+                },
+            ],
+            [
+                {
+                    "title": "Lux☆Magica/Voice/zh",
+                    "rowCount": 62,
+                }
+            ],
+        )
+        self.assertEqual(audit["recoveredGroupCount"], 1)
+        self.assertEqual(audit["recoveredSourceCount"], 1)
+        self.assertEqual(audit["remainingRejectedGroupCount"], 1)
+        self.assertEqual(
+            audit["remaining"][0]["reasonCounts"],
+            {"no_verified_character_page_identity": 1},
+        )
+        self.assertEqual(
+            audit["wikiSnapshot"]["luxMagicaVoiceZh"]["rowCount"],
+            62,
+        )
+
+    def test_playable_json_generation_changes_only_comment_cells(self) -> None:
+        document = {
+            "bookTitle": "voice",
+            "sheetList": [
+                {
+                    "sheetName": "voice",
+                    "headerRow": {
+                        "cellList": [
+                            "ActionType",
+                            "Name",
+                            "Comment",
+                            "Resource",
+                        ]
+                    },
+                    "contentRowList": [
+                        {
+                            "cellList": [
+                                "Talk",
+                                "鹿目まどか",
+                                "日本語",
+                                {"voice": "cv_test"},
+                            ]
+                        }
+                    ],
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary, "source.json")
+            destination = Path(temporary, "translated.json")
+            source.write_text(
+                json.dumps(document, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            voice.common.apply_translated_texts(
+                source,
+                ["中文"],
+                destination,
+            )
+            translated = json.loads(destination.read_text(encoding="utf-8"))
+
+        before = document["sheetList"][0]["contentRowList"][0]["cellList"]
+        after = translated["sheetList"][0]["contentRowList"][0]["cellList"]
+        self.assertEqual(after[0], before[0])
+        self.assertEqual(after[1], before[1])
+        self.assertEqual(after[2], "中文")
+        self.assertEqual(after[3], before[3])
+        self.assertEqual(translated["bookTitle"], document["bookTitle"])
 
     def test_segmentation_uses_punctuation_and_preserves_all_chinese(self) -> None:
         source = "第一句话，第二句话！最后一句。"

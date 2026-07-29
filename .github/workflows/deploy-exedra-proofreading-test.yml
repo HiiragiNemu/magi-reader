@@ -523,3 +523,80 @@ jobs:
               f"admin_unauthenticated={admin_code}"
           )
           PY
+
+      - name: Smoke-test bounded voice playback assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          site_url="https://${TEST_WORKER_HOSTNAME}"
+          hca_sample="$RUNNER_TEMP/voice-sample.hca"
+          ogg_sample="$RUNNER_TEMP/exedra-local-sample.ogg"
+          wasm_sample="$RUNNER_TEMP/hca-wasm.wasm"
+
+          fetch_exact_asset() {
+            local url="$1"
+            local output="$2"
+            local expected_bytes="$3"
+            local range="${4:-}"
+            local code
+            local size
+            for attempt in $(seq 1 30); do
+              : > "$output"
+              if [ -n "$range" ]; then
+                code="$(
+                  curl -L --silent --show-error --range "$range" \
+                    -o "$output" -w '%{http_code}' "$url" || true
+                )"
+              else
+                code="$(
+                  curl -L --silent --show-error \
+                    -o "$output" -w '%{http_code}' "$url" || true
+                )"
+              fi
+              size="$(wc -c < "$output")"
+              if { [ "$code" = 200 ] || [ "$code" = 206 ]; } && \
+                [ "$size" -eq "$expected_bytes" ]; then
+                return 0
+              fi
+              sleep 2
+            done
+            echo "Deployed voice asset did not become ready: $url" >&2
+            return 1
+          }
+
+          fetch_exact_asset \
+            "$site_url/api/audio/magireco-voice/vo_char_3031_00_01" \
+            "$hca_sample" 256 0-255
+          fetch_exact_asset \
+            "$site_url/audio/exedra-local/cv_namae_call_01.ogg" \
+            "$ogg_sample" 12988
+          fetch_exact_asset \
+            "$site_url/audio/hca_wasm_bg.wasm" \
+            "$wasm_sample" 57096
+
+          python3 - "$hca_sample" "$ogg_sample" "$wasm_sample" <<'PY'
+          import hashlib
+          import sys
+          from pathlib import Path
+
+          hca = Path(sys.argv[1]).read_bytes()
+          ogg = Path(sys.argv[2]).read_bytes()
+          wasm = Path(sys.argv[3]).read_bytes()
+          if len(hca) != 256 or bytes(value & 0x7F for value in hca[:4]) != b'HCA\0':
+              raise SystemExit('Deployed Magia Record voice proxy did not return HCA bytes')
+          if (
+              len(ogg) != 12_988
+              or ogg[:4] != b'OggS'
+              or hashlib.sha256(ogg).hexdigest()
+              != '69bd1c25376765e42995529607f551b413eb7dc7922033179d43cb45ca4b7452'
+          ):
+              raise SystemExit('Deployed Exedra local voice fallback is invalid')
+          if (
+              len(wasm) != 57_096
+              or wasm[:4] != b'\0asm'
+              or hashlib.sha256(wasm).hexdigest()
+              != '9f40419cb9080b7bb33087f66dbdbda90bbd323cfca574121af42ee100967bb5'
+          ):
+              raise SystemExit('Deployed bounded HCA decoder is invalid')
+          print('VOICE_ASSETS_OK hca_range=256 ogg=12988 wasm=57096')
+          PY

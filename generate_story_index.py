@@ -44,6 +44,9 @@ DEFAULT_EXEDRA_JP_DIR = (
 DEFAULT_EXEDRA_CN_DIR = (
     SCRIPT_DIR / "magiraexedra-translate-data-master" / "Scenarios_full"
 )
+DEFAULT_EXEDRA_VOICE_CATALOG = (
+    SCRIPT_DIR / "artifacts" / "exedra_voice_catalog.json"
+)
 DEFAULT_GENERAL_VOICE_SOURCE_DIR = (
     SCRIPT_DIR
     / "magireco-voice-source-master"
@@ -83,6 +86,10 @@ EXEDRA_CATEGORY_MAP_REVERSE = {
 }
 STORY_IDS_FILENAME = "story_ids.generated.json"
 EXEDRA_ROUTE_GROUP_RE = re.compile(r"^[A-Za-z0-9_.-]{1,96}$")
+EXEDRA_VOICE_GROUP_RE = re.compile(r"^cv_\d{6}$")
+EXEDRA_VOICE_COMPONENT_RE = re.compile(r"^[A-Za-z0-9_.-]{1,160}$")
+EXEDRA_VOICE_EXPECTED_GROUPS = 86
+MAX_EXEDRA_VOICE_CATALOG_BYTES = 4 * 1024 * 1024
 STORY_ROUTE_ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,256}$")
 MAX_LEGACY_IDS_PER_STORY = 16
 MAX_LEGACY_ROUTE_ALIASES = 10_000
@@ -1735,6 +1742,184 @@ def _sha256_utf8_text_file(path: Path) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
+def load_exedra_voice_titles(
+    catalog_path: Path = DEFAULT_EXEDRA_VOICE_CATALOG,
+) -> dict[str, str]:
+    """Load the committed reaction-voice names without local extraction data."""
+
+    catalog_path = _absolute_lexical(catalog_path)
+    _assert_no_link_ancestors(catalog_path, label="Exedra 语音目录")
+    if not catalog_path.is_file():
+        raise PipelineError(f"Exedra 语音目录不存在: {catalog_path}")
+    catalog_size = catalog_path.stat().st_size
+    if (
+        catalog_size <= 0
+        or catalog_size > MAX_EXEDRA_VOICE_CATALOG_BYTES
+    ):
+        raise PipelineError(
+            f"Exedra 语音目录大小不安全: {catalog_path}: {catalog_size}"
+        )
+    try:
+        catalog = json.loads(catalog_path.read_text(encoding="utf-8-sig"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise PipelineError(
+            f"Exedra 语音目录无法读取: {catalog_path}: {exc}"
+        ) from exc
+    if not isinstance(catalog, dict) or catalog.get("schemaVersion") != 1:
+        raise PipelineError("Exedra 语音目录 schemaVersion 必须为 1")
+    if (
+        catalog.get("policy")
+        != "exedra_reaction_manifest_and_source_json_exact_audio"
+    ):
+        raise PipelineError("Exedra 语音目录 policy 不受支持")
+
+    raw_groups = catalog.get("groups")
+    summary = catalog.get("summary")
+    if not isinstance(raw_groups, list) or not isinstance(summary, dict):
+        raise PipelineError("Exedra 语音目录缺少 groups/summary")
+    if len(raw_groups) != EXEDRA_VOICE_EXPECTED_GROUPS:
+        raise PipelineError(
+            f"Exedra 语音目录组数不正确: {len(raw_groups)}，"
+            f"期望 {EXEDRA_VOICE_EXPECTED_GROUPS}"
+        )
+
+    titles: dict[str, str] = {}
+    seen_audio_keys: set[str] = set()
+    total_sources = 0
+    total_audio_bytes = 0
+    for group_index, raw_group in enumerate(raw_groups):
+        if not isinstance(raw_group, dict):
+            raise PipelineError(
+                f"Exedra 语音目录 groups[{group_index}] 不是对象"
+            )
+        group_key = raw_group.get("groupKey")
+        if (
+            not isinstance(group_key, str)
+            or EXEDRA_VOICE_GROUP_RE.fullmatch(group_key) is None
+        ):
+            raise PipelineError(
+                f"Exedra 语音目录 groupKey 非法: {group_key!r}"
+            )
+        if group_key in titles:
+            raise PipelineError(
+                f"Exedra 语音目录 groupKey 重复: {group_key}"
+            )
+        if raw_group.get("groupId") != f"exedra:6_Reaction:{group_key}":
+            raise PipelineError(
+                f"Exedra 语音目录 groupId 不稳定: {group_key}"
+            )
+        display_title = raw_group.get("displayTitle")
+        if (
+            not isinstance(display_title, str)
+            or not display_title.strip()
+            or len(display_title) > 240
+            or any(ord(char) < 32 for char in display_title)
+        ):
+            raise PipelineError(
+                f"Exedra 语音目录 displayTitle 非法: {group_key}"
+            )
+        titles[group_key] = display_title
+
+        raw_sources = raw_group.get("sources")
+        source_count = raw_group.get("sourceCount")
+        if (
+            not isinstance(raw_sources, list)
+            or not _is_plain_int(source_count)
+            or source_count <= 0
+            or source_count != len(raw_sources)
+        ):
+            raise PipelineError(
+                f"Exedra 语音目录 sourceCount 不一致: {group_key}"
+            )
+        total_sources += source_count
+        for source_index, raw_source in enumerate(raw_sources):
+            if not isinstance(raw_source, dict):
+                raise PipelineError(
+                    "Exedra 语音目录 source 不是对象: "
+                    f"{group_key} #{source_index}"
+                )
+            source_json = _manifest_relative_path(
+                raw_source.get("sourceJson"),
+                field_name=(
+                    f"voice.groups[{group_index}].sources"
+                    f"[{source_index}].sourceJson"
+                ),
+            )
+            if (
+                len(source_json.parts) != 3
+                or source_json.parts[0] != "6_Reaction"
+                or source_json.parts[1] != group_key
+                or source_json.suffix != ".json"
+            ):
+                raise PipelineError(
+                    f"Exedra 语音目录 sourceJson 非法: {source_json}"
+                )
+
+            sound_file = raw_source.get("soundFile")
+            sound_name = raw_source.get("soundName")
+            if (
+                not isinstance(sound_file, str)
+                or not isinstance(sound_name, str)
+                or EXEDRA_VOICE_COMPONENT_RE.fullmatch(sound_file) is None
+                or EXEDRA_VOICE_COMPONENT_RE.fullmatch(sound_name) is None
+                or sound_file in {".", ".."}
+                or sound_name in {".", ".."}
+            ):
+                raise PipelineError(
+                    f"Exedra 语音目录音频资源键非法: {group_key}"
+                )
+            audio_key = f"{sound_file}:{sound_name}"
+            if raw_source.get("audioKey") != audio_key:
+                raise PipelineError(
+                    f"Exedra 语音目录 audioKey 不一致: {group_key}"
+                )
+            if audio_key in seen_audio_keys:
+                raise PipelineError(
+                    f"Exedra 语音目录 audioKey 重复: {audio_key}"
+                )
+            seen_audio_keys.add(audio_key)
+
+            audio_relative = _manifest_relative_path(
+                raw_source.get("audioRelativePath"),
+                field_name=(
+                    f"voice.groups[{group_index}].sources"
+                    f"[{source_index}].audioRelativePath"
+                ),
+            )
+            if audio_relative != Path(sound_file, f"{sound_name}.ogg"):
+                raise PipelineError(
+                    "Exedra 语音目录 audioRelativePath 不一致: "
+                    f"{group_key}"
+                )
+            expected_wiki_url = (
+                "https://exedra.wiki/wiki/Special:Redirect/file/"
+                f"{sound_name}.ogg"
+            )
+            audio_bytes = raw_source.get("bytes")
+            if (
+                raw_source.get("localExists") is not True
+                or not _is_plain_int(audio_bytes)
+                or audio_bytes <= 0
+                or not _valid_sha256(raw_source.get("sha256"))
+                or not _valid_sha256(raw_source.get("sourceJsonSha256"))
+                or raw_source.get("wikiAudioUrl") != expected_wiki_url
+            ):
+                raise PipelineError(
+                    f"Exedra 语音目录 source 元数据无效: "
+                    f"{group_key} #{source_index}"
+                )
+            total_audio_bytes += audio_bytes
+
+    if (
+        summary.get("groups") != len(titles)
+        or summary.get("sources") != total_sources
+        or summary.get("uniqueAudioKeys") != len(seen_audio_keys)
+        or summary.get("localAudioBytes") != total_audio_bytes
+    ):
+        raise PipelineError("Exedra 语音目录 summary 与正文不一致")
+    return titles
+
+
 def _read_exedra_section_sources(path: Path) -> list[str]:
     sources: list[str] = []
     with path.open("r", encoding="utf-8-sig", newline=None) as handle:
@@ -2672,6 +2857,32 @@ def scan_exedra_sources(
     """Publish one story per organizer group without changing turn alignment."""
 
     groups = load_exedra_manifest(jp_dir, stats=stats)
+    reaction_group_keys = {
+        group.group_key
+        for group in groups
+        if group.category == "exedra_reaction"
+    }
+    uses_committed_exedra_source = (
+        _absolute_lexical(jp_dir)
+        == _absolute_lexical(DEFAULT_EXEDRA_JP_DIR)
+    )
+    voice_titles = (
+        load_exedra_voice_titles()
+        if uses_committed_exedra_source
+        else {
+            group.group_key: group.title
+            for group in groups
+            if group.category == "exedra_reaction"
+        }
+    )
+    if set(voice_titles) != reaction_group_keys:
+        missing = sorted(reaction_group_keys - set(voice_titles))
+        extra = sorted(set(voice_titles) - reaction_group_keys)
+        raise PipelineError(
+            "Exedra 语音目录与 reaction manifest 不完全一致: "
+            f"缺失 {len(missing)}，多余 {len(extra)}"
+        )
+    stats["exedra_voice_catalog_groups"] = len(voice_titles)
     cn_sources = _find_exedra_cn_sources(cn_dir, groups)
     cn_json_sources = _find_exedra_cn_json_sources(
         cn_dir,
@@ -2728,9 +2939,17 @@ def scan_exedra_sources(
             folder=(
                 EXEDRA_CHARACTER_DISPLAY_NAMES[group.group_key]
                 if group.category == "exedra_character"
-                else group.group_key
+                else (
+                    voice_titles[group.group_key]
+                    if group.category == "exedra_reaction"
+                    else group.group_key
+                )
             ),
-            title=group.title,
+            title=(
+                voice_titles[group.group_key]
+                if group.category == "exedra_reaction"
+                else group.title
+            ),
         )
         story.update(
             {

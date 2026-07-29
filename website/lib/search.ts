@@ -41,11 +41,14 @@ export const findNormalizedRanges = (
   value: string,
   query: string,
 ): Array<{ start: number; end: number }> => {
+  if (!query) return [];
+
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return [];
+
   const indexed = indexSearchCharacters(value);
   const normalizedValue = indexed.map(character => character.normalized).join('');
-  const normalizedQuery = normalizeSearchText(query);
-
-  if (!normalizedQuery || !normalizedValue) return [];
+  if (!normalizedValue) return [];
 
   const ranges: Array<{ start: number; end: number }> = [];
   let fromIndex = 0;
@@ -68,6 +71,8 @@ export const splitHighlightSegments = (
   value: string,
   query: string,
 ): HighlightSegment[] => {
+  if (!query) return [{ text: value, highlight: false }];
+
   const ranges = findNormalizedRanges(value, query);
   if (ranges.length === 0) return [{ text: value, highlight: false }];
 

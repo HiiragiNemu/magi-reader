@@ -1,15 +1,21 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-28T17:29:13.841640+00:00",
-  "writeMode": true,
+  "generatedAt": "2026-07-28T20:02:32.812820+00:00",
+  "writeMode": false,
   "policy": {
     "sourcePages": "all_main_namespace_pages_ending_/Voice/zh",
-    "fileNameMatch": "exact",
+    "fileNameMatch": "exact_primary_or_verified_page_unique_japanese_fallback",
     "sourceIdentityAliases": {
       "cv_100803": "cv_100805"
     },
     "sourceIdentityAliasValidation": "manifest_suffix_sheet_row_action_speaker_and_per_event_japanese_exact",
     "japaneseMatch": "NFKC_then_remove_whitespace_exact",
+    "japaneseAnchorFallback": {
+      "minimumExactSourcesForPageIdentity": 2,
+      "requiresUniqueWikiFileAndChineseIdentity": true,
+      "allowsCrossPageMatch": false,
+      "allowsPartialTextMatch": false
+    },
     "groupAtomic": true,
     "overwriteExistingChinese": false,
     "usesFuzzyMatching": false,
@@ -976,6 +982,8 @@
     "existing_wiki": 73,
     "rejected": 13
   },
+  "japaneseAnchorRecoveredGroups": 0,
+  "japaneseAnchorRecoveredSources": 0,
   "results": [
     {
       "groupKey": "cv_100101",
@@ -995,85 +1003,169 @@
           "source": "cv_100106_other_evo_fee_01.json",
           "expectedFileName": "cv_100106_other_evo_fee_01.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_evo_fee_01.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_story_01.json",
           "expectedFileName": "cv_100106_other_story_01.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_story_01.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_evo_fee_02.json",
           "expectedFileName": "cv_100106_other_evo_fee_02.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_evo_fee_02.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_story_02.json",
           "expectedFileName": "cv_100106_other_story_02.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_story_02.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_evo_fee_03.json",
           "expectedFileName": "cv_100106_other_evo_fee_03.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_evo_fee_03.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_story_03.json",
           "expectedFileName": "cv_100106_other_story_03.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_story_03.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_evo_fee_04.json",
           "expectedFileName": "cv_100106_other_evo_fee_04.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_evo_fee_04.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_story_04.json",
           "expectedFileName": "cv_100106_other_story_04.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_story_04.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_evo_fee_05.json",
           "expectedFileName": "cv_100106_other_evo_fee_05.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_evo_fee_05.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_story_05.json",
           "expectedFileName": "cv_100106_other_story_05.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_story_05.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_evo_fee_06.json",
           "expectedFileName": "cv_100106_other_evo_fee_06.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_evo_fee_06.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_story_06.json",
           "expectedFileName": "cv_100106_other_story_06.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_story_06.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_evo_fee_07.json",
           "expectedFileName": "cv_100106_other_evo_fee_07.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_evo_fee_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_evo_fee_07.ogg; exactSources=0"
         },
         {
           "source": "cv_100106_other_story_07.json",
           "expectedFileName": "cv_100106_other_story_07.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100106_other_story_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100106_other_story_07.ogg; exactSources=0"
         }
       ]
     },
@@ -1100,85 +1192,169 @@
           "source": "cv_100301_other_evo_fee_01.json",
           "expectedFileName": "cv_100301_other_evo_fee_01.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_evo_fee_01.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_story_01.json",
           "expectedFileName": "cv_100301_other_story_01.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_story_01.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_evo_fee_02.json",
           "expectedFileName": "cv_100301_other_evo_fee_02.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_evo_fee_02.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_story_02.json",
           "expectedFileName": "cv_100301_other_story_02.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_story_02.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_evo_fee_03.json",
           "expectedFileName": "cv_100301_other_evo_fee_03.ogg",
           "eventCount": 3,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_evo_fee_03.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_story_03.json",
           "expectedFileName": "cv_100301_other_story_03.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_story_03.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_evo_fee_04.json",
           "expectedFileName": "cv_100301_other_evo_fee_04.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_evo_fee_04.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_story_04.json",
           "expectedFileName": "cv_100301_other_story_04.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_story_04.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_evo_fee_05.json",
           "expectedFileName": "cv_100301_other_evo_fee_05.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_evo_fee_05.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_story_05.json",
           "expectedFileName": "cv_100301_other_story_05.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_story_05.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_evo_fee_06.json",
           "expectedFileName": "cv_100301_other_evo_fee_06.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_evo_fee_06.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_story_06.json",
           "expectedFileName": "cv_100301_other_story_06.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_story_06.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_evo_fee_07.json",
           "expectedFileName": "cv_100301_other_evo_fee_07.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_evo_fee_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_evo_fee_07.ogg; exactSources=0"
         },
         {
           "source": "cv_100301_other_story_07.json",
           "expectedFileName": "cv_100301_other_story_07.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100301_other_story_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100301_other_story_07.ogg; exactSources=0"
         }
       ]
     },
@@ -1205,7 +1381,15 @@
           "source": "cv_100401_other_evo_fee_06.json",
           "expectedFileName": "cv_100401_other_evo_fee_06.ogg",
           "eventCount": 4,
-          "reason": "Wiki text_jp 与 JP JSON 拼接正文不同：cv_100401_other_evo_fee_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 1,
+          "groupPageIdentityExactSourceCount": 13,
+          "verifiedWikiPages": [
+            "Baldamente Fortissimo/Voice/zh"
+          ],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki text_jp 与 JP JSON 拼接正文不同：cv_100401_other_evo_fee_06.ogg; 日文锚点回退失败：Wiki 已验证角色页面中没有整段日文精确候选：cv_100401_other_evo_fee_06.ogg; globalCandidates=0; verifiedPages=['Baldamente Fortissimo/Voice/zh']"
         }
       ]
     },
@@ -1222,85 +1406,169 @@
           "source": "cv_100403_other_evo_fee_01.json",
           "expectedFileName": "cv_100403_other_evo_fee_01.ogg",
           "eventCount": 6,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_evo_fee_01.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_story_01.json",
           "expectedFileName": "cv_100403_other_story_01.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_story_01.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_evo_fee_02.json",
           "expectedFileName": "cv_100403_other_evo_fee_02.ogg",
           "eventCount": 6,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_evo_fee_02.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_story_02.json",
           "expectedFileName": "cv_100403_other_story_02.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_story_02.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_evo_fee_03.json",
           "expectedFileName": "cv_100403_other_evo_fee_03.ogg",
           "eventCount": 6,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_evo_fee_03.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_story_03.json",
           "expectedFileName": "cv_100403_other_story_03.ogg",
           "eventCount": 2,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_story_03.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_evo_fee_04.json",
           "expectedFileName": "cv_100403_other_evo_fee_04.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_evo_fee_04.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_story_04.json",
           "expectedFileName": "cv_100403_other_story_04.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_story_04.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_evo_fee_05.json",
           "expectedFileName": "cv_100403_other_evo_fee_05.ogg",
           "eventCount": 7,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_evo_fee_05.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_story_05.json",
           "expectedFileName": "cv_100403_other_story_05.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_story_05.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_evo_fee_06.json",
           "expectedFileName": "cv_100403_other_evo_fee_06.ogg",
           "eventCount": 6,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_evo_fee_06.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_story_06.json",
           "expectedFileName": "cv_100403_other_story_06.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_story_06.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_evo_fee_07.json",
           "expectedFileName": "cv_100403_other_evo_fee_07.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_evo_fee_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_evo_fee_07.ogg; exactSources=0"
         },
         {
           "source": "cv_100403_other_story_07.json",
           "expectedFileName": "cv_100403_other_story_07.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_100403_other_story_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_100403_other_story_07.ogg; exactSources=0"
         }
       ]
     },
@@ -1567,85 +1835,169 @@
           "source": "cv_111501_other_evo_fee_01.json",
           "expectedFileName": "cv_111501_other_evo_fee_01.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_evo_fee_01.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_story_01.json",
           "expectedFileName": "cv_111501_other_story_01.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_story_01.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_evo_fee_02.json",
           "expectedFileName": "cv_111501_other_evo_fee_02.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_evo_fee_02.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_story_02.json",
           "expectedFileName": "cv_111501_other_story_02.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_story_02.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_evo_fee_03.json",
           "expectedFileName": "cv_111501_other_evo_fee_03.ogg",
           "eventCount": 6,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_evo_fee_03.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_story_03.json",
           "expectedFileName": "cv_111501_other_story_03.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_story_03.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_evo_fee_04.json",
           "expectedFileName": "cv_111501_other_evo_fee_04.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_evo_fee_04.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_story_04.json",
           "expectedFileName": "cv_111501_other_story_04.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_story_04.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_evo_fee_05.json",
           "expectedFileName": "cv_111501_other_evo_fee_05.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_evo_fee_05.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_story_05.json",
           "expectedFileName": "cv_111501_other_story_05.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_story_05.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_evo_fee_06.json",
           "expectedFileName": "cv_111501_other_evo_fee_06.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_evo_fee_06.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_story_06.json",
           "expectedFileName": "cv_111501_other_story_06.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_story_06.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_evo_fee_07.json",
           "expectedFileName": "cv_111501_other_evo_fee_07.ogg",
           "eventCount": 6,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_evo_fee_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_evo_fee_07.ogg; exactSources=0"
         },
         {
           "source": "cv_111501_other_story_07.json",
           "expectedFileName": "cv_111501_other_story_07.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111501_other_story_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111501_other_story_07.ogg; exactSources=0"
         }
       ]
     },
@@ -1657,85 +2009,169 @@
           "source": "cv_111601_other_evo_fee_01.json",
           "expectedFileName": "cv_111601_other_evo_fee_01.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_evo_fee_01.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_story_01.json",
           "expectedFileName": "cv_111601_other_story_01.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_story_01.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_evo_fee_02.json",
           "expectedFileName": "cv_111601_other_evo_fee_02.ogg",
           "eventCount": 6,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_evo_fee_02.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_story_02.json",
           "expectedFileName": "cv_111601_other_story_02.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_story_02.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_evo_fee_03.json",
           "expectedFileName": "cv_111601_other_evo_fee_03.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_evo_fee_03.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_story_03.json",
           "expectedFileName": "cv_111601_other_story_03.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_story_03.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_evo_fee_04.json",
           "expectedFileName": "cv_111601_other_evo_fee_04.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_evo_fee_04.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_story_04.json",
           "expectedFileName": "cv_111601_other_story_04.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_story_04.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_evo_fee_05.json",
           "expectedFileName": "cv_111601_other_evo_fee_05.ogg",
           "eventCount": 6,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_evo_fee_05.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_story_05.json",
           "expectedFileName": "cv_111601_other_story_05.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_story_05.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_evo_fee_06.json",
           "expectedFileName": "cv_111601_other_evo_fee_06.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_evo_fee_06.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_story_06.json",
           "expectedFileName": "cv_111601_other_story_06.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_story_06.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_evo_fee_07.json",
           "expectedFileName": "cv_111601_other_evo_fee_07.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_evo_fee_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_evo_fee_07.ogg; exactSources=0"
         },
         {
           "source": "cv_111601_other_story_07.json",
           "expectedFileName": "cv_111601_other_story_07.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111601_other_story_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111601_other_story_07.ogg; exactSources=0"
         }
       ]
     },
@@ -1747,85 +2183,169 @@
           "source": "cv_111701_other_evo_fee_01.json",
           "expectedFileName": "cv_111701_other_evo_fee_01.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_evo_fee_01.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_story_01.json",
           "expectedFileName": "cv_111701_other_story_01.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_story_01.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_evo_fee_02.json",
           "expectedFileName": "cv_111701_other_evo_fee_02.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_evo_fee_02.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_story_02.json",
           "expectedFileName": "cv_111701_other_story_02.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_story_02.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_evo_fee_03.json",
           "expectedFileName": "cv_111701_other_evo_fee_03.ogg",
           "eventCount": 6,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_evo_fee_03.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_story_03.json",
           "expectedFileName": "cv_111701_other_story_03.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_story_03.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_evo_fee_04.json",
           "expectedFileName": "cv_111701_other_evo_fee_04.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_evo_fee_04.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_story_04.json",
           "expectedFileName": "cv_111701_other_story_04.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_story_04.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_evo_fee_05.json",
           "expectedFileName": "cv_111701_other_evo_fee_05.ogg",
           "eventCount": 6,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_evo_fee_05.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_story_05.json",
           "expectedFileName": "cv_111701_other_story_05.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_story_05.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_evo_fee_06.json",
           "expectedFileName": "cv_111701_other_evo_fee_06.ogg",
           "eventCount": 6,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_evo_fee_06.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_story_06.json",
           "expectedFileName": "cv_111701_other_story_06.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_story_06.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_evo_fee_07.json",
           "expectedFileName": "cv_111701_other_evo_fee_07.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_evo_fee_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_evo_fee_07.ogg; exactSources=0"
         },
         {
           "source": "cv_111701_other_story_07.json",
           "expectedFileName": "cv_111701_other_story_07.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_111701_other_story_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_111701_other_story_07.ogg; exactSources=0"
         }
       ]
     },
@@ -1857,85 +2377,169 @@
           "source": "cv_113301_other_evo_fee_01.json",
           "expectedFileName": "cv_113301_other_evo_fee_01.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_evo_fee_01.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_story_01.json",
           "expectedFileName": "cv_113301_other_story_01.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_story_01.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_evo_fee_02.json",
           "expectedFileName": "cv_113301_other_evo_fee_02.ogg",
           "eventCount": 6,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_evo_fee_02.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_story_02.json",
           "expectedFileName": "cv_113301_other_story_02.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_story_02.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_evo_fee_03.json",
           "expectedFileName": "cv_113301_other_evo_fee_03.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_evo_fee_03.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_story_03.json",
           "expectedFileName": "cv_113301_other_story_03.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_story_03.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_evo_fee_04.json",
           "expectedFileName": "cv_113301_other_evo_fee_04.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_evo_fee_04.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_story_04.json",
           "expectedFileName": "cv_113301_other_story_04.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_story_04.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_evo_fee_05.json",
           "expectedFileName": "cv_113301_other_evo_fee_05.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_evo_fee_05.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_story_05.json",
           "expectedFileName": "cv_113301_other_story_05.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_story_05.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_evo_fee_06.json",
           "expectedFileName": "cv_113301_other_evo_fee_06.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_evo_fee_06.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_story_06.json",
           "expectedFileName": "cv_113301_other_story_06.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_story_06.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_evo_fee_07.json",
           "expectedFileName": "cv_113301_other_evo_fee_07.ogg",
           "eventCount": 5,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_evo_fee_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_evo_fee_07.ogg; exactSources=0"
         },
         {
           "source": "cv_113301_other_story_07.json",
           "expectedFileName": "cv_113301_other_story_07.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113301_other_story_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113301_other_story_07.ogg; exactSources=0"
         }
       ]
     },
@@ -1947,31 +2551,61 @@
           "source": "cv_113401_1.json",
           "expectedFileName": "cv_113401_1.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113401_1.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113401_1.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113401_1.ogg; exactSources=0"
         },
         {
           "source": "cv_113401_2.json",
           "expectedFileName": "cv_113401_2.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113401_2.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113401_2.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113401_2.ogg; exactSources=0"
         },
         {
           "source": "cv_113401_3.json",
           "expectedFileName": "cv_113401_3.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113401_3.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113401_3.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113401_3.ogg; exactSources=0"
         },
         {
           "source": "cv_113401_4.json",
           "expectedFileName": "cv_113401_4.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113401_4.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113401_4.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113401_4.ogg; exactSources=0"
         },
         {
           "source": "cv_113401_5.json",
           "expectedFileName": "cv_113401_5.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113401_5.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113401_5.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113401_5.ogg; exactSources=0"
         }
       ]
     },
@@ -1983,31 +2617,61 @@
           "source": "cv_113501_1.json",
           "expectedFileName": "cv_113501_1.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113501_1.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113501_1.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113501_1.ogg; exactSources=0"
         },
         {
           "source": "cv_113501_2.json",
           "expectedFileName": "cv_113501_2.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113501_2.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113501_2.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113501_2.ogg; exactSources=0"
         },
         {
           "source": "cv_113501_3.json",
           "expectedFileName": "cv_113501_3.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113501_3.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113501_3.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113501_3.ogg; exactSources=0"
         },
         {
           "source": "cv_113501_4.json",
           "expectedFileName": "cv_113501_4.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113501_4.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113501_4.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113501_4.ogg; exactSources=0"
         },
         {
           "source": "cv_113501_5.json",
           "expectedFileName": "cv_113501_5.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113501_5.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113501_5.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113501_5.ogg; exactSources=0"
         }
       ]
     },
@@ -2019,31 +2683,61 @@
           "source": "cv_113601_1.json",
           "expectedFileName": "cv_113601_1.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113601_1.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113601_1.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113601_1.ogg; exactSources=0"
         },
         {
           "source": "cv_113601_2.json",
           "expectedFileName": "cv_113601_2.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113601_2.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113601_2.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113601_2.ogg; exactSources=0"
         },
         {
           "source": "cv_113601_3.json",
           "expectedFileName": "cv_113601_3.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113601_3.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113601_3.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113601_3.ogg; exactSources=0"
         },
         {
           "source": "cv_113601_4.json",
           "expectedFileName": "cv_113601_4.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113601_4.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113601_4.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113601_4.ogg; exactSources=0"
         },
         {
           "source": "cv_113601_5.json",
           "expectedFileName": "cv_113601_5.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113601_5.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113601_5.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113601_5.ogg; exactSources=0"
         }
       ]
     },
@@ -2060,85 +2754,169 @@
           "source": "cv_113801_other_evo_fee_01.json",
           "expectedFileName": "cv_113801_other_evo_fee_01.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_evo_fee_01.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_story_01.json",
           "expectedFileName": "cv_113801_other_story_01.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_01.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_01.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_story_01.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_evo_fee_02.json",
           "expectedFileName": "cv_113801_other_evo_fee_02.ogg",
           "eventCount": 2,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_evo_fee_02.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_story_02.json",
           "expectedFileName": "cv_113801_other_story_02.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_02.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_02.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_story_02.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_evo_fee_03.json",
           "expectedFileName": "cv_113801_other_evo_fee_03.ogg",
           "eventCount": 2,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_evo_fee_03.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_story_03.json",
           "expectedFileName": "cv_113801_other_story_03.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_03.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_03.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_story_03.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_evo_fee_04.json",
           "expectedFileName": "cv_113801_other_evo_fee_04.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_evo_fee_04.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_story_04.json",
           "expectedFileName": "cv_113801_other_story_04.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_04.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_04.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_story_04.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_evo_fee_05.json",
           "expectedFileName": "cv_113801_other_evo_fee_05.ogg",
           "eventCount": 3,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_evo_fee_05.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_story_05.json",
           "expectedFileName": "cv_113801_other_story_05.ogg",
           "eventCount": 2,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_05.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_05.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_story_05.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_evo_fee_06.json",
           "expectedFileName": "cv_113801_other_evo_fee_06.ogg",
           "eventCount": 3,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_evo_fee_06.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_story_06.json",
           "expectedFileName": "cv_113801_other_story_06.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_06.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_06.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_story_06.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_evo_fee_07.json",
           "expectedFileName": "cv_113801_other_evo_fee_07.ogg",
           "eventCount": 4,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_evo_fee_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_evo_fee_07.ogg; exactSources=0"
         },
         {
           "source": "cv_113801_other_story_07.json",
           "expectedFileName": "cv_113801_other_story_07.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_07.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_113801_other_story_07.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_113801_other_story_07.ogg; exactSources=0"
         }
       ]
     },
@@ -2170,25 +2948,49 @@
           "source": "cv_114801_1.json",
           "expectedFileName": "cv_114801_1.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_114801_1.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_114801_1.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_114801_1.ogg; exactSources=0"
         },
         {
           "source": "cv_114801_2.json",
           "expectedFileName": "cv_114801_2.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_114801_2.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_114801_2.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_114801_2.ogg; exactSources=0"
         },
         {
           "source": "cv_114801_3.json",
           "expectedFileName": "cv_114801_3.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_114801_3.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_114801_3.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_114801_3.ogg; exactSources=0"
         },
         {
           "source": "cv_114801_4.json",
           "expectedFileName": "cv_114801_4.ogg",
           "eventCount": 1,
-          "reason": "Wiki 缺少精确 file_name：cv_114801_4.ogg"
+          "failureStage": "source_selection",
+          "exactFileNameRowCount": 0,
+          "groupPageIdentityExactSourceCount": 0,
+          "verifiedWikiPages": [],
+          "globalExactJapaneseCandidateCount": 0,
+          "verifiedPageExactJapaneseCandidateCount": 0,
+          "reason": "Wiki 缺少精确 file_name：cv_114801_4.ogg; 日文锚点回退失败：Wiki 日文锚点回退缺少角色页面身份证明：cv_114801_4.ogg; exactSources=0"
         }
       ]
     },

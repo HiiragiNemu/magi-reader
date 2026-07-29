@@ -133,6 +133,19 @@ test('reader resolves safe query paths without waiting for the full story index'
   );
 });
 
+test('optional runtime Chinese failures do not block Japanese-only stories', async () => {
+  const { isOptionalStorySourceUnavailable } = await import(
+    '../lib/story-index.ts'
+  );
+
+  for (const status of [404, 502, 503]) {
+    assert.equal(isOptionalStorySourceUnavailable(status), true);
+  }
+  for (const status of [200, 400, 401, 403, 500]) {
+    assert.equal(isOptionalStorySourceUnavailable(status), false);
+  }
+});
+
 test('reader derives deterministic Exedra paths for direct route visits', async () => {
   const {
     resolveDirectStorySources,

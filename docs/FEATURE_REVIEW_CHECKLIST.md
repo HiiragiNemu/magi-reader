@@ -1,4 +1,4 @@
-# `feature/exedra-cn-and-magireco-voice` 最终审查清单
+# `feature/exedra-voice-playback-human-localization` 最终审查清单
 
 目标：仅合并到 `EXEDRA-TEST` 并部署独立测试 Worker。禁止写入 `main` 或生产 Worker。
 
@@ -22,12 +22,12 @@
 
 ## Exedra 角色剧情
 
-- [x] 61 个角色组中 51 个有中文。
+- [x] 61 个角色组中 53 个有中文。
 - [x] 5 个旧本地中文组未改动。
-- [x] 6 个纯 Wiki、15 个纯 0728、25 个混合组。
+- [x] 6 个纯 Wiki、17 个纯 0728、25 个混合组。
 - [x] Wiki 187 JSON / 9,048 事件。
-- [x] 0728 181 JSON / 9,004 事件。
-- [x] 10 个无法安全匹配组保持拒绝。
+- [x] 0728 197 JSON / 9,762 事件。
+- [x] 8 个无法安全匹配组保持拒绝。
 - [x] 不使用 LCS、模糊匹配或重排。
 
 ## Exedra Wiki 语音
@@ -47,9 +47,10 @@
 - [x] 中文 JSON 验证通过后才生成规范 TXT。
 - [x] 失败组事务回滚，不留半成品。
 - [x] `generate_story_index.py` 复核 manifest、报告、哈希、事件和说话人顺序。
-- [x] Exedra 124 / 443 中文，119 个新 JSON-backed 组，319 个仍缺。
-- [x] 发布 1,390 个 Exedra 中文 JSON 和 20,990 条事件。
-- [x] `story_index.json` 为 119 个 Exedra 组发布 `json_paths_cn`。
+- [x] Exedra 142 / 443 中文，137 个新 JSON-backed 组，301 个仍缺。
+- [x] 新增活动 6、肖像 10、角色 2 组，共 94 个 JSON、5,820 条事件。
+- [x] 发布 1,484 个 Exedra 中文 JSON 和 26,810 条事件。
+- [x] `story_index.json` 为 137 个 Exedra 组发布 `json_paths_cn`。
 
 ## 魔法纪录 general voice
 
@@ -61,6 +62,8 @@
 - [x] 315 个多 `textHome` 组按事件逐行生成。
 - [x] 源/中文 manifest 字节一致且哈希已更新。
 - [x] 410 个 TXT 和 410 个 JSON进入 public 与 story index。
+- [x] Exedra 86 个语音组和 1,167 个来源均具有精确可播放音频映射。
+- [x] Exedra 本地 OGG、Wiki 固定文件重定向、魔法纪录 HCA 代理与有界 Worker 解码均通过真实播放。
 
 ## 人工校验双产物
 
@@ -80,19 +83,20 @@
 - [x] Exedra 页面没有机器翻译统计或橙色机翻标记。
 - [x] 左右/上下中日排列选项共用持久化设置。
 - [x] 布局代码同时作用于阅读和编辑行。
-- [x] 本地浏览器已看到分类、51 / 61 角色覆盖、布局设置和环彩羽中文。
-- [ ] 最终手动点击“上下排列”，并在“协助汉化”模式确认编辑布局。
+- [x] 本地浏览器已看到分类、53 / 61 角色覆盖、布局设置和新增活动中文。
+- [x] 最终手动点击“上下排列”，并在“协助汉化”模式确认编辑布局。
+- [x] 1,642 行剧情仅挂载 200 行并成功切换下一页，浏览器无错误或意外警告。
 
 ## 数据与本地验证
 
 - [x] 生成 3,012 条 story index。
-- [x] Exedra 443 / 中文 124 / general voice 410。
-- [x] 公开 JSON 总数 1,800。
+- [x] Exedra 443 / 中文 142 / general voice 410。
+- [x] 公开 JSON 总数 1,894。
 - [x] 魔法纪录机翻清单为 507，可信人工覆盖/删除为 0。
-- [x] Python 测试 143 通过、2 跳过。
+- [x] Python 测试 167 通过、2 跳过。
 - [x] `npm ci` 完成。
-- [x] 最终 `npm run check`：feature policy 97 项、Python 143 通过/2 跳过、ESLint、TypeScript、83 / 83 Node、生产依赖审计通过。
-- [x] 搜索生成/验证：5,242 条。
+- [x] 最终 `npm run check`：feature policy 97 项、Python 167 通过/2 跳过、ESLint、TypeScript、120 / 120 Node、生产依赖审计通过。
+- [x] 搜索生成/验证：5,260 条、79,334,357 字节、76 块。
 - [x] 在最后一次静态 Exedra 路由修复后重跑 OpenNext Worker 构建和 Cloudflare 输出验证。
 - [x] 本地浏览器验证左右/上下排列、普通阅读、汉化编辑、Exedra 静态中文和 general voice。
 - [x] `npm run deploy:test:direct -- --dry-run` 通过：9,029 个静态资源、测试 Worker/KV/域名/目标分支绑定正确。
@@ -100,7 +104,7 @@
 ## Git、部署与线上
 
 - [x] 审计最终 Git 差异和秘密/临时文件：无凭据、超大文件、既有人工译文修改/删除或 `main` 变动。
-- [ ] 提交并推送 `feature/exedra-cn-and-magireco-voice`。
+- [ ] 提交并推送 `feature/exedra-voice-playback-human-localization`。
 - [ ] 建立目标为 `EXEDRA-TEST` 的 PR。
 - [ ] 等待全部 CI 通过。
 - [ ] squash merge 到 `EXEDRA-TEST`。
@@ -114,7 +118,7 @@
 ## 已知非阻断/需单独披露项
 
 - [x] 全文搜索 payload 已本地生成和验证。
-- [ ] 当前 Cloudflare Token 没有 R2 权限，79,001,794 字节对象尚未上传。
+- [ ] 当前测试部署流程不上传 79,334,357 字节的新 R2 搜索对象；正文全文搜索需单独上传。
 - [ ] 真实 Turnstile 和共享管理员密钥尚未确认；测试站可能继续使用 Turnstile 测试模式。
 
 Git、最终 dry-run 和线上项目未全部勾选前，不得表述为“已部署完成”。

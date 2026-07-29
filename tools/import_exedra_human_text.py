@@ -41,6 +41,7 @@ JP_ROOT = ROOT / "magiraexedra-source-master/Scenarios_full"
 CN_ROOT = ROOT / "magiraexedra-translate-data-master/Scenarios_full"
 MANIFEST = JP_ROOT / "exedra_manifest.json"
 AUDIT_PATH = ROOT / "artifacts/exedra_human_text_import_report.json"
+COVERAGE_PATH = ROOT / "artifacts/exedra_human_text_coverage_report.json"
 INVENTORY_PATH = (
     ROOT / "artifacts/source-archives/rounddora-text-0728.files.json"
 )
@@ -56,9 +57,9 @@ CHARACTER_WIKI_SLUGS: dict[str, tuple[str, ...]] = {
     "character_asuka": ("Asuka_Tatsuki",),
     "character_ayame": ("Ayame_Mikuri",),
     "character_corbeau": ("Corbeau",),
-    "character_darc": ("Tart", "Darc"),
+    "character_darc": ("Darc", "Tart"),
     "character_felicia": ("Felicia_Mitsuki",),
-    "character_fuka": ("Fuka_Higurashi",),
+    "character_fuka": ("Fuka_Higure", "Fuka_Higurashi"),
     "character_hanna": ("Hanna_Sarasa",),
     "character_hazuki": ("Hazuki_Yusa",),
     "character_himika": ("Himika_Mao",),
@@ -72,18 +73,21 @@ CHARACTER_WIKI_SLUGS: dict[str, tuple[str, ...]] = {
     "character_koito": ("Koito_Asako",),
     "character_kokoro": ("Kokoro_Awane",),
     "character_konoha": ("Konoha_Shizumi",),
-    "character_kush": ("Kush_Irnam", "Kush"),
+    "character_kush": ("Kush_Irina", "Kush_Irnam", "Kush"),
     "character_kyoko": ("Kyoko_Sakura",),
     "character_liz": ("Liz_Hawkwood", "Riz_Hawkwood"),
     "character_mabayu": ("Mabayu_Aki",),
     "character_madoka": ("Madoka_Kaname",),
     "character_mami": ("Mami_Tomoe",),
-    "character_mannenzakura": ("Rumor_of_the_Ten-Thousand-Year_Sakura",),
+    "character_mannenzakura": (
+        "Eternal_Sakura",
+        "Rumor_of_the_Ten-Thousand-Year_Sakura",
+    ),
     "character_masara": ("Masara_Kagami",),
     "character_mayoi": ("Mayoi_Hachikuji",),
     "character_meiyui": ("Meiyui_Chun",),
     "character_melissa": ("Melissa_de_Vignolles", "Melissa"),
-    "character_meru": ("Meru_Anna",),
+    "character_meru": ("Mel_Anna", "Meru_Anna"),
     "character_mifuyu": ("Mifuyu_Azusa",),
     "character_mitama": ("Mitama_Yakumo",),
     "character_mito": ("Mito_Aino",),
@@ -178,6 +182,59 @@ ASS_CHARACTER_BASES: dict[str, str] = {
     "character_yuma": "ChitoseYuma",
 }
 
+# These bindings are intentionally explicit.  A filename is not accepted merely
+# because its row count happens to match a group: every entry below names the
+# human subtitle project for that exact story.  Runtime validation still requires
+# an exact Japanese Wiki/JSON content proof and an exact event count.
+ASS_STORY_FILES: dict[str, tuple[str, ...]] = {
+    "sub_1stanniv": (
+        "Anniversary1-1.ass",
+        "Anniversary1-2.ass",
+        "Anniversary1-3.ass",
+        "Anniversary1-4.ass",
+    ),
+    "sub_amaneshimai": ("Amaneshimai_event.ass",),
+    "sub_annameru": ("AnnaMeru_Event.ass",),
+    "sub_april2026": ("AprilFool2026.ass",),
+    "sub_asakokoito": ("Koito_Event.ass",),
+    "sub_birthday2025_iroha": ("IrohaBirthday2025.ass",),
+    "sub_chelatebigferris": ("MitamaDetective3.ass",),
+    "sub_embryoeve3": ("MitamaDetective5.ass",),
+    "sub_mannenzakura": ("Sakurako_Event.ass",),
+    "sub_nanashi": (
+        "【Magia Exedra_CC中字】活动剧情-调整师小姐的事件簿2 漂泊的叙述者_游戏热门视频.ass",
+    ),
+    "sub_valentine2026": ("Valentine2026.ass",),
+    "sub_yakumomitama": ("Mitama_Event.ass",),
+    "portrait_annameru": ("AnnaMeru_BonusStory.ass",),
+    "portrait_asakokoito": ("Koito_Bonus.ass",),
+    "portrait_halloween2025_arina": ("Halloween2025-2_Bonus.ass",),
+    "portrait_halloween2025_mami": ("Halloween2025-1_Bonus.ass",),
+    "portrait_magirekozero1": ("crememo1-bonus.ass",),
+    "portrait_magirekozero2": ("CreMemo2_Bonus.ass",),
+    "portrait_magirekozero3": ("CreMemo3_Bonus.ass",),
+    "portrait_mannenzakura": ("Sakurako_Bonus Story.ass",),
+    "portrait_Newyear2026_madoka": ("Newyear2026.ass",),
+    "portrait_snowdome_ren": ("Xmas2025-2.ass",),
+    "portrait_snowdome_rika": ("Xmas2025-1.ass",),
+    "portrait_tart1": ("TartMain1_Bonus.ass",),
+    "portrait_tart2": ("TartMain3_Bonus.ass",),
+    "portrait_tsukasa": ("Amaneshimai_bonus2.ass",),
+    "portrait_tsukuyo": ("Amaneshimai_bonus1.ass",),
+    "portrait_yakumomitama": ("Mitama_BonusStory.ass",),
+}
+
+MAIN_ASS_FAMILY_PATTERNS: dict[str, str] = {
+    "Opening": r"^Opening\d+\.ass$",
+    "Tutorial": r"^Tutorial\d+\.ass$",
+    "Main0": r"^Main0-\d+\.ass$",
+    "Main1": r"^main1-\d+\.ass$",
+    "MagirecoCapture": r"^Magireco(?:-\d+#.+|\d+)\.ass$",
+    "ChineseMagirecoCapture": r"^魔纪\d+\.ass$",
+    "CrescentMemoriaMain": r"^(?:CreMemo|CreMemo3|CrescentMemoria1)\.ass$",
+    "TartMain": r"^TartMain\d+\.ass$",
+}
+
 
 @dataclass(frozen=True)
 class HumanEpisode:
@@ -204,6 +261,20 @@ class AlignmentChunk:
     wiki_count: int
     target_start: int
     target_count: int
+
+
+@dataclass(frozen=True)
+class WikiPage:
+    title: str
+    episodes: dict[int, ParsedWikiEpisode]
+    source_url: str
+    source_sha256: str
+
+
+@dataclass(frozen=True)
+class WikiGroupMatch:
+    episode_numbers: tuple[int, ...]
+    chunks: tuple[AlignmentChunk, ...]
 
 
 def digest_bytes(value: bytes) -> str:
@@ -244,7 +315,7 @@ def parse_wiki_entries(raw: str) -> dict[int, ParsedWikiEpisode]:
         pending_narration = []
 
     dialogue_re = re.compile(
-        r"^\s*(?:\{\{Audio\|[^}]+\}\}\s*)?"
+        r"^\s*(?:\{\{Audio\|[^}]+\}\}\s*)*"
         r"\{\{Color Dialogue\|[^}]+\}\}"
         r"(?:\s*[＆&]\s*\{\{Color Dialogue\|[^}]+\}\})*"
         r"\s*[:：]\s*(.*)$",
@@ -296,8 +367,14 @@ def parse_wiki_entries(raw: str) -> dict[int, ParsedWikiEpisode]:
                 anchors[current].append(current_anchor())
             continue
         stripped = raw_line.strip()
-        if stripped.startswith("'''") and stripped.endswith("'''"):
-            pending_narration.append(clean_wiki_text(stripped))
+        narration_text = re.sub(
+            r"^(?:\{\{Audio\|[^}]+\}\}\s*)*",
+            "",
+            stripped,
+            flags=re.I,
+        )
+        if narration_text.startswith("'''") and narration_text.endswith("'''"):
+            pending_narration.append(clean_wiki_text(narration_text))
             continue
         if not stripped:
             flush_narration()
@@ -322,11 +399,13 @@ def parse_wiki_wikitext(raw: str) -> dict[int, tuple[str, ...]]:
     }
 
 
-def _fetch_wiki_page(
-    slug: str,
-    language: str,
-) -> tuple[dict[int, ParsedWikiEpisode], str, str]:
-    title = f":{slug}/Story/{language}"
+def _fetch_wiki_title(title: str) -> WikiPage:
+    if (
+        not title
+        or "\x00" in title
+        or not title.endswith(("/Chinese", "/Japanese"))
+    ):
+        raise RuntimeError(f"Wiki 剧情页标题非法：{title!r}")
     query = urllib.parse.urlencode(
         {
             "action": "parse",
@@ -343,8 +422,19 @@ def _fetch_wiki_page(
         url,
         headers={"Accept": "application/json", "User-Agent": USER_AGENT},
     )
-    with urllib.request.urlopen(request, timeout=30) as response:
-        payload = response.read(8 * 1024 * 1024 + 1)
+    payload: bytes | None = None
+    last_network_error: BaseException | None = None
+    for _attempt in range(2):
+        try:
+            with urllib.request.urlopen(request, timeout=45) as response:
+                payload = response.read(8 * 1024 * 1024 + 1)
+            break
+        except (OSError, TimeoutError, urllib.error.URLError) as exc:
+            last_network_error = exc
+    if payload is None:
+        if last_network_error is not None:
+            raise last_network_error
+        raise RuntimeError("Wiki 请求未返回响应")
     if len(payload) > 8 * 1024 * 1024:
         raise RuntimeError("Wiki 响应超过 8 MiB")
     data = json.loads(payload.decode("utf-8"))
@@ -357,15 +447,30 @@ def _fetch_wiki_page(
             else "invalid"
         )
         raise RuntimeError(code)
+    canonical_title = parsed.get("title")
+    if not isinstance(canonical_title, str) or not canonical_title:
+        raise RuntimeError("Wiki 响应缺少规范页面标题")
     source_url = (
         "https://exedra.wiki/wiki/"
-        + urllib.parse.quote(title.replace(" ", "_"), safe="/:_-")
+        + urllib.parse.quote(
+            canonical_title.replace(" ", "_"),
+            safe="/:_-",
+        )
     )
-    return (
-        parse_wiki_entries(wikitext),
-        source_url,
-        digest_bytes(wikitext.encode("utf-8")),
+    return WikiPage(
+        title=canonical_title,
+        episodes=parse_wiki_entries(wikitext),
+        source_url=source_url,
+        source_sha256=digest_bytes(wikitext.encode("utf-8")),
     )
+
+
+def _fetch_wiki_page(
+    slug: str,
+    language: str,
+) -> tuple[dict[int, ParsedWikiEpisode], str, str]:
+    page = _fetch_wiki_title(f":{slug}/Story/{language}")
+    return page.episodes, page.source_url, page.source_sha256
 
 
 def fetch_wiki_group(
@@ -465,6 +570,8 @@ def ass_episode_path(
     group_key: str,
     episode: int,
 ) -> Path | None:
+    if group_key not in ASS_CHARACTER_BASES:
+        return None
     if group_key == "character_tsuruno":
         base = "UiTsuruno" if episode in {0, 1, 2, 3, 4, 7} else "YuiTsuruno"
     else:
@@ -493,6 +600,46 @@ def parse_ass(path: Path) -> tuple[str, ...]:
     if not texts:
         raise RuntimeError(f"ASS 不含 Dialogue：{path}")
     return tuple(texts)
+
+
+def parse_ass_source_metadata(path: Path) -> dict[str, str]:
+    metadata: dict[str, str] = {}
+    for raw in path.read_text(encoding="utf-8-sig").splitlines():
+        line = raw.strip()
+        if line.startswith("[Events]"):
+            break
+        for field in (
+            "Title",
+            "Original Script",
+            "OriginalScript",
+            "Original Translation",
+            "OriginalTranslation",
+            "Audio File",
+            "Video File",
+        ):
+            prefix = f"{field}:"
+            if line.casefold().startswith(prefix.casefold()):
+                value = line[len(prefix) :].strip()
+                if value:
+                    metadata[field] = value
+                break
+    return metadata
+
+
+def trusted_ass_source_record(path: Path) -> dict[str, Any]:
+    metadata = parse_ass_source_metadata(path)
+    media_identity = metadata.get("Video File") or metadata.get("Audio File")
+    if not media_identity:
+        raise RuntimeError(
+            "0728 ASS 缺少 Video File/Audio File 身份元数据，"
+            f"拒绝只凭文件名和行数导入：{path.name}"
+        )
+    return {
+        "name": path.name,
+        "sha256": digest_file(path),
+        "metadata": metadata,
+        "mediaIdentity": media_identity,
+    }
 
 
 def inventory_ass(ass_root: Path) -> tuple[dict[str, Path], dict[str, Any]]:
@@ -533,6 +680,90 @@ def inventory_ass(ass_root: Path) -> tuple[dict[str, Path], dict[str, Any]]:
         "fileCount": len(files),
         "totalBytes": sum(item["bytes"] for item in records),
         "files": records,
+    }
+
+
+def audit_main_ass_candidates(
+    ass_files: dict[str, Path],
+    groups: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Record suspicious Main-like ASS families without treating counts as identity."""
+
+    main_counts = {
+        str(group["groupKey"]): sum(
+            len(section) for section in _group_json_texts(group)
+        )
+        for group in groups
+        if group.get("category") == "1_Main"
+    }
+    families: list[dict[str, Any]] = []
+    candidate_file_count = 0
+    for family, raw_pattern in MAIN_ASS_FAMILY_PATTERNS.items():
+        pattern = re.compile(raw_pattern, re.I)
+        filenames = sorted(name for name in ass_files if pattern.match(name))
+        sources: list[dict[str, Any]] = []
+        for filename in filenames:
+            path = ass_files[filename]
+            parse_error = ""
+            try:
+                event_count: int | None = len(parse_ass(path))
+            except RuntimeError as exc:
+                event_count = None
+                parse_error = str(exc)
+            metadata = parse_ass_source_metadata(path)
+            sources.append(
+                {
+                    "name": filename,
+                    "sha256": digest_file(path),
+                    "eventCount": event_count,
+                    "metadata": metadata,
+                    "mediaIdentity": (
+                        metadata.get("Video File")
+                        or metadata.get("Audio File")
+                        or None
+                    ),
+                    "individualCountOnlyMatches": sorted(
+                        key
+                        for key, count in main_counts.items()
+                        if event_count is not None and count == event_count
+                    ),
+                    "parseError": parse_error or None,
+                }
+            )
+        if all(item["eventCount"] is not None for item in sources):
+            total_events: int | None = sum(
+                int(item["eventCount"]) for item in sources
+            )
+            family_count_matches = sorted(
+                key for key, count in main_counts.items() if count == total_events
+            )
+        else:
+            total_events = None
+            family_count_matches = []
+        candidate_file_count += len(sources)
+        families.append(
+            {
+                "family": family,
+                "fileCount": len(sources),
+                "eventCount": total_events,
+                "familyCountOnlyMatches": family_count_matches,
+                "status": "rejected_no_unique_explicit_main_mapping",
+                "reason": (
+                    "事件数只能作为否决条件，不能证明字幕对应剧情；"
+                    "该 ASS 家族没有唯一的日文正文锚点和显式主线组映射。"
+                ),
+                "sources": sources,
+            }
+        )
+    return {
+        "policy": (
+            "main_ass_requires_explicit_story_identity_plus_exact_japanese_"
+            "content_anchor; filename_and_event_count_are_never_sufficient"
+        ),
+        "candidateFamilyCount": len(families),
+        "candidateFileCount": candidate_file_count,
+        "acceptedGroupCount": 0,
+        "families": families,
     }
 
 
@@ -647,6 +878,623 @@ def _exact_chunk_alignment(
     if len(paths) != 1:
         raise RuntimeError("日文 Wiki 与日文 JSON 存在多个等价对齐，拒绝猜测")
     return paths[0]
+
+
+def search_wiki_chinese_story_titles() -> tuple[str, ...]:
+    """Return the bounded, complete Wiki search result for Chinese stories."""
+    query = urllib.parse.urlencode(
+        {
+            "action": "query",
+            "list": "search",
+            "srsearch": '"Story/Chinese"',
+            "srnamespace": "0",
+            "srlimit": "500",
+            "srprop": "",
+            "format": "json",
+            "formatversion": "2",
+            "origin": "*",
+        }
+    )
+    request = urllib.request.Request(
+        f"{WIKI_API}?{query}",
+        headers={"Accept": "application/json", "User-Agent": USER_AGENT},
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        payload = response.read(1024 * 1024 + 1)
+    if len(payload) > 1024 * 1024:
+        raise RuntimeError("Wiki 剧情标题索引超过 1 MiB")
+    data = json.loads(payload.decode("utf-8"))
+    query_result = data.get("query") if isinstance(data, dict) else None
+    search = query_result.get("search") if isinstance(query_result, dict) else None
+    total_hits = (
+        query_result.get("searchinfo", {}).get("totalhits")
+        if isinstance(query_result, dict)
+        else None
+    )
+    if not isinstance(search, list) or not isinstance(total_hits, int):
+        raise RuntimeError("Wiki 剧情标题索引结构无效")
+    if total_hits > 500 or len(search) != total_hits or "continue" in data:
+        raise RuntimeError(
+            f"Wiki 剧情标题索引不完整：{len(search)}/{total_hits}"
+        )
+    titles = []
+    for item in search:
+        title = item.get("title") if isinstance(item, dict) else None
+        if not isinstance(title, str) or not title.endswith("/Chinese"):
+            continue
+        titles.append(title)
+    return tuple(sorted(set(titles)))
+
+
+def _wiki_title_matches_category(title: str, category: str) -> bool:
+    if category == "1_Main":
+        return title.endswith("/Main Story/Chinese")
+    if category == "2_Sub":
+        return (
+            title.endswith("/Story/Chinese")
+            and not title.endswith(
+                (
+                    "/Main Story/Chinese",
+                    "/Nightmare Story/Chinese",
+                    "/Bonus Story/Chinese",
+                    "/Battler Story/Chinese",
+                )
+            )
+        )
+    if category == "4_Portrait":
+        return title.endswith(
+            ("/Nightmare Story/Chinese", "/Bonus Story/Chinese")
+        )
+    return False
+
+
+def _group_json_texts(group: dict[str, Any]) -> tuple[tuple[str, ...], ...]:
+    source_paths = group.get("sources")
+    if not isinstance(source_paths, list) or not source_paths:
+        raise RuntimeError(
+            f"{group.get('groupKey')}: manifest 缺少来源 JSON"
+        )
+    result: list[tuple[str, ...]] = []
+    for raw_source in source_paths:
+        source_path = group_jp_json(group, str(raw_source))
+        rows = common.extract_rows(source_path)
+        result.append(tuple(str(row["text"]) for row in rows))
+    return tuple(result)
+
+
+def match_japanese_page_to_group(
+    group: dict[str, Any],
+    page: WikiPage,
+    *,
+    json_sections: tuple[tuple[str, ...], ...] | None = None,
+) -> WikiGroupMatch | None:
+    """Prove a full ordered page/group match by exact Japanese text."""
+    if json_sections is None:
+        json_sections = _group_json_texts(group)
+    page_sections = tuple(sorted(page.episodes.items()))
+    if not json_sections or not page_sections:
+        return None
+    wiki_units = tuple(
+        "".join(
+            normalize_japanese_anchor(text)
+            for text in parsed.texts
+        )
+        for _episode, parsed in page_sections
+    )
+    json_units = tuple(
+        "".join(normalize_japanese_anchor(text) for text in texts)
+        for texts in json_sections
+    )
+    if not all(wiki_units) or not all(json_units):
+        return None
+
+    memo: dict[
+        tuple[int, int],
+        tuple[int, tuple[tuple[AlignmentChunk, ...], ...]] | None,
+    ] = {}
+
+    def solve(
+        wiki_index: int,
+        json_index: int,
+    ) -> tuple[int, tuple[tuple[AlignmentChunk, ...], ...]] | None:
+        key = (wiki_index, json_index)
+        if key in memo:
+            return memo[key]
+        if wiki_index == len(wiki_units) and json_index == len(json_units):
+            return 0, ((),)
+        if wiki_index >= len(wiki_units) or json_index >= len(json_units):
+            memo[key] = None
+            return None
+        candidates: list[tuple[int, tuple[AlignmentChunk, ...]]] = []
+        for wiki_count in range(1, min(8, len(wiki_units) - wiki_index) + 1):
+            wiki_value = "".join(
+                wiki_units[wiki_index : wiki_index + wiki_count]
+            )
+            for json_count in range(
+                1,
+                min(8, len(json_units) - json_index) + 1,
+            ):
+                if wiki_value != "".join(
+                    json_units[json_index : json_index + json_count]
+                ):
+                    continue
+                remainder = solve(
+                    wiki_index + wiki_count,
+                    json_index + json_count,
+                )
+                if remainder is None:
+                    continue
+                remainder_cost, remainder_paths = remainder
+                chunk = AlignmentChunk(
+                    wiki_start=wiki_index,
+                    wiki_count=wiki_count,
+                    target_start=json_index,
+                    target_count=json_count,
+                )
+                cost = remainder_cost + wiki_count + json_count - 2
+                candidates.extend(
+                    (cost, (chunk, *path))
+                    for path in remainder_paths
+                )
+        if not candidates:
+            memo[key] = None
+            return None
+        minimum = min(cost for cost, _path in candidates)
+        unique: list[tuple[AlignmentChunk, ...]] = []
+        for cost, path in candidates:
+            if cost == minimum and path not in unique:
+                unique.append(path)
+            if len(unique) > 1:
+                break
+        memo[key] = minimum, tuple(unique)
+        return memo[key]
+
+    matched = solve(0, 0)
+    if matched is None:
+        return None
+    _cost, paths = matched
+    if len(paths) != 1:
+        return None
+    return WikiGroupMatch(
+        episode_numbers=tuple(episode for episode, _parsed in page_sections),
+        chunks=paths[0],
+    )
+
+
+def _prealign_wiki_page_to_group(
+    chinese_page: WikiPage,
+    japanese_page: WikiPage,
+    match: WikiGroupMatch,
+    json_sections: tuple[tuple[str, ...], ...],
+) -> tuple[
+    dict[int, HumanEpisode],
+    dict[int, ParsedWikiEpisode],
+]:
+    chinese_sections: dict[int, HumanEpisode] = {}
+    japanese_sections: dict[int, ParsedWikiEpisode] = {}
+    episode_numbers = match.episode_numbers
+    for chunk_index, chunk in enumerate(match.chunks):
+        selected_numbers = episode_numbers[
+            chunk.wiki_start : chunk.wiki_start + chunk.wiki_count
+        ]
+        japanese_parts = [
+            japanese_page.episodes[number]
+            for number in selected_numbers
+        ]
+        try:
+            chinese_parts = [
+                chinese_page.episodes[number]
+                for number in selected_numbers
+            ]
+        except KeyError as exc:
+            raise RuntimeError(
+                f"Wiki 中文页缺少已证明的 Episode {exc.args[0]}"
+            ) from exc
+        combined_japanese = ParsedWikiEpisode(
+            texts=tuple(
+                text for part in japanese_parts for text in part.texts
+            ),
+            speaker_keys=tuple(
+                value
+                for part in japanese_parts
+                for value in part.speaker_keys
+            ),
+            anchor_keys=tuple(
+                value
+                for part in japanese_parts
+                for value in part.anchor_keys
+            ),
+        )
+        combined_chinese = HumanEpisode(
+            texts=tuple(
+                text for part in chinese_parts for text in part.texts
+            ),
+            speaker_keys=tuple(
+                value
+                for part in chinese_parts
+                for value in part.speaker_keys
+            ),
+            source_type="exedra_wiki_human",
+            source_name=chinese_page.title,
+            source_url=chinese_page.source_url,
+            source_sha256=chinese_page.source_sha256,
+            anchor_keys=tuple(
+                value
+                for part in chinese_parts
+                for value in part.anchor_keys
+            ),
+        )
+        target_sections = json_sections[
+            chunk.target_start : chunk.target_start + chunk.target_count
+        ]
+        target_flat = tuple(
+            text for section in target_sections for text in section
+        )
+        aligned = align_wiki_episode(
+            combined_chinese,
+            combined_japanese,
+            target_flat,
+            japanese_url=japanese_page.source_url,
+            japanese_sha256=japanese_page.source_sha256,
+        )
+        offset = 0
+        for section_offset, json_texts in enumerate(target_sections):
+            section_index = chunk.target_start + section_offset
+            translated = aligned.texts[offset : offset + len(json_texts)]
+            if len(translated) != len(json_texts):
+                raise RuntimeError(
+                    f"Wiki 页对齐后 Section {section_index + 1} 长度错误"
+                )
+            alignment = dict(aligned.alignment or {})
+            alignment.update(
+                {
+                    "prealignedWikiPage": True,
+                    "pageChunk": chunk_index,
+                    "pageEpisodeNumbers": list(selected_numbers),
+                    "pageToGroup": _chunks_json(match.chunks),
+                    "groupSection": section_index + 1,
+                }
+            )
+            chinese_sections[section_index] = HumanEpisode(
+                texts=translated,
+                speaker_keys=tuple(() for _ in translated),
+                source_type="exedra_wiki_human",
+                source_name=chinese_page.title,
+                source_url=chinese_page.source_url,
+                source_sha256=chinese_page.source_sha256,
+                alignment=alignment,
+            )
+            japanese_sections[section_index] = ParsedWikiEpisode(
+                texts=json_texts,
+                speaker_keys=tuple(() for _ in json_texts),
+            )
+            offset += len(json_texts)
+        if offset != len(aligned.texts):
+            raise RuntimeError("Wiki 页对齐后存在未分配中文文本")
+    if len(chinese_sections) != len(json_sections):
+        raise RuntimeError("Wiki 页未覆盖剧情组全部 Section")
+    return chinese_sections, japanese_sections
+
+
+def _prealign_ass_page_to_group(
+    ass_files: dict[str, Path],
+    filenames: tuple[str, ...],
+    japanese_page: WikiPage,
+    match: WikiGroupMatch,
+    json_sections: tuple[tuple[str, ...], ...],
+) -> tuple[
+    dict[int, HumanEpisode],
+    dict[int, ParsedWikiEpisode],
+]:
+    """Project an explicitly identified ASS story only at exact event count."""
+    missing = [name for name in filenames if name not in ass_files]
+    if missing:
+        raise RuntimeError(f"0728 缺少显式绑定 ASS：{missing}")
+    source_records: list[dict[str, Any]] = []
+    ass_parts: list[tuple[str, ...]] = []
+    for filename in filenames:
+        path = ass_files[filename]
+        texts = parse_ass(path)
+        source_record = trusted_ass_source_record(path)
+        ass_parts.append(texts)
+        source_record["eventCount"] = len(texts)
+        source_records.append(source_record)
+    ass_texts = tuple(text for part in ass_parts for text in part)
+    json_flat = tuple(text for section in json_sections for text in section)
+    if len(ass_texts) != len(json_flat):
+        raise RuntimeError(
+            "显式 0728 ASS 与 JSON 事件数不完全相等，拒绝猜测："
+            f"ASS={len(ass_texts)} JSON={len(json_flat)}"
+        )
+
+    if len(filenames) > 1:
+        ass_boundaries: list[int] = []
+        offset = 0
+        for part in ass_parts[:-1]:
+            offset += len(part)
+            ass_boundaries.append(offset)
+        json_boundaries: set[int] = set()
+        offset = 0
+        for section in json_sections[:-1]:
+            offset += len(section)
+            json_boundaries.add(offset)
+        missing_boundaries = [
+            value for value in ass_boundaries if value not in json_boundaries
+        ]
+        if missing_boundaries:
+            raise RuntimeError(
+                "多个 ASS 的文件边界未落在 JSON Section 边界："
+                f"{missing_boundaries}"
+            )
+
+    source_sha256 = digest_bytes(
+        json.dumps(
+            source_records,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    )
+    page_proof = {
+        "method": (
+            "explicit_rounddora_ass_identity_plus_exact_event_count_"
+            "and_exact_japanese_wiki_group_anchor"
+        ),
+        "prealignedAssPage": True,
+        "japaneseWikiUrl": japanese_page.source_url,
+        "japaneseWikiSha256": japanese_page.source_sha256,
+        "pageEpisodeNumbers": list(match.episode_numbers),
+        "pageToGroup": _chunks_json(match.chunks),
+        "assSources": source_records,
+        "assEvents": len(ass_texts),
+        "jsonEvents": len(json_flat),
+    }
+    chinese_sections: dict[int, HumanEpisode] = {}
+    japanese_sections: dict[int, ParsedWikiEpisode] = {}
+    offset = 0
+    for section_index, json_texts in enumerate(json_sections):
+        translated = ass_texts[offset : offset + len(json_texts)]
+        alignment = dict(page_proof)
+        alignment["groupSection"] = section_index + 1
+        chinese_sections[section_index] = HumanEpisode(
+            texts=translated,
+            speaker_keys=tuple(() for _ in translated),
+            source_type="rounddora_0728_human",
+            source_name=" + ".join(filenames),
+            source_url="",
+            source_sha256=source_sha256,
+            alignment=alignment,
+        )
+        japanese_sections[section_index] = ParsedWikiEpisode(
+            texts=json_texts,
+            speaker_keys=tuple(() for _ in json_texts),
+        )
+        offset += len(json_texts)
+    if offset != len(ass_texts):
+        raise RuntimeError("0728 ASS 存在未分配文本")
+    return chinese_sections, japanese_sections
+
+
+def discover_wiki_story_groups(
+    groups: list[dict[str, Any]],
+    *,
+    ass_files: dict[str, Path],
+    workers: int,
+) -> tuple[
+    dict[str, dict[int, HumanEpisode]],
+    dict[str, dict[int, ParsedWikiEpisode]],
+    dict[str, tuple[str, str]],
+    dict[str, Any],
+]:
+    """Discover only uniquely exact non-character Wiki mappings."""
+    categories = {
+        str(group.get("category"))
+        for group in groups
+        if str(group.get("category")) in {"1_Main", "2_Sub", "4_Portrait"}
+    }
+    if not categories:
+        return {}, {}, {}, {
+            "searchedTitleCount": 0,
+            "fetchedJapanesePageCount": 0,
+            "mappedGroupCount": 0,
+            "groups": {},
+            "fetchErrors": {},
+        }
+
+    titles = tuple(
+        title
+        for title in search_wiki_chinese_story_titles()
+        if any(_wiki_title_matches_category(title, category) for category in categories)
+    )
+    print(
+        "[wiki-discovery] "
+        f"categories={','.join(sorted(categories))} "
+        f"candidate_titles={len(titles)}",
+        file=sys.stderr,
+        flush=True,
+    )
+    japanese_pages: dict[str, WikiPage] = {}
+    fetch_errors: dict[str, str] = {}
+
+    def fetch_japanese(chinese_title: str) -> tuple[str, WikiPage]:
+        japanese_title = chinese_title.removesuffix("/Chinese") + "/Japanese"
+        return chinese_title, _fetch_wiki_title(japanese_title)
+
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=max(1, min(workers, 8))
+    ) as executor:
+        futures = {
+            executor.submit(fetch_japanese, title): title
+            for title in titles
+        }
+        completed_fetches = 0
+        for future in concurrent.futures.as_completed(futures):
+            title = futures[future]
+            try:
+                source_title, page = future.result()
+                japanese_pages[source_title] = page
+            except (
+                OSError,
+                UnicodeError,
+                json.JSONDecodeError,
+                RuntimeError,
+                urllib.error.URLError,
+            ) as exc:
+                fetch_errors[title] = (
+                    f"{type(exc).__name__}:{str(exc)[:240]}"
+                )
+            completed_fetches += 1
+            if completed_fetches % 25 == 0 or completed_fetches == len(titles):
+                print(
+                    "[wiki-discovery] "
+                    f"japanese_pages={completed_fetches}/{len(titles)} "
+                    f"ok={len(japanese_pages)} errors={len(fetch_errors)}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+
+    wiki_results: dict[str, dict[int, HumanEpisode]] = {}
+    japanese_results: dict[str, dict[int, ParsedWikiEpisode]] = {}
+    japanese_sources: dict[str, tuple[str, str]] = {}
+    group_audit: dict[str, Any] = {}
+    for group_index, group in enumerate(groups, 1):
+        category = str(group.get("category"))
+        if category not in categories:
+            continue
+        key = str(group["groupKey"])
+        if group_index % 10 == 0 or group_index == len(groups):
+            print(
+                "[wiki-discovery] "
+                f"groups={group_index}/{len(groups)} "
+                f"mapped_so_far={len(wiki_results)}",
+                file=sys.stderr,
+                flush=True,
+            )
+        json_sections = _group_json_texts(group)
+        matches: list[tuple[str, WikiPage, WikiGroupMatch]] = []
+        for chinese_title, page in japanese_pages.items():
+            if not _wiki_title_matches_category(chinese_title, category):
+                continue
+            page_match = match_japanese_page_to_group(
+                group,
+                page,
+                json_sections=json_sections,
+            )
+            if page_match is not None:
+                matches.append((chinese_title, page, page_match))
+        if len(matches) != 1:
+            group_audit[key] = {
+                "status": "unmapped" if not matches else "ambiguous",
+                "exactJapaneseMatches": [
+                    {
+                        "chineseTitle": title,
+                        "japaneseTitle": page.title,
+                        "japaneseSha256": page.source_sha256,
+                        "episodeNumbers": list(page_match.episode_numbers),
+                        "pageToGroup": _chunks_json(page_match.chunks),
+                    }
+                    for title, page, page_match in matches
+                ],
+            }
+            continue
+        chinese_title, japanese_page, page_match = matches[0]
+        try:
+            chinese_page = _fetch_wiki_title(chinese_title)
+            (
+                chinese_by_section,
+                japanese_by_section,
+            ) = _prealign_wiki_page_to_group(
+                chinese_page,
+                japanese_page,
+                page_match,
+                json_sections,
+            )
+        except (
+            OSError,
+            UnicodeError,
+            json.JSONDecodeError,
+            RuntimeError,
+            urllib.error.URLError,
+        ) as exc:
+            ass_names = ASS_STORY_FILES.get(key)
+            if ass_names:
+                try:
+                    (
+                        ass_by_section,
+                        ass_japanese_by_section,
+                    ) = _prealign_ass_page_to_group(
+                        ass_files,
+                        ass_names,
+                        japanese_page,
+                        page_match,
+                        json_sections,
+                    )
+                    wiki_results[key] = ass_by_section
+                    japanese_results[key] = ass_japanese_by_section
+                    japanese_sources[key] = (
+                        japanese_page.source_url,
+                        japanese_page.source_sha256,
+                    )
+                    group_audit[key] = {
+                        "status": "mapped_rounddora",
+                        "wikiChineseStatus": "unusable",
+                        "wikiChineseError": (
+                            f"{type(exc).__name__}:{str(exc)[:240]}"
+                        ),
+                        "assFiles": list(ass_names),
+                        "japaneseTitle": japanese_page.title,
+                        "japaneseUrl": japanese_page.source_url,
+                        "japaneseSha256": japanese_page.source_sha256,
+                        "episodeNumbers": list(page_match.episode_numbers),
+                        "pageToGroup": _chunks_json(page_match.chunks),
+                    }
+                    continue
+                except RuntimeError as ass_exc:
+                    group_audit[key] = {
+                        "status": "rounddora_rejected",
+                        "chineseTitle": chinese_title,
+                        "wikiChineseError": (
+                            f"{type(exc).__name__}:{str(exc)[:240]}"
+                        ),
+                        "assFiles": list(ass_names),
+                        "assError": str(ass_exc)[:320],
+                        "japaneseTitle": japanese_page.title,
+                        "japaneseUrl": japanese_page.source_url,
+                        "japaneseSha256": japanese_page.source_sha256,
+                        "episodeNumbers": list(page_match.episode_numbers),
+                        "pageToGroup": _chunks_json(page_match.chunks),
+                    }
+                    continue
+            group_audit[key] = {
+                "status": "chinese_fetch_failed",
+                "chineseTitle": chinese_title,
+                "error": f"{type(exc).__name__}:{str(exc)[:240]}",
+            }
+            continue
+        wiki_results[key] = chinese_by_section
+        japanese_results[key] = japanese_by_section
+        japanese_sources[key] = (
+            japanese_page.source_url,
+            japanese_page.source_sha256,
+        )
+        group_audit[key] = {
+            "status": "mapped",
+            "chineseTitle": chinese_page.title,
+            "chineseUrl": chinese_page.source_url,
+            "chineseSha256": chinese_page.source_sha256,
+            "japaneseTitle": japanese_page.title,
+            "japaneseUrl": japanese_page.source_url,
+            "japaneseSha256": japanese_page.source_sha256,
+            "episodeNumbers": list(page_match.episode_numbers),
+            "pageToGroup": _chunks_json(page_match.chunks),
+        }
+    return wiki_results, japanese_results, japanese_sources, {
+        "searchedTitleCount": len(titles),
+        "fetchedJapanesePageCount": len(japanese_pages),
+        "mappedGroupCount": len(wiki_results),
+        "groups": group_audit,
+        "fetchErrors": fetch_errors,
+    }
 
 
 def _speaker_mapping_after_chunk(
@@ -1086,6 +1934,153 @@ def group_jp_json(group: dict[str, Any], source: str) -> Path:
     return path
 
 
+def parse_group_txt(path: Path) -> tuple[common.Section, ...]:
+    """Parse canonical Exedra TXT, including filenames containing parentheses."""
+    sections: list[common.Section] = []
+    current_number: int | None = None
+    current_source = ""
+    current_lines: list[common.Line] = []
+
+    def flush() -> None:
+        nonlocal current_number, current_source, current_lines
+        if current_number is not None:
+            sections.append(
+                common.Section(
+                    current_number,
+                    current_source,
+                    tuple(current_lines),
+                )
+            )
+        current_number = None
+        current_source = ""
+        current_lines = []
+
+    try:
+        handle = path.open("r", encoding="utf-8-sig", newline=None)
+    except (OSError, UnicodeError) as exc:
+        raise RuntimeError(f"聚合 TXT 无法读取：{path}: {exc}") from exc
+    with handle:
+        for line_number, raw in enumerate(handle, 1):
+            line = raw.strip()
+            if not line:
+                continue
+            if line.startswith("---"):
+                match = pipeline.EXEDRA_SECTION_RE.fullmatch(line)
+                if match is None:
+                    raise RuntimeError(
+                        f"非法 Section 头：{path}:{line_number}"
+                    )
+                flush()
+                current_number = int(match.group(1))
+                if current_number != len(sections) + 1:
+                    raise RuntimeError(
+                        f"Section 编号不连续：{path}:{line_number}"
+                    )
+                current_source = PurePosixPath(
+                    match.group(2).strip()
+                ).name
+                continue
+            if current_number is None:
+                raise RuntimeError(
+                    f"首个 Section 前存在正文：{path}:{line_number}"
+                )
+            speaker, text = common.split_line(line)
+            normalized = pipeline._normalize_exedra_speaker(speaker)
+            kind = (
+                "narration"
+                if normalized in pipeline.EXEDRA_NARRATION_SPEAKERS
+                else "dialogue"
+            )
+            if not speaker or not text:
+                raise RuntimeError(
+                    f"空说话人或正文：{path}:{line_number}"
+                )
+            current_lines.append(common.Line(speaker, text, kind))
+    flush()
+    if not sections:
+        raise RuntimeError(f"缺少 Section：{path}")
+    return tuple(sections)
+
+
+def validate_only_comment_changed(
+    jp_json: Path,
+    cn_json: Path,
+    expected_texts: list[str],
+) -> dict[str, Any]:
+    """Prove that localized JSON differs only in playable text Comment cells."""
+
+    jp_document = common.load_json(jp_json)
+    cn_document = common.load_json(cn_json)
+    if not isinstance(jp_document, dict) or not isinstance(cn_document, dict):
+        raise RuntimeError(f"Exedra JSON 顶层不是对象：{jp_json.name}")
+
+    def redact_text_comments(document: dict[str, Any]) -> int:
+        count = 0
+        sheets = document.get("sheetList")
+        if not isinstance(sheets, list):
+            raise RuntimeError(f"Exedra JSON 缺少 sheetList：{jp_json.name}")
+        for sheet in sheets:
+            if not isinstance(sheet, dict):
+                continue
+            header = sheet.get("headerRow")
+            contents = sheet.get("contentRowList")
+            if not isinstance(header, dict) or not isinstance(contents, list):
+                continue
+            header_cells = header.get("cellList")
+            if not isinstance(header_cells, list):
+                continue
+            names = [str(value).strip().casefold() for value in header_cells]
+            try:
+                action_index = names.index("actiontype")
+                comment_index = names.index("comment")
+            except ValueError:
+                continue
+            for row in contents:
+                cells = row.get("cellList") if isinstance(row, dict) else None
+                if not isinstance(cells, list):
+                    continue
+                action = str(
+                    cells[action_index] if action_index < len(cells) else ""
+                ).strip()
+                comment = (
+                    cells[comment_index] if comment_index < len(cells) else ""
+                )
+                if (
+                    action.casefold() not in common.TEXT_ACTIONS
+                    or not isinstance(comment, str)
+                    or not comment.strip()
+                ):
+                    continue
+                cells[comment_index] = "__MAGIREADER_LOCALIZED_COMMENT__"
+                count += 1
+        return count
+
+    jp_comment_cells = redact_text_comments(jp_document)
+    cn_comment_cells = redact_text_comments(cn_document)
+    if jp_comment_cells != cn_comment_cells:
+        raise RuntimeError(
+            f"本地化前后可变 Comment 单元格数不同：{jp_json.name}: "
+            f"JP={jp_comment_cells} CN={cn_comment_cells}"
+        )
+    if jp_document != cn_document:
+        raise RuntimeError(
+            f"本地化 JSON 修改了 Comment 以外的字段：{jp_json.name}"
+        )
+
+    cn_rows = common.extract_rows(cn_json)
+    actual_texts = [str(row.get("text") or "") for row in cn_rows]
+    if actual_texts != expected_texts:
+        raise RuntimeError(
+            f"本地化 JSON 的可播放 Comment 顺序错误：{jp_json.name}"
+        )
+    return {
+        "nonCommentFieldsMatch": True,
+        "playableCommentSequenceMatches": True,
+        "mutableCommentCellCount": cn_comment_cells,
+        "canonicalEventCount": len(actual_texts),
+    }
+
+
 def import_group(
     group: dict[str, Any],
     wiki: dict[int, HumanEpisode],
@@ -1104,7 +2099,7 @@ def import_group(
         return {"groupKey": group_key, "status": "existing_local"}
 
     jp_path = JP_ROOT / str(group["textFile"])
-    sections = common.parse_txt(jp_path)
+    sections = parse_group_txt(jp_path)
     source_paths = group.get("sources")
     if not isinstance(source_paths, list) or len(source_paths) != len(sections):
         raise RuntimeError(f"{group_key}: manifest/Section 数量不一致")
@@ -1124,7 +2119,23 @@ def import_group(
         selected: HumanEpisode | None = None
         alignment_errors: list[str] = []
         if wiki_episode:
-            if japanese_episode:
+            if (
+                wiki_episode.alignment
+                and (
+                    wiki_episode.alignment.get("prealignedWikiPage") is True
+                    or wiki_episode.alignment.get("prealignedAssPage") is True
+                )
+            ):
+                if (
+                    len(wiki_episode.texts) == event_count
+                    and all(text.strip() for text in wiki_episode.texts)
+                ):
+                    selected = wiki_episode
+                else:
+                    alignment_errors.append(
+                        "wiki:预对齐 Wiki 页与 JSON 事件数不一致"
+                    )
+            elif japanese_episode:
                 try:
                     selected = align_wiki_episode(
                         wiki_episode,
@@ -1138,38 +2149,74 @@ def import_group(
             else:
                 alignment_errors.append("wiki:缺少同角色日文 Wiki Episode 锚点")
         if selected is None and ass_path:
-            ass_texts = parse_ass(ass_path)
-            if japanese_episode:
-                try:
+            try:
+                ass_source = trusted_ass_source_record(ass_path)
+            except RuntimeError as exc:
+                alignment_errors.append(f"ass:{exc}")
+            else:
+                ass_texts = parse_ass(ass_path)
+                if japanese_episode:
+                    try:
+                        selected = align_ass_episode(
+                            ass_texts,
+                            japanese_episode,
+                            json_texts,
+                            source_name=ass_path.name,
+                            source_sha256=ass_source["sha256"],
+                            japanese_url=japanese_wiki_url,
+                            japanese_sha256=japanese_wiki_sha256,
+                        )
+                    except RuntimeError as exc:
+                        alignment_errors.append(f"ass:{exc}")
+                elif len(ass_texts) == event_count:
                     selected = align_ass_episode(
                         ass_texts,
-                        japanese_episode,
+                        ParsedWikiEpisode(
+                            texts=json_texts,
+                            speaker_keys=tuple(() for _ in json_texts),
+                        ),
                         json_texts,
                         source_name=ass_path.name,
-                        source_sha256=digest_file(ass_path),
-                        japanese_url=japanese_wiki_url,
-                        japanese_sha256=japanese_wiki_sha256,
+                        source_sha256=ass_source["sha256"],
+                        japanese_url="",
+                        japanese_sha256="",
                     )
-                except RuntimeError as exc:
-                    alignment_errors.append(f"ass:{exc}")
-            elif len(ass_texts) == event_count:
-                selected = HumanEpisode(
-                    texts=ass_texts,
-                    speaker_keys=tuple(() for _ in ass_texts),
-                    source_type="rounddora_0728_human",
-                    source_name=ass_path.name,
-                    source_url="",
-                    source_sha256=digest_file(ass_path),
-                    alignment={
-                        "method": "exact_count_without_adjustment",
-                        "assRows": len(ass_texts),
-                        "jsonEvents": event_count,
-                    },
-                )
-            else:
-                alignment_errors.append(
-                    "ass:数量不等且缺少日文 Wiki 锚点，禁止调整"
-                )
+                    alignment = dict(selected.alignment or {})
+                    alignment["method"] = (
+                        "explicit_character_ass_identity_plus_exact_event_count"
+                    )
+                    selected = HumanEpisode(
+                        texts=selected.texts,
+                        speaker_keys=selected.speaker_keys,
+                        source_type=selected.source_type,
+                        source_name=selected.source_name,
+                        source_url=selected.source_url,
+                        source_sha256=selected.source_sha256,
+                        anchor_keys=selected.anchor_keys,
+                        alignment=alignment,
+                    )
+                else:
+                    alignment_errors.append(
+                        "ass:数量不等且缺少日文 Wiki 锚点，禁止调整"
+                    )
+                if selected is not None:
+                    alignment = dict(selected.alignment or {})
+                    alignment["assSources"] = [
+                        {
+                            **ass_source,
+                            "eventCount": len(ass_texts),
+                        }
+                    ]
+                    selected = HumanEpisode(
+                        texts=selected.texts,
+                        speaker_keys=selected.speaker_keys,
+                        source_type=selected.source_type,
+                        source_name=selected.source_name,
+                        source_url=selected.source_url,
+                        source_sha256=selected.source_sha256,
+                        anchor_keys=selected.anchor_keys,
+                        alignment=alignment,
+                    )
         if selected is None:
             rejected.append(
                 {
@@ -1197,6 +2244,7 @@ def import_group(
             "reasons": rejected,
         }
 
+    output_dir.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(
         prefix=f".{group_key}-",
         dir=output_dir.parent,
@@ -1217,6 +2265,11 @@ def import_group(
                 destination,
             )
             json.loads(destination.read_text(encoding="utf-8"))
+            mutation_proof = validate_only_comment_changed(
+                jp_json,
+                destination,
+                texts,
+            )
             json_meta.append(
                 {
                     "source": section.source,
@@ -1228,6 +2281,7 @@ def import_group(
                     "sourceSha256": human_source.source_sha256,
                     "eventCount": len(texts),
                     "alignment": human_source.alignment,
+                    "mutationProof": mutation_proof,
                 }
             )
 
@@ -1302,23 +2356,50 @@ def main() -> int:
     parser.add_argument("ass_root", type=Path)
     parser.add_argument("--write", action="store_true")
     parser.add_argument("--only-group", action="append", default=[])
+    parser.add_argument(
+        "--category",
+        action="append",
+        choices=("1_Main", "2_Sub", "3_Character", "4_Portrait"),
+        default=[],
+        help="Limit import/audit to one or more Exedra categories.",
+    )
     parser.add_argument("--wiki-workers", type=int, default=8)
     args = parser.parse_args()
 
     ass_files, inventory = inventory_ass(args.ass_root)
     manifest = common.load_json(MANIFEST)
+    requested_categories = set(args.category) or {
+        "1_Main",
+        "2_Sub",
+        "3_Character",
+        "4_Portrait",
+    }
+    requested_groups = set(args.only_group)
     groups = [
         group
         for group in manifest.get("groups", [])
         if isinstance(group, dict)
-        and group.get("category") == "3_Character"
+        and group.get("category") in requested_categories
         and (
-            not args.only_group
-            or str(group.get("groupKey")) in set(args.only_group)
+            not requested_groups
+            or str(group.get("groupKey")) in requested_groups
         )
     ]
-    expected_keys = {str(group["groupKey"]) for group in groups}
-    missing_mapping = expected_keys - set(ASS_CHARACTER_BASES)
+    if requested_groups:
+        found_groups = {str(group["groupKey"]) for group in groups}
+        missing_requested = requested_groups - found_groups
+        if missing_requested:
+            raise SystemExit(
+                f"请求的剧情组不存在或不在所选分类：{sorted(missing_requested)}"
+            )
+
+    character_groups = [
+        group for group in groups if group.get("category") == "3_Character"
+    ]
+    expected_character_keys = {
+        str(group["groupKey"]) for group in character_groups
+    }
+    missing_mapping = expected_character_keys - set(ASS_CHARACTER_BASES)
     if missing_mapping:
         raise SystemExit(f"缺少 ASS 显式角色映射：{sorted(missing_mapping)}")
 
@@ -1326,9 +2407,19 @@ def main() -> int:
     japanese_wiki_results: dict[str, dict[int, ParsedWikiEpisode]] = {}
     japanese_wiki_sources: dict[str, tuple[str, str]] = {}
     wiki_errors: dict[str, list[str]] = {}
+    missing_character_keys = {
+        str(group["groupKey"])
+        for group in character_groups
+        if not (
+            CN_ROOT
+            / str(group["category"])
+            / str(group["groupKey"])
+            / f"{group['groupKey']}_cn.txt"
+        ).exists()
+    }
     wiki_items = [
         (key, CHARACTER_WIKI_SLUGS[key])
-        for key in expected_keys
+        for key in sorted(missing_character_keys)
     ]
     with concurrent.futures.ThreadPoolExecutor(
         max_workers=max(1, min(args.wiki_workers, 16))
@@ -1346,6 +2437,31 @@ def main() -> int:
             japanese_wiki_sources[key] = (japanese_url, japanese_sha)
             if errors:
                 wiki_errors[key] = errors
+
+    non_character_missing = [
+        group
+        for group in groups
+        if group.get("category") in {"1_Main", "2_Sub", "4_Portrait"}
+        and not (
+            CN_ROOT
+            / str(group["category"])
+            / str(group["groupKey"])
+            / f"{group['groupKey']}_cn.txt"
+        ).exists()
+    ]
+    (
+        discovered_wiki,
+        discovered_japanese,
+        discovered_sources,
+        wiki_story_audit,
+    ) = discover_wiki_story_groups(
+        non_character_missing,
+        ass_files=ass_files,
+        workers=args.wiki_workers,
+    )
+    wiki_results.update(discovered_wiki)
+    japanese_wiki_results.update(discovered_japanese)
+    japanese_wiki_sources.update(discovered_sources)
 
     results: list[dict[str, Any]] = []
     for group in groups:
@@ -1384,12 +2500,20 @@ def main() -> int:
             "fileCount": inventory["fileCount"],
             "totalBytes": inventory["totalBytes"],
         },
+        "rounddora0728": {
+            "explicitStoryMappingCount": len(ASS_STORY_FILES),
+            "mainCandidateAudit": audit_main_ass_candidates(
+                ass_files,
+                groups,
+            ),
+        },
         "wiki": {
             "pageCount": sum(bool(value) for value in wiki_results.values()),
             "japaneseAnchorPageCount": sum(
                 bool(value) for value in japanese_wiki_results.values()
             ),
             "errors": wiki_errors,
+            "storyDiscovery": wiki_story_audit,
         },
         "counts": {
             status: sum(item["status"] == status for item in results)
@@ -1403,10 +2527,11 @@ def main() -> int:
         },
         "results": results,
     }
+    AUDIT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    COVERAGE_PATH.write_bytes(common.json_bytes(report))
     if args.write:
         INVENTORY_PATH.parent.mkdir(parents=True, exist_ok=True)
         INVENTORY_PATH.write_bytes(common.json_bytes(inventory))
-        AUDIT_PATH.parent.mkdir(parents=True, exist_ok=True)
         AUDIT_PATH.write_bytes(common.json_bytes(report))
     print(json.dumps(report["counts"], ensure_ascii=False))
     for item in results:

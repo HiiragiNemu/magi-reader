@@ -56,7 +56,12 @@ type SearchWorkerMessage =
   | { type: 'results'; sequence: number; matches: Array<[string, string]>; truncated: boolean }
   | { type: 'error'; sequence: number; message: string };
 
-type SearchIndexManifest = {
+type SearchIndexChunk = {
+  bytes: number;
+  sha256: string;
+};
+
+type SearchIndexManifestV1 = {
   version: 1;
   sha256: string;
   bytes: number;
@@ -65,11 +70,22 @@ type SearchIndexManifest = {
   story_index_sha256: string;
 };
 
-type SearchIndexSource = {
+type SearchIndexManifestV2 = Omit<SearchIndexManifestV1, 'version'> & {
+  version: 2;
+  chunk_bytes: number;
+  chunks: SearchIndexChunk[];
+};
+
+type SearchIndexManifest = SearchIndexManifestV1 | SearchIndexManifestV2;
+
+type SearchIndexSource = Pick<
+  SearchIndexManifestV1,
+  'sha256' | 'bytes' | 'entries'
+> & {
   url: string;
-  sha256: string;
-  bytes: number;
-  entries: number;
+  version: 1 | 2;
+  chunk_bytes?: number;
+  chunks?: SearchIndexChunk[];
 };
 
 type ProofreadingStatus = {
@@ -133,8 +149,8 @@ const isSearchIndexManifest = (value: unknown): value is SearchIndexManifest => 
   const manifest = value as Record<string, unknown>;
   const sha256 =
     typeof manifest.sha256 === 'string' ? manifest.sha256.toLowerCase() : '';
-  return (
-    manifest.version === 1 &&
+  const commonValid =
+    (manifest.version === 1 || manifest.version === 2) &&
     /^[a-f0-9]{64}$/.test(sha256) &&
     Number.isSafeInteger(manifest.bytes) &&
     Number(manifest.bytes) > 0 &&
@@ -145,8 +161,44 @@ const isSearchIndexManifest = (value: unknown): value is SearchIndexManifest => 
     typeof manifest.object_key === 'string' &&
     manifest.object_key === `search/${sha256}.json` &&
     typeof manifest.story_index_sha256 === 'string' &&
-    /^[a-f0-9]{64}$/.test(manifest.story_index_sha256)
-  );
+    /^[a-f0-9]{64}$/.test(manifest.story_index_sha256);
+  if (!commonValid) return false;
+  if (manifest.version === 1) return true;
+
+  const chunkBytes = Number(manifest.chunk_bytes);
+  const chunks = manifest.chunks;
+  if (
+    chunkBytes !== 1024 * 1024 ||
+    !Array.isArray(chunks) ||
+    chunks.length === 0 ||
+    chunks.length > 4096 ||
+    chunks.length !== Math.ceil(Number(manifest.bytes) / chunkBytes)
+  ) {
+    return false;
+  }
+  let total = 0;
+  for (let index = 0; index < chunks.length; index += 1) {
+    const chunk = chunks[index];
+    if (!chunk || typeof chunk !== 'object') return false;
+    const item = chunk as Record<string, unknown>;
+    const itemBytes = Number(item.bytes);
+    const finalChunk = index === chunks.length - 1;
+    if (
+      !Number.isSafeInteger(itemBytes) ||
+      itemBytes <= 0 ||
+      itemBytes > chunkBytes ||
+      (!finalChunk && itemBytes !== chunkBytes) ||
+      typeof item.sha256 !== 'string' ||
+      !/^[a-f0-9]{64}$/.test(item.sha256)
+    ) {
+      return false;
+    }
+    total += itemBytes;
+    if (!Number.isSafeInteger(total) || total > Number(manifest.bytes)) {
+      return false;
+    }
+  }
+  return total === Number(manifest.bytes);
 };
 
 const getSearchIndexSources = async (
@@ -172,9 +224,16 @@ const getSearchIndexSources = async (
   }
 
   const sourceMetadata = {
+    version: manifest.version,
     sha256: manifest.sha256,
     bytes: manifest.bytes,
     entries: manifest.entries,
+    ...(manifest.version === 2
+      ? {
+          chunk_bytes: manifest.chunk_bytes,
+          chunks: manifest.chunks,
+        }
+      : {}),
   };
   const addressedSource: SearchIndexSource = {
     url: `${SEARCH_INDEX_CLOUDFLARE_BASE_URL}${manifest.object_key}`,
@@ -432,10 +491,11 @@ export default function Home() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState('');
   const [searchTruncated, setSearchTruncated] = useState(false);
+  const [searchIndexBytes, setSearchIndexBytes] = useState(0);
   const [textMatches, setTextMatches] = useState<Record<string, string>>({});
   const [aboutOpen, setAboutOpen] = useState(false);
   const [searchJp, setSearchJp] = useState(false);
-  const [searchMode, setSearchMode] = useState<SearchMode>('all');
+  const [searchMode, setSearchMode] = useState<SearchMode>('title');
   const [proofreadingStatus, setProofreadingStatus] = useState<ProofreadingStatus | null>(null);
   const [onlyNeedsReview, setOnlyNeedsReview] = useState(false);
   const workerRef = useRef<Worker | null>(null);
@@ -521,7 +581,7 @@ export default function Home() {
   useEffect(() => {
     if (!storyIndexSha256) return;
     const controller = new AbortController();
-    const worker = new Worker('/search-worker.js');
+    const worker = new Worker('/search-worker.js?v=2');
     workerRef.current = worker;
     worker.onmessage = (event: MessageEvent<SearchWorkerMessage>) => {
       const message = event.data;
@@ -544,7 +604,10 @@ export default function Home() {
     };
 
     void getSearchIndexSources(controller.signal, storyIndexSha256)
-      .then((sources) => worker.postMessage({ type: 'init', sources }))
+      .then((sources) => {
+        setSearchIndexBytes(sources[0]?.bytes ?? 0);
+        worker.postMessage({ type: 'init', sources });
+      })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === 'AbortError') return;
         worker.postMessage({ type: 'init', sources: [] });
@@ -860,6 +923,14 @@ export default function Home() {
               ))}
             </div>
           </div>
+
+          {searchMode !== 'title' && searchIndexBytes > 0 && (
+            <p className="text-[11px] opacity-65">
+              正文搜索会在首次使用时按需加载约{' '}
+              {(searchIndexBytes / (1024 * 1024)).toFixed(1)} MiB 索引。
+              内存较小的设备请使用“标题”模式。
+            </p>
+          )}
 
           <div className="md:hidden -mx-3">
             <CategoryNav
