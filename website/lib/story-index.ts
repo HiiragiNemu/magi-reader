@@ -222,6 +222,9 @@ export const resolveDirectStorySources = (
   return null;
 };
 
+export const isOptionalStorySourceUnavailable = (status: number): boolean =>
+  status === 404 || status === 502 || status === 503;
+
 const parseStory = (value: unknown, index: number): StoryIndexEntry => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new Error(`剧情目录第 ${index + 1} 项不是对象`);

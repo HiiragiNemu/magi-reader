@@ -8,6 +8,12 @@ import test from 'node:test';
 const configVerifier = path.resolve('scripts/verify-cloudflare-config.mjs');
 const outputVerifier = path.resolve('scripts/verify-cloudflare-output.mjs');
 const deploymentWorkflow = path.resolve('..', '.github', 'workflows', 'deploy.yml');
+const testDeploymentWorkflow = path.resolve(
+  '..',
+  '.github',
+  'workflows',
+  'deploy-exedra-proofreading-test.yml',
+);
 const placeholder = '00000000000000000000000000000000';
 const realNamespaceId = '0123456789abcdef0123456789abcdef';
 
@@ -114,6 +120,54 @@ test('Cloudflare output requires a valid manifest and excludes the large payload
     });
     assert.equal(valid.status, 0, valid.stderr);
 
+    const v2Manifest = JSON.stringify({
+      version: 2,
+      sha256: 'c'.repeat(64),
+      bytes: 1024 * 1024 + 17,
+      entries: 2,
+      object_key: `search/${'c'.repeat(64)}.json`,
+      story_index_sha256: 'd'.repeat(64),
+      chunk_bytes: 1024 * 1024,
+      chunks: [
+        { bytes: 1024 * 1024, sha256: 'e'.repeat(64) },
+        { bytes: 17, sha256: 'f'.repeat(64) },
+      ],
+    });
+    writeFileSync(path.join(assets, 'search_index_manifest.json'), v2Manifest);
+    writeFileSync(
+      path.join(publicDirectory, 'search_index_manifest.json'),
+      v2Manifest,
+    );
+    const validV2 = spawnSync(process.execPath, [outputVerifier], {
+      cwd: directory,
+      encoding: 'utf8',
+    });
+    assert.equal(validV2.status, 0, validV2.stderr);
+
+    const malformedV2 = JSON.stringify({
+      ...JSON.parse(v2Manifest),
+      chunks: [
+        { bytes: 1024 * 1024, sha256: 'not-a-hash' },
+        { bytes: 17, sha256: 'f'.repeat(64) },
+      ],
+    });
+    writeFileSync(path.join(assets, 'search_index_manifest.json'), malformedV2);
+    writeFileSync(
+      path.join(publicDirectory, 'search_index_manifest.json'),
+      malformedV2,
+    );
+    const invalidManifest = spawnSync(process.execPath, [outputVerifier], {
+      cwd: directory,
+      encoding: 'utf8',
+    });
+    assert.notEqual(invalidManifest.status, 0);
+    assert.match(invalidManifest.stderr, /内容寻址键无效/u);
+
+    writeFileSync(path.join(assets, 'search_index_manifest.json'), v2Manifest);
+    writeFileSync(
+      path.join(publicDirectory, 'search_index_manifest.json'),
+      v2Manifest,
+    );
     writeFileSync(path.join(assets, 'search_content.json'), '[]');
     const invalid = spawnSync(process.execPath, [outputVerifier], {
       cwd: directory,
@@ -151,4 +205,19 @@ test('production workflow uploads the verified search object before Worker deplo
     workflow.indexOf('wrangler r2 object put')
       < workflow.indexOf('opennextjs-cloudflare deploy'),
   );
+});
+
+test('isolated Exedra deployment smoke-tests both voice systems and the decoder', () => {
+  const workflow = readFileSync(testDeploymentWorkflow, 'utf8');
+  assert.match(workflow, /Smoke-test bounded voice playback assets/u);
+  assert.match(
+    workflow,
+    /api\/audio\/magireco-voice\/vo_char_3031_00_01/u,
+  );
+  assert.match(
+    workflow,
+    /audio\/exedra-local\/cv_namae_call_01\.ogg/u,
+  );
+  assert.match(workflow, /audio\/hca_wasm_bg\.wasm/u);
+  assert.match(workflow, /VOICE_ASSETS_OK/u);
 });

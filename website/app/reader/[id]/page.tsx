@@ -1,6 +1,13 @@
 "use client";
 
-import { use, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  use,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
@@ -19,6 +26,7 @@ import AboutModal from '@/components/AboutModal';
 import TurnstileWidget from '@/components/TurnstileWidget';
 import Sidebar, { type Story } from '@/components/Sidebar';
 import StoryText from '@/components/StoryText';
+import { VoicePlayButton } from '@/components/voice/VoicePlayButton';
 import {
   speakerColorFor,
   translateSpeakerName,
@@ -31,8 +39,10 @@ import {
   sha256Text,
 } from '@/lib/proofreading';
 import { saveProofreadingReceipt } from '@/lib/proofreading-client';
+import { voicePlaybackController } from '@/lib/audio/voice-player';
 import {
   findStoryByRouteId,
+  isOptionalStorySourceUnavailable,
   loadStoryIndex,
   readBoundedResponseBody,
   resolveDirectStorySources,
@@ -70,6 +80,7 @@ type ProofreadingConfig = {
 
 const MAX_STORY_SOURCE_BYTES = 8 * 1024 * 1024;
 const BILINGUAL_LAYOUT_STORAGE_KEY = 'magi-reader-bilingual-layout-v1';
+const STORY_ROWS_PER_PAGE = 200;
 
 const THEME_STYLES: Record<string, string> = {
   light: 'bg-transparent text-gray-900',
@@ -234,6 +245,11 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const [editedCnLines, setEditedCnLines] = useState<StoryLine[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentMatchIndex, setCurrentMatchIndex] = useState(-1);
+  const [visiblePage, setVisiblePage] = useState(0);
+  const [pendingRowScroll, setPendingRowScroll] = useState<{
+    rowIndex: number;
+    highlight: boolean;
+  } | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [editMessage, setEditMessage] = useState('');
   const settingsDialogRef = useDialog<HTMLElement>(
@@ -393,7 +409,12 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       if (!path) return null;
       const response = await fetch(path, { signal: controller.signal });
       if (!response.ok) {
-        if (optional && response.status === 404) return null;
+        if (
+          optional &&
+          isOptionalStorySourceUnavailable(response.status)
+        ) {
+          return null;
+        }
         throw new Error(`${fallbackName}读取失败（HTTP ${response.status}）`);
       }
       const declaredLength = Number(response.headers.get('content-length'));
@@ -497,18 +518,100 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     () => alignStoryLines(displayedCnLines, jpLines),
     [displayedCnLines, jpLines],
   );
+  const pageCount = Math.max(1, Math.ceil(renderList.length / STORY_ROWS_PER_PAGE));
+  const pageStart = visiblePage * STORY_ROWS_PER_PAGE;
+  const visibleRenderList = renderList.slice(
+    pageStart,
+    pageStart + STORY_ROWS_PER_PAGE,
+  );
   const editedLineIndices = useMemo(
     () => new Map(editedCnLines.map((line, index) => [line, index])),
     [editedCnLines],
   );
 
+  useEffect(() => {
+    setVisiblePage(current => Math.min(current, pageCount - 1));
+  }, [pageCount]);
+
+  useEffect(() => {
+    setVisiblePage(0);
+    setPendingRowScroll(null);
+  }, [id]);
+
+  const revealRow = useCallback((rowIndex: number, highlight = false) => {
+    if (rowIndex < 0) return;
+    voicePlaybackController.stop();
+    setVisiblePage(Math.floor(rowIndex / STORY_ROWS_PER_PAGE));
+    setPendingRowScroll({ rowIndex, highlight });
+  }, []);
+
+  useEffect(() => {
+    const stopForHiddenPage = () => {
+      if (document.visibilityState === 'hidden') {
+        voicePlaybackController.stop();
+      }
+    };
+    window.addEventListener('pagehide', voicePlaybackController.stop);
+    document.addEventListener('visibilitychange', stopForHiddenPage);
+    return () => {
+      window.removeEventListener('pagehide', voicePlaybackController.stop);
+      document.removeEventListener('visibilitychange', stopForHiddenPage);
+      voicePlaybackController.stop();
+    };
+  }, [id]);
+
+  const changeVisiblePage = useCallback((page: number) => {
+    const nextPage = Math.max(0, page);
+    voicePlaybackController.stop();
+    setVisiblePage(nextPage);
+    setPendingRowScroll({
+      rowIndex: nextPage * STORY_ROWS_PER_PAGE,
+      highlight: false,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!pendingRowScroll) return;
+    const targetPage = Math.floor(
+      pendingRowScroll.rowIndex / STORY_ROWS_PER_PAGE,
+    );
+    if (targetPage !== visiblePage) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const pendingRow = renderList[pendingRowScroll.rowIndex];
+      const header = pendingRow?.cn?.isHeader
+        ? pendingRow.cn
+        : pendingRow?.jp?.isHeader
+          ? pendingRow.jp
+          : undefined;
+      const target = document.getElementById(
+        header?.headerId || `line-${pendingRowScroll.rowIndex}`,
+      );
+      if (!target) {
+        setPendingRowScroll(null);
+        return;
+      }
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (pendingRowScroll.highlight) {
+        target.classList.add('ring-4', 'ring-amber-400');
+        window.setTimeout(
+          () => target.classList.remove('ring-4', 'ring-amber-400'),
+          1500,
+        );
+      }
+      setPendingRowScroll(null);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [pendingRowScroll, renderList, visiblePage]);
+
+  const deferredSearchQuery = useDeferredValue(searchQuery);
   const normalizedQuery = useMemo(
-    () => normalizeSearchText(searchQuery),
-    [searchQuery],
+    () => normalizeSearchText(deferredSearchQuery),
+    [deferredSearchQuery],
   );
 
-  const matchedIndices = useMemo(() => {
-    if (!normalizedQuery) return [];
+  const findMatchedIndices = useCallback((query: string): number[] => {
+    if (!query) return [];
     const matches: number[] = [];
     renderList.forEach((row, index) => {
       const header = row.cn?.isHeader ? row.cn : row.jp?.isHeader ? row.jp : undefined;
@@ -522,20 +625,35 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
         header?.headerBranch ? `分支${header.headerBranch} 路线${header.headerBranch}` : '',
         choice?.choiceLabel ? `${choice.choiceLabel} 选项 分支` : '',
       ].filter(Boolean).join(' ');
-      if (normalizeSearchText(searchable).includes(normalizedQuery)) matches.push(index);
+      if (normalizeSearchText(searchable).includes(query)) matches.push(index);
     });
     return matches;
-  }, [normalizedQuery, renderList]);
+  }, [renderList]);
+  const matchedIndices = useMemo(
+    () => findMatchedIndices(normalizedQuery),
+    [findMatchedIndices, normalizedQuery],
+  );
 
   const jumpToNextMatch = useCallback(() => {
-    if (matchedIndices.length === 0) return;
+    const immediateQuery = normalizeSearchText(searchQuery);
+    const currentMatches =
+      immediateQuery === normalizedQuery
+        ? matchedIndices
+        : findMatchedIndices(immediateQuery);
+    if (currentMatches.length === 0) return;
     const next = currentMatchIndex < 0
       ? 0
-      : (currentMatchIndex + 1) % matchedIndices.length;
+      : (currentMatchIndex + 1) % currentMatches.length;
     setCurrentMatchIndex(next);
-    document.getElementById(`line-${matchedIndices[next]}`)
-      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, [currentMatchIndex, matchedIndices]);
+    revealRow(currentMatches[next]);
+  }, [
+    currentMatchIndex,
+    findMatchedIndices,
+    matchedIndices,
+    normalizedQuery,
+    revealRow,
+    searchQuery,
+  ]);
 
   const changeSearch = (value: string) => {
     setSearchQuery(value);
@@ -716,19 +834,20 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       source && section
         ? makeSectionAnchorId(source, section, choice.choiceTargetId)
         : '';
-    let target = exactId ? document.getElementById(exactId) : null;
-    if (!target) {
-      const fallback = renderList.slice(rowIndex + 1).find(row => {
+    let targetIndex = exactId
+      ? renderList.findIndex(row => {
+          const header = row.cn?.isHeader ? row.cn : row.jp?.isHeader ? row.jp : undefined;
+          return header?.headerId === exactId;
+        })
+      : -1;
+    if (targetIndex < 0) {
+      const fallbackOffset = renderList.slice(rowIndex + 1).findIndex(row => {
         const header = row.cn?.isHeader ? row.cn : row.jp?.isHeader ? row.jp : undefined;
         return header?.headerBranch === choice.choiceTargetId;
       });
-      const header = fallback?.cn?.isHeader ? fallback.cn : fallback?.jp;
-      target = header?.headerId ? document.getElementById(header.headerId) : null;
+      if (fallbackOffset >= 0) targetIndex = rowIndex + 1 + fallbackOffset;
     }
-    if (!target) return;
-    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    target.classList.add('ring-4', 'ring-amber-400');
-    window.setTimeout(() => target?.classList.remove('ring-4', 'ring-amber-400'), 1500);
+    revealRow(targetIndex, true);
   };
 
   if (loading) {
@@ -738,6 +857,20 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       </div>
     );
   }
+
+  const hasChineseDisplay =
+    cnLines.length > 0 || (isEditMode && editedCnLines.length > 0);
+  const hasJapaneseDisplay = jpLines.length > 0;
+  const modeAvailability: Record<ReaderMode, boolean> = {
+    cn: hasChineseDisplay,
+    split: hasChineseDisplay && hasJapaneseDisplay,
+    jp: hasJapaneseDisplay,
+  };
+  const generalVoiceHasNoTrustedJapaneseColumn =
+    currentStory?.category === 'general_voice' &&
+    hasChineseDisplay &&
+    !hasJapaneseDisplay &&
+    !loadError;
 
   return (
     <div className={`flex h-screen h-[100dvh] overflow-hidden ${THEME_STYLES[theme]}`}>
@@ -844,6 +977,14 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                 <button
                   type="button"
                   key={nextMode}
+                  disabled={!modeAvailability[nextMode]}
+                  title={
+                    modeAvailability[nextMode]
+                      ? undefined
+                      : nextMode === 'cn'
+                        ? '当前没有可显示的中文文本'
+                        : '当前没有可逐行证明的日文文本'
+                  }
                   aria-label={
                     nextMode === 'cn'
                       ? '只显示中文'
@@ -852,11 +993,17 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                         : '显示中日双语'
                   }
                   aria-pressed={mode === nextMode}
-                  onClick={() => setMode(nextMode)}
+                  onClick={() => {
+                    if (modeAvailability[nextMode]) setMode(nextMode);
+                  }}
                   className={`rounded px-2 py-1 ${
                     mode === nextMode
                       ? theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white shadow'
                       : 'opacity-40'
+                  } ${
+                    modeAvailability[nextMode]
+                      ? ''
+                      : 'cursor-not-allowed opacity-20'
                   }`}
                 >
                   {nextMode === 'cn' ? '中' : nextMode === 'jp' ? '日' : '双'}
@@ -902,6 +1049,14 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   ))}
                 </ul>
               </details>
+            )}
+
+            {generalVoiceHasNoTrustedJapaneseColumn && (
+              <div className="mb-4 rounded-lg border border-sky-200 bg-sky-50/80 p-3 text-xs text-sky-900">
+                这是魔法纪录语音资料。现有上游没有独立且完整、可逐行证明的日文字幕列，
+                因此本站保留人工中文和语音编号，但不会伪造日文对照。Exedra 语音在存在
+                可信中文时仍使用真实的中日对照。
+              </div>
             )}
 
             {isEditMode && !loadError && (
@@ -1050,24 +1205,49 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
               </div>
             )}
 
-            {!loadError && renderList.map((row, index) => (
-              <StoryRow
-                key={index}
-                row={row}
-                index={index}
-                editIndex={row.cn ? (editedLineIndices.get(row.cn) ?? index) : index}
-                mode={mode}
-                bilingualLayout={bilingualLayout}
-                theme={theme}
-                isEditMode={isEditMode}
-                editedLines={editedCnLines}
-                setEditedLines={setEditedCnLines}
-                query={searchQuery}
-                normalizedQuery={normalizedQuery}
-                focused={currentMatchIndex >= 0 && matchedIndices[currentMatchIndex] === index}
-                onChoice={jumpToChoice}
+            {!loadError && renderList.length > 0 && (
+              <StoryPagination
+                page={visiblePage}
+                pageCount={pageCount}
+                start={pageStart}
+                end={Math.min(pageStart + visibleRenderList.length, renderList.length)}
+                total={renderList.length}
+                onPage={changeVisiblePage}
               />
-            ))}
+            )}
+
+            {!loadError && visibleRenderList.map((row, offset) => {
+              const index = pageStart + offset;
+              return (
+                <StoryRow
+                  key={index}
+                  row={row}
+                  index={index}
+                  editIndex={row.cn ? (editedLineIndices.get(row.cn) ?? index) : index}
+                  mode={mode}
+                  bilingualLayout={bilingualLayout}
+                  theme={theme}
+                  isEditMode={isEditMode}
+                  editedLines={editedCnLines}
+                  setEditedLines={setEditedCnLines}
+                  query={deferredSearchQuery}
+                  normalizedQuery={normalizedQuery}
+                  focused={currentMatchIndex >= 0 && matchedIndices[currentMatchIndex] === index}
+                  onChoice={jumpToChoice}
+                />
+              );
+            })}
+
+            {!loadError && renderList.length > STORY_ROWS_PER_PAGE && (
+              <StoryPagination
+                page={visiblePage}
+                pageCount={pageCount}
+                start={pageStart}
+                end={Math.min(pageStart + visibleRenderList.length, renderList.length)}
+                total={renderList.length}
+                onPage={changeVisiblePage}
+              />
+            )}
           </div>
         </main>
 
@@ -1148,7 +1328,8 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                     ))}
                   </div>
                   <p className="mt-1 text-[11px] opacity-60">
-                    手机上两种模式都可手动选择；上下排列也适用于汉化输入框。
+                    手机端始终采用上下排列以避免挤压；此选项控制电脑端的左右或上下排列，
+                    并同样适用于汉化输入框。
                   </p>
                 </div>
                 <label className="block">
@@ -1163,6 +1344,53 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
 
       <AboutModal isOpen={aboutOpen} onClose={() => setAboutOpen(false)} theme={theme} />
     </div>
+  );
+}
+
+type StoryPaginationProps = {
+  page: number;
+  pageCount: number;
+  start: number;
+  end: number;
+  total: number;
+  onPage: (page: number) => void;
+};
+
+function StoryPagination({
+  page,
+  pageCount,
+  start,
+  end,
+  total,
+  onPage,
+}: StoryPaginationProps) {
+  if (pageCount <= 1) return null;
+
+  return (
+    <nav
+      aria-label="剧情分页"
+      className="my-4 flex flex-wrap items-center justify-center gap-3 rounded-xl border border-black/10 bg-white/50 px-3 py-2 text-xs shadow-sm"
+    >
+      <button
+        type="button"
+        disabled={page <= 0}
+        onClick={() => onPage(Math.max(0, page - 1))}
+        className="rounded-lg border border-current px-3 py-1.5 font-bold disabled:cursor-not-allowed disabled:opacity-30"
+      >
+        ← 上一页
+      </button>
+      <span aria-live="polite" className="tabular-nums opacity-75">
+        第 {page + 1} / {pageCount} 页 · 第 {start + 1}–{end} 行，共 {total} 行
+      </span>
+      <button
+        type="button"
+        disabled={page >= pageCount - 1}
+        onClick={() => onPage(Math.min(pageCount - 1, page + 1))}
+        className="rounded-lg border border-current px-3 py-1.5 font-bold disabled:cursor-not-allowed disabled:opacity-30"
+      >
+        下一页 →
+      </button>
+    </nav>
   );
 }
 
@@ -1280,6 +1508,7 @@ function StoryRow({
   const jpSpeakerMatches =
     Boolean(normalizedQuery) &&
     normalizeSearchText(row.jp?.speaker || '').includes(normalizedQuery);
+  const audioCueId = row.cn?.audioCueId || row.jp?.audioCueId;
 
   return (
     <div
@@ -1302,6 +1531,13 @@ function StoryRow({
             ? 'md:w-1/2'
             : 'w-full'
         }`}>
+          {audioCueId && (
+            <VoicePlayButton
+              cueId={audioCueId}
+              label="播放"
+              className="shrink-0 px-2"
+            />
+          )}
           {isEditMode ? (
             <>
               <input
@@ -1372,6 +1608,13 @@ function StoryRow({
               : 'mt-1 border-current border-opacity-10 md:mt-0 md:w-1/2 md:border-l md:pl-4'
             : 'w-full'
         }`}>
+          {mode === 'jp' && audioCueId && (
+            <VoicePlayButton
+              cueId={audioCueId}
+              label="播放"
+              className="shrink-0 px-2"
+            />
+          )}
           {row.jp ? (
             <>
               <SpeakerLabel line={row.jp} highlighted={jpSpeakerMatches} faded />

@@ -25,3 +25,16 @@ test('static Exedra Chinese uses the validated catalog path before the runtime A
     /directSourceResolution\.sources\?\.kind === 'query' \|\|\s+Boolean\(currentStory\.path_cn\)/u,
   );
 });
+
+test('unavailable language views are disabled and general voice explains the missing JP source', () => {
+  assert.match(source, /disabled=\{!modeAvailability\[nextMode\]\}/u);
+  assert.match(source, /currentStory\?\.category === 'general_voice'/u);
+  assert.match(source, /不会伪造日文对照/u);
+  assert.match(source, /Exedra 语音/u);
+});
+
+test('pressing Enter uses the current search text instead of stale deferred matches', () => {
+  assert.match(source, /const immediateQuery = normalizeSearchText\(searchQuery\)/u);
+  assert.match(source, /immediateQuery === normalizedQuery/u);
+  assert.match(source, /findMatchedIndices\(immediateQuery\)/u);
+});

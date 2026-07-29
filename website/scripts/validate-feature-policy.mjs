@@ -2,6 +2,7 @@ import {
   existsSync,
   readFileSync,
 } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import process from 'node:process';
 
@@ -295,6 +296,59 @@ requireCondition(
   )),
   '不得保留本项目临时 GitHub Actions 审计工作流',
 );
+
+const prohibitedProbePattern = [
+  ['magireco', '\\.moe'].join(''),
+  ['probe', '_audio_listing'].join(''),
+  ['probe-magireco', '-audio-listing'].join(''),
+].join('|');
+const prohibitedProbe = spawnSync(
+  'git',
+  [
+    'grep',
+    '-n',
+    '-I',
+    '-i',
+    '-E',
+    prohibitedProbePattern,
+    '--',
+    '.github/workflows',
+    'website/app',
+    'website/components',
+    'website/lib',
+    'website/scripts',
+    'tools',
+    'scripts',
+    'wiki-preservation',
+    '*.py',
+    '*.js',
+    '*.mjs',
+    '*.ts',
+  ],
+  {
+    cwd: repositoryRoot,
+    encoding: 'utf8',
+    windowsHide: true,
+    maxBuffer: 1024 * 1024,
+  },
+);
+if (prohibitedProbe.error) {
+  failures.push(`无法执行外部探针策略检查：${prohibitedProbe.error.message}`);
+} else if (prohibitedProbe.status === 0) {
+  const matches = prohibitedProbe.stdout
+    .split(/\r?\n/u)
+    .filter(Boolean)
+    .slice(0, 20);
+  failures.push(
+    `活动代码或工作流重新引入了禁止的外站探针：${matches.join('；')}`,
+  );
+} else if (prohibitedProbe.status === 1) {
+  checks.push('活动代码与工作流未引用禁止的外站探针');
+} else {
+  failures.push(
+    `外部探针策略检查异常退出（${prohibitedProbe.status}）：${prohibitedProbe.stderr.trim()}`,
+  );
+}
 
 const report = {
   version: 1,

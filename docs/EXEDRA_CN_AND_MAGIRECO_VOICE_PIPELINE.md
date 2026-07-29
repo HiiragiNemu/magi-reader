@@ -1,6 +1,6 @@
 # Exedra 人工中文与魔法纪录语音生产管线
 
-目标分支：`feature/exedra-cn-and-magireco-voice`，基于并最终合并到 `EXEDRA-TEST`。`main` 不参与写入。
+目标分支：`feature/exedra-voice-playback-human-localization`，基于并最终合并到 `EXEDRA-TEST`。`main` 不参与写入。
 
 ## 1. 可信来源与优先级
 
@@ -115,20 +115,22 @@ Wiki 全量审计：
 | 指标 | 数量 |
 |---|---:|
 | JP 逻辑组 | 443 |
-| 中文逻辑组 | 124 |
-| 仍无中文 | 319 |
-| 新 JSON-backed 中文组 | 119 |
+| 中文逻辑组 | 142 |
+| 仍无中文 | 301 |
+| 新 JSON-backed 中文组 | 137 |
 | 旧本地 TXT 兼容组 | 5 |
-| 新 Exedra 中文 JSON | 1,390 |
-| 新 Exedra 中文事件 | 20,990 |
+| 新 Exedra 中文 JSON | 1,484 |
+| 新 Exedra 中文事件 | 26,810 |
 
 来源组分布：
 
 - 5 个旧本地；
 - 6 个纯 Wiki 角色；
-- 15 个纯 0728 角色；
+- 17 个纯 0728 角色；
 - 25 个 Wiki + 0728 混合角色；
-- 73 个 Wiki 语音。
+- 73 个 Wiki 语音；
+- 6 个 0728 活动；
+- 10 个 0728 肖像。
 
 ## 6. 魔法纪录 general voice
 
@@ -157,6 +159,13 @@ tools/import_magireco_general_voice.py
 - 8,026 个没有 `textHome` 的只读资源/动作组。
 
 多 `textHome` 组必须保持一个事件一行，不能合并成一个校对输入。两个 manifest 必须字节一致并随 JSON/TXT 更新哈希。
+
+### 6.1 音频播放边界
+
+- Exedra 86 个 reaction 组、1,167 个来源使用 manifest、脚本和音频键精确匹配。
+- Exedra 只读取受审计本地 OGG或固定 Wiki 文件重定向。
+- 魔法纪录只允许严格语音 ID，经同源服务端代理获取有上限的 HCA，再在独立 Worker 中解码。
+- 单播放器控制器在停止、切换、卸载和超时后释放全部资源，不把私有仓库令牌暴露到前端。
 
 ## 7. 人工校验物化
 
@@ -191,9 +200,9 @@ general voice 同步更新源/中文 manifest。CI 会把生成的 JSON、TXT和
 当前 `story_index.json`：
 
 - 3,012 个总条目；
-- 443 个 Exedra 条目，其中 124 个有中文；
+- 443 个 Exedra 条目，其中 142 个有中文；
 - 410 个 general voice 条目；
-- 119 个 Exedra 条目和全部 410 个 general voice 条目具有 `json_paths_cn`。
+- 137 个 Exedra 条目和全部 410 个 general voice 条目具有 `json_paths_cn`。
 
 静态 Exedra 中文优先直接读取经过生成器验证的 public TXT/JSON。只有真正的可信动态 Wiki KV 项才使用 `/api/exedra/localized/<id>`；本地 Next 开发不应因缺少 Cloudflare context 而阻断静态中文。
 
@@ -210,7 +219,7 @@ general voice 同步更新源/中文 manifest。CI 会把生成的 JSON、TXT和
 magi-reader-bilingual-layout-v1
 ```
 
-手机和 PC 均可手动切换，选择同时应用于普通阅读和“协助汉化”输入行。
+PC 可手动切换；手机端固定采用上下排列以避免双栏挤压。选择同时应用于普通阅读和“协助汉化”输入行。
 
 ## 10. 分类与机翻边界
 
@@ -246,12 +255,12 @@ npm run verify:cloudflare-output
 npm run deploy:test:direct -- --dry-run
 ```
 
-最后一次静态 Exedra 路由修复后已经重新完成：143 个 Python 测试、2 个跳过、83 个 Node 测试、完整 lint/type-check/check、生产依赖审计和 Worker 构建。直接部署 dry-run 也已在干净工作树通过，确认 9,029 个静态资源及隔离测试 Worker/KV 绑定。
+最后一次日文单语降级修复后已经重新完成：167 个 Python 测试、2 个跳过、120 个 Node 测试、完整 lint/type-check/check、生产依赖审计和 Worker 构建。外部 Chrome 已实际验证双语编辑、三条音频链和超长剧情分页。
 
 ## 12. 当前非完成项
 
 - 尚未提交、推送、建立 PR 或合并进 `EXEDRA-TEST`。
 - 尚未把最终版本部署到 `magireader-exedra-cn-test`。
-- 79,001,794 字节全文搜索 payload 尚未上传 R2；当前令牌没有 R2 权限。
+- 79,334,357 字节全文搜索 payload 已本地分成 76 块并验证；测试部署流程仍不上传新 R2 对象。
 
 这些状态不得在部署完成前改写成“已上线”。

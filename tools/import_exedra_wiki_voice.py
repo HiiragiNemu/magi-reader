@@ -2,11 +2,25 @@
 """Import trusted Chinese Exedra reaction voices from Exedra Wiki.
 
 Only main-namespace pages whose titles end in ``/Voice/zh`` are considered.
-Each Wiki row must satisfy both of these independent identity checks:
+The primary path requires both of these independent identity checks:
 
 * ``file_name`` exactly equals the manifest source basename plus ``.ogg``;
 * normalized ``text_jp`` exactly equals all Japanese JSON text events joined
   in source order.
+
+When the exact file-name row is absent, or that row's Japanese text is not the
+playback script text, a deliberately narrower fallback is allowed:
+
+* at least two other sources in the same reaction group must independently
+  prove a common Wiki page through exact file-name + exact Japanese matches;
+* the complete normalized Japanese playback text must have exactly one Wiki
+  row identity on that already-proven page set;
+* duplicate copies are accepted only when file name and Chinese text are
+  identical.
+
+This fallback never uses edit distance, token overlap, partial lines, event
+reordering, or Chinese text to establish identity.  A group without a proven
+page identity remains rejected even when a same-Japanese row exists elsewhere.
 
 One audited source-id alias is allowed only after the target and alias manifest
 groups prove an exact one-to-one source suffix, sheet/row, action, speaker, and
@@ -59,6 +73,9 @@ AUDIT_PATH = ROOT / "artifacts/exedra_wiki_voice_import_report.json"
 CHARACTER_AUDIT_PATH = (
     ROOT / "artifacts/exedra_wiki_voice_character_match_report.json"
 )
+JAPANESE_ANCHOR_AUDIT_PATH = (
+    ROOT / "artifacts/exedra_wiki_voice_japanese_anchor_report.json"
+)
 HUMAN_IMPORT_AUDIT = ROOT / "artifacts/exedra_human_text_import_report.json"
 WIKI_API = "https://exedra.wiki/w/api.php"
 WIKI_BASE = "https://exedra.wiki/wiki/"
@@ -93,6 +110,22 @@ class WikiVoice:
 class SelectedVoice:
     record: WikiVoice
     equivalent_pages: tuple[str, ...]
+    match_method: str = "exact_file_name_and_japanese"
+    verified_pages: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class VerifiedPageIdentity:
+    pages: tuple[str, ...]
+    exact_source_count: int
+
+
+class WikiFileNameMissingError(FileNotFoundError):
+    """The expected Wiki audio row does not exist."""
+
+
+class WikiJapaneseMismatchError(RuntimeError):
+    """The expected Wiki audio row exists but its Japanese text is different."""
 
 
 def json_bytes(value: Any) -> bytes:
@@ -369,6 +402,18 @@ def index_records(records: Iterable[WikiVoice]) -> dict[str, list[WikiVoice]]:
     return result
 
 
+def index_records_by_japanese(
+    records: Iterable[WikiVoice],
+) -> dict[str, list[WikiVoice]]:
+    result: dict[str, list[WikiVoice]] = {}
+    for record in records:
+        result.setdefault(
+            normalize_japanese(record.text_jp),
+            [],
+        ).append(record)
+    return result
+
+
 def select_voice(
     record_index: dict[str, list[WikiVoice]],
     source_basename: str,
@@ -377,7 +422,9 @@ def select_voice(
     expected_name = source_basename + ".ogg"
     named = record_index.get(expected_name, [])
     if not named:
-        raise FileNotFoundError(f"Wiki 缺少精确 file_name：{expected_name}")
+        raise WikiFileNameMissingError(
+            f"Wiki 缺少精确 file_name：{expected_name}"
+        )
     expected_japanese = normalize_japanese("".join(japanese_events))
     exact = [
         record
@@ -385,7 +432,7 @@ def select_voice(
         if normalize_japanese(record.text_jp) == expected_japanese
     ]
     if not exact:
-        raise RuntimeError(
+        raise WikiJapaneseMismatchError(
             f"Wiki text_jp 与 JP JSON 拼接正文不同：{expected_name}"
         )
     by_chinese: dict[str, list[WikiVoice]] = {}
@@ -403,6 +450,75 @@ def select_voice(
         equivalent_pages=tuple(
             sorted({item.page_title for item in equivalent}, key=str.casefold)
         ),
+    )
+
+
+def select_voice_by_japanese_anchor(
+    japanese_index: dict[str, list[WikiVoice]],
+    source_basename: str,
+    japanese_events: list[str],
+    page_identity: VerifiedPageIdentity,
+) -> SelectedVoice:
+    """Select one Wiki row by exact Japanese within a proven character page.
+
+    ``file_name`` is intentionally not part of this fallback identity because
+    it exists specifically to repair Wiki/file-number drift.  It remains part
+    of uniqueness: two different Wiki file names with the same Japanese are
+    ambiguous and therefore rejected.
+    """
+
+    expected_name = source_basename + ".ogg"
+    if not page_identity.pages or page_identity.exact_source_count < 2:
+        raise RuntimeError(
+            "Wiki 日文锚点回退缺少角色页面身份证明："
+            f"{expected_name}; exactSources={page_identity.exact_source_count}"
+        )
+    expected_japanese = normalize_japanese("".join(japanese_events))
+    global_candidates = japanese_index.get(expected_japanese, [])
+    candidates = [
+        record
+        for record in global_candidates
+        if record.page_title in page_identity.pages
+    ]
+    if not candidates:
+        raise RuntimeError(
+            "Wiki 已验证角色页面中没有整段日文精确候选："
+            f"{expected_name}; globalCandidates={len(global_candidates)}; "
+            f"verifiedPages={list(page_identity.pages)}"
+        )
+
+    by_identity: dict[tuple[str, str], list[WikiVoice]] = {}
+    for record in candidates:
+        by_identity.setdefault(
+            (record.file_name, chinese_signature(record.text_cn)),
+            [],
+        ).append(record)
+    if len(by_identity) != 1:
+        identities = sorted(
+            {
+                f"{file_name}@{record.page_title}"
+                for (file_name, _), values in by_identity.items()
+                for record in values
+            },
+            key=str.casefold,
+        )
+        raise RuntimeError(
+            "Wiki 已验证角色页面的整段日文候选不唯一："
+            f"{expected_name}: {identities}"
+        )
+
+    equivalent = next(iter(by_identity.values()))
+    selected = sorted(
+        equivalent,
+        key=lambda item: (item.page_title.casefold(), item.file_name.casefold()),
+    )[0]
+    return SelectedVoice(
+        record=selected,
+        equivalent_pages=tuple(
+            sorted({item.page_title for item in equivalent}, key=str.casefold)
+        ),
+        match_method="verified_page_unique_japanese_exact",
+        verified_pages=page_identity.pages,
     )
 
 
@@ -496,6 +612,56 @@ def validate_strict_reaction_group_alias(
     return mapping
 
 
+def prove_group_page_identity(
+    group: dict[str, Any],
+    record_index: dict[str, list[WikiVoice]],
+    source_aliases: dict[str, str],
+) -> VerifiedPageIdentity:
+    """Prove a common Wiki page from independent exact source matches.
+
+    A page is eligible only when it occurs among the exact file-name +
+    Japanese matches for every source that contributed evidence.  At least two
+    independent manifest sources are required before a page may authorize the
+    Japanese-anchor fallback.
+    """
+
+    page_sets: list[set[str]] = []
+    for raw_source_value in group.get("sources", []):
+        raw_source = str(raw_source_value)
+        source_name = PurePosixPath(raw_source).name
+        source_basename = Path(source_name).stem
+        rows = common.extract_rows(group_jp_json(group, raw_source))
+        japanese_events = [str(row.get("text") or "") for row in rows]
+        try:
+            try:
+                selected = select_voice(
+                    record_index,
+                    source_basename,
+                    japanese_events,
+                )
+            except WikiFileNameMissingError:
+                alias_basename = source_aliases.get(source_basename)
+                if not alias_basename:
+                    raise
+                selected = select_voice(
+                    record_index,
+                    alias_basename,
+                    japanese_events,
+                )
+        except (WikiFileNameMissingError, WikiJapaneseMismatchError):
+            continue
+        page_sets.append(set(selected.equivalent_pages))
+
+    exact_source_count = len(page_sets)
+    if exact_source_count < 2:
+        return VerifiedPageIdentity((), exact_source_count)
+    common_pages = set.intersection(*page_sets)
+    return VerifiedPageIdentity(
+        tuple(sorted(common_pages, key=str.casefold)),
+        exact_source_count,
+    )
+
+
 def _candidate_score(position: int, target: float, previous_character: str) -> float:
     if previous_character in STRONG_PUNCTUATION:
         punctuation_penalty = 0.0
@@ -586,6 +752,7 @@ def group_jp_json(group: dict[str, Any], raw_source: str) -> Path:
 def import_group(
     group: dict[str, Any],
     record_index: dict[str, list[WikiVoice]],
+    japanese_index: dict[str, list[WikiVoice]],
     reaction_groups: dict[str, dict[str, Any]],
     *,
     write: bool,
@@ -632,6 +799,11 @@ def import_group(
             group,
             alias_group,
         )
+    page_identity = prove_group_page_identity(
+        group,
+        record_index,
+        source_aliases,
+    )
 
     source_paths = group.get("sources")
     if not isinstance(source_paths, list):
@@ -659,34 +831,76 @@ def import_group(
         jp_json = group_jp_json(group, raw_source)
         rows = common.extract_rows(jp_json)
         japanese_events = [str(row.get("text") or "") for row in rows]
+        failure_stage = "source_selection"
         try:
             source_basename = Path(source_name).stem
             try:
-                selected = select_voice(
-                    record_index,
-                    source_basename,
-                    japanese_events,
-                )
-            except FileNotFoundError:
-                alias_basename = source_aliases.get(source_basename)
-                if not alias_basename:
-                    raise
-                selected = select_voice(
-                    record_index,
-                    alias_basename,
-                    japanese_events,
-                )
+                try:
+                    selected = select_voice(
+                        record_index,
+                        source_basename,
+                        japanese_events,
+                    )
+                except WikiFileNameMissingError:
+                    alias_basename = source_aliases.get(source_basename)
+                    if not alias_basename:
+                        raise
+                    selected = select_voice(
+                        record_index,
+                        alias_basename,
+                        japanese_events,
+                    )
+            except (
+                WikiFileNameMissingError,
+                WikiJapaneseMismatchError,
+            ) as exact_error:
+                try:
+                    selected = select_voice_by_japanese_anchor(
+                        japanese_index,
+                        source_basename,
+                        japanese_events,
+                        page_identity,
+                    )
+                except Exception as fallback_error:
+                    raise RuntimeError(
+                        f"{exact_error}; 日文锚点回退失败：{fallback_error}"
+                    ) from fallback_error
+            failure_stage = "chinese_segmentation"
             texts = split_chinese_by_japanese(
                 selected.record.text_cn,
                 japanese_events,
             )
             planned.append((section, raw_source, jp_json, texts, selected))
         except Exception as exc:
+            expected_japanese = normalize_japanese("".join(japanese_events))
+            global_candidates = japanese_index.get(expected_japanese, [])
+            verified_candidates = [
+                record
+                for record in global_candidates
+                if record.page_title in page_identity.pages
+            ]
             rejected.append(
                 {
                     "source": source_name,
                     "expectedFileName": Path(source_name).stem + ".ogg",
                     "eventCount": len(japanese_events),
+                    "failureStage": failure_stage,
+                    "exactFileNameRowCount": len(
+                        record_index.get(
+                            Path(source_name).stem + ".ogg",
+                            [],
+                        )
+                    ),
+                    "groupPageIdentityExactSourceCount": (
+                        page_identity.exact_source_count
+                    ),
+                    "verifiedWikiPages": list(page_identity.pages),
+                    "globalExactJapaneseCandidateCount": len(
+                        global_candidates
+                    ),
+                    "verifiedPageExactJapaneseCandidateCount": len(
+                        verified_candidates
+                    ),
                     "reason": str(exc),
                 }
             )
@@ -742,6 +956,18 @@ def import_group(
                     "wikiUrl": record.page_url,
                     "wikiPageSha256": record.page_sha256,
                     "equivalentWikiPages": list(selected.equivalent_pages),
+                    "sourceSelection": {
+                        "method": selected.match_method,
+                        "targetFileName": Path(section.source).stem + ".ogg",
+                        "wikiFileName": record.file_name,
+                        "verifiedWikiPages": list(selected.verified_pages),
+                        "groupPageIdentityExactSourceCount": (
+                            page_identity.exact_source_count
+                        ),
+                        "japaneseMatch": (
+                            "NFKC_then_remove_whitespace_exact_whole_source"
+                        ),
+                    },
                     "textJpNormalizedSha256": sha256_bytes(
                         normalize_japanese(record.text_jp).encode("utf-8")
                     ),
@@ -771,7 +997,17 @@ def import_group(
         report["provenance"] = "exedra_wiki_voice_human"
         report["sourcePolicy"] = {
             "pageSuffix": VOICE_TITLE_SUFFIX,
-            "fileNameMatch": "exact",
+            "fileNameMatch": (
+                "exact_primary_or_verified_page_unique_japanese_fallback"
+            ),
+            "japaneseAnchorFallback": {
+                "minimumExactSourcesForPageIdentity": 2,
+                "verifiedPages": list(page_identity.pages),
+                "pageIdentityExactSourceCount": (
+                    page_identity.exact_source_count
+                ),
+                "requiresUniqueWikiFileAndChineseIdentity": True,
+            },
             "sourceIdentityAlias": (
                 {
                     "targetGroupKey": group_key,
@@ -829,6 +1065,13 @@ def import_group(
         "status": "imported" if write else "ready",
         "jsonCount": len(json_meta),
         "eventCount": sum(item["eventCount"] for item in json_meta),
+        "japaneseAnchorFallbackCount": sum(
+            item["sourceSelection"]["method"]
+            == "verified_page_unique_japanese_exact"
+            for item in json_meta
+        ),
+        "verifiedWikiPages": list(page_identity.pages),
+        "groupPageIdentityExactSourceCount": page_identity.exact_source_count,
         "provenance": "exedra_wiki_voice_human",
         "sourceIdentityAlias": alias_group_key,
     }
@@ -920,6 +1163,89 @@ def evaluate_rejected_character_sources(
     }
 
 
+def build_japanese_anchor_audit(
+    results: list[dict[str, Any]],
+    page_inventory: list[dict[str, Any]],
+) -> dict[str, Any]:
+    rejected = [
+        item
+        for item in results
+        if item.get("status") == "rejected"
+    ]
+    remaining: list[dict[str, Any]] = []
+    for item in rejected:
+        categories: dict[str, int] = {}
+        for reason in item.get("reasons", []):
+            failure_stage = str(
+                reason.get("failureStage") or "source_selection"
+            )
+            exact_sources = int(
+                reason.get("groupPageIdentityExactSourceCount") or 0
+            )
+            verified_pages = reason.get("verifiedWikiPages") or []
+            verified_candidates = int(
+                reason.get("verifiedPageExactJapaneseCandidateCount") or 0
+            )
+            if failure_stage != "source_selection":
+                category = "chinese_segmentation_or_structure_rejected"
+            elif exact_sources < 2 or not verified_pages:
+                category = "no_verified_character_page_identity"
+            elif verified_candidates == 0:
+                category = "no_exact_japanese_candidate_on_verified_page"
+            else:
+                category = "ambiguous_exact_japanese_candidate"
+            categories[category] = categories.get(category, 0) + 1
+        remaining.append(
+            {
+                "groupKey": item.get("groupKey"),
+                "sourceCount": len(item.get("reasons", [])),
+                "reasonCounts": categories,
+                "sources": item.get("reasons", []),
+            }
+        )
+    lux_page = next(
+        (
+            item
+            for item in page_inventory
+            if item.get("title") == "Lux☆Magica/Voice/zh"
+        ),
+        None,
+    )
+    return {
+        "schemaVersion": 1,
+        "generatedAt": datetime.now(timezone.utc).isoformat(),
+        "policy": {
+            "primary": "exact_file_name_and_whole_japanese",
+            "fallback": "verified_character_page_unique_whole_japanese",
+            "japaneseNormalization": "NFKC_then_remove_unicode_whitespace",
+            "minimumExactSourcesForPageIdentity": 2,
+            "allowsFuzzyMatching": False,
+            "allowsPartialMatching": False,
+            "allowsCrossPageMatching": False,
+            "allowsReordering": False,
+        },
+        "wikiSnapshot": {
+            "pageCount": len(page_inventory),
+            "luxMagicaVoiceZh": lux_page,
+        },
+        "recoveredGroupCount": sum(
+            item.get("status") in {"ready", "imported"}
+            and int(item.get("japaneseAnchorFallbackCount") or 0) > 0
+            for item in results
+        ),
+        "recoveredSourceCount": sum(
+            int(item.get("japaneseAnchorFallbackCount") or 0)
+            for item in results
+        ),
+        "remainingRejectedGroupCount": len(rejected),
+        "remainingRejectedSourceCount": sum(
+            len(item.get("reasons", []))
+            for item in rejected
+        ),
+        "remaining": remaining,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--write", action="store_true")
@@ -929,6 +1255,7 @@ def main() -> int:
 
     records, page_inventory = fetch_all_voice_records(args.wiki_workers)
     record_index = index_records(records)
+    japanese_index = index_records_by_japanese(records)
     manifest = common.load_json(MANIFEST)
     selected_groups = {
         value
@@ -960,6 +1287,7 @@ def main() -> int:
                 import_group(
                     group,
                     record_index,
+                    japanese_index,
                     reaction_groups,
                     write=args.write,
                 )
@@ -983,13 +1311,21 @@ def main() -> int:
         "writeMode": args.write,
         "policy": {
             "sourcePages": "all_main_namespace_pages_ending_/Voice/zh",
-            "fileNameMatch": "exact",
+            "fileNameMatch": (
+                "exact_primary_or_verified_page_unique_japanese_fallback"
+            ),
             "sourceIdentityAliases": STRICT_REACTION_GROUP_ALIASES,
             "sourceIdentityAliasValidation": (
                 "manifest_suffix_sheet_row_action_speaker_"
                 "and_per_event_japanese_exact"
             ),
             "japaneseMatch": "NFKC_then_remove_whitespace_exact",
+            "japaneseAnchorFallback": {
+                "minimumExactSourcesForPageIdentity": 2,
+                "requiresUniqueWikiFileAndChineseIdentity": True,
+                "allowsCrossPageMatch": False,
+                "allowsPartialTextMatch": False,
+            },
             "groupAtomic": True,
             "overwriteExistingChinese": False,
             "usesFuzzyMatching": False,
@@ -1004,6 +1340,15 @@ def main() -> int:
             "pages": page_inventory,
         },
         "counts": counts,
+        "japaneseAnchorRecoveredGroups": sum(
+            item.get("status") in {"ready", "imported"}
+            and int(item.get("japaneseAnchorFallbackCount") or 0) > 0
+            for item in results
+        ),
+        "japaneseAnchorRecoveredSources": sum(
+            int(item.get("japaneseAnchorFallbackCount") or 0)
+            for item in results
+        ),
         "results": results,
     }
     AUDIT_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -1011,6 +1356,14 @@ def main() -> int:
 
     character_audit = evaluate_rejected_character_sources(records)
     CHARACTER_AUDIT_PATH.write_bytes(json_bytes(character_audit))
+    JAPANESE_ANCHOR_AUDIT_PATH.write_bytes(
+        json_bytes(
+            build_japanese_anchor_audit(
+                results,
+                page_inventory,
+            )
+        )
+    )
 
     print(
         json.dumps(

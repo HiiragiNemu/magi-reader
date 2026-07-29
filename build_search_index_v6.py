@@ -34,6 +34,7 @@ DEFAULT_SEARCH_MANIFEST_NAME = "search_index_manifest.json"
 DEFAULT_OBJECT_KEY_PREFIX = "search"
 MAX_SEARCH_INDEX_BYTES = 256 * 1024 * 1024
 MAX_SEARCH_INDEX_ENTRIES = 1_000_000
+SEARCH_INDEX_CHUNK_BYTES = 1024 * 1024
 
 
 def normalize_scene0_extended_lines(content: str) -> str:
@@ -336,6 +337,18 @@ def _normalize_object_key_prefix(value: str) -> str:
     return prefix
 
 
+def _build_search_chunk_records(payload: bytes) -> list[dict[str, Any]]:
+    view = memoryview(payload)
+    return [
+        {
+            "bytes": len(chunk),
+            "sha256": hashlib.sha256(chunk).hexdigest(),
+        }
+        for offset in range(0, len(payload), SEARCH_INDEX_CHUNK_BYTES)
+        for chunk in (view[offset : offset + SEARCH_INDEX_CHUNK_BYTES],)
+    ]
+
+
 def build_search_manifest(
     payload: bytes,
     *,
@@ -355,13 +368,16 @@ def build_search_manifest(
         )
     digest = hashlib.sha256(payload).hexdigest()
     prefix = _normalize_object_key_prefix(object_key_prefix)
+    chunks = _build_search_chunk_records(payload)
     return {
-        "version": 1,
+        "version": 2,
         "sha256": digest,
         "bytes": len(payload),
         "entries": entry_count,
         "object_key": f"{prefix}/{digest}.json",
         "story_index_sha256": hashlib.sha256(story_index_bytes).hexdigest(),
+        "chunk_bytes": SEARCH_INDEX_CHUNK_BYTES,
+        "chunks": chunks,
     }
 
 

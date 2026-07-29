@@ -1,3 +1,8 @@
+import {
+  extractExedraVoiceId,
+  extractMagirecoVoiceId,
+} from './audio/voice-cue.ts';
+
 export type StoryLineKind = 'dialogue' | 'narration' | 'fnarration';
 export type StoryLinePosition = 'left' | 'center' | 'right';
 export type StoryFormat =
@@ -16,6 +21,7 @@ export type StoryLine = {
   sourceFormat?: StoryFormat;
   sourceRow?: number;
   sourceSheet?: string;
+  audioCueId?: string;
   isScene0?: boolean;
   isHeader?: boolean;
   headerId?: string;
@@ -243,13 +249,17 @@ const parsePlainText = (
   const warnings: string[] = [];
   const parsed: StoryLine[] = [];
   let sawScene0 = false;
+  let currentHeaderAudioCueId: string | undefined;
 
   normalizeNewlines(raw).split('\n').forEach((rawLine, index) => {
     const line = rawLine.trim();
     if (!line) return;
 
     if (line.startsWith('---')) {
-      parsed.push(createHeaderLine(line, index));
+      const header = createHeaderLine(line, index);
+      currentHeaderAudioCueId =
+        extractExedraVoiceId(header.headerSourceId || '') || undefined;
+      parsed.push(header);
       return;
     }
 
@@ -271,9 +281,19 @@ const parsePlainText = (
     const scene0Line = parseScene0Line(line, warnings, index + 1);
     if (scene0Line) {
       sawScene0 = true;
-      parsed.push(scene0Line);
+      const audioCueId =
+        extractMagirecoVoiceId(line) || currentHeaderAudioCueId;
+      currentHeaderAudioCueId = undefined;
+      parsed.push({
+        ...scene0Line,
+        audioCueId,
+      });
       return;
     }
+
+    const audioCueId =
+      extractMagirecoVoiceId(line) || currentHeaderAudioCueId;
+    currentHeaderAudioCueId = undefined;
 
     const separatorIndex = line.search(SPEAKER_SEPARATORS);
     const possibleSpeaker = separatorIndex > 0 ? line.slice(0, separatorIndex).trim() : '';
@@ -296,6 +316,7 @@ const parsePlainText = (
         kind: isNarration ? 'narration' : 'dialogue',
         sourceFormat: 'plain-text',
         sourceRow: index + 1,
+        audioCueId,
       });
     } else {
       parsed.push({
@@ -304,6 +325,7 @@ const parsePlainText = (
         kind: 'narration',
         sourceFormat: 'plain-text',
         sourceRow: index + 1,
+        audioCueId,
       });
     }
   });

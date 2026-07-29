@@ -240,6 +240,28 @@ test('preserves parenthesized Exedra source filenames in section anchors', () =>
   assert.equal(result.lines[0].headerId, makeSectionAnchorId(sourceId, '8'));
 });
 
+test('attaches an exact Exedra cv cue from its section source without changing TXT', () => {
+  const content = [
+    '--- [Section 1] (Source: cv_100101_other_story_01.json) ---',
+    '环彩羽: 我会继续前进。',
+    '小丘比: 下一行不应重复整段音频按钮。',
+  ].join('\n');
+  const result = parseStoryContent(content);
+
+  assert.equal(result.lines[1].audioCueId, 'cv_100101_other_story_01');
+  assert.equal(result.lines[2].audioCueId, undefined);
+  assert.equal(serializeStoryLine(result.lines[1]), '环彩羽: 我会继续前进。');
+});
+
+test('attaches a Magireco general voice cue from its visible metadata tag', () => {
+  const result = parseStoryContent([
+    '--- [Section 1] (Source: 303100.json) ---',
+    '绫野梨花: 【vo_char_3031_00_01｜19秒】我是绫野梨花！',
+  ].join('\n'));
+
+  assert.equal(result.lines[1].audioCueId, 'vo_char_3031_00_01');
+});
+
 test('aligns strictly by utterance-block index regardless of text length', () => {
   const cn = parseStoryContent([
     '彩羽: 我最近总是做同一个梦。',
