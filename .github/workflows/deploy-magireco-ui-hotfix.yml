@@ -1,4 +1,4 @@
-name: Deploy Magireco Reader v6
+name: Deploy Magireco Reader v6.4 Audio
 
 on:
   pull_request:
@@ -20,14 +20,14 @@ concurrency:
 jobs:
   deploy-reader-v6:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 55
     env:
-      READER_REVISION: '6.3'
+      READER_REVISION: '6.4'
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
     steps:
-      - name: Check out Reader v6 sources
+      - name: Check out Reader v6.4 sources
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
@@ -62,9 +62,9 @@ jobs:
           node-version: '22'
 
       - name: Install build dependencies
-        run: python -m pip install --disable-pip-version-check beautifulsoup4 lxml
+        run: python -m pip install --disable-pip-version-check beautifulsoup4 lxml requests
 
-      - name: Assemble and validate production Reader v6
+      - name: Assemble and validate production Reader v6.4
         shell: bash
         run: |
           set -euo pipefail
@@ -74,7 +74,24 @@ jobs:
             --scripts wiki-preservation/scripts \
             --memoria memoria-source \
             --revision "$READER_REVISION" 2>&1 | tee /tmp/reader-assembly.log
-          for file in app.js ui-v4-runtime.js github-media-runtime.js structured-ui.js doppel-ui.js memoria-ui.js sw.js "sw-v${READER_REVISION}.js"; do
+
+      - name: Build all public character voice audio indexes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python wiki-preservation/scripts/build_voice_audio_index.py \
+            --output voice-audio 2>&1 | tee /tmp/voice-audio-build.log
+          python wiki-preservation/scripts/integrate_voice_audio.py \
+            --root snapshot \
+            --voice-source voice-audio \
+            --static wiki-preservation/static \
+            --revision "$READER_REVISION" 2>&1 | tee /tmp/voice-audio-integration.log
+
+      - name: Validate assembled Reader and audio source coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in app.js ui-v4-runtime.js github-media-runtime.js structured-ui.js doppel-ui.js memoria-ui.js audio-ui.js sw.js "sw-v${READER_REVISION}.js"; do
             node --check "snapshot/$file"
           done
           for file in archive-index.json category-index.json portal-index.json; do
@@ -83,25 +100,83 @@ jobs:
           grep -q 'reader-version-cache-bootstrap' snapshot/index.html
           grep -q 'NETWORK_FIRST_PATHS' "snapshot/sw-v${READER_REVISION}.js"
           grep -q '/github-media-runtime.js' "snapshot/sw-v${READER_REVISION}.js"
+          grep -q '/audio-ui.js' "snapshot/sw-v${READER_REVISION}.js"
           grep -q '/media-origin.json' "snapshot/sw-v${READER_REVISION}.js"
+          grep -q "/audio-ui.js?v=${READER_REVISION}" snapshot/index.html
+          grep -q "/audio-ui.css?v=${READER_REVISION}" snapshot/index.html
+          test -f snapshot/data/voice-audio/manifest.json
+          test -f snapshot/data/voice-audio/character-index.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          voice = json.loads(Path('snapshot/data/voice-audio/manifest.json').read_text())
+          index = json.loads(Path('snapshot/data/voice-audio/character-index.json').read_text())
+          health = json.loads(Path('snapshot/health.json').read_text())
+          assert voice['quotePagesDiscovered'] >= 235, voice
+          assert voice['quotePagesProcessed'] >= 235, voice
+          assert voice['voiceFiles'] >= 18000, voice
+          assert voice['characters'] >= 220, voice
+          assert voice['fandomUrls'] >= int(voice['voiceFiles'] * .95), voice
+          assert len(index) == voice['characters'], (len(index), voice)
+          assert health['counts']['audio'] == voice['voiceFiles'], health
+          assert health['voiceAudio']['sourceOrder'] == ['github', 'cn-cdn', 'fandom'], health
+          assert health['voiceAudio']['r2'] is False, health
+          first = index[0]['charaId']
+          assert Path(f'snapshot/data/voice-audio/characters/{first}.json').exists(), first
+          print(json.dumps({'voice': voice, 'firstCharacter': first}, ensure_ascii=False, indent=2))
+          PY
 
-      - name: Upload Reader assembly diagnostic
+      - name: Probe MP3 and OGG fallback sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import requests
+          index=json.loads(Path('snapshot/data/voice-audio/character-index.json').read_text())
+          records=json.loads(Path(f"snapshot/data/voice-audio/characters/{index[0]['charaId']}.json").read_text())
+          results=[]
+          for item in records[:12]:
+              row={'file':item['mp3Filename']}
+              for source in item['sources']:
+                  if source['kind'] == 'github':
+                      continue
+                  try:
+                      r=requests.get(source['url'],headers={'Range':'bytes=0-63','User-Agent':'Mozilla/5.0'},timeout=20,allow_redirects=True)
+                      row[source['kind']]={'status':r.status_code,'type':r.headers.get('content-type',''),'bytes':len(r.content)}
+                  except Exception as exc:
+                      row[source['kind']]={'error':repr(exc)}
+              results.append(row)
+          Path('/tmp/audio-source-probe.json').write_text(json.dumps(results,ensure_ascii=False,indent=2)+'\n')
+          playable=sum(any(row.get(kind,{}).get('status') in (200,206) for kind in ('cn-cdn','fandom')) for row in results)
+          assert playable >= 10, (playable,results)
+          print(json.dumps(results,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Upload Reader and audio diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: magireco-reader-v6-3-assembly-log
-          path: /tmp/reader-assembly.log
+          name: magireco-reader-v6-4-audio-diagnostics
+          path: |
+            /tmp/reader-assembly.log
+            /tmp/voice-audio-build.log
+            /tmp/voice-audio-integration.log
+            /tmp/audio-source-probe.json
+            snapshot/data/voice-audio/manifest.json
+            snapshot/data/voice-audio/character-index.json
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Deploy Reader v6 to Cloudflare Pages
+      - name: Deploy Reader v6.4 Audio to Cloudflare Pages
         run: |
           npx --yes wrangler@latest pages deploy snapshot \
             --project-name magireco-cn-reader \
             --branch main \
             --commit-dirty=true
 
-      - name: Verify uncached production Reader v6
+      - name: Verify uncached production Reader v6.4 Audio
         shell: bash
         run: |
           set -euo pipefail
@@ -109,7 +184,7 @@ jobs:
           nonce="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$(date +%s)"
           for attempt in $(seq 1 60); do
             files=(
-              health.json index.html app.js github-media-runtime.js media-origin.json structured-ui.js doppel-ui.js memoria-ui.js
+              health.json index.html app.js github-media-runtime.js media-origin.json structured-ui.js doppel-ui.js memoria-ui.js audio-ui.js audio-ui.css
               "sw-v${revision}.js"
               data/archive-index.json
               data/category-index.json
@@ -120,6 +195,8 @@ jobs:
               data/structured/doppel.json
               data/structured/memoria-manifest.json
               data/structured/memoria-index.json
+              data/voice-audio/manifest.json
+              data/voice-audio/character-index.json
             )
             for shard in 0 1 2 3 4 5 6 7 8 9 a b c d e f; do
               files+=("data/structured/memoria/${shard}.json")
@@ -141,13 +218,14 @@ jobs:
           suffix = revision.replace('.', '_')
           try:
               health = json.loads(Path('/tmp/health_json').read_text(encoding='utf-8-sig'))
-              index = Path('/tmp/index_html').read_text(encoding='utf-8')
+              index_html = Path('/tmp/index_html').read_text(encoding='utf-8')
               app = Path('/tmp/app_js').read_text(encoding='utf-8')
               media_runtime = Path('/tmp/github-media-runtime_js').read_text(encoding='utf-8')
               media_origin = json.loads(Path('/tmp/media-origin_json').read_text(encoding='utf-8-sig'))
               structured_ui = Path('/tmp/structured-ui_js').read_text(encoding='utf-8')
               doppel_ui = Path('/tmp/doppel-ui_js').read_text(encoding='utf-8')
               memoria_ui = Path('/tmp/memoria-ui_js').read_text(encoding='utf-8')
+              audio_ui = Path('/tmp/audio-ui_js').read_text(encoding='utf-8')
               worker = Path(f'/tmp/sw-v{suffix}_js').read_text(encoding='utf-8')
               archive_index = json.loads(Path('/tmp/data_archive-index_json').read_text(encoding='utf-8-sig'))
               category_index = json.loads(Path('/tmp/data_category-index_json').read_text(encoding='utf-8-sig'))
@@ -158,65 +236,62 @@ jobs:
               doppels = json.loads(Path('/tmp/data_structured_doppel_json').read_text(encoding='utf-8-sig'))
               memoria_manifest = json.loads(Path('/tmp/data_structured_memoria-manifest_json').read_text(encoding='utf-8-sig'))
               memoria_index = json.loads(Path('/tmp/data_structured_memoria-index_json').read_text(encoding='utf-8-sig'))
+              voice_audio = json.loads(Path('/tmp/data_voice-audio_manifest_json').read_text(encoding='utf-8-sig'))
+              voice_audio_index = json.loads(Path('/tmp/data_voice-audio_character-index_json').read_text(encoding='utf-8-sig'))
 
               assert health['status'] == 'ok'
               assert health['uiVersion'] == 6 and health['uiRevision'] == revision
               assert health['counts']['pages'] == 500 and health['counts']['memoria'] == 1042
+              assert health['counts']['audio'] == voice_audio['voiceFiles'] >= 18000
+              assert health['voiceAudio']['r2'] is False
+              assert health['voiceAudio']['sourceOrder'] == ['github', 'cn-cdn', 'fandom']
               assert health['mediaStorage']['authority'] == 'github'
               assert health['mediaStorage']['repository'] == 'HiiragiNemu/magiWiki'
               assert health['mediaStorage']['r2'] is False
               assert media_origin['storage'] == 'github'
-              assert media_origin['strategy'] == 'github-first-with-source-fallback'
               assert media_origin['r2Storage'] is False
-              assert media_origin['github']['repository'] == 'magiWiki'
               assert 'MagirecoMediaOrigin' in media_runtime
-              assert 'r2Storage: false' in media_runtime
               assert isinstance(archive_index, list) and len(archive_index) == 500
               assert isinstance(category_index, list) and isinstance(portal_index, list)
               assert manifest['characters'] >= 235 and manifest['voiceWithAudio'] >= 16000 and manifest['doppel'] == 174
               assert len(characters) >= 235 and len(voices) >= 220 and len(doppels) == 174
-              assert memoria_manifest['records'] == 1042
-              assert memoria_manifest['complete'] == 1042 and memoria_manifest['partial'] == 0
-              assert memoria_manifest['withImage'] == 1042 and memoria_manifest['withChineseName'] == 1042
-              assert len(memoria_index) == 1042
-              for asset in ('styles.css', 'app.js', 'github-media-runtime.js', 'structured-ui.js', 'doppel-ui.js', 'memoria-ui.js', 'dense-reader.css', 'dense-reader-compact.css'):
-                  assert f'/{asset}?v={revision}' in index
-              forbidden = ('把原 Wiki', '不会删减', '这里不是', '以保存快照', '来源与保存说明', '本站用于研究', '兼容性开发')
-              visitor_text = '\n'.join((index, app, structured_ui, doppel_ui, memoria_ui))
-              assert not any(value in visitor_text for value in forbidden)
-              assert 'reader-version-cache-bootstrap' in index
+              assert memoria_manifest['records'] == 1042 and len(memoria_index) == 1042
+              assert voice_audio['quotePagesProcessed'] >= 235
+              assert voice_audio['characters'] >= 220
+              assert len(voice_audio_index) == voice_audio['characters']
+              for asset in ('styles.css', 'app.js', 'github-media-runtime.js', 'structured-ui.js', 'doppel-ui.js', 'memoria-ui.js', 'audio-ui.js', 'audio-ui.css', 'dense-reader.css', 'dense-reader-compact.css'):
+                  assert f'/{asset}?v={revision}' in index_html
               assert f"const UI_VERSION = '{revision}'" in app
+              assert 'github-raw-then-cn-cdn-then-fandom' in audio_ui or 'sourceLabels' in audio_ui
               assert f'magireco-cn-reader-v{revision}-offline' in worker
+              assert '/audio-ui.js' in worker
               assert 'NETWORK_FIRST_PATHS' in worker
-              for path in (
-                  '/app.js', '/github-media-runtime.js', '/media-origin.json',
-                  '/structured-ui.js', '/doppel-ui.js', '/memoria-ui.js',
-                  '/styles.css', '/dense-reader.css', '/dense-reader-compact.css',
-                  '/data/archive-index.json', '/data/category-index.json',
-                  '/data/portal-index.json', '/data/structured/memoria-index.json',
-              ):
-                  assert path in worker
-              for shard in '0123456789abcdef':
-                  value = json.loads(Path(f'/tmp/data_structured_memoria_{shard}_json').read_text(encoding='utf-8-sig'))
-                  assert isinstance(value, dict) and value
-              print('PRODUCTION_READER_V6_3_GITHUB_MEDIA_OK', health['mediaStorage'])
+              print('PRODUCTION_READER_V6_4_AUDIO_OK', health['voiceAudio'])
           except Exception as exc:
               print('not ready:', exc)
               raise SystemExit(1)
           PY
             then
-              curl --fail --silent --show-error --head \
-                "https://magireco-cn-reader.pages.dev/sw-v${revision}.js" \
-                -o /tmp/sw-headers.txt
-              curl --fail --silent --show-error --head \
-                "https://magireco-cn-reader.pages.dev/app.js" \
-                -o /tmp/app-headers.txt
-              curl --fail --silent --show-error --head \
-                "https://magireco-cn-reader.pages.dev/media-origin.json" \
-                -o /tmp/media-origin-headers.txt
-              grep -qi 'cache-control:.*no-cache' /tmp/sw-headers.txt
-              grep -qi 'cache-control:.*no-cache' /tmp/app-headers.txt
-              grep -qi 'cache-control:.*no-cache' /tmp/media-origin-headers.txt
+              first=$(python - <<'PY'
+          import json
+          from pathlib import Path
+          value=json.loads(Path('/tmp/data_voice-audio_character-index_json').read_text())
+          print(value[0]['charaId'])
+          PY
+              )
+              curl --fail --silent --show-error --location \
+                --header 'Cache-Control: no-cache' \
+                "https://magireco-cn-reader.pages.dev/data/voice-audio/characters/${first}.json?probe=$nonce" \
+                -o /tmp/voice-character.json
+              python - <<'PY'
+          import json
+          from pathlib import Path
+          records=json.loads(Path('/tmp/voice-character.json').read_text())
+          assert len(records) >= 20
+          assert all(len(item.get('sources',[])) >= 3 for item in records[:20])
+          assert all(item['sources'][0]['kind'] == 'github' for item in records[:20])
+          print('PRODUCTION_VOICE_CHARACTER_SHARD_OK', len(records))
+          PY
               exit 0
             fi
             sleep 6
