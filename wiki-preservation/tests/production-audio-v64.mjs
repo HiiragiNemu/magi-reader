@@ -35,10 +35,13 @@ try {
   if (indexMetrics.title !== '角色语音') throw new Error(`语音标题错误：${indexMetrics.title}`);
   await page.screenshot({ path: `${output}/01-audio-index-mobile.png` });
 
-  await page.locator('.voice-character-card').first().click();
+  // Character 1001 is a stable three-source validation target. The first
+  // alphabetically sorted character may legitimately be one of the 144 records
+  // still absent from public fallback indexes.
+  await page.goto(`${base}?audio-character-test=${Date.now()}#/audio/1001`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
   await page.waitForSelector('.voice-audio-list .voice-audio-card audio', { timeout: 45_000 });
   const players = await page.locator('.voice-audio-card audio').count();
-  if (players < 20) throw new Error(`角色语音播放器数量过少：${players}`);
+  if (players < 20) throw new Error(`角色1001语音播放器数量过少：${players}`);
 
   const select = page.locator('#audio-costume');
   const optionCount = await select.locator('option').count();
@@ -68,8 +71,10 @@ try {
       status,
       title: document.querySelector('.voice-audio-page h1')?.textContent || '',
       selectedCostume: document.querySelector('#audio-costume')?.value || '',
+      hash: location.hash,
     };
   });
+  if (detailMetrics.hash !== '#/audio/1001') throw new Error(`角色语音路由错误：${detailMetrics.hash}`);
   if (detailMetrics.documentWidth > detailMetrics.viewport + 2) throw new Error(`语音详情横向溢出：${JSON.stringify(detailMetrics)}`);
   if (!/raw\.githubusercontent\.com|cdn\.mfjl\.wiki|wikia|nocookie/i.test(detailMetrics.currentSrc)) {
     throw new Error(`播放器没有使用允许的GitHub/CDN/Fandom来源：${JSON.stringify(detailMetrics)}`);
@@ -90,7 +95,13 @@ try {
   const manifestResponse = await page.request.get(`${base}data/voice-audio/manifest.json?test=${Date.now()}`);
   if (!manifestResponse.ok()) throw new Error(`语音manifest HTTP ${manifestResponse.status()}`);
   const manifest = await manifestResponse.json();
-  if (manifest.voiceFiles < 18000 || manifest.characters < 220 || manifest.fandomUrls < 17000) {
+  if (
+    manifest.voiceFiles < 18000 ||
+    manifest.characters < 220 ||
+    manifest.fandomUrls < 17000 ||
+    manifest.knownPrivateAudioFiles !== 21225 ||
+    manifest.unindexedAgainstPrivateManifest > 200
+  ) {
     throw new Error(`语音完整性不足：${JSON.stringify(manifest)}`);
   }
 
