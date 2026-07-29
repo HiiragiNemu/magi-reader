@@ -159,10 +159,12 @@ jobs:
         working-directory: website
         env:
           KV_NAMESPACE_ID: ${{ steps.kv.outputs.namespace_id }}
-          # The bucket name was independently verified against the managed
-          # r2.dev domain. Keep it as a fallback when the CI token can deploy
-          # Workers but cannot enumerate R2 buckets.
-          VOICE_R2_BUCKET_NAME: ${{ steps.voice_r2.outputs.bucket_name || 'live2dv4' }}
+          # Only add an R2 binding when this deployment credential could
+          # validate the exact managed-domain owner. A Workers-only token
+          # cannot deploy a config containing an R2 binding, even when the
+          # bucket name is already known; the browser then uses the audited
+          # fixed-origin CORS fallback instead.
+          VOICE_R2_BUCKET_NAME: ${{ steps.voice_r2.outputs.bucket_name }}
           TURNSTILE_SITE_KEY: ${{ steps.turnstile.outputs.site_key }}
           TURNSTILE_TEST_MODE: ${{ steps.turnstile.outputs.test_mode }}
           SOURCE_COMMIT: ${{ github.sha }}
@@ -591,6 +593,7 @@ jobs:
           set -euo pipefail
           site_url="https://${TEST_WORKER_HOSTNAME}"
           hca_sample="$RUNNER_TEMP/voice-sample.hca"
+          hca_headers="$RUNNER_TEMP/voice-sample.headers"
           ogg_sample="$RUNNER_TEMP/exedra-local-sample.ogg"
           wasm_sample="$RUNNER_TEMP/hca-wasm.wasm"
 
@@ -625,9 +628,38 @@ jobs:
             return 1
           }
 
-          fetch_exact_asset \
+          # Prefer the same-origin Worker route. If the deployment credential
+          # cannot bind R2 and Workers cannot reach r2.dev server-side, verify
+          # the exact browser fallback including its CORS grant instead.
+          if ! fetch_exact_asset \
             "$site_url/api/audio/magireco-voice/vo_char_3031_00_01" \
-            "$hca_sample" 256 0-255
+            "$hca_sample" 256 0-255; then
+            direct_voice_url="https://${MAGIRECO_VOICE_R2_DOMAIN}/voice/vo_char_3031_00_01_hca.hca"
+            code="$(
+              curl -L --silent --show-error --range 0-255 \
+                -H "Origin: $site_url" \
+                -D "$hca_headers" \
+                -o "$hca_sample" -w '%{http_code}' \
+                "$direct_voice_url"
+            )"
+            if [ "$code" != 206 ] || [ "$(wc -c < "$hca_sample")" -ne 256 ]; then
+              echo "Browser voice fallback did not return the bounded HCA range." >&2
+              exit 1
+            fi
+            python3 - "$hca_headers" "$site_url" <<'PY'
+          import sys
+          from pathlib import Path
+
+          headers = Path(sys.argv[1]).read_text(
+              encoding='iso-8859-1', errors='strict'
+          )
+          expected = f'access-control-allow-origin: {sys.argv[2]}'.lower()
+          if expected not in headers.lower():
+              raise SystemExit(
+                  'Browser voice fallback is missing the exact test-site CORS grant'
+              )
+          PY
+          fi
           fetch_exact_asset \
             "$site_url/audio/exedra-local/cv_namae_call_01.ogg" \
             "$ogg_sample" 12988

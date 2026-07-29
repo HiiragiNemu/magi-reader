@@ -227,7 +227,11 @@ test('isolated Exedra deployment smoke-tests both voice systems and the decoder'
   );
   assert.match(
     workflow,
-    /VOICE_R2_BUCKET_NAME: \$\{\{ steps\.voice_r2\.outputs\.bucket_name \|\| 'live2dv4' \}\}/u,
+    /VOICE_R2_BUCKET_NAME: \$\{\{ steps\.voice_r2\.outputs\.bucket_name \}\}/u,
+  );
+  assert.doesNotMatch(
+    workflow,
+    /steps\.voice_r2\.outputs\.bucket_name \|\|/u,
   );
   assert.match(
     workflow,
@@ -238,6 +242,14 @@ test('isolated Exedra deployment smoke-tests both voice systems and the decoder'
   assert.match(
     workflow,
     /api\/audio\/magireco-voice\/vo_char_3031_00_01/u,
+  );
+  assert.match(
+    workflow,
+    /Origin: \$site_url/u,
+  );
+  assert.match(
+    workflow,
+    /access-control-allow-origin/u,
   );
   assert.match(
     workflow,
