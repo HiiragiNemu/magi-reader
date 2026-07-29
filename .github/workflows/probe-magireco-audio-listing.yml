@@ -1,0 +1,41 @@
+name: Probe Magireco Audio Listing
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'wiki-preservation/scripts/probe_audio_listing.py'
+      - '.github/workflows/probe-magireco-audio-listing.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out audio probe
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            wiki-preservation/scripts/probe_audio_listing.py
+          sparse-checkout-cone-mode: true
+          show-progress: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install parser dependencies
+        run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+      - name: Probe public audio listing
+        run: python wiki-preservation/scripts/probe_audio_listing.py
+      - name: Upload diagnostic pages
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-audio-listing-probe
+          path: audio-probe
+          if-no-files-found: warn
+          retention-days: 7
