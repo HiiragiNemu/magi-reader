@@ -82,9 +82,31 @@ def list_quote_pages(session: requests.Session) -> list[str]:
     return sorted(set(titles))
 
 
+def list_page_media_titles(session: requests.Session, page_title: str) -> list[str]:
+    titles: list[str] = []
+    cont: dict[str, str] = {}
+    while True:
+        payload = api(
+            session,
+            action="query",
+            prop="images",
+            titles=page_title,
+            imlimit="max",
+            **cont,
+        )
+        for page in payload.get("query", {}).get("pages", []):
+            titles.extend(
+                item.get("title", "")
+                for item in page.get("images", [])
+                if item.get("title")
+            )
+        if "continue" not in payload:
+            break
+        cont = payload["continue"]
+    return titles
+
+
 def decoded_markup(value: str) -> str:
-    # Fandom embeds filenames in ordinary hrefs, data-source attributes and
-    # JSON-ish player attributes. Decode URL and HTML escaping before matching.
     previous = value
     for _ in range(3):
         current = unquote(html_lib.unescape(previous))
@@ -94,7 +116,7 @@ def decoded_markup(value: str) -> str:
     return previous.replace("\\/", "/")
 
 
-def row_label(node: Tag | None, filename: str) -> str:
+def clean_label(node: Tag | None, filename: str) -> str:
     if node is None:
         return filename
     text = re.sub(r"\s+", " ", node.get_text(" ", strip=True)).strip()
@@ -102,14 +124,48 @@ def row_label(node: Tag | None, filename: str) -> str:
     return text[:1600] or filename
 
 
-def append_matches(
-    records: list[dict],
-    seen: set[str],
-    markup: str,
-    page_title: str,
-    node: Tag | None,
-) -> None:
-    for match in VOICE_TOKEN_RE.finditer(decoded_markup(markup)):
+def html_labels(html: str) -> dict[str, str]:
+    soup = BeautifulSoup(html, "lxml")
+    labels: dict[str, str] = {}
+    for row in soup.select("tr, li"):
+        serialized = decoded_markup(str(row))
+        for match in VOICE_TOKEN_RE.finditer(serialized):
+            stem = canonical_stem(match.group(1))
+            labels.setdefault(stem.casefold(), clean_label(row, f"{stem}.ogg"))
+    return labels
+
+
+def extract_file_records(session: requests.Session, page_title: str) -> list[dict]:
+    parse_payload = api(session, action="parse", page=page_title, prop="text|displaytitle")
+    html = parse_payload.get("parse", {}).get("text", "")
+    labels = html_labels(html)
+    actual_titles = list_page_media_titles(session, page_title)
+    records: list[dict] = []
+    seen: set[str] = set()
+
+    # MediaWiki's page image list supplies canonical File titles. This is more
+    # reliable than reconstructing them from Fandom player attributes.
+    for title in actual_titles:
+        bare = title.split(":", 1)[-1].replace(" ", "_")
+        match = VOICE_TOKEN_RE.search(decoded_markup(bare))
+        if not match:
+            continue
+        stem = canonical_stem(match.group(1))
+        mp3_name = canonical_mp3(stem)
+        if mp3_name in seen:
+            continue
+        seen.add(mp3_name)
+        records.append({
+            "pageTitle": page_title,
+            "characterName": page_title.removesuffix("/Quotes").replace("_", " "),
+            "fandomFileTitle": title,
+            "mp3Filename": mp3_name,
+            "label": labels.get(stem.casefold(), mp3_name),
+        })
+
+    # Fallback for audio player references omitted from prop=images.
+    decoded = decoded_markup(html)
+    for match in VOICE_TOKEN_RE.finditer(decoded):
         stem = canonical_stem(match.group(1))
         mp3_name = canonical_mp3(stem)
         if mp3_name in seen:
@@ -120,28 +176,8 @@ def append_matches(
             "characterName": page_title.removesuffix("/Quotes").replace("_", " "),
             "fandomFileTitle": f"File:{stem}.ogg",
             "mp3Filename": mp3_name,
-            "label": row_label(node, mp3_name),
+            "label": labels.get(stem.casefold(), mp3_name),
         })
-
-
-def extract_file_records(session: requests.Session, page_title: str) -> list[dict]:
-    payload = api(session, action="parse", page=page_title, prop="text|displaytitle")
-    html = payload.get("parse", {}).get("text", "")
-    soup = BeautifulSoup(html, "lxml")
-    records: list[dict] = []
-    seen: set[str] = set()
-
-    # Quotes pages are predominantly tables. Parsing rows first associates the
-    # filename with its visible Japanese/English label instead of losing text.
-    for row in soup.select("tr, li"):
-        serialized = str(row)
-        if "Vo_" not in serialized and "vo_" not in serialized:
-            continue
-        append_matches(records, seen, serialized, page_title, row)
-
-    # Some skins/player widgets keep the audio source outside the table row.
-    # A full-page pass guarantees those filenames are still retained.
-    append_matches(records, seen, html, page_title, None)
     return records
 
 
