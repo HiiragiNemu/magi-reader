@@ -1,3 +1,89 @@
+@media (max-width: 1000px) {
+  /* Preserved MediaWiki pages contain legacy float/infobox classes. On narrow
+     viewports they must become normal blocks or the following text collapses
+     into a thin column beside them. */
+  .wiki-document .floatleft,
+  .wiki-document .tleft,
+  .wiki-document .floatright,
+  .wiki-document .tright,
+  .wiki-document .thumb,
+  .wiki-document .infobox,
+  .wiki-document table[align="left"],
+  .wiki-document table[align="right"],
+  .wiki-document div[align="left"],
+  .wiki-document div[align="right"] {
+    float: none !important;
+    clear: both !important;
+    max-width: 100% !important;
+    margin-inline: 0 !important;
+  }
+
+  .wiki-document .infobox {
+    width: 100% !important;
+    margin-block: .8rem !important;
+  }
+
+  .wiki-document .notice.metadata,
+  .wiki-document #disambig {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    align-items: flex-start;
+    gap: .55rem;
+    margin: 0 0 .8rem !important;
+    padding: .65rem .75rem;
+    border: 1px solid var(--line);
+    border-radius: .65rem;
+    background: color-mix(in srgb, var(--paper-2) 90%, transparent);
+  }
+
+  .wiki-document .notice.metadata > .floatleft,
+  .wiki-document #disambig > .floatleft {
+    display: block !important;
+    flex: 0 0 auto;
+    width: auto !important;
+    margin: 0 !important;
+  }
+
+  .wiki-document .notice.metadata .hatnote,
+  .wiki-document #disambig .hatnote {
+    display: block !important;
+    flex: 1 1 auto;
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.65;
+  }
+
+  .wiki-document .notice.metadata img,
+  .wiki-document #disambig img {
+    display: block;
+    width: auto !important;
+    max-width: 2rem !important;
+    height: auto !important;
+    margin: .1rem 0 0 !important;
+  }
+
+  .wiki-document .cquote,
+  .wiki-document > table,
+  .wiki-document > div,
+  .wiki-document > p,
+  .wiki-document > section {
+    max-width: 100% !important;
+  }
+
+  .wiki-document > p,
+  .wiki-document > h2,
+  .wiki-document > h3,
+  .wiki-document > h4,
+  .wiki-document > ul,
+  .wiki-document > ol,
+  .wiki-document > blockquote {
+    clear: both;
+  }
+}
+
 @media (max-width: 760px) {
   /* backdrop-filter creates a containing block for fixed descendants in
      Chromium/WebKit. Remove it so the appearance panel is fixed to viewport. */
@@ -29,5 +115,15 @@
 
   .display-panel .segmented button {
     min-height: 2.65rem;
+  }
+
+  .wiki-document .notice.metadata,
+  .wiki-document #disambig {
+    padding: .55rem .6rem;
+    font-size: .92em;
+  }
+
+  .wiki-document .table-viewport {
+    margin-inline: 0;
   }
 }
