@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 from pathlib import Path
 
@@ -59,6 +60,40 @@ def localize_character_index(root: Path, destination: Path) -> dict[str, int]:
         "localized": localized,
         "unmatched": len(audio_index) - localized,
     }
+
+
+def patch_worker(path: Path) -> None:
+    if not path.exists():
+        raise RuntimeError(f"Service Worker missing: {path}")
+    text = path.read_text(encoding="utf-8")
+    if text.count("const NETWORK_FIRST_PATHS") != 1:
+        raise RuntimeError(f"NETWORK_FIRST_PATHS declaration count invalid before audio patch: {path}")
+    if "/audio-ui.js" not in text:
+        pattern = re.compile(r"(const\s+NETWORK_FIRST_PATHS\s*=\s*new\s+Set\s*\(\s*\[)")
+        text, count = pattern.subn(
+            r"\1\n  '/audio-ui.js',\n  '/audio-ui.css',",
+            text,
+            count=1,
+        )
+        if count != 1:
+            raise RuntimeError(f"NETWORK_FIRST_PATHS set marker missing: {path}")
+    if text.count("const NETWORK_FIRST_PATHS") != 1:
+        raise RuntimeError(f"NETWORK_FIRST_PATHS declaration count invalid after audio patch: {path}")
+    for value in ("/audio-ui.js", "/audio-ui.css"):
+        if value not in text:
+            raise RuntimeError(f"audio update path missing from worker: {value}")
+    path.write_text(text, encoding="utf-8")
+
+
+def patch_headers(path: Path) -> None:
+    text = path.read_text(encoding="utf-8") if path.exists() else ""
+    block = (
+        "/audio-ui.js\n  Cache-Control: no-cache, no-store, must-revalidate\n\n"
+        "/audio-ui.css\n  Cache-Control: no-cache, no-store, must-revalidate\n"
+    )
+    if "/audio-ui.js\n" not in text:
+        text = text.rstrip() + "\n\n" + block
+    path.write_text(text, encoding="utf-8")
 
 
 def integrate(root: Path, voice_source: Path, static: Path, revision: str) -> dict:
@@ -140,18 +175,11 @@ def integrate(root: Path, voice_source: Path, static: Path, revision: str) -> di
         runtime_manifest["voiceAudio"] = health["voiceAudio"]
         dump(runtime_manifest_path, runtime_manifest)
 
-    # Versioned service worker already applies stale-while-revalidate to all
-    # same-origin /data/*.json and JS/CSS, so no media binary enters Pages/R2.
-    worker_path = root / f"sw-v{revision}.js"
-    if worker_path.exists():
-        worker = worker_path.read_text(encoding="utf-8")
-        if "/audio-ui.js" not in worker and "const NETWORK_FIRST_PATHS = [" in worker:
-            worker = worker.replace(
-                "const NETWORK_FIRST_PATHS = [",
-                "const NETWORK_FIRST_PATHS = [\n  '/audio-ui.js',\n  '/audio-ui.css',",
-                1,
-            )
-            worker_path.write_text(worker, encoding="utf-8")
+    # No media binary enters Pages/R2. Only same-origin indexes and UI files are
+    # cached; actual MP3/OGG requests remain cross-origin and range-capable.
+    patch_worker(root / "sw.js")
+    patch_worker(root / f"sw-v{revision}.js")
+    patch_headers(root / "_headers")
 
     return {"health": health, "voiceAudio": manifest, "localization": localization}
 
