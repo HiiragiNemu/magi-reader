@@ -7,6 +7,8 @@ import re
 import shutil
 from pathlib import Path
 
+KNOWN_PRIVATE_AUDIO_FILES = 21225
+
 
 def load(path: Path):
     return json.loads(path.read_text(encoding="utf-8-sig"))
@@ -105,8 +107,6 @@ def integrate(root: Path, voice_source: Path, static: Path, revision: str) -> di
     for name in ("audio-ui.js", "audio-ui.css"):
         shutil.copy2(static / name, root / name)
 
-    # Reuse the existing visible Voice navigation rather than showing two
-    # competing "语音" entries. The dedicated application owns #/audio.
     runtime_path = root / "audio-ui.js"
     runtime = runtime_path.read_text(encoding="utf-8")
     runtime = patch_once(
@@ -138,16 +138,30 @@ def integrate(root: Path, voice_source: Path, static: Path, revision: str) -> di
 
     manifest = load(destination / "manifest.json")
     manifest["localization"] = localization
+    manifest["knownPrivateAudioFiles"] = KNOWN_PRIVATE_AUDIO_FILES
+    manifest["unindexedAgainstPrivateManifest"] = max(
+        0, KNOWN_PRIVATE_AUDIO_FILES - int(manifest["voiceFiles"])
+    )
+    manifest["coveragePercent"] = round(
+        int(manifest["voiceFiles"]) * 100 / KNOWN_PRIVATE_AUDIO_FILES,
+        4,
+    )
     dump(destination / "manifest.json", manifest)
+
     health_path = root / "health.json"
     health = load(health_path)
     health.setdefault("counts", {})["audio"] = manifest["voiceFiles"]
+    health["counts"]["audioKnownPrivate"] = KNOWN_PRIVATE_AUDIO_FILES
+    health["counts"]["audioPendingIndex"] = manifest["unindexedAgainstPrivateManifest"]
     health["counts"]["voiceAudio"] = manifest["characterVoiceFiles"]
     health["counts"]["voiceAudioCharacters"] = manifest["characters"]
     health["voiceAudio"] = {
         "schemaVersion": manifest["schemaVersion"],
         "quotePages": manifest["quotePagesProcessed"],
         "files": manifest["voiceFiles"],
+        "knownPrivateFiles": KNOWN_PRIVATE_AUDIO_FILES,
+        "pendingIndex": manifest["unindexedAgainstPrivateManifest"],
+        "coveragePercent": manifest["coveragePercent"],
         "characters": manifest["characters"],
         "localizedCharacters": localization["localized"],
         "fandomFallbacks": manifest["fandomUrls"],
@@ -162,6 +176,7 @@ def integrate(root: Path, voice_source: Path, static: Path, revision: str) -> di
         "costume-and-line-audio-search",
         "single-active-audio-playback",
         "no-r2-audio-storage",
+        "explicit-private-audio-coverage-gap",
     ):
         if value not in features:
             features.append(value)
@@ -171,12 +186,12 @@ def integrate(root: Path, voice_source: Path, static: Path, revision: str) -> di
     if runtime_manifest_path.exists():
         runtime_manifest = load(runtime_manifest_path)
         runtime_manifest.setdefault("counts", {})["audio"] = manifest["voiceFiles"]
+        runtime_manifest["counts"]["audioKnownPrivate"] = KNOWN_PRIVATE_AUDIO_FILES
+        runtime_manifest["counts"]["audioPendingIndex"] = manifest["unindexedAgainstPrivateManifest"]
         runtime_manifest["counts"]["voiceAudioCharacters"] = manifest["characters"]
         runtime_manifest["voiceAudio"] = health["voiceAudio"]
         dump(runtime_manifest_path, runtime_manifest)
 
-    # No media binary enters Pages/R2. Only same-origin indexes and UI files are
-    # cached; actual MP3/OGG requests remain cross-origin and range-capable.
     patch_worker(root / "sw.js")
     patch_worker(root / f"sw-v{revision}.js")
     patch_headers(root / "_headers")
