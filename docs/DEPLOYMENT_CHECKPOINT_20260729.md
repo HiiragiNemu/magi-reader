@@ -31,14 +31,18 @@ range header: bytes 0-255/165744
 ## Remediation
 
 1. The deployment discovers the bucket by exact managed-domain equality and
-   binds it to the Worker as `MAGIRECO_VOICE_R2`.
-2. The known verified bucket name `live2dv4` is used if the deployment token
-   can edit Workers but cannot enumerate R2 buckets.
+   binds it to the Worker as `MAGIRECO_VOICE_R2` only when the deployment
+   credential can validate and use R2.
+2. A Workers-only deployment credential does not receive an R2 binding,
+   because Cloudflare rejects such configurations before publishing. In that
+   case the reader uses the audited fixed-origin browser fallback.
 3. The API route performs bounded, streamed R2 reads and preserves HTTP range
    metadata.
 4. The fixed public R2 origin remains a bounded server fallback.
 5. The browser player falls back to the same fixed origin only for transient
-   proxy errors. Definitive 4xx responses are not retried.
+   proxy errors. Definitive 4xx responses are not retried. Deployment smoke
+   testing verifies the exact CORS origin and a 256-byte HCA range when the
+   Worker binding is unavailable.
 6. The R2 CORS policy preserves all prior Viewer origins and additionally
    allows only the Exedra test Worker origin used by this site.
 
