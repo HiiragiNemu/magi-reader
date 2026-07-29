@@ -22,11 +22,51 @@ def patch_once(text: str, old: str, new: str, label: str) -> str:
     return text.replace(old, new, 1)
 
 
+def localize_character_index(root: Path, destination: Path) -> dict[str, int]:
+    audio_path = destination / "character-index.json"
+    structured_path = root / "data" / "structured" / "voice-index.json"
+    audio_index = load(audio_path)
+    structured = load(structured_path) if structured_path.exists() else []
+    by_chara: dict[str, dict] = {}
+    for item in structured:
+        for chara_id in item.get("charaIds") or []:
+            key = str(chara_id)
+            current = by_chara.get(key)
+            if current is None or int(item.get("lineCount") or 0) > int(current.get("lineCount") or 0):
+                by_chara[key] = item
+
+    localized = 0
+    for item in audio_index:
+        matched = by_chara.get(str(item.get("charaId")))
+        if not matched:
+            continue
+        original_name = item.get("name") or ""
+        item["englishName"] = original_name
+        item["name"] = matched.get("title") or original_name
+        item["baseName"] = matched.get("baseName") or item["name"]
+        item["voiceActor"] = matched.get("voiceActor") or ""
+        item["imageUrl"] = matched.get("imageUrl")
+        item["structuredId"] = matched.get("id")
+        localized += 1
+    audio_index.sort(key=lambda item: (
+        str(item.get("baseName") or item.get("name") or "").casefold(),
+        str(item.get("name") or "").casefold(),
+        str(item.get("charaId") or ""),
+    ))
+    dump(audio_path, audio_index)
+    return {
+        "records": len(audio_index),
+        "localized": localized,
+        "unmatched": len(audio_index) - localized,
+    }
+
+
 def integrate(root: Path, voice_source: Path, static: Path, revision: str) -> dict:
     destination = root / "data" / "voice-audio"
     if destination.exists():
         shutil.rmtree(destination)
     shutil.copytree(voice_source, destination)
+    localization = localize_character_index(root, destination)
     for name in ("audio-ui.js", "audio-ui.css"):
         shutil.copy2(static / name, root / name)
 
@@ -62,6 +102,8 @@ def integrate(root: Path, voice_source: Path, static: Path, revision: str) -> di
     index_path.write_text(index, encoding="utf-8")
 
     manifest = load(destination / "manifest.json")
+    manifest["localization"] = localization
+    dump(destination / "manifest.json", manifest)
     health_path = root / "health.json"
     health = load(health_path)
     health.setdefault("counts", {})["audio"] = manifest["voiceFiles"]
@@ -72,6 +114,7 @@ def integrate(root: Path, voice_source: Path, static: Path, revision: str) -> di
         "quotePages": manifest["quotePagesProcessed"],
         "files": manifest["voiceFiles"],
         "characters": manifest["characters"],
+        "localizedCharacters": localization["localized"],
         "fandomFallbacks": manifest["fandomUrls"],
         "sourceOrder": ["github", "cn-cdn", "fandom"],
         "r2": False,
@@ -79,6 +122,7 @@ def integrate(root: Path, voice_source: Path, static: Path, revision: str) -> di
     features = health.setdefault("uiFeatures", [])
     for value in (
         "full-character-voice-audio-index",
+        "chinese-character-name-merge",
         "github-cdn-fandom-audio-fallback",
         "costume-and-line-audio-search",
         "single-active-audio-playback",
@@ -109,7 +153,7 @@ def integrate(root: Path, voice_source: Path, static: Path, revision: str) -> di
             )
             worker_path.write_text(worker, encoding="utf-8")
 
-    return {"health": health, "voiceAudio": manifest}
+    return {"health": health, "voiceAudio": manifest, "localization": localization}
 
 
 def main() -> None:
