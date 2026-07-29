@@ -20,8 +20,10 @@
     "verify:cloudflare-output": "node scripts/verify-cloudflare-output.mjs",
     "check": "npm run validate:feature && npm run test:python && npm run lint && npm run type-check && npm test && npm run audit:prod",
     "build:worker": "node scripts/verify-cloudflare-output.mjs --build",
+    "build:pages": "npm run build:worker && node scripts/prepare-pages.js",
     "preview": "npm run build:worker && opennextjs-cloudflare preview",
     "deploy:worker": "npm run verify:cloudflare-config && npm run build:worker && opennextjs-cloudflare deploy",
+    "deploy:pages": "npm run build:pages && wrangler pages deploy .pages-deploy",
     "predeploy:test:direct": "npm run validate:feature && npm run test:python",
     "deploy:test:direct": "node scripts/deploy-direct.mjs"
   },

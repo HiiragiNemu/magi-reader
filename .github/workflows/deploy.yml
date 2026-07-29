@@ -1,24 +1,39 @@
-
-name: Deploy to Cloudflare Workers
+name: Deploy to Cloudflare Pages
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      pages_branch:
+        description: Pages preview branch (main deploys production)
+        required: true
+        default: promotion-current
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: deploy-production
+  group: deploy-pages-${{ github.event_name == 'push' && 'main' || inputs.pages_branch }}
   cancel-in-progress: true
 
 jobs:
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: ./website
+    env:
+      PAGES_PROJECT_NAME: magireader
+      PAGES_BRANCH: ${{ github.event_name == 'push' && 'main' || inputs.pages_branch }}
+      PAGES_ENVIRONMENT: ${{ (github.event_name == 'push' || inputs.pages_branch == 'main') && 'production' || 'preview' }}
+      SERVER_GITHUB_TOKEN: ${{ secrets.PROOFREADING_GITHUB_TOKEN || secrets.TARGET_REPO_TOKEN }}
+      SHARED_ADMIN_TOKEN: ${{ secrets.SUBMISSIONS_ADMIN_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
@@ -26,6 +41,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
 
       - uses: actions/setup-python@v5
         with:
@@ -34,58 +51,117 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Type check
-        run: npm run type-check
-
-      - name: Test
-        run: npm test
-
-      - name: Test data pipeline
-        working-directory: .
-        run: python -m unittest discover -s tests -p "test_*.py"
+      - name: Run complete checks
+        run: npm run check
 
       - name: Generate deployable story catalogue
         working-directory: .
         run: python generate_story_index.py
 
-      - name: Build and validate search index
-        id: search
+      - name: Resolve Turnstile credentials
+        id: turnstile
+        env:
+          REAL_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
+          REAL_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/magi-reader-search"
-          payload="$RUNNER_TEMP/magi-reader-search/search_content.json"
-          python ../build_search_index_v6.py             --output "$payload"
-          python ../build_search_index_v6.py             --output "$payload"             --validate-only
-          object_key="$(node --input-type=module -e "import fs from 'node:fs'; const manifest = JSON.parse(fs.readFileSync('public/search_index_manifest.json', 'utf8')); if (!/^search\/[a-f0-9]{64}\.json$/.test(manifest.object_key)) process.exit(1); process.stdout.write(manifest.object_key);")"
-          echo "object_key=$object_key" >> "$GITHUB_OUTPUT"
+          if [ -n "$REAL_SITE_KEY" ] && [ -n "$REAL_SECRET_KEY" ]; then
+            site_key="$REAL_SITE_KEY"
+            secret_key="$REAL_SECRET_KEY"
+            test_mode=false
+          else
+            site_key='1x00000000000000000000AA'
+            secret_key='1x0000000000000000000000000000000AA'
+            test_mode=true
+            echo "::warning::Using Cloudflare Turnstile test keys. Configure TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY before public launch."
+          fi
+          echo "site_key=$site_key" >> "$GITHUB_OUTPUT"
+          echo "test_mode=$test_mode" >> "$GITHUB_OUTPUT"
+          echo "TURNSTILE_SECRET_KEY_VALUE=$secret_key" >> "$GITHUB_ENV"
+          echo "::add-mask::$secret_key"
 
-      - name: Build Cloudflare Worker
-        run: npm run build:worker
+      - name: Build safe Pages advanced-mode output
+        run: npm run build:pages
 
-      - name: Prepare deployment bindings
+      - name: Verify server implementation is not exposed as public assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .pages-deploy/_worker.js
+          for forbidden in app-worker.js server-functions middleware cloudflare .build; do
+            if find .pages-deploy -mindepth 1 -maxdepth 2 -name "$forbidden" -print -quit | grep -q .; then
+              echo "::error::Unsafe Pages public asset: $forbidden"
+              exit 1
+            fi
+          done
+
+      - name: Configure Pages Functions bindings
         env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           SUBMISSIONS_KV_NAMESPACE_ID: ${{ secrets.SUBMISSIONS_KV_NAMESPACE_ID }}
-        run: node scripts/verify-cloudflare-config.mjs --output .wrangler-deploy.jsonc
+          TURNSTILE_SITE_KEY: ${{ steps.turnstile.outputs.site_key }}
+          TURNSTILE_SECRET_KEY: ${{ env.TURNSTILE_SECRET_KEY_VALUE }}
+          TURNSTILE_TEST_MODE: ${{ steps.turnstile.outputs.test_mode }}
+          TURNSTILE_ALLOWED_HOSTNAMES: >-
+            magireader.pages.dev,${{ env.PAGES_BRANCH }}.magireader.pages.dev
+          PROOFREADING_GITHUB_TOKEN: ${{ env.SERVER_GITHUB_TOKEN }}
+          SUBMISSIONS_ADMIN_TOKEN: ${{ env.SHARED_ADMIN_TOKEN }}
+        run: node scripts/configure-pages-project.mjs
 
-      - name: Upload content-addressed search index
+      - name: Deploy Pages
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
         run: >-
-          npx wrangler r2 object put
-          "magi-assets/${{ steps.search.outputs.object_key }}"
-          --file "$RUNNER_TEMP/magi-reader-search/search_content.json"
-          --content-type "application/json; charset=utf-8"
-          --cache-control "public, max-age=31536000, immutable"
-          --remote
-          --force
+          npx wrangler pages deploy .pages-deploy
+          --project-name "$PAGES_PROJECT_NAME"
+          --branch "$PAGES_BRANCH"
+          --commit-hash "$GITHUB_SHA"
+          --commit-message "MagiReader $GITHUB_SHA"
 
-      - name: Deploy Worker with search manifest
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-        run: npx opennextjs-cloudflare deploy --config .wrangler-deploy.jsonc
+      - name: Smoke test Pages deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$PAGES_ENVIRONMENT" = production ]; then
+            base='https://magireader.pages.dev'
+          else
+            base="https://${PAGES_BRANCH}.magireader.pages.dev"
+          fi
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error --max-time 30 "$base/" >/tmp/home.html &&
+               curl --fail --silent --show-error --max-time 30 "$base/story_index.json" >/tmp/story_index.json &&
+               curl --fail --silent --show-error --max-time 30 "$base/api/proofreading/config" >/tmp/config.json &&
+               curl --fail --silent --show-error --max-time 30 "$base/api/proofreading/machine-status" >/tmp/status.json &&
+               curl --fail --silent --show-error --max-time 30 "$base/data/exedra_character/character_asuka/character_asuka_cn.txt" >/tmp/asuka.txt &&
+               curl --fail --silent --show-error --max-time 30 "$base/data/exedra_character/character_asuka/character_asuka_0.json" >/tmp/asuka.json; then
+              break
+            fi
+            if [ "$attempt" -eq 12 ]; then
+              echo "::error::Pages smoke test did not become healthy."
+              exit 1
+            fi
+            sleep 10
+          done
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const index = JSON.parse(fs.readFileSync('/tmp/story_index.json', 'utf8'));
+          const config = JSON.parse(fs.readFileSync('/tmp/config.json', 'utf8'));
+          const status = JSON.parse(fs.readFileSync('/tmp/status.json', 'utf8'));
+          const asuka = JSON.parse(fs.readFileSync('/tmp/asuka.json', 'utf8'));
+          if (!Array.isArray(index) || index.length < 3000) throw new Error('story index is incomplete');
+          if (config.source_revision !== process.env.GITHUB_SHA) throw new Error('source revision mismatch');
+          if (status.total !== 507 || status.remaining > status.total) throw new Error('machine review status mismatch');
+          if (!fs.readFileSync('/tmp/asuka.txt', 'utf8').includes('[Section')) throw new Error('Asuka TXT is incomplete');
+          if (!Array.isArray(asuka.sheetList) || asuka.sheetList.length < 1) throw new Error('Asuka JSON is incomplete');
+          console.log(JSON.stringify({
+            site: process.env.PAGES_ENVIRONMENT === 'production'
+              ? 'https://magireader.pages.dev'
+              : `https://${process.env.PAGES_BRANCH}.magireader.pages.dev`,
+            stories: index.length,
+            machineTotal: status.total,
+            sourceRevision: config.source_revision,
+          }));
+          NODE
