@@ -43,7 +43,7 @@ def media_urls(mp3_name: str, fandom_url: str | None) -> list[dict[str, str]]:
         {
             "kind": "github",
             "type": "audio/mpeg",
-            "url": f"{GITHUB_RAW}/{digest[:2]}/{encoded}",
+            "url": f"{GITHUB_RAW}/{digest[0]}/{digest[:2]}/{encoded}",
         },
         {
             "kind": "cn-cdn",
@@ -113,7 +113,7 @@ def decoded_markup(value: str) -> str:
         if current == previous:
             break
         previous = current
-    return previous.replace("\\/", "/")
+    return previous.replace("\/", "/")
 
 
 def clean_label(node: Tag | None, filename: str) -> str:
@@ -286,6 +286,7 @@ def build(output: Path, max_pages: int | None) -> dict:
         "failures": failures,
         "primaryMediaPolicy": "github-raw-then-cn-cdn-then-fandom",
         "githubRepositoryVisibilityRequired": "public",
+        "githubBucketLayout": "images/<md5-first>/<md5-first-two>/<filename>",
     }
     (output / "manifest.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
