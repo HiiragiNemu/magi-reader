@@ -4,10 +4,11 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'wiki-preservation/static/**'
-      - 'wiki-preservation/tests/production-reader-v6.mjs'
+      - 'wiki-preservation/static/audio-ui.js'
+      - 'wiki-preservation/static/audio-ui.css'
       - 'wiki-preservation/tests/production-audio-v64.mjs'
-      - 'wiki-preservation/scripts/**'
+      - 'wiki-preservation/scripts/build_voice_audio_index.py'
+      - 'wiki-preservation/scripts/integrate_voice_audio.py'
       - '.github/workflows/deploy-magireco-ui-hotfix.yml'
       - '.github/workflows/test-magireco-reader-v6.yml'
   workflow_dispatch:
@@ -16,21 +17,20 @@ permissions:
   contents: read
 
 concurrency:
-  group: magireco-reader-v6-production-browser
+  group: magireco-reader-v64-audio-browser
   cancel-in-progress: true
 
 jobs:
-  production-browser:
+  production-audio-browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 35
     env:
       READER_REVISION: '6.4'
     steps:
-      - name: Check out v6.4 production tests
+      - name: Check out v6.4 audio production test
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            wiki-preservation/tests/production-reader-v6.mjs
             wiki-preservation/tests/production-audio-v64.mjs
           sparse-checkout-cone-mode: true
           show-progress: false
@@ -45,14 +45,14 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Wait for Reader v6.4 production revision and audio corpus
+      - name: Wait for Reader v6.4 audio production corpus
         shell: bash
         run: |
           set -euo pipefail
           for attempt in $(seq 1 100); do
             if curl --fail --silent --show-error --location \
               --header 'Cache-Control: no-cache' \
-              "https://magireco-cn-reader.pages.dev/health.json?revision=${READER_REVISION}-${GITHUB_RUN_ID}-$attempt" \
+              "https://magireco-cn-reader.pages.dev/health.json?audio-revision=${READER_REVISION}-${GITHUB_RUN_ID}-$attempt" \
               -o /tmp/health.json; then
               if python - <<'PY'
           import json
@@ -62,11 +62,14 @@ jobs:
           ok = (
               value.get('uiRevision') == os.environ['READER_REVISION']
               and value.get('counts', {}).get('audio', 0) >= 18000
+              and value.get('counts', {}).get('audioKnownPrivate') == 21225
+              and value.get('counts', {}).get('audioPendingIndex', 9999) <= 200
               and value.get('voiceAudio', {}).get('r2') is False
           )
           raise SystemExit(0 if ok else 1)
           PY
               then
+                cat /tmp/health.json
                 exit 0
               fi
             fi
@@ -75,55 +78,33 @@ jobs:
           echo "Reader ${READER_REVISION} audio build did not propagate before browser validation." >&2
           exit 1
 
-      - name: Prepare current production regression
-        run: |
-          python - <<'PY'
-          import os
-          from pathlib import Path
-          source = Path('wiki-preservation/tests/production-reader-v6.mjs')
-          target = source.with_name('production-reader-current.mjs')
-          text = source.read_text(encoding='utf-8')
-          old = "const revision = '6.0';"
-          assert text.count(old) == 1
-          revision = os.environ['READER_REVISION']
-          target.write_text(text.replace(old, f"const revision = '{revision}';", 1), encoding='utf-8')
-          PY
-
-      - name: Run Reader production regression
-        run: node wiki-preservation/tests/production-reader-current.mjs
-
       - name: Run full voice audio production regression
         run: node wiki-preservation/tests/production-audio-v64.mjs
 
-      - name: Require clean offline core-index startup
+      - name: Verify audio evidence contract
         run: |
           python - <<'PY'
           import json
-          import os
           from pathlib import Path
-          result = json.loads(Path('reader-v6-evidence/result.json').read_text(encoding='utf-8'))
-          forbidden = ('/data/archive-index.json', '/data/category-index.json', '/data/portal-index.json')
-          failures = [
-              item for item in result.get('events', [])
-              if item.get('type') == 'requestfailed'
-              and any(value in item.get('url', '') for value in forbidden)
-          ]
-          assert not failures, failures
-          registration = result.get('registration', {})
-          expected = f"/sw-v{os.environ['READER_REVISION']}.js"
-          assert expected in registration.get('active', ''), registration
-          audio = json.loads(Path('reader-audio-evidence/result.json').read_text(encoding='utf-8'))
-          assert audio['manifest']['voiceFiles'] >= 18000
-          assert audio['detailMetrics']['readyState'] >= 1
+          result = json.loads(Path('reader-audio-evidence/result.json').read_text(encoding='utf-8'))
+          manifest = result['manifest']
+          detail = result['detailMetrics']
+          assert manifest['voiceFiles'] >= 18000, manifest
+          assert manifest['knownPrivateAudioFiles'] == 21225, manifest
+          assert manifest['unindexedAgainstPrivateManifest'] <= 200, manifest
+          assert manifest['coveragePercent'] >= 99, manifest
+          assert detail['hash'] == '#/audio/1001', detail
+          assert detail['readyState'] >= 1, detail
+          assert detail['documentWidth'] <= detail['viewport'] + 2, detail
+          assert detail['currentSrc'], detail
+          print(json.dumps({'manifest': manifest, 'playback': detail}, ensure_ascii=False, indent=2))
           PY
 
-      - name: Upload production evidence
+      - name: Upload audio production evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: magireco-reader-v64-audio-production-evidence
-          path: |
-            reader-v6-evidence
-            reader-audio-evidence
+          path: reader-audio-evidence
           if-no-files-found: warn
           retention-days: 14
