@@ -3,9 +3,11 @@
 
 Older workers used stale-while-revalidate for JavaScript and CSS. A navigation
 could therefore receive the new HTML while the controlling worker returned an
-old app.js from Cache Storage. This patch runs after the normal offline worker
-is generated. It merges all update entry points into the existing network-first
-set and injects a small, version-scoped cache migration into the HTML shell.
+old app.js from Cache Storage. Versioned workers also use a different script URL
+for every Reader release, so calling update() on an old registration cannot move
+it from /sw-v6.2.js to /sw-v6.4.js. This patch merges every update entry point
+into the network-first set, removes obsolete registrations and injects a small,
+version-scoped cache migration into the HTML shell.
 """
 
 from __future__ import annotations
@@ -20,17 +22,20 @@ NETWORK_FIRST_PATHS = (
     "/index.html",
     "/health.json",
     "/ui-version.json",
+    "/media-origin.json",
     "/app.js",
     "/ui-v4-runtime.js",
     "/github-media-runtime.js",
     "/structured-ui.js",
     "/doppel-ui.js",
     "/memoria-ui.js",
+    "/audio-ui.js",
     "/styles.css",
     "/ui-v4-fixes.css",
     "/structured-ui.css",
     "/doppel-ui.css",
     "/memoria-ui.css",
+    "/audio-ui.css",
     "/dense-reader.css",
     "/dense-reader-compact.css",
 )
@@ -98,32 +103,47 @@ def patch_index(path: Path, revision: str) -> None:
     script = f"""  <script data-reader-bootstrap=\"{BOOTSTRAP_MARKER}\">
     (() => {{
       const revision = {revision_json};
+      const expectedWorkerPath = `/sw-v${{revision}}.js`;
       const sessionKey = `magireco-reader-cache-reset:${{revision}}`;
       if (sessionStorage.getItem(sessionKey)) return;
       sessionStorage.setItem(sessionKey, '1');
-      if (!('caches' in window)) return;
-      Promise.all([
-        caches.keys().then((keys) => {{
-          const keep = `magireco-cn-reader-v${{revision}}-`;
-          const obsolete = keys.filter((name) =>
-            name.startsWith('magireco-cn-reader-') && !name.startsWith(keep)
-          );
-          return Promise.all(obsolete.map((name) => caches.delete(name)))
-            .then(() => obsolete.length);
-        }}),
-        navigator.serviceWorker
-          ? navigator.serviceWorker.getRegistrations().then((registrations) =>
-              Promise.all(registrations.map((registration) =>
-                registration.update().catch(() => undefined)
-              ))
-            )
-          : Promise.resolve([]),
-      ]).then(([removed]) => {{
-        if (!removed) return;
-        const url = new URL(location.href);
-        url.searchParams.set('reader-ui', revision);
-        location.replace(url.href);
-      }}).catch(() => undefined);
+
+      const migrateCaches = ('caches' in window)
+        ? caches.keys().then((keys) => {{
+            const keep = `magireco-cn-reader-v${{revision}}-`;
+            const obsolete = keys.filter((name) =>
+              name.startsWith('magireco-cn-reader-') && !name.startsWith(keep)
+            );
+            return Promise.all(obsolete.map((name) => caches.delete(name)))
+              .then(() => obsolete.length);
+          }})
+        : Promise.resolve(0);
+
+      const migrateWorkers = ('serviceWorker' in navigator)
+        ? navigator.serviceWorker.getRegistrations().then(async (registrations) => {{
+            let changed = 0;
+            for (const registration of registrations) {{
+              const worker = registration.active || registration.waiting || registration.installing;
+              let pathname = '';
+              try {{ pathname = worker ? new URL(worker.scriptURL).pathname : ''; }} catch {{}}
+              if (pathname && pathname !== expectedWorkerPath) {{
+                if (await registration.unregister().catch(() => false)) changed += 1;
+                continue;
+              }}
+              await registration.update().catch(() => undefined);
+            }}
+            return changed;
+          }})
+        : Promise.resolve(0);
+
+      Promise.all([migrateCaches, migrateWorkers])
+        .then(([removedCaches, removedWorkers]) => {{
+          if (!removedCaches && !removedWorkers) return;
+          const url = new URL(location.href);
+          url.searchParams.set('reader-ui', revision);
+          location.replace(url.href);
+        }})
+        .catch(() => undefined);
     }})();
   </script>
 """
@@ -145,6 +165,7 @@ def main() -> None:
         "revision": args.revision,
         "networkFirst": NETWORK_FIRST_PATHS,
         "bootstrap": BOOTSTRAP_MARKER,
+        "workerMigration": True,
     }, ensure_ascii=False, indent=2))
 
 
