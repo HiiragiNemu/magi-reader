@@ -426,10 +426,18 @@ jobs:
           fi
           wiki_txt_path="${wiki_assets[0]}"
           wiki_json_path="${wiki_assets[1]}"
-          curl --fail --silent --show-error "$SITE_URL/data/general_voice/100100/100100_cn.txt" -o "$RUNNER_TEMP/general-voice-100100.txt"
-          curl --fail --silent --show-error "$SITE_URL/data/general_voice/100100/100100_cn.json" -o "$RUNNER_TEMP/general-voice-100100.json"
-          curl --fail --silent --show-error "$SITE_URL$wiki_txt_path" -o "$RUNNER_TEMP/exedra-wiki-cn.txt"
-          curl --fail --silent --show-error "$SITE_URL$wiki_json_path" -o "$RUNNER_TEMP/exedra-wiki-cn.json"
+          fetch_ready_asset \
+            "$SITE_URL/data/general_voice/100100/100100_cn.txt" \
+            "$RUNNER_TEMP/general-voice-100100.txt" 100 text
+          fetch_ready_asset \
+            "$SITE_URL/data/general_voice/100100/100100_cn.json" \
+            "$RUNNER_TEMP/general-voice-100100.json" 100 json
+          fetch_ready_asset \
+            "$SITE_URL$wiki_txt_path" \
+            "$RUNNER_TEMP/exedra-wiki-cn.txt" 20 text
+          fetch_ready_asset \
+            "$SITE_URL$wiki_json_path" \
+            "$RUNNER_TEMP/exedra-wiki-cn.json" 2 json
           admin_code="$(curl --silent --show-error -o "$RUNNER_TEMP/admin.json" -w '%{http_code}' "$SITE_URL/api/admin/machine-review")"
           python3 - "$RUNNER_TEMP/home.html" "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/config.json" "$RUNNER_TEMP/machine-status.json" "$RUNNER_TEMP/exedra-localization-status.json" "$RUNNER_TEMP/submissions.html" "$RUNNER_TEMP/machine-review.html" "$admin_code" "$EXPECTED_MACHINE_TOTAL" "$RUNNER_TEMP/general-voice-100100.txt" "$RUNNER_TEMP/general-voice-100100.json" "$RUNNER_TEMP/exedra-wiki-cn.txt" "$RUNNER_TEMP/exedra-wiki-cn.json" "$wiki_txt_path" "$wiki_json_path" <<'PY'
           import json, sys

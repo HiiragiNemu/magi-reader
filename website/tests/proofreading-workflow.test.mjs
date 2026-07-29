@@ -76,6 +76,14 @@ test('test deployment uses a dedicated KV and supports real Turnstile secrets', 
   );
   assert.match(
     workflow,
+    /fetch_ready_asset\s+\\\s+"\$SITE_URL\/data\/general_voice\/100100\/100100_cn\.json"/u,
+  );
+  assert.match(
+    workflow,
+    /fetch_ready_asset\s+\\\s+"\$SITE_URL\$wiki_json_path"/u,
+  );
+  assert.match(
+    workflow,
     /json\.load\(open\(sys\.argv\[1\], encoding="utf-8"\)\)/u,
   );
 });
