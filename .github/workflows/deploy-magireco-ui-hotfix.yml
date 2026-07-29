@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
-      READER_REVISION: '6.2'
+      READER_REVISION: '6.3'
       CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
@@ -74,7 +74,7 @@ jobs:
             --scripts wiki-preservation/scripts \
             --memoria memoria-source \
             --revision "$READER_REVISION"
-          for file in app.js ui-v4-runtime.js structured-ui.js doppel-ui.js memoria-ui.js sw.js "sw-v${READER_REVISION}.js"; do
+          for file in app.js ui-v4-runtime.js github-media-runtime.js structured-ui.js doppel-ui.js memoria-ui.js sw.js "sw-v${READER_REVISION}.js"; do
             node --check "snapshot/$file"
           done
           for file in archive-index.json category-index.json portal-index.json; do
@@ -82,6 +82,8 @@ jobs:
           done
           grep -q 'reader-version-cache-bootstrap' snapshot/index.html
           grep -q 'NETWORK_FIRST_PATHS' "snapshot/sw-v${READER_REVISION}.js"
+          grep -q '/github-media-runtime.js' "snapshot/sw-v${READER_REVISION}.js"
+          grep -q '/media-origin.json' "snapshot/sw-v${READER_REVISION}.js"
 
       - name: Deploy Reader v6 to Cloudflare Pages
         run: |
@@ -98,7 +100,7 @@ jobs:
           nonce="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$(date +%s)"
           for attempt in $(seq 1 60); do
             files=(
-              health.json index.html app.js structured-ui.js doppel-ui.js memoria-ui.js
+              health.json index.html app.js github-media-runtime.js media-origin.json structured-ui.js doppel-ui.js memoria-ui.js
               "sw-v${revision}.js"
               data/archive-index.json
               data/category-index.json
@@ -132,6 +134,8 @@ jobs:
               health = json.loads(Path('/tmp/health_json').read_text(encoding='utf-8-sig'))
               index = Path('/tmp/index_html').read_text(encoding='utf-8')
               app = Path('/tmp/app_js').read_text(encoding='utf-8')
+              media_runtime = Path('/tmp/github-media-runtime_js').read_text(encoding='utf-8')
+              media_origin = json.loads(Path('/tmp/media-origin_json').read_text(encoding='utf-8-sig'))
               structured_ui = Path('/tmp/structured-ui_js').read_text(encoding='utf-8')
               doppel_ui = Path('/tmp/doppel-ui_js').read_text(encoding='utf-8')
               memoria_ui = Path('/tmp/memoria-ui_js').read_text(encoding='utf-8')
@@ -149,6 +153,15 @@ jobs:
               assert health['status'] == 'ok'
               assert health['uiVersion'] == 6 and health['uiRevision'] == revision
               assert health['counts']['pages'] == 500 and health['counts']['memoria'] == 1042
+              assert health['mediaStorage']['authority'] == 'github'
+              assert health['mediaStorage']['repository'] == 'HiiragiNemu/magiWiki'
+              assert health['mediaStorage']['r2'] is False
+              assert media_origin['storage'] == 'github'
+              assert media_origin['strategy'] == 'github-first-with-source-fallback'
+              assert media_origin['r2Storage'] is False
+              assert media_origin['github']['repository'] == 'magiWiki'
+              assert 'MagirecoMediaOrigin' in media_runtime
+              assert 'r2Storage: false' in media_runtime
               assert isinstance(archive_index, list) and len(archive_index) == 500
               assert isinstance(category_index, list) and isinstance(portal_index, list)
               assert manifest['characters'] >= 235 and manifest['voiceWithAudio'] >= 16000 and manifest['doppel'] == 174
@@ -157,7 +170,7 @@ jobs:
               assert memoria_manifest['complete'] == 1042 and memoria_manifest['partial'] == 0
               assert memoria_manifest['withImage'] == 1042 and memoria_manifest['withChineseName'] == 1042
               assert len(memoria_index) == 1042
-              for asset in ('styles.css', 'app.js', 'structured-ui.js', 'doppel-ui.js', 'memoria-ui.js', 'dense-reader.css', 'dense-reader-compact.css'):
+              for asset in ('styles.css', 'app.js', 'github-media-runtime.js', 'structured-ui.js', 'doppel-ui.js', 'memoria-ui.js', 'dense-reader.css', 'dense-reader-compact.css'):
                   assert f'/{asset}?v={revision}' in index
               forbidden = ('把原 Wiki', '不会删减', '这里不是', '以保存快照', '来源与保存说明', '本站用于研究', '兼容性开发')
               visitor_text = '\n'.join((index, app, structured_ui, doppel_ui, memoria_ui))
@@ -167,7 +180,8 @@ jobs:
               assert f'magireco-cn-reader-v{revision}-offline' in worker
               assert 'NETWORK_FIRST_PATHS' in worker
               for path in (
-                  '/app.js', '/structured-ui.js', '/doppel-ui.js', '/memoria-ui.js',
+                  '/app.js', '/github-media-runtime.js', '/media-origin.json',
+                  '/structured-ui.js', '/doppel-ui.js', '/memoria-ui.js',
                   '/styles.css', '/dense-reader.css', '/dense-reader-compact.css',
                   '/data/archive-index.json', '/data/category-index.json',
                   '/data/portal-index.json', '/data/structured/memoria-index.json',
@@ -176,7 +190,7 @@ jobs:
               for shard in '0123456789abcdef':
                   value = json.loads(Path(f'/tmp/data_structured_memoria_{shard}_json').read_text(encoding='utf-8-sig'))
                   assert isinstance(value, dict) and value
-              print('PRODUCTION_READER_V6_2_OK', memoria_manifest)
+              print('PRODUCTION_READER_V6_3_GITHUB_MEDIA_OK', health['mediaStorage'])
           except Exception as exc:
               print('not ready:', exc)
               raise SystemExit(1)
@@ -188,8 +202,12 @@ jobs:
               curl --fail --silent --show-error --head \
                 "https://magireco-cn-reader.pages.dev/app.js" \
                 -o /tmp/app-headers.txt
+              curl --fail --silent --show-error --head \
+                "https://magireco-cn-reader.pages.dev/media-origin.json" \
+                -o /tmp/media-origin-headers.txt
               grep -qi 'cache-control:.*no-cache' /tmp/sw-headers.txt
               grep -qi 'cache-control:.*no-cache' /tmp/app-headers.txt
+              grep -qi 'cache-control:.*no-cache' /tmp/media-origin-headers.txt
               exit 0
             fi
             sleep 6
