@@ -29,7 +29,7 @@ def unique(values: list[str]) -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("root", type=Path)
-    parser.add_argument("--revision", default="6.1")
+    parser.add_argument("--revision", default="6.3")
     args = parser.parse_args()
 
     root = args.root.resolve()
@@ -71,6 +71,7 @@ def main() -> None:
         "/index.html",
         *assets,
         "/health.json",
+        "/media-origin.json",
         "/data/runtime-manifest.json",
         "/data/archive-index.json",
         "/data/category-index.json",
@@ -84,12 +85,19 @@ def main() -> None:
     ]
     core = unique([value for value in core_candidates if value.startswith("/")])
 
-    required = ("/app.js", "/structured-ui.js", "/doppel-ui.js", "/memoria-ui.js")
+    required = (
+        "/app.js",
+        "/github-media-runtime.js",
+        "/structured-ui.js",
+        "/doppel-ui.js",
+        "/memoria-ui.js",
+    )
     for path in required:
         if not any(urlsplit(value).path == path for value in core):
             raise RuntimeError(f"final index does not reference required asset: {path}")
 
     required_data = (
+        root / "media-origin.json",
         root / "data" / "archive-index.json",
         root / "data" / "category-index.json",
         root / "data" / "portal-index.json",
@@ -107,6 +115,20 @@ const SHELL = `${{VERSION}}-shell`;
 const DATA = `${{VERSION}}-data`;
 const STATIC = `${{VERSION}}-static`;
 const CORE = {json.dumps(core, ensure_ascii=False, indent=2)};
+const NETWORK_FIRST_PATHS = new Set([
+  '/health.json',
+  '/index.html',
+  '/media-origin.json',
+  '/app.js',
+  '/ui-v4-runtime.js',
+  '/github-media-runtime.js',
+  '/structured-ui.js',
+  '/doppel-ui.js',
+  '/memoria-ui.js',
+  '/styles.css',
+  '/dense-reader.css',
+  '/dense-reader-compact.css',
+]);
 const FALLBACK_URL = new URL('/index.html', self.location.origin).href;
 
 self.addEventListener('install', (event) => {{
@@ -178,7 +200,7 @@ self.addEventListener('fetch', (event) => {{
     event.respondWith(networkFirst(request));
     return;
   }}
-  if (url.pathname === '/health.json' || url.pathname === '/index.html') {{
+  if (NETWORK_FIRST_PATHS.has(url.pathname)) {{
     event.respondWith(networkFirst(request));
     return;
   }}
@@ -206,8 +228,10 @@ self.addEventListener('message', (event) => {{
         "/",
         "/index.html",
         "/health.json",
+        "/media-origin.json",
         "/app.js",
         "/ui-v4-runtime.js",
+        "/github-media-runtime.js",
         "/structured-ui.js",
         "/doppel-ui.js",
         "/memoria-ui.js",
