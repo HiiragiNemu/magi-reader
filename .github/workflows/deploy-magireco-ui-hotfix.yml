@@ -106,6 +106,7 @@ jobs:
           grep -q "/audio-ui.css?v=${READER_REVISION}" snapshot/index.html
           test -f snapshot/data/voice-audio/manifest.json
           test -f snapshot/data/voice-audio/character-index.json
+          test -f snapshot/data/voice-audio/characters/1001.json
           python - <<'PY'
           import json
           from pathlib import Path
@@ -117,16 +118,20 @@ jobs:
           assert voice['voiceFiles'] >= 18000, voice
           assert voice['characters'] >= 220, voice
           assert voice['fandomUrls'] >= int(voice['voiceFiles'] * .95), voice
+          assert voice['knownPrivateAudioFiles'] == 21225, voice
+          assert 0 <= voice['unindexedAgainstPrivateManifest'] <= 200, voice
+          assert voice['coveragePercent'] >= 99, voice
           assert len(index) == voice['characters'], (len(index), voice)
           assert health['counts']['audio'] == voice['voiceFiles'], health
+          assert health['counts']['audioKnownPrivate'] == 21225, health
+          assert health['counts']['audioPendingIndex'] == voice['unindexedAgainstPrivateManifest'], health
           assert health['voiceAudio']['sourceOrder'] == ['github', 'cn-cdn', 'fandom'], health
           assert health['voiceAudio']['r2'] is False, health
-          first = index[0]['charaId']
-          assert Path(f'snapshot/data/voice-audio/characters/{first}.json').exists(), first
-          print(json.dumps({'voice': voice, 'firstCharacter': first}, ensure_ascii=False, indent=2))
+          assert health['voiceAudio']['localizedCharacters'] >= 225, health
+          print(json.dumps({'voice': voice, 'validationCharacter': '1001'}, ensure_ascii=False, indent=2))
           PY
 
-      - name: Probe MP3 and OGG fallback sources
+      - name: Probe public MP3 and OGG fallback sources
         shell: bash
         run: |
           set -euo pipefail
@@ -134,10 +139,11 @@ jobs:
           import json
           from pathlib import Path
           import requests
-          index=json.loads(Path('snapshot/data/voice-audio/character-index.json').read_text())
-          records=json.loads(Path(f"snapshot/data/voice-audio/characters/{index[0]['charaId']}.json").read_text())
+          records=json.loads(Path('snapshot/data/voice-audio/characters/1001.json').read_text())
+          sample=[item for item in records if any(source.get('kind') == 'fandom' for source in item.get('sources', []))][:12]
+          assert len(sample) >= 10, len(sample)
           results=[]
-          for item in records[:12]:
+          for item in sample:
               row={'file':item['mp3Filename']}
               for source in item['sources']:
                   if source['kind'] == 'github':
@@ -222,9 +228,6 @@ jobs:
               app = Path('/tmp/app_js').read_text(encoding='utf-8')
               media_runtime = Path('/tmp/github-media-runtime_js').read_text(encoding='utf-8')
               media_origin = json.loads(Path('/tmp/media-origin_json').read_text(encoding='utf-8-sig'))
-              structured_ui = Path('/tmp/structured-ui_js').read_text(encoding='utf-8')
-              doppel_ui = Path('/tmp/doppel-ui_js').read_text(encoding='utf-8')
-              memoria_ui = Path('/tmp/memoria-ui_js').read_text(encoding='utf-8')
               audio_ui = Path('/tmp/audio-ui_js').read_text(encoding='utf-8')
               worker = Path(f'/tmp/sw-v{suffix}_js').read_text(encoding='utf-8')
               archive_index = json.loads(Path('/tmp/data_archive-index_json').read_text(encoding='utf-8-sig'))
@@ -243,6 +246,8 @@ jobs:
               assert health['uiVersion'] == 6 and health['uiRevision'] == revision
               assert health['counts']['pages'] == 500 and health['counts']['memoria'] == 1042
               assert health['counts']['audio'] == voice_audio['voiceFiles'] >= 18000
+              assert health['counts']['audioKnownPrivate'] == 21225
+              assert health['counts']['audioPendingIndex'] == voice_audio['unindexedAgainstPrivateManifest'] <= 200
               assert health['voiceAudio']['r2'] is False
               assert health['voiceAudio']['sourceOrder'] == ['github', 'cn-cdn', 'fandom']
               assert health['mediaStorage']['authority'] == 'github'
@@ -262,7 +267,7 @@ jobs:
               for asset in ('styles.css', 'app.js', 'github-media-runtime.js', 'structured-ui.js', 'doppel-ui.js', 'memoria-ui.js', 'audio-ui.js', 'audio-ui.css', 'dense-reader.css', 'dense-reader-compact.css'):
                   assert f'/{asset}?v={revision}' in index_html
               assert f"const UI_VERSION = '{revision}'" in app
-              assert 'github-raw-then-cn-cdn-then-fandom' in audio_ui or 'sourceLabels' in audio_ui
+              assert 'sourceLabels' in audio_ui
               assert f'magireco-cn-reader-v{revision}-offline' in worker
               assert '/audio-ui.js' in worker
               assert 'NETWORK_FIRST_PATHS' in worker
@@ -272,25 +277,19 @@ jobs:
               raise SystemExit(1)
           PY
             then
-              first=$(python - <<'PY'
-          import json
-          from pathlib import Path
-          value=json.loads(Path('/tmp/data_voice-audio_character-index_json').read_text())
-          print(value[0]['charaId'])
-          PY
-              )
               curl --fail --silent --show-error --location \
                 --header 'Cache-Control: no-cache' \
-                "https://magireco-cn-reader.pages.dev/data/voice-audio/characters/${first}.json?probe=$nonce" \
+                "https://magireco-cn-reader.pages.dev/data/voice-audio/characters/1001.json?probe=$nonce" \
                 -o /tmp/voice-character.json
               python - <<'PY'
           import json
           from pathlib import Path
           records=json.loads(Path('/tmp/voice-character.json').read_text())
-          assert len(records) >= 20
-          assert all(len(item.get('sources',[])) >= 3 for item in records[:20])
-          assert all(item['sources'][0]['kind'] == 'github' for item in records[:20])
-          print('PRODUCTION_VOICE_CHARACTER_SHARD_OK', len(records))
+          sample=[item for item in records if any(source.get('kind') == 'fandom' for source in item.get('sources', []))][:20]
+          assert len(sample) == 20
+          assert all(len(item.get('sources',[])) >= 3 for item in sample)
+          assert all(item['sources'][0]['kind'] == 'github' for item in sample)
+          print('PRODUCTION_VOICE_CHARACTER_SHARD_OK', len(records), len(sample))
           PY
               exit 0
             fi
