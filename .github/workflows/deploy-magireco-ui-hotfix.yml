@@ -73,7 +73,7 @@ jobs:
             --static wiki-preservation/static \
             --scripts wiki-preservation/scripts \
             --memoria memoria-source \
-            --revision "$READER_REVISION"
+            --revision "$READER_REVISION" 2>&1 | tee /tmp/reader-assembly.log
           for file in app.js ui-v4-runtime.js github-media-runtime.js structured-ui.js doppel-ui.js memoria-ui.js sw.js "sw-v${READER_REVISION}.js"; do
             node --check "snapshot/$file"
           done
@@ -84,6 +84,15 @@ jobs:
           grep -q 'NETWORK_FIRST_PATHS' "snapshot/sw-v${READER_REVISION}.js"
           grep -q '/github-media-runtime.js' "snapshot/sw-v${READER_REVISION}.js"
           grep -q '/media-origin.json' "snapshot/sw-v${READER_REVISION}.js"
+
+      - name: Upload Reader assembly diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-reader-v6-3-assembly-log
+          path: /tmp/reader-assembly.log
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Deploy Reader v6 to Cloudflare Pages
         run: |
