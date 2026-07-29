@@ -1,15 +1,14 @@
 name: Probe Fandom Voice Index
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'wiki-preservation/scripts/build_voice_audio_index.py'
-      - '.github/workflows/probe-fandom-voice-index.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: probe-fandom-voice-index
+  cancel-in-progress: true
 
 jobs:
   probe:

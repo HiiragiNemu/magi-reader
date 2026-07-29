@@ -1,16 +1,6 @@
 name: Test Magireco Reader v6.4 Audio
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'wiki-preservation/static/audio-ui.js'
-      - 'wiki-preservation/static/audio-ui.css'
-      - 'wiki-preservation/tests/production-audio-v64.mjs'
-      - 'wiki-preservation/scripts/build_voice_audio_index.py'
-      - 'wiki-preservation/scripts/integrate_voice_audio.py'
-      - '.github/workflows/deploy-magireco-ui-hotfix.yml'
-      - '.github/workflows/test-magireco-reader-v6.yml'
   workflow_dispatch:
 
 permissions:

@@ -1,12 +1,6 @@
 name: Deploy Magireco Reader v6.4 Audio
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'wiki-preservation/static/**'
-      - 'wiki-preservation/scripts/**'
-      - '.github/workflows/deploy-magireco-ui-hotfix.yml'
   workflow_dispatch:
 
 permissions:

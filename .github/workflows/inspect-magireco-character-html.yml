@@ -1,14 +1,14 @@
 name: Inspect Magireco Character HTML
 
 on:
-  push:
-    branches: [deploy/magireco-cn-reader]
-    paths:
-      - '.github/workflows/inspect-magireco-character-html.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: inspect-magireco-character-html
+  cancel-in-progress: true
 
 jobs:
   inspect:
