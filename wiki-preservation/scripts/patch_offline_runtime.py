@@ -29,7 +29,7 @@ def unique(values: list[str]) -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("root", type=Path)
-    parser.add_argument("--revision", default="6.3")
+    parser.add_argument("--revision", default="6.4")
     args = parser.parse_args()
 
     root = args.root.resolve()
@@ -71,6 +71,7 @@ def main() -> None:
         "/index.html",
         *assets,
         "/health.json",
+        "/ui-version.json",
         "/media-origin.json",
         "/data/runtime-manifest.json",
         "/data/archive-index.json",
@@ -97,6 +98,8 @@ def main() -> None:
             raise RuntimeError(f"final index does not reference required asset: {path}")
 
     required_data = (
+        root / "health.json",
+        root / "ui-version.json",
         root / "media-origin.json",
         root / "data" / "archive-index.json",
         root / "data" / "category-index.json",
@@ -117,6 +120,7 @@ const STATIC = `${{VERSION}}-static`;
 const CORE = {json.dumps(core, ensure_ascii=False, indent=2)};
 const NETWORK_FIRST_PATHS = new Set([
   '/health.json',
+  '/ui-version.json',
   '/index.html',
   '/media-origin.json',
   '/app.js',
@@ -126,6 +130,10 @@ const NETWORK_FIRST_PATHS = new Set([
   '/doppel-ui.js',
   '/memoria-ui.js',
   '/styles.css',
+  '/ui-v4-fixes.css',
+  '/structured-ui.css',
+  '/doppel-ui.css',
+  '/memoria-ui.css',
   '/dense-reader.css',
   '/dense-reader-compact.css',
 ]);
@@ -228,6 +236,7 @@ self.addEventListener('message', (event) => {{
         "/",
         "/index.html",
         "/health.json",
+        "/ui-version.json",
         "/media-origin.json",
         "/app.js",
         "/ui-v4-runtime.js",
