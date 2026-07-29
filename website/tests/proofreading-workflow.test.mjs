@@ -87,3 +87,25 @@ test('test deployment uses a dedicated KV and supports real Turnstile secrets', 
     /json\.load\(open\(sys\.argv\[1\], encoding="utf-8"\)\)/u,
   );
 });
+
+test('review login presents shared team token as the simple default', () => {
+  const page = read('app/review/submissions/page.tsx');
+  const configRoute = read('app/api/proofreading/config/route.ts');
+  const auth = read('lib/admin-auth.ts');
+  assert.match(page, /团队审核口令/u);
+  assert.match(page, /普通审核员无需创建 GitHub 令牌/u);
+  assert.match(page, /仓库维护者高级登录/u);
+  assert.match(configRoute, /shared_admin_auth/u);
+  assert.match(configRoute, /server_pr_creation/u);
+  assert.doesNotMatch(configRoute, /SUBMISSIONS_ADMIN_TOKEN\s*[,}]/u);
+  assert.doesNotMatch(configRoute, /PROOFREADING_GITHUB_TOKEN\s*[,}]/u);
+  assert.match(
+    auth,
+    /githubToken:\s*env\.PROOFREADING_GITHUB_TOKEN\?\.trim\(\)\s*\|\|\s*undefined/u,
+  );
+  assert.ok(
+    auth.indexOf('constantTimeEquals(token, sharedSecret)') <
+      auth.indexOf('const githubAllowed'),
+    'fixed team token must be checked before the advanced GitHub fallback',
+  );
+});

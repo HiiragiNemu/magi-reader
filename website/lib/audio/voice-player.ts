@@ -7,7 +7,10 @@ import {
   getMagirecoVoiceProxyUrl,
   parseVoiceCue,
 } from './voice-cue.ts';
-import { MAX_VOICE_BYTES } from './voice-proxy.ts';
+import {
+  getMagirecoVoiceUpstreamUrl,
+  MAX_VOICE_BYTES,
+} from './voice-proxy.ts';
 
 export type VoicePlaybackStatus = 'idle' | 'loading' | 'playing' | 'error';
 
@@ -26,6 +29,57 @@ const IDLE_STATE: VoicePlaybackState = {
 };
 const NETWORK_TIMEOUT_MS = 30_000;
 const PLAYBACK_CEILING_MS = 90_000;
+const RETRYABLE_PROXY_STATUSES = new Set([502, 503, 504]);
+
+type VoiceFetch = (
+  input: RequestInfo | URL,
+  init?: RequestInit,
+) => Promise<Response>;
+
+/**
+ * Keep the same-origin Worker proxy as the primary source. If the proxy cannot
+ * reach the voice bucket, use the bucket's fixed public URL as a bounded
+ * browser-side fallback. The bucket CORS policy only permits the known reader
+ * and viewer origins.
+ */
+export async function fetchMagirecoVoiceResponse(
+  cueId: string,
+  signal: AbortSignal,
+  fetchVoice: VoiceFetch = fetch,
+): Promise<Response> {
+  let proxyResponse: Response | null = null;
+  try {
+    proxyResponse = await fetchVoice(getMagirecoVoiceProxyUrl(cueId), {
+      cache: 'no-store',
+      credentials: 'same-origin',
+      signal,
+    });
+  } catch (error) {
+    if (signal.aborted) throw error;
+  }
+
+  if (proxyResponse?.ok) return proxyResponse;
+  if (
+    proxyResponse &&
+    !RETRYABLE_PROXY_STATUSES.has(proxyResponse.status)
+  ) {
+    throw new Error(`魔法纪录语音加载失败 (${proxyResponse.status})`);
+  }
+
+  const directResponse = await fetchVoice(
+    getMagirecoVoiceUpstreamUrl(cueId),
+    {
+      cache: 'no-store',
+      credentials: 'omit',
+      mode: 'cors',
+      signal,
+    },
+  );
+  if (!directResponse.ok) {
+    throw new Error(`魔法纪录语音加载失败 (${directResponse.status})`);
+  }
+  return directResponse;
+}
 
 async function readBodyBounded(
   response: Response,
@@ -240,14 +294,10 @@ class VoicePlaybackController {
     );
     let bytes: ArrayBuffer;
     try {
-      const response = await fetch(getMagirecoVoiceProxyUrl(cueId), {
-        cache: 'no-store',
-        credentials: 'same-origin',
-        signal: abortController.signal,
-      });
-      if (!response.ok) {
-        throw new Error(`魔法纪录语音加载失败 (${response.status})`);
-      }
+      const response = await fetchMagirecoVoiceResponse(
+        cueId,
+        abortController.signal,
+      );
       bytes = await readBodyBounded(response, abortController.signal);
     } finally {
       clearTimeout(networkTimer);

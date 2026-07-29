@@ -21,6 +21,7 @@ jobs:
       TEST_WORKER_NAME: magireader-exedra-cn-test
       PROOFREADING_KV_TITLE: magi-submissions-exedra-cn-test
       TEST_WORKER_HOSTNAME: magireader-exedra-cn-test.crynetsystemscell.workers.dev
+      MAGIRECO_VOICE_R2_DOMAIN: pub-70a248f1a6fe4ca597e7a10f8b95dfd8.r2.dev
       SERVER_GITHUB_TOKEN: ${{ secrets.PROOFREADING_GITHUB_TOKEN || secrets.TARGET_REPO_TOKEN }}
       SHARED_ADMIN_TOKEN: ${{ secrets.SUBMISSIONS_ADMIN_TOKEN }}
 
@@ -143,16 +144,45 @@ jobs:
           echo "TURNSTILE_SECRET_KEY_VALUE=$secret_key" >> "$GITHUB_ENV"
           echo "::add-mask::$secret_key"
 
+      - name: Discover optional Magia Record voice R2 bucket
+        id: voice_r2
+        timeout-minutes: 3
+        working-directory: website
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: >-
+          node scripts/discover-cloudflare-r2-bucket.mjs
+          --target-domain "$MAGIRECO_VOICE_R2_DOMAIN"
+
       - name: Prepare isolated Worker configurations
         working-directory: website
         env:
           KV_NAMESPACE_ID: ${{ steps.kv.outputs.namespace_id }}
+          # The bucket name was independently verified against the managed
+          # r2.dev domain. Keep it as a fallback when the CI token can deploy
+          # Workers but cannot enumerate R2 buckets.
+          VOICE_R2_BUCKET_NAME: ${{ steps.voice_r2.outputs.bucket_name || 'live2dv4' }}
           TURNSTILE_SITE_KEY: ${{ steps.turnstile.outputs.site_key }}
           TURNSTILE_TEST_MODE: ${{ steps.turnstile.outputs.test_mode }}
           SOURCE_COMMIT: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
+          voice_r2_config=""
+          if [ -n "$VOICE_R2_BUCKET_NAME" ]; then
+            voice_r2_config="$(cat <<EOF
+            "r2_buckets": [
+              {
+                "binding": "MAGIRECO_VOICE_R2",
+                "bucket_name": "$VOICE_R2_BUCKET_NAME"
+              }
+            ],
+          EOF
+            )"
+          else
+            echo "::warning::MAGIRECO_VOICE_R2 is not bound; the Worker will use the bounded fixed-origin HTTP fallback."
+          fi
           cat > .wrangler-proofreading-bootstrap.jsonc <<EOF
           {
             "name": "$TEST_WORKER_NAME",
@@ -179,6 +209,7 @@ jobs:
             "kv_namespaces": [
               { "binding": "SUBMISSIONS_KV", "id": "$KV_NAMESPACE_ID" }
             ],
+          $voice_r2_config
             "vars": {
               "TURNSTILE_SITE_KEY": "$TURNSTILE_SITE_KEY",
               "TURNSTILE_ALLOWED_HOSTNAMES": "$TEST_WORKER_HOSTNAME",

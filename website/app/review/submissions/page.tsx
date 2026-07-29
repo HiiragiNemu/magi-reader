@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Check,
   Clock3,
+  Download,
   ExternalLink,
   FileWarning,
   LogOut,
@@ -12,6 +13,7 @@ import {
   X,
 } from 'lucide-react';
 
+import { triggerUtf8Download } from '@/lib/browser-download';
 import {
   PROOFREADING_STATUSES,
   PROOFREADING_STATUS_LABELS,
@@ -108,6 +110,11 @@ const lineCard = (line: StoryLine | undefined, emptyText: string) => {
 export default function ProofreadingReviewPage() {
   const [token, setToken] = useState('');
   const [tokenInput, setTokenInput] = useState('');
+  const [authConfig, setAuthConfig] = useState<{
+    shared_admin_auth?: boolean;
+    server_pr_creation?: boolean;
+    github_admin_auth?: boolean;
+  } | null>(null);
   const [status, setStatus] = useState<ProofreadingStatus>('pending');
   const [items, setItems] = useState<ProofreadingListItem[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -128,6 +135,12 @@ export default function ProofreadingReviewPage() {
     const stored = sessionStorage.getItem(ADMIN_TOKEN_KEY) || '';
     setToken(stored);
     setTokenInput(stored);
+    void fetch('/api/proofreading/config', {
+      cache: 'no-store',
+    })
+      .then(response => response.json())
+      .then(payload => setAuthConfig(payload))
+      .catch(() => setAuthConfig(null));
   }, []);
 
   const headers = useMemo(
@@ -278,14 +291,35 @@ export default function ProofreadingReviewPage() {
     selected && selected.content_sha256 === selected.base_content_sha256,
   );
 
+  const downloadReviewText = (
+    content: string,
+    suffix: 'current_cn' | 'submitted_cn' | 'source_jp',
+  ) => {
+    if (!selected || !content) return;
+    triggerUtf8Download(
+      content,
+      `${selected.story_id}_${suffix}.txt`,
+    );
+  };
+
   if (!token) {
     return (
       <main className="mx-auto flex min-h-screen max-w-xl items-center px-4 py-12">
         <section className="w-full rounded-2xl border bg-white p-6 shadow-lg">
           <h1 className="text-xl font-bold">中文校对审阅后台</h1>
           <p className="mt-2 text-sm leading-6 text-gray-500">
-            可输入共享管理员密钥，或输入对本仓库具有写入权限的 GitHub 细粒度访问令牌。凭据只保存在当前标签页的 sessionStorage 中。
+            向项目负责人领取团队审核口令，输入一次即可查看投稿、审核并自动建立 PR，
+            普通审核员无需创建 GitHub 令牌。口令只保存在当前浏览器标签页中。
           </p>
+          {authConfig && (!authConfig.shared_admin_auth || !authConfig.server_pr_creation) && (
+            <p
+              role="status"
+              className="mt-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm leading-6 text-amber-900"
+            >
+              团队审核口令尚未完整启用。项目负责人需要配置固定审核口令和服务器
+              GitHub 写入令牌后重新部署。
+            </p>
+          )}
           <input
             type="password"
             autoComplete="off"
@@ -294,7 +328,7 @@ export default function ProofreadingReviewPage() {
             onKeyDown={(event) => {
               if (event.key === 'Enter') login();
             }}
-            placeholder="管理员密钥或 GitHub PAT"
+            placeholder="团队审核口令"
             className="mt-5 w-full rounded-lg border px-3 py-2 outline-none focus:border-emerald-500"
           />
           <button
@@ -304,6 +338,17 @@ export default function ProofreadingReviewPage() {
           >
             进入审阅后台
           </button>
+          {authConfig?.github_admin_auth && (
+            <details className="mt-4 rounded-lg bg-gray-50 p-3 text-xs leading-5 text-gray-600">
+              <summary className="cursor-pointer font-bold text-gray-700">
+                仓库维护者高级登录
+              </summary>
+              <p className="mt-2">
+                仅在团队口令暂不可用时，仓库维护者才需要在上方输入自己的 GitHub
+                PAT。个人令牌不要共享给其他审核员，也不要写入网页或仓库。
+              </p>
+            </details>
+          )}
           <Link href="/" className="mt-4 block text-center text-sm text-gray-500 underline">
             返回剧情目录
           </Link>
@@ -433,6 +478,13 @@ export default function ProofreadingReviewPage() {
                   <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-bold">
                     {PROOFREADING_STATUS_LABELS[selected.status]}
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => downloadReviewText(selected.content, 'submitted_cn')}
+                    className="flex items-center gap-1 rounded-lg border px-3 py-1 text-xs"
+                  >
+                    <Download size={13} />下载投稿 TXT
+                  </button>
                   <Link
                     href={`/reader/${encodeURIComponent(selected.story_id)}?cn=${encodeURIComponent(selected.source_path_cn)}&jp=${encodeURIComponent(selected.source_path_jp)}`}
                     target="_blank"
@@ -456,6 +508,35 @@ export default function ProofreadingReviewPage() {
                   <div className="font-bold">差异统计</div>
                   <div className="mt-1">{changedCount} / {rows.length} 行发生变化</div>
                 </div>
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                <span className="self-center text-gray-500">
+                  下载文件统一为 UTF-8 BOM 与 CRLF，兼容手机编辑器并可重新上传：
+                </span>
+                <button
+                  type="button"
+                  disabled={!currentCn}
+                  onClick={() => downloadReviewText(currentCn, 'current_cn')}
+                  className="rounded-lg border px-3 py-1.5 disabled:opacity-40"
+                >
+                  当前中文
+                </button>
+                <button
+                  type="button"
+                  onClick={() => downloadReviewText(selected.content, 'submitted_cn')}
+                  className="rounded-lg border px-3 py-1.5"
+                >
+                  投稿修订
+                </button>
+                <button
+                  type="button"
+                  disabled={!currentJp}
+                  onClick={() => downloadReviewText(currentJp, 'source_jp')}
+                  className="rounded-lg border px-3 py-1.5 disabled:opacity-40"
+                >
+                  日文原文
+                </button>
               </div>
 
               {selected.note && (

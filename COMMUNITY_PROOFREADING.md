@@ -23,12 +23,31 @@
 
 ## 审核权限
 
-审核后台接受以下任一种凭据：
+普通审核员只需要一条由项目负责人发放的固定团队审核口令，不需要 GitHub
+账户权限，也不需要创建 PAT。团队口令对应 Worker secret
+`SUBMISSIONS_ADMIN_TOKEN`；服务器使用另一条只保存在 Worker 中的
+`PROOFREADING_GITHUB_TOKEN` 建立 PR。两条凭据不得互换或一起共享。
 
-- GitHub fine-grained personal access token：必须能访问 `HiiragiNemu/magi-reader`，并具有 Contents Read and write、Pull requests Read and write 权限；
-- `SUBMISSIONS_ADMIN_TOKEN` Worker secret。使用共享密钥批准 PR 时，还必须配置服务器端 `PROOFREADING_GITHUB_TOKEN`。
+仓库维护者仍可将自己的 GitHub fine-grained PAT 作为故障备用登录方式。该 PAT
+必须能访问 `HiiragiNemu/magi-reader`，并具有 Contents Read and write、
+Pull requests Read and write 权限；不要把个人 PAT 发给普通审核员。
 
 GitHub PAT 只保存在当前浏览器标签页的 `sessionStorage`，请求通过 HTTPS 发送到 Worker，仅用于验证仓库写权限和创建 PR，不写入 KV。
+
+### 固定团队审核口令的部署方式
+
+项目负责人只需在 GitHub 仓库的 `Settings → Secrets and variables → Actions`
+中保存一次 `SUBMISSIONS_ADMIN_TOKEN`。测试部署会将这条固定值写入 Worker secret；
+后续部署继续使用同一值，不会自动生成或轮换，也不会把它输出到 Actions 日志。
+
+仓库还必须已有 `PROOFREADING_GITHUB_TOKEN` 或兼容的 `TARGET_REPO_TOKEN`，否则
+审核员仍可查看、暂缓或驳回，但批准时不能自动建立 PR。服务器 GitHub token 只
+供 Worker 使用，永远不发给审核员。
+
+需要撤销所有旧审核员访问时，由项目负责人在本机生成新的 32 字节以上随机值，
+更新 `SUBMISSIONS_ADMIN_TOKEN`，然后重新运行
+`Deploy Exedra Community Proofreading Test Site`。不要在 Issue、PR、群聊或
+仓库文件中粘贴口令。
 
 ## Cloudflare 资源
 
@@ -56,8 +75,8 @@ GitHub PAT 只保存在当前浏览器标签页的 `sessionStorage`，请求通�
 | `CF_ACCOUNT_ID` | 是 | Cloudflare 账户 |
 | `TURNSTILE_SITE_KEY` | 正式开放前必需 | 真实 Turnstile 站点密钥 |
 | `TURNSTILE_SECRET_KEY` | 正式开放前必需 | 真实 Turnstile 私钥 |
-| `PROOFREADING_GITHUB_TOKEN` | 可选 | 允许共享管理员密钥批准 PR，并让公开状态页自动同步 PR 状态 |
-| `SUBMISSIONS_ADMIN_TOKEN` | 可选 | 共享审核密钥，至少 32 字符 |
+| `PROOFREADING_GITHUB_TOKEN` | 团队审核必需 | 服务器建立校对 PR；绝不共享给审核员 |
+| `SUBMISSIONS_ADMIN_TOKEN` | 团队审核必需 | 固定团队审核口令，至少 32 字符 |
 
 若未配置真实 Turnstile 密钥，测试部署会使用 Cloudflare 官方测试密钥，并在校对界面明确显示警告。测试密钥不能作为正式防滥用方案。
 

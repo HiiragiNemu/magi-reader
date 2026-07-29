@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { triggerBlobDownload } from '@/lib/browser-download';
+
 type Provenance = 'local_human' | 'official_tw_human' | 'exedra_wiki_human';
 type Status = {
   reviewer?: string;
@@ -160,15 +162,10 @@ export default function ExedraLocalizationPage() {
         const payload = await json<{ error?: string }>(response);
         throw new Error(payload.error || `HTTP ${response.status}`);
       }
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = 'exedra-localization-cache-v1.json';
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      URL.revokeObjectURL(url);
+      triggerBlobDownload(
+        await response.blob(),
+        'exedra-localization-cache-v1.json',
+      );
       setMessage('可信 Exedra 中文缓存已导出。');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : '导出失败');
@@ -197,7 +194,7 @@ export default function ExedraLocalizationPage() {
                 type="password"
                 value={token}
                 onChange={event => setToken(event.target.value.trim())}
-                placeholder="管理员令牌或 GitHub PAT"
+                placeholder="团队审核口令"
                 className="min-w-0 flex-1 rounded-lg border px-3 py-2 font-mono text-sm"
               />
               <button
@@ -209,6 +206,9 @@ export default function ExedraLocalizationPage() {
               </button>
             </div>
           </div>
+          <p className="mt-3 text-xs text-gray-500">
+            使用与投稿审核台相同的团队口令；普通审核员无需创建或共享 GitHub PAT。
+          </p>
         </header>
 
         {status && (

@@ -32,8 +32,33 @@ declare global {
     fetch(request: Request | string): Promise<Response>;
   }
 
+  type CloudflareR2Range = {
+    offset?: number;
+    length?: number;
+    suffix?: number;
+  };
+
+  interface CloudflareR2ObjectBody {
+    body: ReadableStream<Uint8Array>;
+    size: number;
+    etag: string;
+    httpEtag: string;
+    range?: {
+      offset: number;
+      length: number;
+    };
+  }
+
+  interface CloudflareR2Bucket {
+    get(
+      key: string,
+      options?: { range?: CloudflareR2Range },
+    ): Promise<CloudflareR2ObjectBody | null>;
+  }
+
   interface CloudflareEnv {
     ASSETS?: CloudflareAssetsBinding;
+    MAGIRECO_VOICE_R2?: CloudflareR2Bucket;
     SUBMISSIONS_KV?: SubmissionKvNamespace;
     SUBMISSIONS_ADMIN_TOKEN?: string;
     TURNSTILE_SITE_KEY?: string;

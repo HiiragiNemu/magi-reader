@@ -7,6 +7,7 @@ import {
   useRef,
   useId,
   useState,
+  useSyncExternalStore,
   type ComponentType,
 } from 'react';
 import Link from 'next/link';
@@ -20,6 +21,7 @@ import {
   FileText,
   ChevronRight,
   ChevronDown,
+  ChevronUp,
   Sun,
   Moon,
   BookOpen,
@@ -33,6 +35,12 @@ import LocalStoryPicker from '@/components/LocalStoryPicker';
 import { normalizeSearchText } from '@/lib/search';
 import { loadStoryIndex } from '@/lib/story-index';
 import { categoryOrder } from '@/lib/category-order';
+import {
+  getMachineReviewPanelServerSnapshot,
+  getMachineReviewPanelSnapshot,
+  setMachineReviewPanelCollapsedPreference,
+  subscribeMachineReviewPanel,
+} from '@/lib/machine-review-panel';
 
 type SearchMode = 'all' | 'title' | 'content';
 type StorySystem = 'magireco' | 'exedra';
@@ -498,6 +506,12 @@ export default function Home() {
   const [searchMode, setSearchMode] = useState<SearchMode>('title');
   const [proofreadingStatus, setProofreadingStatus] = useState<ProofreadingStatus | null>(null);
   const [onlyNeedsReview, setOnlyNeedsReview] = useState(false);
+  const machineReviewPanelCollapsed = useSyncExternalStore(
+    subscribeMachineReviewPanel,
+    getMachineReviewPanelSnapshot,
+    getMachineReviewPanelServerSnapshot,
+  );
+  const machineReviewPanelContentId = useId();
   const workerRef = useRef<Worker | null>(null);
   const searchSequenceRef = useRef(0);
 
@@ -947,71 +961,119 @@ export default function Home() {
         <div className="flex-1 overflow-y-auto p-3 md:p-6 scroll-smooth">
           <div className="max-w-7xl mx-auto">
             {storySystem === 'magireco' && proofreadingStatus && (
-              <section className={`mb-5 rounded-2xl border p-4 shadow-sm ${
+              <section className={`mb-5 rounded-2xl border shadow-sm ${
+                machineReviewPanelCollapsed ? 'p-2' : 'p-4'
+              } ${
                 theme === 'dark'
                   ? 'border-amber-800 bg-amber-950/40 text-amber-100'
                   : 'border-amber-300 bg-gradient-to-r from-amber-50 to-emerald-50 text-gray-900'
               }`}>
-                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-base font-black">机器翻译人工校验清单</h2>
-                      <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black text-white">
-                        动态
+                {machineReviewPanelCollapsed && (
+                  <button
+                    type="button"
+                    aria-controls={machineReviewPanelContentId}
+                    aria-expanded={!machineReviewPanelCollapsed}
+                    aria-label={`展开机器翻译人工校验清单，仍需 ${proofreadingStatus.remaining} 部`}
+                    onClick={() => setMachineReviewPanelCollapsedPreference(false)}
+                    className={`flex min-h-11 w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm font-black transition ${
+                      theme === 'dark'
+                        ? 'hover:bg-amber-900/50 focus-visible:bg-amber-900/50'
+                        : 'hover:bg-white/70 focus-visible:bg-white/70'
+                    } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500`}
+                  >
+                    <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                      <span>机器翻译人工校验清单</span>
+                      <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] text-white">
+                        仍需 {proofreadingStatus.remaining} 部
                       </span>
-                    </div>
-                    <p className="mt-1 text-sm opacity-80">
-                      总计 {proofreadingStatus.total} 部，已人工校验 {proofreadingStatus.verified} 部，
-                      仍需校验 <strong>{proofreadingStatus.remaining}</strong> 部。
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <div className="min-w-48">
-                      <div className="mb-1 flex justify-between text-[10px] font-bold opacity-70">
-                        <span>校验进度</span>
-                        <span>
-                          {proofreadingStatus.total > 0
-                            ? Math.round((proofreadingStatus.verified / proofreadingStatus.total) * 100)
-                            : 0}%
+                    </span>
+                    <span className="flex shrink-0 items-center gap-1 text-xs">
+                      展开
+                      <ChevronDown aria-hidden="true" size={16} />
+                    </span>
+                  </button>
+                )}
+                <div
+                  id={machineReviewPanelContentId}
+                  hidden={machineReviewPanelCollapsed}
+                >
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h2 className="text-base font-black">机器翻译人工校验清单</h2>
+                        <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black text-white">
+                          动态
                         </span>
                       </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-black/10">
-                        <div
-                          className="h-full rounded-full bg-emerald-500 transition-all"
-                          style={{
-                            width: `${proofreadingStatus.total > 0
-                              ? (proofreadingStatus.verified / proofreadingStatus.total) * 100
-                              : 0}%`,
-                          }}
-                        />
-                      </div>
+                      <p className="mt-1 text-sm opacity-80">
+                        总计 {proofreadingStatus.total} 部，已人工校验 {proofreadingStatus.verified} 部，
+                        仍需校验 <strong>{proofreadingStatus.remaining}</strong> 部。
+                      </p>
                     </div>
-                    <button
-                      type="button"
-                      aria-pressed={onlyNeedsReview}
-                      onClick={() => setOnlyNeedsReview(value => !value)}
-                      className={`rounded-lg border px-3 py-2 text-xs font-black transition ${
-                        onlyNeedsReview
-                          ? 'border-amber-600 bg-amber-500 text-white'
-                          : theme === 'dark'
-                            ? 'border-amber-700 bg-black/20 text-amber-200'
-                            : 'border-amber-300 bg-white text-amber-800'
-                      }`}
-                    >
-                      {onlyNeedsReview ? '显示当前分类全部剧情' : '只看机器翻译待校剧情'}
-                    </button>
-                    <Link
-                      href="/review/machine-translations"
-                      className="rounded-lg bg-amber-600 px-3 py-2 text-xs font-black text-white hover:bg-amber-700"
-                    >
-                      管理机器校验标记
-                    </Link>
-                    <Link
-                      href="/review/submissions"
-                      className="rounded-lg bg-purple-600 px-3 py-2 text-xs font-black text-white hover:bg-purple-700"
-                    >
-                      投稿审核
-                    </Link>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="min-w-48 grow md:grow-0">
+                        <div className="mb-1 flex justify-between text-[10px] font-bold opacity-70">
+                          <span>校验进度</span>
+                          <span>
+                            {proofreadingStatus.total > 0
+                              ? Math.round((proofreadingStatus.verified / proofreadingStatus.total) * 100)
+                              : 0}%
+                          </span>
+                        </div>
+                        <div className="h-2 overflow-hidden rounded-full bg-black/10">
+                          <div
+                            className="h-full rounded-full bg-emerald-500 transition-all"
+                            style={{
+                              width: `${proofreadingStatus.total > 0
+                                ? (proofreadingStatus.verified / proofreadingStatus.total) * 100
+                                : 0}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        aria-pressed={onlyNeedsReview}
+                        onClick={() => setOnlyNeedsReview(value => !value)}
+                        className={`rounded-lg border px-3 py-2 text-xs font-black transition ${
+                          onlyNeedsReview
+                            ? 'border-amber-600 bg-amber-500 text-white'
+                            : theme === 'dark'
+                              ? 'border-amber-700 bg-black/20 text-amber-200'
+                              : 'border-amber-300 bg-white text-amber-800'
+                        }`}
+                      >
+                        {onlyNeedsReview ? '显示当前分类全部剧情' : '只看机器翻译待校剧情'}
+                      </button>
+                      <Link
+                        href="/review/machine-translations"
+                        className="rounded-lg bg-amber-600 px-3 py-2 text-xs font-black text-white hover:bg-amber-700"
+                      >
+                        管理机器校验标记
+                      </Link>
+                      <Link
+                        href="/review/submissions"
+                        className="rounded-lg bg-purple-600 px-3 py-2 text-xs font-black text-white hover:bg-purple-700"
+                      >
+                        投稿审核
+                      </Link>
+                      <button
+                        type="button"
+                        aria-controls={machineReviewPanelContentId}
+                        aria-expanded={!machineReviewPanelCollapsed}
+                        aria-label="收起机器翻译人工校验清单"
+                        title="收起校验清单"
+                        onClick={() => setMachineReviewPanelCollapsedPreference(true)}
+                        className={`flex min-h-9 items-center gap-1 rounded-lg border px-3 py-2 text-xs font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+                          theme === 'dark'
+                            ? 'border-amber-700 bg-black/20 text-amber-200 hover:bg-amber-900/50'
+                            : 'border-amber-300 bg-white text-amber-800 hover:bg-amber-100'
+                        }`}
+                      >
+                        <ChevronUp aria-hidden="true" size={15} />
+                        收起
+                      </button>
+                    </div>
                   </div>
                 </div>
               </section>
