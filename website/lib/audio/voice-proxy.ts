@@ -4,11 +4,22 @@ export const MAX_VOICE_BYTES = 8 * 1024 * 1024;
 export const MAGIRECO_VOICE_R2_ORIGIN =
   'https://pub-70a248f1a6fe4ca597e7a10f8b95dfd8.r2.dev';
 
-export function getMagirecoVoiceUpstreamUrl(voiceId: string): URL {
+export type VoiceResponseMetadata = {
+  status: 200 | 206;
+  contentLength: number;
+  contentRange: string | null;
+  etag: string;
+};
+
+export function getMagirecoVoiceObjectKey(voiceId: string): string {
   if (!isMagirecoVoiceId(voiceId)) {
     throw new TypeError('Invalid Magia Record voice cue ID');
   }
-  return new URL(`/voice/${voiceId}_hca.hca`, MAGIRECO_VOICE_R2_ORIGIN);
+  return `voice/${voiceId}_hca.hca`;
+}
+
+export function getMagirecoVoiceUpstreamUrl(voiceId: string): URL {
+  return new URL(`/${getMagirecoVoiceObjectKey(voiceId)}`, MAGIRECO_VOICE_R2_ORIGIN);
 }
 
 /**
@@ -34,6 +45,81 @@ export function normalizeVoiceRange(value: string | null): string | null {
     return null;
   }
   return value;
+}
+
+/**
+ * Convert an already validated HTTP byte range into the shape accepted by R2.
+ * Keeping this conversion separate makes the route testable without a Worker
+ * runtime or an actual bucket.
+ */
+export function voiceRangeToR2Range(
+  value: string | null,
+): CloudflareR2Range | undefined {
+  if (value === null) return undefined;
+  if (normalizeVoiceRange(value) === null) {
+    throw new TypeError('Invalid or oversized voice byte range');
+  }
+
+  const match = /^bytes=([0-9]*)-([0-9]*)$/.exec(value);
+  if (!match) throw new TypeError('Invalid voice byte range');
+  if (!match[1]) return { suffix: Number(match[2]) };
+
+  const offset = Number(match[1]);
+  if (!match[2]) return { offset };
+  return {
+    offset,
+    length: Number(match[2]) - offset + 1,
+  };
+}
+
+/**
+ * Validate R2 metadata and derive an HTTP response. R2 exposes the complete
+ * object size even for a range read, so the 8 MiB object ceiling remains
+ * enforceable without buffering the body.
+ */
+export function getR2VoiceResponseMetadata(
+  object: Pick<
+    CloudflareR2ObjectBody,
+    'size' | 'etag' | 'httpEtag' | 'range'
+  >,
+): VoiceResponseMetadata {
+  if (
+    !Number.isSafeInteger(object.size) ||
+    object.size < 0 ||
+    object.size > MAX_VOICE_BYTES
+  ) {
+    throw new RangeError('Voice object exceeds size limit');
+  }
+
+  const etag = object.httpEtag || `"${object.etag}"`;
+  if (!object.range) {
+    return {
+      status: 200,
+      contentLength: object.size,
+      contentRange: null,
+      etag,
+    };
+  }
+
+  const { offset, length } = object.range;
+  if (
+    !Number.isSafeInteger(offset) ||
+    !Number.isSafeInteger(length) ||
+    offset < 0 ||
+    length < 1 ||
+    offset >= object.size ||
+    offset + length > object.size ||
+    length > MAX_VOICE_BYTES
+  ) {
+    throw new TypeError('R2 returned invalid voice range metadata');
+  }
+
+  return {
+    status: 206,
+    contentLength: length,
+    contentRange: `bytes ${offset}-${offset + length - 1}/${object.size}`,
+    etag,
+  };
 }
 
 export function parseBoundedContentLength(

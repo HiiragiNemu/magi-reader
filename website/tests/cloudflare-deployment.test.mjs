@@ -209,6 +209,31 @@ test('production workflow uploads the verified search object before Worker deplo
 
 test('isolated Exedra deployment smoke-tests both voice systems and the decoder', () => {
   const workflow = readFileSync(testDeploymentWorkflow, 'utf8');
+  assert.match(
+    workflow,
+    /pub-70a248f1a6fe4ca597e7a10f8b95dfd8\.r2\.dev/u,
+  );
+  assert.match(
+    workflow,
+    /discover-cloudflare-r2-bucket\.mjs/u,
+  );
+  assert.match(
+    workflow,
+    /"binding": "MAGIRECO_VOICE_R2"/u,
+  );
+  assert.match(
+    workflow,
+    /"bucket_name": "\$VOICE_R2_BUCKET_NAME"/u,
+  );
+  assert.match(
+    workflow,
+    /VOICE_R2_BUCKET_NAME: \$\{\{ steps\.voice_r2\.outputs\.bucket_name \|\| 'live2dv4' \}\}/u,
+  );
+  assert.match(
+    workflow,
+    /HTTP fallback/u,
+  );
+  assert.doesNotMatch(workflow, /wrangler r2 object put/u);
   assert.match(workflow, /Smoke-test bounded voice playback assets/u);
   assert.match(
     workflow,

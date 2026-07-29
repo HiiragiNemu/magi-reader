@@ -136,7 +136,7 @@ export default function MachineTranslationReviewPage() {
                 value={token}
                 onChange={event => setToken(event.target.value.trim())}
                 className="min-w-0 flex-1 rounded-lg border px-3 py-2 font-mono text-sm"
-                placeholder="管理员令牌或具有仓库写权限的 GitHub PAT"
+                placeholder="团队审核口令"
               />
               <button
                 type="button"
@@ -148,6 +148,9 @@ export default function MachineTranslationReviewPage() {
               </button>
             </div>
           </div>
+          <p className="mt-3 text-xs text-gray-500">
+            使用与投稿审核台相同的团队口令；普通审核员无需创建或共享 GitHub PAT。
+          </p>
         </header>
 
         {status && (

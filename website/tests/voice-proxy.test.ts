@@ -4,13 +4,20 @@ import test from 'node:test';
 import {
   contentRangeTotalExceedsLimit,
   createBoundedVoiceStream,
+  getMagirecoVoiceObjectKey,
   getMagirecoVoiceUpstreamUrl,
+  getR2VoiceResponseMetadata,
   MAX_VOICE_BYTES,
   normalizeVoiceRange,
   parseBoundedContentLength,
+  voiceRangeToR2Range,
 } from '../lib/audio/voice-proxy.ts';
 
 test('constructs the fixed R2 URL from a strict cue only', () => {
+  assert.equal(
+    getMagirecoVoiceObjectKey('vo_char_3031_00_01'),
+    'voice/vo_char_3031_00_01_hca.hca',
+  );
   assert.equal(
     getMagirecoVoiceUpstreamUrl('vo_char_3031_00_01').href,
     'https://pub-70a248f1a6fe4ca597e7a10f8b95dfd8.r2.dev/voice/vo_char_3031_00_01_hca.hca',
@@ -18,6 +25,73 @@ test('constructs the fixed R2 URL from a strict cue only', () => {
   assert.throws(
     () => getMagirecoVoiceUpstreamUrl('//evil.invalid/a'),
     /Invalid Magia Record/,
+  );
+});
+
+test('converts validated HTTP ranges to R2 range options', () => {
+  assert.equal(voiceRangeToR2Range(null), undefined);
+  assert.deepEqual(
+    voiceRangeToR2Range('bytes=20-29'),
+    { offset: 20, length: 10 },
+  );
+  assert.deepEqual(voiceRangeToR2Range('bytes=20-'), { offset: 20 });
+  assert.deepEqual(voiceRangeToR2Range('bytes=-20'), { suffix: 20 });
+  assert.throws(
+    () => voiceRangeToR2Range('bytes=20-10'),
+    /Invalid or oversized/,
+  );
+});
+
+test('derives complete R2 voice response metadata', () => {
+  assert.deepEqual(
+    getR2VoiceResponseMetadata({
+      size: 165744,
+      etag: 'raw-etag',
+      httpEtag: '"raw-etag"',
+    }),
+    {
+      status: 200,
+      contentLength: 165744,
+      contentRange: null,
+      etag: '"raw-etag"',
+    },
+  );
+});
+
+test('derives ranged R2 voice response metadata', () => {
+  assert.deepEqual(
+    getR2VoiceResponseMetadata({
+      size: 165744,
+      etag: 'raw-etag',
+      httpEtag: '"raw-etag"',
+      range: { offset: 0, length: 256 },
+    }),
+    {
+      status: 206,
+      contentLength: 256,
+      contentRange: 'bytes 0-255/165744',
+      etag: '"raw-etag"',
+    },
+  );
+});
+
+test('rejects oversized objects and malformed R2 response ranges', () => {
+  assert.throws(
+    () => getR2VoiceResponseMetadata({
+      size: MAX_VOICE_BYTES + 1,
+      etag: 'raw-etag',
+      httpEtag: '"raw-etag"',
+    }),
+    /exceeds size limit/,
+  );
+  assert.throws(
+    () => getR2VoiceResponseMetadata({
+      size: 100,
+      etag: 'raw-etag',
+      httpEtag: '"raw-etag"',
+      range: { offset: 90, length: 20 },
+    }),
+    /invalid voice range metadata/,
   );
 });
 

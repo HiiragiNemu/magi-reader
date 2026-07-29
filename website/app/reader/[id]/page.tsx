@@ -49,6 +49,7 @@ import {
   verifyExedraStoryId,
 } from '@/lib/story-index';
 import { useDialog } from '@/lib/use-dialog';
+import { triggerUtf8Download } from '@/lib/browser-download';
 import {
   alignStoryLines,
   makeSectionAnchorId,
@@ -104,9 +105,6 @@ const FORMAT_LABELS: Record<StoryFormat, string> = {
   'generic-json': '通用 JSON',
 };
 
-const safeDownloadName = (value: string): string =>
-  value.replace(/[<>:"/\\|?*\u0000-\u001F]/g, '-').replace(/\s+/g, ' ').trim() || 'story';
-
 const filenameFromPath = (path: string, fallback: string): string => {
   try {
     const pathname = new URL(path, window.location.origin).pathname;
@@ -114,23 +112,6 @@ const filenameFromPath = (path: string, fallback: string): string => {
   } catch {
     return fallback;
   }
-};
-
-const downloadContent = (content: string, filename: string, addBom = false) => {
-  const blob = new Blob([addBom ? `\uFEFF${content}` : content], {
-    type: filename.toLowerCase().endsWith('.json')
-      ? 'application/json;charset=utf-8'
-      : 'text/plain;charset=utf-8',
-  });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = safeDownloadName(filename);
-  anchor.style.display = 'none';
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 100);
 };
 
 const sourceDownloadName = (id: string, language: 'cn' | 'jp', source: LoadedSource): string => {
@@ -686,10 +667,9 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       setEditMessage('当前没有可下载的中文内容。');
       return;
     }
-    downloadContent(
+    triggerUtf8Download(
       lines.map(serializeStoryLine).join('\n'),
       `${id}_translated.txt`,
-      true,
     );
   };
 
@@ -811,7 +791,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       setEditMessage(
         `${error instanceof Error ? error.message : '在线提交失败'}；已自动下载备份文件。`,
       );
-      downloadContent(content, `${currentStory.id}_submit.txt`, true);
+      triggerUtf8Download(content, `${currentStory.id}_submit.txt`);
       setTurnstileToken('');
       setTurnstileResetKey((value) => value + 1);
     } finally {
@@ -904,10 +884,9 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   <button
                     type="button"
                     title={`下载原始文件（${FORMAT_LABELS[cnSource.format]}）`}
-                    onClick={() => downloadContent(
+                    onClick={() => triggerUtf8Download(
                       cnSource.raw,
                       sourceDownloadName(id, 'cn', cnSource),
-                      !cnSource.name.toLowerCase().endsWith('.json'),
                     )}
                     className="flex items-center gap-1 rounded px-1.5 py-0.5 opacity-50 transition hover:text-green-600 hover:opacity-100"
                   >
@@ -918,10 +897,9 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   <button
                     type="button"
                     title={`下载原始文件（${FORMAT_LABELS[jpSource.format]}）`}
-                    onClick={() => downloadContent(
+                    onClick={() => triggerUtf8Download(
                       jpSource.raw,
                       sourceDownloadName(id, 'jp', jpSource),
-                      !jpSource.name.toLowerCase().endsWith('.json'),
                     )}
                     className="flex items-center gap-1 rounded px-1.5 py-0.5 opacity-50 transition hover:text-blue-600 hover:opacity-100"
                   >
@@ -1074,7 +1052,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                     <input type="file" accept=".json,.txt" className="hidden" onChange={uploadTranslation} />
                   </label>
                   <button type="button" onClick={downloadTranslation} className="ml-auto rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow hover:bg-blue-700">
-                    下载当前进度
+                    下载当前进度（UTF-8）
                   </button>
                 </div>
 

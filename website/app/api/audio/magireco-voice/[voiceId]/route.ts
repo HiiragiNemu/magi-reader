@@ -1,10 +1,15 @@
+import { getCloudflareContext } from '@opennextjs/cloudflare';
+
 import {
   contentRangeTotalExceedsLimit,
   createBoundedVoiceStream,
+  getMagirecoVoiceObjectKey,
   getMagirecoVoiceUpstreamUrl,
+  getR2VoiceResponseMetadata,
   MAX_VOICE_BYTES,
   normalizeVoiceRange,
   parseBoundedContentLength,
+  voiceRangeToR2Range,
 } from '@/lib/audio/voice-proxy';
 import { isMagirecoVoiceId } from '@/lib/audio/voice-cue';
 
@@ -23,27 +28,73 @@ const ERROR_HEADERS = {
   'Cache-Control': 'no-store',
 };
 
-export async function GET(
-  request: Request,
-  context: { params: Promise<{ voiceId: string }> },
-) {
-  const { voiceId } = await context.params;
-  if (!isMagirecoVoiceId(voiceId)) {
+async function getFromR2(
+  bucket: CloudflareR2Bucket,
+  voiceId: string,
+  safeRange: string | null,
+): Promise<Response> {
+  let object: CloudflareR2ObjectBody | null;
+  try {
+    object = await bucket.get(getMagirecoVoiceObjectKey(voiceId), {
+      ...(safeRange
+        ? { range: voiceRangeToR2Range(safeRange) }
+        : {}),
+    });
+  } catch (error) {
+    console.error('Magia Record voice R2 request failed', error);
     return Response.json(
-      { error: '无效的魔法纪录语音编号' },
-      { status: 400, headers: ERROR_HEADERS },
+      { error: '魔法纪录语音存储暂时不可用' },
+      { status: 502, headers: ERROR_HEADERS },
     );
   }
 
-  const requestRange = request.headers.get('range');
-  const safeRange = normalizeVoiceRange(requestRange);
-  if (requestRange !== null && safeRange === null) {
+  if (!object) {
     return Response.json(
-      { error: '无效或过大的 Range 请求' },
-      { status: 416, headers: ERROR_HEADERS },
+      { error: '未找到该语音' },
+      { status: 404, headers: ERROR_HEADERS },
     );
   }
 
+  let metadata;
+  try {
+    metadata = getR2VoiceResponseMetadata(object);
+  } catch (error) {
+    void object.body.cancel('Invalid or oversized R2 voice object');
+    if (error instanceof RangeError) {
+      return Response.json(
+        { error: '语音文件超过 8 MiB 安全上限' },
+        { status: 413, headers: ERROR_HEADERS },
+      );
+    }
+    console.error('Magia Record voice R2 metadata is invalid', error);
+    return Response.json(
+      { error: '魔法纪录语音存储返回异常' },
+      { status: 502, headers: ERROR_HEADERS },
+    );
+  }
+
+  const headers = new Headers(SUCCESS_HEADERS);
+  headers.set('Content-Type', 'audio/x-hca');
+  headers.set('Accept-Ranges', 'bytes');
+  headers.set('Content-Length', String(metadata.contentLength));
+  headers.set('ETag', metadata.etag);
+  if (metadata.contentRange) {
+    headers.set('Content-Range', metadata.contentRange);
+  }
+
+  return new Response(
+    createBoundedVoiceStream(object.body, metadata.contentLength),
+    {
+      status: metadata.status,
+      headers,
+    },
+  );
+}
+
+async function getFromPublicOrigin(
+  voiceId: string,
+  safeRange: string | null,
+): Promise<Response> {
   const upstreamHeaders = new Headers({
     Accept: 'application/octet-stream',
   });
@@ -54,7 +105,7 @@ export async function GET(
     upstream = await fetch(getMagirecoVoiceUpstreamUrl(voiceId), {
       cache: 'no-store',
       headers: upstreamHeaders,
-      redirect: 'error',
+      redirect: 'follow',
     });
   } catch (error) {
     console.error('Magia Record voice upstream request failed', error);
@@ -114,4 +165,32 @@ export async function GET(
     status: upstream.status,
     headers,
   });
+}
+
+export async function GET(
+  request: Request,
+  context: { params: Promise<{ voiceId: string }> },
+) {
+  const { voiceId } = await context.params;
+  if (!isMagirecoVoiceId(voiceId)) {
+    return Response.json(
+      { error: '无效的魔法纪录语音编号' },
+      { status: 400, headers: ERROR_HEADERS },
+    );
+  }
+
+  const requestRange = request.headers.get('range');
+  const safeRange = normalizeVoiceRange(requestRange);
+  if (requestRange !== null && safeRange === null) {
+    return Response.json(
+      { error: '无效或过大的 Range 请求' },
+      { status: 416, headers: ERROR_HEADERS },
+    );
+  }
+
+  const { env } = await getCloudflareContext({ async: true });
+  if (env.MAGIRECO_VOICE_R2) {
+    return getFromR2(env.MAGIRECO_VOICE_R2, voiceId, safeRange);
+  }
+  return getFromPublicOrigin(voiceId, safeRange);
 }

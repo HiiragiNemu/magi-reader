@@ -100,3 +100,7 @@ GitHub Actions 只在推送到 `main` 时运行生产部署；`EXEDRA-TEST` 等�
 ## 社区中文校对
 
 社区校对系统的审核流程、Cloudflare KV、Turnstile、GitHub PR 自动化和权限配置见仓库根目录 [`COMMUNITY_PROOFREADING.md`](../COMMUNITY_PROOFREADING.md)。
+
+普通审核员只使用项目负责人发放的固定团队审核口令，不需要创建 GitHub PAT。
+固定口令只保存为 GitHub Actions Secret `SUBMISSIONS_ADMIN_TOKEN` 和 Worker
+secret，不写入仓库或前端。
