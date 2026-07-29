@@ -68,6 +68,10 @@ jobs:
         working-directory: website
         run: npm ci
 
+      - name: Enforce feature and external network policy
+        working-directory: website
+        run: npm run validate:feature
+
       - name: Lint, type check and website tests
         working-directory: website
         run: |
@@ -76,13 +80,31 @@ jobs:
           npm test
 
       - name: Generate matching search manifest
+        id: search
         shell: bash
         run: |
           set -euo pipefail
           payload="$RUNNER_TEMP/search_content.json"
           python build_search_index_v6.py --output "$payload"
           python build_search_index_v6.py --output "$payload" --validate-only
-          echo "Full-text payload is validated but intentionally not uploaded without R2 permission."
+          object_key="$(python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          manifest = json.loads(
+              Path("website/public/search_index_manifest.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          object_key = manifest.get("object_key", "")
+          if not re.fullmatch(r"search/[a-f0-9]{64}\.json", object_key):
+              raise SystemExit(f"Invalid search object key: {object_key!r}")
+          print(object_key)
+          PY
+          )"
+          echo "object_key=$object_key" >> "$GITHUB_OUTPUT"
+          echo "Full-text payload is validated for manual R2 upload: $object_key"
 
       - name: Build Cloudflare Worker output
         working-directory: website

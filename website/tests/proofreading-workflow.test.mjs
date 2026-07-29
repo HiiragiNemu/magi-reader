@@ -61,6 +61,9 @@ test('test deployment uses a dedicated KV and supports real Turnstile secrets', 
   assert.match(workflow, /TURNSTILE_SECRET_KEY/u);
   assert.match(workflow, /PROOFREADING_TARGET_BRANCH/u);
   assert.match(workflow, /EXEDRA-TEST/u);
+  assert.match(workflow, /npm run validate:feature/u);
+  assert.doesNotMatch(workflow, /wrangler r2 object put/u);
+  assert.match(workflow, /manual R2 upload/u);
   assert.match(workflow, /for attempt in \$\(seq 1 30\)/u);
   assert.match(
     workflow,
