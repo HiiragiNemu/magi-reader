@@ -1,0 +1,79 @@
+name: Probe Fandom Voice Index
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'wiki-preservation/scripts/build_voice_audio_index.py'
+      - '.github/workflows/probe-fandom-voice-index.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out voice indexer
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            wiki-preservation/scripts/build_voice_audio_index.py
+          sparse-checkout-cone-mode: true
+          show-progress: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+      - name: Build five-page voice sample
+        run: |
+          python wiki-preservation/scripts/build_voice_audio_index.py \
+            --output voice-sample \
+            --max-pages 5
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('voice-sample/manifest.json').read_text())
+          assert m['quotePagesProcessed'] == 5, m
+          assert m['voiceFiles'] >= 50, m
+          assert m['characters'] >= 1, m
+          assert m['fandomUrls'] >= 1, m
+          print(json.dumps(m, ensure_ascii=False, indent=2))
+          PY
+      - name: Verify source availability sample
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, random, requests
+          from pathlib import Path
+          files=[]
+          for path in Path('voice-sample/characters').glob('*.json'):
+              files.extend(json.loads(path.read_text()))
+          assert files
+          sample=files[:min(12,len(files))]
+          results=[]
+          for item in sample:
+              row={'file':item['mp3Filename']}
+              for source in item['sources']:
+                  try:
+                      r=requests.get(source['url'], headers={'Range':'bytes=0-31','User-Agent':'Mozilla/5.0'}, timeout=20, allow_redirects=True)
+                      row[source['kind']]={'status':r.status_code,'bytes':len(r.content),'type':r.headers.get('content-type','')}
+                  except Exception as exc:
+                      row[source['kind']]={'error':repr(exc)}
+              results.append(row)
+          Path('voice-sample/source-probe.json').write_text(json.dumps(results,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(results,ensure_ascii=False,indent=2))
+          assert any(row.get('cn-cdn',{}).get('status') in (200,206) or row.get('fandom',{}).get('status') in (200,206) for row in results)
+          PY
+      - name: Upload voice sample
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: magireco-voice-index-sample
+          path: voice-sample
+          if-no-files-found: warn
+          retention-days: 7
