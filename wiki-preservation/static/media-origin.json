@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "strategy": "github-first-with-source-fallback",
+  "storage": "github",
+  "github": {
+    "owner": "HiiragiNemu",
+    "repository": "magiWiki",
+    "branch": "main",
+    "root": "images",
+    "probePath": "README.md"
+  },
+  "sourceFallback": true,
+  "r2Storage": false,
+  "notes": "GitHub保存图片和音频原件；Cloudflare Pages只托管网页、索引和缓存。当前私有仓库不可匿名读取时自动使用历史源地址。"
+}
