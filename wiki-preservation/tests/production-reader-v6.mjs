@@ -107,6 +107,44 @@ try {
     await desktopPage.screenshot({ path: `${output}/02-article-desktop.png` });
   }
 
+  const kyubey = archive.find((item) => item.title === '丘比' && item.namespace === 0);
+  check(Boolean(kyubey), '生产归档缺少丘比移动端验收目标');
+  let kyubeyMetrics = null;
+  if (kyubey) {
+    await page.goto(`${base}?kyubey-v6=${Date.now()}#/article/${encodeURIComponent(kyubey.id)}`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
+    await page.waitForSelector('.wiki-document');
+    await page.waitForFunction(() => document.querySelector('.wiki-document')?.dataset.enhanced === 'true', null, { timeout: 30_000 });
+    await page.waitForTimeout(900);
+    kyubeyMetrics = await page.evaluate(() => {
+      const documentRoot = document.documentElement;
+      const article = document.querySelector('.wiki-document');
+      const notice = article?.querySelector('.notice.metadata, #disambig');
+      const hatnote = notice?.querySelector('.hatnote');
+      const firstParagraph = [...(article?.children || [])].find((node) => node.tagName === 'P');
+      const firstTableViewport = article?.querySelector('.table-viewport');
+      const width = article?.getBoundingClientRect().width || 0;
+      return {
+        viewport: documentRoot.clientWidth,
+        documentWidth: documentRoot.scrollWidth,
+        articleWidth: width,
+        noticeWidth: notice?.getBoundingClientRect().width || 0,
+        hatnoteWidth: hatnote?.getBoundingClientRect().width || 0,
+        firstParagraphWidth: firstParagraph?.getBoundingClientRect().width || 0,
+        firstTableViewportWidth: firstTableViewport?.getBoundingClientRect().width || 0,
+        noticeDisplay: notice ? getComputedStyle(notice).display : '',
+        floatLeft: notice?.querySelector('.floatleft') ? getComputedStyle(notice.querySelector('.floatleft')).float : '',
+      };
+    });
+    check(kyubeyMetrics.documentWidth <= kyubeyMetrics.viewport + 2, `丘比页面横向溢出：${JSON.stringify(kyubeyMetrics)}`);
+    check(kyubeyMetrics.articleWidth >= kyubeyMetrics.viewport - 30, `丘比正文容器过窄：${JSON.stringify(kyubeyMetrics)}`);
+    check(kyubeyMetrics.noticeWidth >= kyubeyMetrics.articleWidth * .88, `丘比消歧提示没有占满正文：${JSON.stringify(kyubeyMetrics)}`);
+    check(kyubeyMetrics.hatnoteWidth >= kyubeyMetrics.articleWidth * .68, `丘比消歧说明仍被挤成窄列：${JSON.stringify(kyubeyMetrics)}`);
+    check(kyubeyMetrics.firstParagraphWidth >= kyubeyMetrics.articleWidth * .9, `丘比首段正文仍为窄列：${JSON.stringify(kyubeyMetrics)}`);
+    check(kyubeyMetrics.firstTableViewportWidth >= kyubeyMetrics.articleWidth * .9, `丘比信息表容器过窄：${JSON.stringify(kyubeyMetrics)}`);
+    check(kyubeyMetrics.floatLeft === 'none', `丘比消歧图标仍参与浮动：${JSON.stringify(kyubeyMetrics)}`);
+    await page.screenshot({ path: `${output}/03-kyubey-mobile.png` });
+  }
+
   await page.goto(`${base}?characters-v6=${Date.now()}#/characters`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
   await page.waitForSelector('.character-card');
   await page.waitForFunction(() => document.querySelectorAll('.character-card').length >= 40);
@@ -129,7 +167,7 @@ try {
   check(/Vo_char_1002_00_01\.mp3$/.test(audio.src || ''), `七海八千代首条语音地址错误：${audio.src}`);
   const audioResponse = await mobile.request.get(audio.src, { headers: { Range: 'bytes=0-2047' }, timeout: 30_000 });
   check([200, 206].includes(audioResponse.status()), `MP3范围请求失败：HTTP ${audioResponse.status()}`);
-  await page.screenshot({ path: `${output}/03-voice-mobile.png` });
+  await page.screenshot({ path: `${output}/04-voice-mobile.png` });
 
   await page.goto(`${base}?memoria-v6=${Date.now()}#/memoria`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
   await page.waitForSelector('.memoria-card');
@@ -150,7 +188,7 @@ try {
   check(memoriaText.includes('资料完整'), '已验证记忆结晶被错误标为待补');
   check((await page.locator('.memoria-detail .reader-image').count()) === 1, '记忆结晶详情缺少图片');
   check((await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)) <= 2, '记忆结晶详情横向溢出');
-  await page.screenshot({ path: `${output}/04-memoria-detail-mobile.png` });
+  await page.screenshot({ path: `${output}/05-memoria-detail-mobile.png` });
 
   const registration = await page.evaluate(async () => {
     const value = await navigator.serviceWorker.ready;
@@ -180,12 +218,13 @@ try {
   const offlineText = await page.locator('.memoria-detail').innerText();
   check(offlineText.includes('1000円未満の魔法') || offlineText.includes('1000日元'), '断网后记忆结晶详情未恢复');
   check((await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)) <= 2, '离线记忆结晶详情横向溢出');
-  await page.screenshot({ path: `${output}/05-memoria-offline-mobile.png` });
+  await page.screenshot({ path: `${output}/06-memoria-offline-mobile.png` });
   await mobile.setOffline(false);
 
   const result = {
     production,
     portalMetrics,
+    kyubeyMetrics,
     audio,
     audioStatus: audioResponse.status(),
     registration,
