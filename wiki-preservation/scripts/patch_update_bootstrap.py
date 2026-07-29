@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Make Reader UI updates visible on the first online reload.
 
-Older workers used stale-while-revalidate for JavaScript and CSS.  A navigation
+Older workers used stale-while-revalidate for JavaScript and CSS. A navigation
 could therefore receive the new HTML while the controlling worker returned an
-old app.js from Cache Storage.  This patch runs after the normal offline worker
-is generated.  It makes update entry points network-first and injects a small,
+old app.js from Cache Storage. This patch runs after the normal offline worker
+is generated. It makes update entry points network-first and injects a small,
 version-scoped cache migration into the HTML shell.
 """
 
@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 
@@ -21,6 +22,7 @@ NETWORK_FIRST_PATHS = (
     "/ui-version.json",
     "/app.js",
     "/ui-v4-runtime.js",
+    "/github-media-runtime.js",
     "/structured-ui.js",
     "/doppel-ui.js",
     "/memoria-ui.js",
@@ -34,15 +36,21 @@ NETWORK_FIRST_PATHS = (
 )
 
 BOOTSTRAP_MARKER = "reader-version-cache-bootstrap"
+DECLARATION_RE = re.compile(r"const\s+NETWORK_FIRST_PATHS\s*=", re.M)
 
 
 def patch_worker(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
-    declaration = (
-        f"const NETWORK_FIRST_PATHS = new Set({json.dumps(NETWORK_FIRST_PATHS, ensure_ascii=False)});\n"
-    )
     fetch_marker = "self.addEventListener('fetch', (event) => {"
-    if declaration not in text:
+
+    # patch_offline_runtime.py now generates NETWORK_FIRST_PATHS itself. Older
+    # workers did not. Detect any valid declaration instead of comparing exact
+    # whitespace/serialization, otherwise a second const is injected.
+    if not DECLARATION_RE.search(text):
+        declaration = (
+            "const NETWORK_FIRST_PATHS = new Set("
+            f"{json.dumps(NETWORK_FIRST_PATHS, ensure_ascii=False)});\n"
+        )
         if text.count(fetch_marker) != 1:
             raise RuntimeError(f"fetch listener marker missing in {path}")
         text = text.replace(fetch_marker, declaration + "\n" + fetch_marker, 1)
@@ -57,6 +65,8 @@ def patch_worker(path: Path) -> None:
     for value in NETWORK_FIRST_PATHS:
         if value not in text:
             raise RuntimeError(f"critical update path missing from {path}: {value}")
+    if len(DECLARATION_RE.findall(text)) != 1:
+        raise RuntimeError(f"NETWORK_FIRST_PATHS declaration count invalid in {path}")
     path.write_text(text, encoding="utf-8")
 
 
