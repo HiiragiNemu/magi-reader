@@ -4,8 +4,8 @@
 Older workers used stale-while-revalidate for JavaScript and CSS. A navigation
 could therefore receive the new HTML while the controlling worker returned an
 old app.js from Cache Storage. This patch runs after the normal offline worker
-is generated. It makes update entry points network-first and injects a small,
-version-scoped cache migration into the HTML shell.
+is generated. It merges all update entry points into the existing network-first
+set and injects a small, version-scoped cache migration into the HTML shell.
 """
 
 from __future__ import annotations
@@ -36,24 +36,39 @@ NETWORK_FIRST_PATHS = (
 )
 
 BOOTSTRAP_MARKER = "reader-version-cache-bootstrap"
-DECLARATION_RE = re.compile(r"const\s+NETWORK_FIRST_PATHS\s*=", re.M)
+DECLARATION_RE = re.compile(
+    r"const\s+NETWORK_FIRST_PATHS\s*=\s*new\s+Set\s*\(\s*\[(?P<body>[\s\S]*?)\]\s*\)\s*;",
+    re.M,
+)
+
+
+def merge_network_paths(text: str, path: Path) -> str:
+    matches = list(DECLARATION_RE.finditer(text))
+    if not matches:
+        fetch_marker = "self.addEventListener('fetch', (event) => {"
+        if text.count(fetch_marker) != 1:
+            raise RuntimeError(f"fetch listener marker missing in {path}")
+        declaration = (
+            "const NETWORK_FIRST_PATHS = new Set("
+            f"{json.dumps(NETWORK_FIRST_PATHS, ensure_ascii=False)});\n\n"
+        )
+        return text.replace(fetch_marker, declaration + fetch_marker, 1)
+    if len(matches) != 1:
+        raise RuntimeError(f"NETWORK_FIRST_PATHS declaration count invalid in {path}: {len(matches)}")
+
+    match = matches[0]
+    body = match.group("body")
+    missing = [value for value in NETWORK_FIRST_PATHS if value not in body]
+    if not missing:
+        return text
+    addition = "".join(f"\n  {json.dumps(value)}," for value in missing)
+    replacement = match.group(0).replace("]", addition + "\n]", 1)
+    return text[:match.start()] + replacement + text[match.end():]
 
 
 def patch_worker(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
-    fetch_marker = "self.addEventListener('fetch', (event) => {"
-
-    # patch_offline_runtime.py now generates NETWORK_FIRST_PATHS itself. Older
-    # workers did not. Detect any valid declaration instead of comparing exact
-    # whitespace/serialization, otherwise a second const is injected.
-    if not DECLARATION_RE.search(text):
-        declaration = (
-            "const NETWORK_FIRST_PATHS = new Set("
-            f"{json.dumps(NETWORK_FIRST_PATHS, ensure_ascii=False)});\n"
-        )
-        if text.count(fetch_marker) != 1:
-            raise RuntimeError(f"fetch listener marker missing in {path}")
-        text = text.replace(fetch_marker, declaration + "\n" + fetch_marker, 1)
+    text = merge_network_paths(text, path)
 
     old = "if (url.pathname === '/health.json' || url.pathname === '/index.html') {"
     new = "if (NETWORK_FIRST_PATHS.has(url.pathname)) {"
@@ -62,11 +77,13 @@ def patch_worker(path: Path) -> None:
     elif new not in text:
         raise RuntimeError(f"network-first update condition missing in {path}")
 
+    matches = list(DECLARATION_RE.finditer(text))
+    if len(matches) != 1:
+        raise RuntimeError(f"NETWORK_FIRST_PATHS declaration count invalid after merge in {path}")
+    body = matches[0].group("body")
     for value in NETWORK_FIRST_PATHS:
-        if value not in text:
+        if value not in body:
             raise RuntimeError(f"critical update path missing from {path}: {value}")
-    if len(DECLARATION_RE.findall(text)) != 1:
-        raise RuntimeError(f"NETWORK_FIRST_PATHS declaration count invalid in {path}")
     path.write_text(text, encoding="utf-8")
 
 
