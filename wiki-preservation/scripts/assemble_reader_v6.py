@@ -22,6 +22,8 @@ STATIC_FILES = (
     "styles.css",
     "ui-v4-fixes.css",
     "ui-v4-runtime.js",
+    "github-media-runtime.js",
+    "media-origin.json",
     "structured-ui.js",
     "structured-ui.css",
     "doppel-ui.js",
@@ -42,6 +44,7 @@ VERSIONED_ASSETS = (
     "dense-reader.css",
     "dense-reader-compact.css",
     "ui-v4-runtime.js",
+    "github-media-runtime.js",
     "app.js",
     "structured-ui.js",
     "doppel-ui.js",
@@ -63,12 +66,14 @@ FORBIDDEN_VISITOR_COPY = (
 NETWORK_FIRST_ASSETS = (
     "/app.js",
     "/ui-v4-runtime.js",
+    "/github-media-runtime.js",
     "/structured-ui.js",
     "/doppel-ui.js",
     "/memoria-ui.js",
     "/styles.css",
     "/dense-reader.css",
     "/dense-reader-compact.css",
+    "/media-origin.json",
 )
 
 
@@ -110,6 +115,33 @@ def assert_visitor_copy(root: Path) -> None:
         raise RuntimeError(f"internal/development copy leaked into visitor UI: {found}")
 
 
+def media_storage_contract(root: Path) -> dict:
+    config = load(root / "media-origin.json")
+    github = config.get("github") or {}
+    expected = {
+        "owner": "HiiragiNemu",
+        "repository": "magiWiki",
+        "branch": "main",
+        "root": "images",
+    }
+    if config.get("storage") != "github" or config.get("r2Storage") is not False:
+        raise RuntimeError(f"invalid media storage contract: {config}")
+    if config.get("strategy") != "github-first-with-source-fallback":
+        raise RuntimeError(f"invalid media strategy: {config}")
+    for key, value in expected.items():
+        if github.get(key) != value:
+            raise RuntimeError(f"invalid GitHub media coordinate {key}: {github}")
+    return {
+        "authority": "github",
+        "repository": f"{github['owner']}/{github['repository']}",
+        "branch": github["branch"],
+        "root": github["root"],
+        "r2": False,
+        "sourceFallback": bool(config.get("sourceFallback")),
+        "publicReadiness": "runtime-probe",
+    }
+
+
 def update_health(root: Path, revision: str) -> dict:
     health_path = root / "health.json"
     health = load(health_path)
@@ -119,10 +151,12 @@ def update_health(root: Path, revision: str) -> dict:
     structured["memoria"] = memoria
     dump(structured_path, structured)
 
+    storage = media_storage_contract(root)
     health["uiVersion"] = 6
     health["uiRevision"] = revision
     health["portalClassification"] = "wiki-and-structured-catalogs"
     health["structured"] = structured
+    health["mediaStorage"] = storage
     health.setdefault("counts", {})["memoria"] = memoria["records"]
     health["uiFeatures"] = [
         "dense-wiki-desktop-layout",
@@ -135,6 +169,9 @@ def update_health(root: Path, revision: str) -> dict:
         "structured-doppel-catalog",
         "structured-memoria-catalog",
         "on-demand-memoria-detail-shards",
+        "github-first-media-origin",
+        "single-probe-private-media-fallback",
+        "no-r2-media-storage",
         "versioned-service-worker-file",
         "legacy-cache-eviction",
         "first-reload-cache-migration",
@@ -151,6 +188,7 @@ def update_health(root: Path, revision: str) -> dict:
             "uiRevision": revision,
             "name": "dense-structured-magireco-database",
             "structured": structured,
+            "mediaStorage": storage,
         },
     )
     return health
@@ -164,10 +202,13 @@ def validate(root: Path, revision: str) -> dict:
     doppels = load(root / "data" / "structured" / "doppel.json")
     memoria_manifest = load(root / "data" / "structured" / "memoria-manifest.json")
     memoria_index = load(root / "data" / "structured" / "memoria-index.json")
+    storage = media_storage_contract(root)
 
     if health["counts"]["pages"] != 500 or health["counts"]["images"] < 12000:
         raise RuntimeError(health)
     if health.get("uiVersion") != 6 or health.get("uiRevision") != revision:
+        raise RuntimeError(health)
+    if health.get("mediaStorage") != storage or storage.get("r2") is not False:
         raise RuntimeError(health)
     if health["counts"].get("memoria") != 1042:
         raise RuntimeError(health)
@@ -221,6 +262,9 @@ def validate(root: Path, revision: str) -> dict:
         raise RuntimeError("dense Memoria grid missing")
     if "requestIdleCallback" not in (root / "app.js").read_text(encoding="utf-8"):
         raise RuntimeError("idle article enhancement missing")
+    media_runtime = (root / "github-media-runtime.js").read_text(encoding="utf-8")
+    if "MagirecoMediaOrigin" not in media_runtime or "r2Storage: false" not in media_runtime:
+        raise RuntimeError("GitHub media runtime missing")
     for name in ("structured-ui.js", "doppel-ui.js", "memoria-ui.js"):
         if "subtree: false" not in (root / name).read_text(encoding="utf-8"):
             raise RuntimeError(f"root-only observer missing: {name}")
@@ -235,6 +279,7 @@ def validate(root: Path, revision: str) -> dict:
         "health": health,
         "structured": manifest,
         "memoria": memoria_manifest,
+        "mediaStorage": storage,
     }
 
 
@@ -244,7 +289,7 @@ def main() -> None:
     parser.add_argument("--static", type=Path, required=True)
     parser.add_argument("--scripts", type=Path, required=True)
     parser.add_argument("--memoria", type=Path, required=True)
-    parser.add_argument("--revision", default="6.2")
+    parser.add_argument("--revision", default="6.3")
     args = parser.parse_args()
 
     root = args.snapshot.resolve()
