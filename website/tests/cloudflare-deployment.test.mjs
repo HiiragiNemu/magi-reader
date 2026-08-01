@@ -181,11 +181,21 @@ test('Cloudflare output requires a valid manifest and excludes the large payload
 test('production workflow safely deploys the current app to Cloudflare Pages', () => {
   const workflow = readFileSync(deploymentWorkflow, 'utf8');
   assert.match(workflow, /branches:\s*\[main\]/u);
+  assert.match(workflow, /fetch-depth:\s*0/u);
   assert.match(workflow, /wrangler pages deploy \.pages-deploy/u);
   assert.doesNotMatch(workflow, /secrets\.KV_NAMESPACE_ID/u);
   assert.match(workflow, /secrets\.SUBMISSIONS_KV_NAMESPACE_ID/u);
   assert.match(workflow, /npm ci/u);
   assert.match(workflow, /npm run check/u);
+  assert.match(workflow, /generate_machine_translation_manifest\.py/u);
+  assert.ok(
+    workflow.indexOf('python generate_story_index.py') <
+      workflow.indexOf('python generate_machine_translation_manifest.py'),
+  );
+  assert.ok(
+    workflow.indexOf('python generate_machine_translation_manifest.py') <
+      workflow.indexOf('npm run build:pages'),
+  );
   assert.match(workflow, /npm run build:pages/u);
   assert.match(workflow, /configure-pages-project\.mjs/u);
   assert.match(workflow, /Verify server implementation is not exposed/u);
@@ -193,6 +203,15 @@ test('production workflow safely deploys the current app to Cloudflare Pages', (
   assert.match(workflow, /api\/proofreading\/machine-status/u);
   assert.doesNotMatch(workflow, /wrangler r2 object put/u);
   assert.doesNotMatch(workflow, /opennextjs-cloudflare deploy/u);
+});
+
+test('Pages binding configuration uses the runtime GitHub repository variable', () => {
+  const script = readFileSync(
+    path.resolve('scripts', 'configure-pages-project.mjs'),
+    'utf8',
+  );
+  assert.match(script, /PROOFREADING_GITHUB_REPO:/u);
+  assert.doesNotMatch(script, /PROOFREADING_GITHUB_REPOSITORY:/u);
 });
 
 test('isolated Exedra deployment smoke-tests both voice systems and the decoder', () => {
