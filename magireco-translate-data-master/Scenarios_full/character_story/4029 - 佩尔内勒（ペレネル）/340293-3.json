@@ -1,0 +1,587 @@
+{
+ "story": {
+  "group_1": [
+   {
+    "autoTurnLast": 0.01,
+    "bg": "black",
+    "bgm": "bgm05_event07",
+    "item": [
+     {
+      "iPhoneXScale": 1,
+      "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+      "posX": 0,
+      "posY": 0,
+      "visible": "appear"
+     }
+    ],
+    "turnChangeIn": "fadeIn"
+   },
+   {
+    "nameNarration": "佩尔内勒的手记",
+    "narration": "[textBlack:灵魂宝石，杂质超出极限，生下了魔女……]@[textBlack:这是魔法少女无法逃脱的命运，]",
+    "narrationCoverOpacity": 0,
+    "narrationEffect": "in",
+    "narrationHAlignment": "left",
+    "narrationPosX": 150,
+    "turnChangeOut": "fadeOut"
+   },
+   {
+    "narration": "[textBlack:]@[textBlack:“少女”对此负有责任。如果考虑到巨大的因果关系，]@[textBlack:这场悲剧注定会发生]"
+   },
+   {
+    "narration": "[textBlack:而设计让那份因果]@[textBlack:集中到她身上的人]@[textBlack:正是我自己]@[textBlack:仅凭这一点，我便理应受到谴责]"
+   },
+   {
+    "narration": "[textBlack:不仅如此，我还对]@[textBlack:自己更为深重的罪孽闭口不谈]@[textBlack:试图就此结束这份记录]"
+   },
+   {
+    "narration": "[textBlack:因为我和丘比知晓的事情中]@[textBlack:有许多一旦曝光]@[textBlack:便可能成为新一轮战乱的导火索]"
+   },
+   {
+    "narration": "[textBlack:不过，这份记录]@[textBlack:是用只有我和尼古拉才懂的暗号写成]@[textBlack:所以写下它这件事本身]@[textBlack:早已毫无意义……]"
+   },
+   {
+    "narration": "[textBlack:还是忍不住写下了]@[textBlack:]"
+   },
+   {
+    "narration": "[textBlack:「我的心中，身为人的心]@[textBlack:是否还残留着呢……？」]@[textBlack:因为在“圣女”迎来最后一刻时……]@[textBlack:我已经知道了答案]"
+   },
+   {
+    "autoTurnLast": 2,
+    "bg": "bg_adv_20231.jpg",
+    "bgm": "stop",
+    "item": [
+     {
+      "path": "resource/scenario/img/51030_fishing_homura/51030_homura_dairy.jpg",
+      "visible": "hide"
+     }
+    ],
+    "narrationEffect": "out",
+    "turnChangeIn": "fadeIn",
+    "turnEffect": "sepiaFrame"
+   },
+   {
+    "nameNarration": "",
+    "narration": "<1431 年 5 月 30 日>",
+    "narrationBg": "",
+    "narrationCoverOpacity": 50,
+    "narrationEffect": "in",
+    "turnChangeOut": "fadeOut"
+   },
+   {
+    "narration": "<法国北部鲁昂>"
+   },
+   {
+    "autoTurnLast": 1.6,
+    "bg": "bg_adv_31121.jpg",
+    "chara": [
+     {
+      "cheek": 1,
+      "eyeClose": 1,
+      "face": "mtn_ex_030.exp3.json",
+      "id": 402101,
+      "motion": 100,
+      "pos": 1
+     }
+    ],
+    "narrationEffect": "out",
+    "turnChangeIn": "fadeIn",
+    "turnEffect": "stop"
+   },
+   {
+    "armatureList": [
+     {
+      "animation": [
+       "action"
+      ],
+      "armatureId": 1,
+      "filePath": "resource/image_native/effect/story/general/4004_red_flame.ExportJson",
+      "zOrder": "messageBack"
+     }
+    ],
+    "autoTurnLast": 0.1
+   },
+   {
+    "armatureList": [
+     {
+      "animation": [
+       "action"
+      ],
+      "armatureId": 2,
+      "filePath": "resource/image_native/effect/story/general/3004_sparks.ExportJson",
+      "zOrder": "messageBack"
+     }
+    ],
+    "autoTurnLast": 0.1
+   },
+   {
+    "armatureList": [
+     {
+      "animation": [
+       "action"
+      ],
+      "armatureId": 3,
+      "filePath": "resource/image_native/effect/story/general/6002_sparks.ExportJson",
+      "zOrder": "bgFront"
+     }
+    ],
+    "autoTurnLast": 0.1
+   },
+   {
+    "bgm": "bgm05_event05",
+    "chara": [
+     {
+      "id": 402101,
+      "lipSynch": 0
+     }
+    ],
+    "nameCenter": "塔鲁特",
+    "textCenter": "…………@…………",
+    "turnChangeOut": "rollOutFast"
+   },
+   {
+    "autoTurnLast": 1,
+    "bg": "bg_adv_31121.jpg",
+    "chara": [
+     {
+      "cheek": 0,
+      "face": "mtn_ex_020.exp3.json",
+      "id": 402900,
+      "motion": 0,
+      "pos": 2
+     },
+     {
+      "id": 810000,
+      "pos": 0,
+      "posX": -50,
+      "posY": 0
+     }
+    ],
+    "deleteArmatureList": [
+     1,
+     2,
+     3
+    ],
+    "turnChangeIn": "fadeIn",
+    "turnEffect": "sepiaFrame"
+   },
+   {
+    "chara": [
+     {
+      "id": 810000
+     }
+    ],
+    "nameLeft": "丘卜",
+    "textLeft": "就算我牺牲自己",
+    "turnChangeOut": "fadeOut"
+   },
+   {
+    "chara": [
+     {
+      "id": 810000
+     }
+    ],
+    "nameLeft": "丘卜",
+    "textLeft": "消除你体内 @ 女巫的潜力…………"
+   },
+   {
+    "chara": [
+     {
+      "id": 810000
+     }
+    ],
+    "nameLeft": "丘卜",
+    "textLeft": "很难理解。@ 这对她来说是最糟糕的结局。"
+   },
+   {
+    "chara": [
+     {
+      "cheek": 0,
+      "face": "mtn_ex_020.exp3.json",
+      "id": 402900,
+      "motion": 100
+     }
+    ],
+    "nameRight": "佩尔内勒·弗拉梅尔",
+    "textRight": "尽管如此，你还是没有阻止@塔鲁特的决心。"
+   },
+   {
+    "chara": [
+     {
+      "id": 402900,
+      "motion": 1
+     }
+    ],
+    "nameRight": "佩尔内勒·弗拉梅尔",
+    "textRight": "她变成了一个女巫"
+   },
+   {
+    "chara": [
+     {
+      "id": 402900
+     }
+    ],
+    "nameRight": "佩尔内勒·弗拉梅尔",
+    "textRight": "虽然对你来说很方便 @"
+   },
+   {
+    "chara": [
+     {
+      "id": 402900,
+      "motion": 400
+     }
+    ],
+    "nameRight": "佩尔内勒·弗拉梅尔",
+    "textRight": "不知道忧是不是在吹？"
+   },
+   {
+    "chara": [
+     {
+      "id": 810000
+     },
+     {
+      "id": 402900,
+      "motion": 0
+     }
+    ],
+    "nameLeft": "丘卜",
+    "textLeft": "……没有什么深意。"
+   },
+   {
+    "chara": [
+     {
+      "id": 810000
+     }
+    ],
+    "nameLeft": "丘卜",
+    "textLeft": "到目前为止，塔鲁特 对 @ 表现良好"
+   },
+   {
+    "chara": [
+     {
+      "id": 810000
+     }
+    ],
+    "nameLeft": "丘卜",
+    "textLeft": "正如我所愿"
+   },
+   {
+    "chara": [
+     {
+      "id": 810000
+     }
+    ],
+    "nameLeft": "丘卜",
+    "textLeft": "他击败了伊莎贝拉"
+   },
+   {
+    "chara": [
+     {
+      "id": 810000
+     }
+    ],
+    "nameLeft": "丘卜",
+    "textLeft": "所以我还是听从了她的意愿 @"
+   },
+   {
+    "chara": [
+     {
+      "id": 810000
+     }
+    ],
+    "nameLeft": "丘卜",
+    "textLeft": "如果你看知花"
+   },
+   {
+    "chara": [
+     {
+      "id": 810000
+     }
+    ],
+    "nameLeft": "丘卜",
+    "textLeft": "您是在说“谢谢”@ 吗？"
+   },
+   {
+    "chara": [
+     {
+      "id": 402900,
+      "motion": 100
+     }
+    ],
+    "nameRight": "佩尔内勒·弗拉梅尔",
+    "textRight": "……这就是所谓的“祈祷”"
+   },
+   {
+    "chara": [
+     {
+      "id": 402900
+     }
+    ],
+    "nameRight": "佩尔内勒·弗拉梅尔",
+    "textRight": "值得感恩的事情，值得热爱的事情@值得恐惧的事情"
+   },
+   {
+    "chara": [
+     {
+      "id": 402900
+     }
+    ],
+    "nameRight": "佩尔内勒·弗拉梅尔",
+    "textRight": "对各种珍贵事物的感情"
+   },
+   {
+    "chara": [
+     {
+      "id": 810000
+     }
+    ],
+    "nameLeft": "丘卜",
+    "textLeft": "……你们人类的感情真是@……我不明白。"
+   },
+   {
+    "autoTurnLast": 0.25,
+    "chara": [
+     {
+      "effect": "fadeout",
+      "id": 810000
+     }
+    ],
+    "textClear": 1
+   },
+   {
+    "autoTurnLast": 1.3,
+    "chara": [
+     {
+      "cheek": 0,
+      "face": "mtn_ex_020.exp3.json",
+      "id": 402900,
+      "motion": 400,
+      "pos": 2
+     },
+     {
+      "cheek": 2,
+      "face": "mtn_ex_020.exp3.json",
+      "id": 402601,
+      "lipSynch": 0,
+      "motion": 1,
+      "pos": 0,
+      "tear": 1
+     },
+     {
+      "cheek": 2,
+      "eyeClose": 1,
+      "face": "mtn_ex_030.exp3.json",
+      "id": 402301,
+      "lipSynch": 0,
+      "motion": 300,
+      "pos": 1,
+      "tear": 1
+     }
+    ],
+    "turnChangeIn": "fadeIn"
+   },
+   {
+    "chara": [
+     {
+      "id": 402900
+     }
+    ],
+    "nameRight": "佩尔内勒·弗拉梅尔",
+    "textRight": "我也…一起祈祷吧",
+    "turnChangeOut": "fadeOut"
+   },
+   {
+    "chara": [
+     {
+      "id": 402900
+     }
+    ],
+    "nameRight": "佩尔内勒·弗拉梅尔",
+    "textRight": "在圣女…@“圣少女”的传说的最后…"
+   },
+   {
+    "autoTurnLast": 0.2,
+    "textClear": 1
+   },
+   {
+    "autoTurnLast": 0.01,
+    "chara": [
+     {
+      "cheek": 1,
+      "eyeClose": 1,
+      "face": "mtn_ex_030.exp3.json",
+      "id": 402101,
+      "motion": 100,
+      "pos": 1
+     }
+    ],
+    "turnChangeIn": "rollInFast"
+   },
+   {
+    "armatureList": [
+     {
+      "animation": [
+       "action"
+      ],
+      "armatureId": 1,
+      "filePath": "resource/image_native/effect/story/general/4004_red_flame.ExportJson",
+      "zOrder": "messageBack"
+     }
+    ],
+    "autoTurnLast": 0.1
+   },
+   {
+    "armatureList": [
+     {
+      "animation": [
+       "action"
+      ],
+      "armatureId": 2,
+      "filePath": "resource/image_native/effect/story/general/3004_sparks.ExportJson",
+      "zOrder": "messageBack"
+     }
+    ],
+    "autoTurnLast": 0.1
+   },
+   {
+    "armatureList": [
+     {
+      "animation": [
+       "action"
+      ],
+      "armatureId": 3,
+      "filePath": "resource/image_native/effect/story/general/6002_sparks.ExportJson",
+      "zOrder": "bgFront"
+     }
+    ],
+    "autoTurnLast": 1.5
+   },
+   {
+    "chara": [
+     {
+      "id": 402101,
+      "lipSynch": 0
+     }
+    ],
+    "nameCenter": "塔鲁特",
+    "textCenter": "…………@…………",
+    "turnChangeOut": "rollOutFast"
+   },
+   {
+    "autoTurnLast": 0.1,
+    "deleteArmatureList": [
+     1
+    ],
+    "turnChangeIn": "fadeIn"
+   },
+   {
+    "autoTurnLast": 0.1,
+    "deleteArmatureList": [
+     2
+    ]
+   },
+   {
+    "autoTurnLast": 0.1,
+    "deleteArmatureList": [
+     3
+    ]
+   },
+   {
+    "autoTurnLast": 1.2,
+    "chara": [
+     {
+      "cheek": 2,
+      "face": "mtn_ex_020.exp3.json",
+      "id": 402601,
+      "lipSynch": 0,
+      "motion": 0,
+      "pos": 0,
+      "tear": 1
+     },
+     {
+      "cheek": 0,
+      "face": "mtn_ex_020.exp3.json",
+      "id": 402900,
+      "lipSynch": 0,
+      "motion": 400,
+      "pos": 2
+     },
+     {
+      "cheek": 2,
+      "eyeClose": 1,
+      "face": "mtn_ex_030.exp3.json",
+      "id": 402301,
+      "lipSynch": 0,
+      "motion": 300,
+      "pos": 1,
+      "tear": 1
+     }
+    ]
+   },
+   {
+    "autoTurnLast": 0.1,
+    "narrationBg": "bg_adv_31121.jpg",
+    "narrationEffect": "in"
+   },
+   {
+    "nameNarration": "",
+    "narration": "哗啦……",
+    "turnChangeOut": "fadeOut"
+   },
+   {
+    "chara": [
+     {
+      "cheek": 2,
+      "eyeClose": 0,
+      "face": "mtn_ex_050.exp3.json",
+      "id": 402301,
+      "lipSynch": 0,
+      "tear": 1
+     }
+    ],
+    "nameCenter": "梅丽莎·德·维尼奥勒",
+    "narrationEffect": "out",
+    "textCenter": "…………"
+   },
+   {
+    "autoTurnLast": 0.01,
+    "bg": "black",
+    "item": [
+     {
+      "iPhoneXScale": 1,
+      "path": "resource/scenario/img/51102_singleraid_tart3/memoria_1508.jpg",
+      "posX": 0,
+      "posY": 0,
+      "visible": "appear"
+     }
+    ],
+    "turnChangeIn": "fadeIn"
+   },
+   {
+    "nameNarration": "塔鲁特",
+    "narration": "―塔鲁特―@对一切的事物…",
+    "narrationAnchor": "bottom",
+    "narrationCoverOpacity": 110,
+    "narrationEffect": "in",
+    "narrationFontSize": 30,
+    "narrationLineMargin": 35,
+    "narrationLineSpace": 20,
+    "turnChangeOut": "fadeOut"
+   },
+   {
+    "narration": "―塔鲁特―@致以感谢（Merci Vraiment）"
+   },
+   {
+    "autoTurnLast": 0.1,
+    "narrationEffect": "out"
+   },
+   {
+    "autoTurnLast": 2.5,
+    "turnChangeIn": "whiteIn",
+    "turnChangeInTime": 2,
+    "turnEffect": "stop"
+   }
+  ]
+ },
+ "version": 3
+}

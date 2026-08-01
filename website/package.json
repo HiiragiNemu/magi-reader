@@ -2,33 +2,58 @@
   "name": "website",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.6.0"
+  },
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
+    "lint": "eslint . --max-warnings=0",
     "type-check": "tsc --noEmit",
-    "preview": "npm run build && opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy:worker": "npm run build && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "deploy:pages": "npm run build && opennextjs-cloudflare build && node scripts/prepare-pages.js && wrangler pages deploy"
+    "test": "node --experimental-strip-types --test",
+    "test:python": "node scripts/run-python-checks.mjs",
+    "audit:prod": "npm audit --omit=dev --audit-level=high",
+    "validate:feature": "node scripts/validate-feature-policy.mjs",
+    "validate:scenarios": "node --experimental-strip-types scripts/validate-scenarios.ts",
+    "verify:cloudflare-config": "node scripts/verify-cloudflare-config.mjs",
+    "verify:cloudflare-output": "node scripts/verify-cloudflare-output.mjs",
+    "check": "npm run validate:feature && npm run test:python && npm run lint && npm run type-check && npm test && npm run audit:prod",
+    "build:worker": "node scripts/verify-cloudflare-output.mjs --build",
+    "build:pages": "npm run build:worker && node scripts/prepare-pages.js",
+    "preview": "npm run build:worker && opennextjs-cloudflare preview",
+    "deploy:worker": "npm run verify:cloudflare-config && npm run build:worker && opennextjs-cloudflare deploy",
+    "deploy:pages": "npm run build:pages && wrangler pages deploy .pages-deploy",
+    "predeploy:test:direct": "npm run validate:feature && npm run test:python",
+    "deploy:test:direct": "node scripts/deploy-direct.mjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.7",
     "autoprefixer": "^10.4.20",
     "lucide-react": "^0.563.0",
-    "next": "16.1.6",
-    "postcss": "^8.5.6",
+    "next": "16.2.11",
+    "postcss": "^8.5.23",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwindcss": "^4.0.7"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "^1.16.4",
+    "@opennextjs/cloudflare": "^1.20.2",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^20.19.33",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
+    "eslint": "9.39.2",
+    "eslint-config-next": "16.2.11",
     "typescript": "^5.9.3",
-    "wrangler": "^4.65.0"
+    "wrangler": "^4.114.0"
+  },
+  "overrides": {
+    "postcss": "$postcss",
+    "sharp": "0.35.3",
+    "typescript-eslint": "8.65.0",
+    "minimatch@3.1.5": {
+      "brace-expansion": "1.1.16"
+    }
   }
 }

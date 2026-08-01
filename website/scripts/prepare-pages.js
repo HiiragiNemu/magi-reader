@@ -1,80 +1,89 @@
-const fs = require('fs');
-const path = require('path');
+#!/usr/bin/env node
 
-const sourceDir = path.join(process.cwd(), '.open-next');
-const targetDir = path.join(process.cwd(), '.open-next', 'assets');
+import fs from 'node:fs';
+import path from 'node:path';
 
-// 1. 复制依赖目录
-const itemsToCopy = ['cloudflare', 'middleware', 'server-functions', '.build'];
-console.log('🔄 开始适配 Cloudflare Pages...');
+const projectRoot = fs.realpathSync(process.cwd());
+const openNextRoot = path.join(projectRoot, '.open-next');
+const assetRoot = path.join(openNextRoot, 'assets');
+const workerEntry = path.join(openNextRoot, 'worker.js');
+const outputRoot = path.join(projectRoot, '.pages-deploy');
 
-itemsToCopy.forEach(item => {
-    const srcPath = path.join(sourceDir, item);
-    const destPath = path.join(targetDir, item);
-    if (fs.existsSync(srcPath)) {
-        try {
-            fs.cpSync(srcPath, destPath, { recursive: true, force: true });
-            console.log(`   ✅ 已复制依赖: ${item}`);
-        } catch (e) {
-            console.warn(`   ⚠️ 复制 ${item} 失败 (可能不需要):`, e.message);
-        }
-    }
-});
+function assertInsideProject(candidate) {
+  const relative = path.relative(projectRoot, candidate);
+  if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) {
+    throw new Error(`Refusing unsafe Pages output path: ${candidate}`);
+  }
+}
 
-// 2. 处理核心 Worker 逻辑
-const workerSrc = path.join(sourceDir, 'worker.js');
-const appWorkerDest = path.join(targetDir, 'app-worker.js');
+assertInsideProject(outputRoot);
+if (!fs.statSync(assetRoot, { throwIfNoEntry: false })?.isDirectory()) {
+  throw new Error('Missing .open-next/assets; run the OpenNext build first.');
+}
+if (!fs.statSync(workerEntry, { throwIfNoEntry: false })?.isFile()) {
+  throw new Error('Missing .open-next/worker.js; run the OpenNext build first.');
+}
 
-// 3. 创建新的入口文件 _worker.js
-// 🔴 修正点：使用 import appWorker from ... (默认导入)
-const wrapperWorkerContent = `
-import appWorker from "./app-worker.js";
+const forbiddenAssetEntries = [
+  '_worker.js',
+  'app-worker.js',
+  '.build',
+  'cloudflare',
+  'middleware',
+  'server-functions',
+];
+for (const entry of forbiddenAssetEntries) {
+  if (fs.existsSync(path.join(assetRoot, entry))) {
+    throw new Error(
+      `Unsafe server implementation found in public assets: ${entry}`,
+    );
+  }
+}
+
+fs.rmSync(outputRoot, { recursive: true, force: true });
+fs.mkdirSync(outputRoot, { recursive: true });
+fs.cpSync(assetRoot, outputRoot, { recursive: true, force: true });
+
+const wrapper = String.raw`import appWorker from "../.open-next/worker.js";
 
 export default {
   async fetch(request, env, ctx) {
-    const url = new URL(request.url);
-    
-    // 🔍 策略：如果是静态资源路径，优先查 ASSETS
-    // 涵盖 Next.js 静态资源 (_next) 和 public 目录资源 (含扩展名的文件)
-    if (url.pathname.startsWith('/_next/') || 
-        url.pathname.startsWith('/static/') || 
-        url.pathname.includes('.')) {
-      
-      try {
-        if (env.ASSETS) {
-          const asset = await env.ASSETS.fetch(request);
-          // 只有找到文件 (2xx/3xx) 才返回，404 则继续交给 Next.js 处理
-          if (asset.status < 400) {
-            return asset;
-          }
-        }
-      } catch (e) {
-        console.warn("Asset fetch failed", e);
+    if (request.method === "GET" || request.method === "HEAD") {
+      const assetResponse = await env.ASSETS.fetch(request);
+      if (assetResponse.status !== 404) {
+        return assetResponse;
       }
+      await assetResponse.body?.cancel();
     }
-
-    // 🚀 调用原始 Worker 的 fetch 方法
     return appWorker.fetch(request, env, ctx);
-  }
+  },
 };
 `;
+fs.writeFileSync(path.join(outputRoot, '_worker.js'), wrapper, 'utf8');
 
-try {
-    if (fs.existsSync(workerSrc)) {
-        // 1. 移动原始 worker
-        fs.copyFileSync(workerSrc, appWorkerDest);
-        console.log('   ✅ 原始 Worker 已重命名为 app-worker.js');
-
-        // 2. 写入新的包装器 _worker.js
-        fs.writeFileSync(path.join(targetDir, '_worker.js'), wrapperWorkerContent);
-        console.log('   ✅ 已生成静态资源拦截器 (_worker.js)');
-        
-        console.log('🎉 适配完成！准备部署...');
+let fileCount = 0;
+let totalBytes = 0;
+const pending = [outputRoot];
+while (pending.length > 0) {
+  const directory = pending.pop();
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const absolute = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      pending.push(absolute);
+    } else if (entry.isFile()) {
+      fileCount += 1;
+      totalBytes += fs.statSync(absolute).size;
     } else {
-        console.error('❌ 错误: 未找到 .open-next/worker.js');
-        process.exit(1);
+      throw new Error(`Unsupported Pages output entry: ${absolute}`);
     }
-} catch (e) {
-    console.error('❌ 文件操作失败:', e);
-    process.exit(1);
+  }
 }
+
+console.log(
+  JSON.stringify({
+    output: outputRoot,
+    publicFiles: fileCount - 1,
+    publicBytes: totalBytes - Buffer.byteLength(wrapper),
+    workerWrapper: '_worker.js',
+  }),
+);

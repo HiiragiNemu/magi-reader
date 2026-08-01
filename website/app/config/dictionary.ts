@@ -27,7 +27,7 @@ export const SPEAKER_COLOR_MAP: Record<string, string> = {
   "八雲みたま": "#3d78c1", "八云御魂": "#3d78c1", "みたま": "#3d78c1", "御魂": "#3d78c1", "八云": "#3d78c1",
   "天音月夜": "#EF3775", "月夜": "#EF3775", "天音月咲": "#EF3775", "月咲": "#EF3775",
   "空穂夏希": "#B8DAFF", "空穗夏希": "#B8DAFF", "夏希": "#B8DAFF",
-  "常盤ななか": "#FF5B7E", "常盘七夏": "#FF5B7E", "ななか": "#FF5B7E", "七夏": "#FF5B7E",
+  "常盤ななか": "#FF5B7E", "常盘七夏": "#FF5B7E", "常盘七香": "#FF5B7E", "ななか": "#FF5B7E", "七夏": "#FF5B7E", "七香": "#FF5B7E",
   "夏目かこ": "#53FEC9", "夏目佳子": "#53FEC9", "かこ": "#53FEC9", "佳子": "#53FEC9",
   "純美雨": "#4E80C2", "纯美雨": "#4E80C2", "美雨": "#4E80C2",
   "伊吹れいら": "#E38D84", "伊吹丽良": "#E38D84", "れいら": "#E38D84", "丽良": "#E38D84", "伊吹 れいら": "#E38D84",
@@ -181,6 +181,8 @@ export const SPEAKER_COLOR_MAP: Record<string, string> = {
   "木崎衣美里": "#f4a738", "衣美里": "#f4a738",
   "衣美里の声": "#f4a738", "衣美里的声音": "#f4a738",
   "衣美里ーズ": "#f4a738", "衣美里们": "#f4a738",
+  "日暮ふうか": "#6C6299", "日暮风花": "#6C6299", "ふうか": "#6C6299", "风花": "#6C6299",
+  "夜明すみれ": "#B96AF1", "夜明堇": "#B96AF1", "すみれ": "#B96AF1", "堇": "#B96AF1",
 };
 
 export const NAME_TRANSLATE_MAP: Record<string, string> = {
@@ -204,6 +206,8 @@ export const NAME_TRANSLATE_MAP: Record<string, string> = {
   "三栗あやめ": "三栗菖蒲", "加賀見まさら": "加贺见真良", "綾野梨花": "绫野梨花",
   "安名メル": "安名梅露", "万年桜のウワサ": "万年樱之谣", "アシュリー・テイラー": "阿什莉·泰勒",
   "美国織莉子": "美国织莉子", "呉キリカ": "吴纪里香", "千歳ゆま": "千岁由麻",
+  "日暮ふうか": "日暮风花", "ふうか": "风花", "夜明すみれ": "夜明堇", "すみれ": "堇",
+  "まどか先輩": "小圆前辈",
 
   // ==========================================
   // 2. 特殊指令项
@@ -367,4 +371,108 @@ export const NAME_TRANSLATE_MAP: Record<string, string> = {
   "4人": "4人", "0.5": "0.5", "Cat": "Cat", "Death·Caribou": "Death·Caribou", "DJディスコ": "DJ迪斯科",
   "userName": "userName", "？？？": "？？？", "？？？の声": "？？？的声音", "みんな": "大家",
   "カミハ☆マギカ": "神滨☆魔法少女", "魔法☆神滨": "魔法☆神滨",
+};
+
+/**
+ * Scenario sources occasionally contain trailing carriage returns or visually
+ * equivalent spacing in speaker names. Keep the displayed spelling intact,
+ * while removing control characters that can never be part of a visible name.
+ */
+export const normalizeSpeakerName = (speaker: string): string =>
+  speaker
+    .normalize('NFC')
+    .replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2060\ufeff]+/g, ' ')
+    .trim();
+
+const compactSpeakerLookupKey = (speaker: string): string =>
+  normalizeSpeakerName(speaker).replace(/[ \t\u3000]+/g, '');
+
+const buildUnambiguousLookup = (
+  entries: Record<string, string>,
+): ReadonlyMap<string, string> => {
+  const values = new Map<string, string>();
+  const ambiguous = new Set<string>();
+
+  for (const [speaker, value] of Object.entries(entries)) {
+    const key = compactSpeakerLookupKey(speaker);
+    if (!key || ambiguous.has(key)) continue;
+    const previous = values.get(key);
+    if (previous !== undefined && previous !== value) {
+      values.delete(key);
+      ambiguous.add(key);
+      continue;
+    }
+    values.set(key, value);
+  }
+
+  return values;
+};
+
+const NORMALIZED_NAME_TRANSLATE_MAP = buildUnambiguousLookup(NAME_TRANSLATE_MAP);
+const NORMALIZED_SPEAKER_COLOR_MAP = buildUnambiguousLookup(SPEAKER_COLOR_MAP);
+
+const exactDictionaryValue = (
+  entries: Record<string, string>,
+  key: string,
+): string | undefined =>
+  Object.prototype.hasOwnProperty.call(entries, key) ? entries[key] : undefined;
+
+/**
+ * Translate only exact or unambiguous whitespace variants. Unknown Exedra
+ * names are deliberately returned unchanged instead of receiving guessed
+ * translations.
+ */
+export const translateSpeakerName = (speaker: string): string => {
+  const normalized = normalizeSpeakerName(speaker);
+  return (
+    exactDictionaryValue(NAME_TRANSLATE_MAP, normalized) ??
+    NORMALIZED_NAME_TRANSLATE_MAP.get(compactSpeakerLookupKey(normalized)) ??
+    normalized
+  );
+};
+
+/**
+ * Reuse an established color through either the original name or its existing
+ * dictionary translation. This never invents a color for an unknown speaker.
+ */
+export const speakerColorFor = (speaker: string): string | undefined => {
+  const normalized = normalizeSpeakerName(speaker);
+  const key = compactSpeakerLookupKey(normalized);
+  const direct =
+    exactDictionaryValue(SPEAKER_COLOR_MAP, normalized) ??
+    NORMALIZED_SPEAKER_COLOR_MAP.get(key);
+  if (direct) return direct;
+
+  const translated = translateSpeakerName(normalized);
+  return (
+    exactDictionaryValue(SPEAKER_COLOR_MAP, translated) ??
+    NORMALIZED_SPEAKER_COLOR_MAP.get(compactSpeakerLookupKey(translated))
+  );
+};
+
+const CHARACTER_STORY_CATEGORIES = new Set([
+  'character_story',
+  'exedra_character',
+]);
+
+/**
+ * Color character folder labels without changing the text shown to readers.
+ * Magia Record folders include an ID and Japanese name in parentheses, while
+ * Exedra folders use the translated character name directly.
+ */
+export const characterFolderColorFor = (
+  category: string,
+  folderLabel: string,
+): string | undefined => {
+  if (!CHARACTER_STORY_CATEGORIES.has(category)) return undefined;
+
+  const withoutId = normalizeSpeakerName(
+    folderLabel.replace(/^\d+\s*-\s*/, ''),
+  );
+  const direct = speakerColorFor(withoutId);
+  if (direct) return direct;
+
+  const parenthesisIndex = withoutId.search(/[（(]/);
+  if (parenthesisIndex < 0) return undefined;
+  return speakerColorFor(withoutId.slice(0, parenthesisIndex).trim());
 };

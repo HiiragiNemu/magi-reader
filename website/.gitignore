@@ -17,8 +17,14 @@
 /.next/
 /out/
 
+# Cloudflare / OpenNext generated output
+/.open-next/
+/.wrangler/
+/.wrangler.direct-test.jsonc
+
 # production
 /build
+/.magi-reader-generation-backups/
 
 # misc
 .DS_Store
@@ -32,6 +38,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+.dev.vars*
 
 # vercel
 .vercel

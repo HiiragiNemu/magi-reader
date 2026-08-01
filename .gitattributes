@@ -1,0 +1,15 @@
+# Hash-bound generated artifacts must have identical bytes on Windows and CI.
+website/public/story_index.json text eol=lf
+website/public/search_index_manifest.json text eol=lf
+website/public/data/exedra_*/**/*.txt text eol=lf
+magiraexedra-translate-data-master/Scenarios_full/**/*.txt text eol=lf
+magiraexedra-translate-data-master/Scenarios_full/**/*.json text eol=lf
+magireco-voice-source-master/Scenarios_full/general_voice/**/*.json text eol=lf
+magireco-voice-translate-data-master/Scenarios_full/general_voice/**/*.json text eol=lf
+magireco-voice-translate-data-master/Scenarios_full/general_voice/**/*.txt text eol=lf
+reports/exedra_wiki_translation/**/*.json text eol=lf
+
+# Organizer provenance hashes the original JSON bytes. Never normalize them.
+magiraexedra-source-master/Scenarios_full/**/*.json -text
+magiraexedra-source-master/Scenarios_full/exedra_manifest.json text eol=lf
+magiraexedra-source-master/Scenarios_full/**/*.txt text eol=lf
