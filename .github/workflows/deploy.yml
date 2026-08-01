@@ -30,6 +30,7 @@ jobs:
         working-directory: ./website
     env:
       PAGES_PROJECT_NAME: magireader
+      PROOFREADING_KV_TITLE: magi-submissions
       PAGES_BRANCH: ${{ github.event_name == 'push' && 'main' || inputs.pages_branch }}
       PAGES_ENVIRONMENT: ${{ (github.event_name == 'push' || inputs.pages_branch == 'main') && 'production' || 'preview' }}
       SERVER_GITHUB_TOKEN: ${{ secrets.PROOFREADING_GITHUB_TOKEN || secrets.TARGET_REPO_TOKEN }}
@@ -106,6 +107,28 @@ jobs:
       - name: Build safe Pages advanced-mode output
         run: npm run build:pages
 
+      - name: Resolve proofreading KV namespace
+        id: kv
+        working-directory: .
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CONFIGURED_NAMESPACE_ID: ${{ secrets.SUBMISSIONS_KV_NAMESPACE_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "$CONFIGURED_NAMESPACE_ID" ]; then
+            if ! [[ "$CONFIGURED_NAMESPACE_ID" =~ ^[a-f0-9]{32}$ ]]; then
+              echo "::error::SUBMISSIONS_KV_NAMESPACE_ID is not a 32-character ID."
+              exit 1
+            fi
+            echo "namespace_id=$CONFIGURED_NAMESPACE_ID" >> "$GITHUB_OUTPUT"
+          else
+            python scripts/proofreading_queue.py namespace \
+              --title "$PROOFREADING_KV_TITLE" \
+              --create
+          fi
+
       - name: Verify server implementation is not exposed as public assets
         shell: bash
         run: |
@@ -122,7 +145,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          SUBMISSIONS_KV_NAMESPACE_ID: ${{ secrets.SUBMISSIONS_KV_NAMESPACE_ID }}
+          SUBMISSIONS_KV_NAMESPACE_ID: ${{ steps.kv.outputs.namespace_id }}
           TURNSTILE_SITE_KEY: ${{ steps.turnstile.outputs.site_key }}
           TURNSTILE_SECRET_KEY: ${{ env.TURNSTILE_SECRET_KEY_VALUE }}
           TURNSTILE_TEST_MODE: ${{ steps.turnstile.outputs.test_mode }}

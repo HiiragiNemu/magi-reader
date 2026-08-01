@@ -185,6 +185,9 @@ test('production workflow safely deploys the current app to Cloudflare Pages', (
   assert.match(workflow, /wrangler pages deploy \.pages-deploy/u);
   assert.doesNotMatch(workflow, /secrets\.KV_NAMESPACE_ID/u);
   assert.match(workflow, /secrets\.SUBMISSIONS_KV_NAMESPACE_ID/u);
+  assert.match(workflow, /PROOFREADING_KV_TITLE:\s*magi-submissions/u);
+  assert.match(workflow, /proofreading_queue\.py namespace/u);
+  assert.match(workflow, /steps\.kv\.outputs\.namespace_id/u);
   assert.match(workflow, /npm ci/u);
   assert.match(workflow, /npm run check/u);
   assert.match(workflow, /generate_machine_translation_manifest\.py/u);
