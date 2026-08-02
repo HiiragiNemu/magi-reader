@@ -388,8 +388,8 @@ jobs:
           set -euo pipefail
           ready=false
           for attempt in $(seq 1 30); do
-            home_code="$(curl -L --silent --show-error -o "$RUNNER_TEMP/home.html" -w '%{http_code}' "$SITE_URL/")"
-            machine_code="$(curl -L --silent --show-error -o "$RUNNER_TEMP/machine-status.json" -w '%{http_code}' "$SITE_URL/api/proofreading/machine-status")"
+            home_code="$(curl -L --silent --show-error -o "$RUNNER_TEMP/home.html" -w '%{http_code}' "$SITE_URL/?__revision=${GITHUB_SHA}-${attempt}")"
+            machine_code="$(curl -L --silent --show-error -o "$RUNNER_TEMP/machine-status.json" -w '%{http_code}' "$SITE_URL/api/proofreading/machine-status?__revision=${GITHUB_SHA}-${attempt}")"
             if [ "$home_code" = 200 ] && [ "$machine_code" = 200 ]; then
               live_total="$(python3 - "$RUNNER_TEMP/machine-status.json" <<'PY'
           import json
@@ -427,11 +427,22 @@ jobs:
             local content_kind="$4"
             local code
             local size
+            local separator
+            local request_url
             for attempt in $(seq 1 30); do
               : > "$output"
+              separator='?'
+              if [[ "$url" == *\?* ]]; then
+                separator='&'
+              fi
+              # A Workers static-asset deployment can briefly expose a new
+              # manifest beside an older cached story index.  Bind every
+              # smoke-test request to the deployed commit so the consistency
+              # checks never compare assets from two revisions.
+              request_url="${url}${separator}__revision=${GITHUB_SHA}-${attempt}"
               code="$(
                 curl -L --silent --show-error \
-                  -o "$output" -w '%{http_code}' "$url" || true
+                  -o "$output" -w '%{http_code}' "$request_url" || true
               )"
               size="$(wc -c < "$output")"
               if [ "$code" = 200 ] && [ "$size" -ge "$minimum_bytes" ]; then
