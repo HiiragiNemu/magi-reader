@@ -181,7 +181,12 @@ jobs:
                curl --fail --silent --show-error --max-time 30 "$base/api/proofreading/config" >/tmp/config.json &&
                curl --fail --silent --show-error --max-time 30 "$base/api/proofreading/machine-status" >/tmp/status.json &&
                curl --fail --silent --show-error --max-time 30 "$base/data/exedra_character/character_asuka/character_asuka_cn.txt" >/tmp/asuka.txt &&
-               curl --fail --silent --show-error --max-time 30 "$base/data/exedra_character/character_asuka/character_asuka_0.json" >/tmp/asuka.json; then
+               curl --fail --silent --show-error --max-time 30 "$base/data/exedra_character/character_asuka/character_asuka_0.json" >/tmp/asuka.json &&
+               node --input-type=module -e '
+                 import fs from "node:fs";
+                 const config = JSON.parse(fs.readFileSync("/tmp/config.json", "utf8"));
+                 process.exit(config.source_revision === process.env.GITHUB_SHA ? 0 : 1);
+               '; then
               break
             fi
             if [ "$attempt" -eq 12 ]; then
