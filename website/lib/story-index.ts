@@ -10,11 +10,22 @@ export type StoryIndexEntry = {
   path_cn?: string;
   path_jp?: string;
   json_paths_cn?: string[];
+  json_sources_jp?: string[];
+  json_sources_cn?: string[];
   title?: string;
   sections?: string[];
   game?: string;
+  source_format?: string;
+  source_count?: number;
   source_identity?: string;
   legacy_ids?: string[];
+  translated_units_cn?: number;
+  translation_units_total?: number;
+  raw_voice_references?: number;
+  groups_without_voice?: number;
+  model_id?: string;
+  character_group_id?: string;
+  component_model_ids?: string[];
 };
 
 export type LoadedStoryIndex = {
@@ -54,6 +65,20 @@ const EXEDRA_RAW_CATEGORIES: Record<ExedraRouteCategory, string> = {
 const EXEDRA_GROUP_KEY_RE = /^[A-Za-z0-9_.-]{1,96}$/;
 const EXEDRA_ROUTE_HASH_RE = /^(.+)_([a-f0-9]{10})$/;
 const STORY_SOURCE_EXTENSION_RE = /\.(?:json|txt)$/i;
+const MAX_REPOSITORY_JSON_SOURCES = 10_000;
+const REPOSITORY_JSON_ROOTS = {
+  jp: [
+    'magireco-source-master/Scenarios_full',
+    'magiraexedra-source-master/Scenarios_full',
+  ],
+  cn: [
+    'magireco-translate-data-master/Scenarios_full',
+    'magiraexedra-translate-data-master/Scenarios_full',
+    'magireco-voice-translate-data-master/Scenarios_full/general_voice',
+  ],
+} as const;
+
+export type StoryJsonLanguage = keyof typeof REPOSITORY_JSON_ROOTS;
 
 export type DirectStorySources = {
   pathCn: string;
@@ -222,6 +247,36 @@ export const resolveDirectStorySources = (
   return null;
 };
 
+export const isSafeRepositoryStoryJsonPath = (
+  value: string,
+  language: StoryJsonLanguage,
+): boolean => {
+  if (
+    value.length === 0 ||
+    value.length > 4096 ||
+    value.startsWith('/') ||
+    value.includes('\\') ||
+    value.includes('%') ||
+    value.includes('?') ||
+    value.includes('#') ||
+    /[\u0000-\u001f\u007f]/u.test(value) ||
+    !/\.json$/iu.test(value)
+  ) {
+    return false;
+  }
+  const segments = value.split('/');
+  if (
+    segments.some(
+      segment => segment.length === 0 || segment === '.' || segment === '..',
+    )
+  ) {
+    return false;
+  }
+  return REPOSITORY_JSON_ROOTS[language].some(
+    root => value.startsWith(`${root}/`) && value.length > root.length + 1,
+  );
+};
+
 export const isOptionalStorySourceUnavailable = (status: number): boolean =>
   status === 404 || status === 502 || status === 503;
 
@@ -276,6 +331,7 @@ const parseStory = (value: unknown, index: number): StoryIndexEntry => {
     'path_jp',
     'title',
     'game',
+    'source_format',
     'source_identity',
   ] as const) {
     if (!isOptionalString(story[field])) {
@@ -323,6 +379,90 @@ const parseStory = (value: unknown, index: number): StoryIndexEntry => {
     )
   ) {
     throw new Error(`${story.id}: json_paths_cn 无效`);
+  }
+  for (const language of ['jp', 'cn'] as const) {
+    const field = `json_sources_${language}` as const;
+    const sources = story[field];
+    if (sources === undefined) continue;
+    if (
+      !Array.isArray(sources) ||
+      sources.length === 0 ||
+      sources.length > MAX_REPOSITORY_JSON_SOURCES ||
+      sources.some(
+        path =>
+          typeof path !== 'string' ||
+          !isSafeRepositoryStoryJsonPath(path, language),
+      ) ||
+      new Set(sources.map(path => path.toLowerCase())).size !== sources.length ||
+      story[`has_${language}`] !== true
+    ) {
+      throw new Error(`${story.id}: ${field} 无效`);
+    }
+    if (
+      (story.source_format === 'organized_txt' ||
+        story.source_format === 'general_voice_json') &&
+      Number.isSafeInteger(story.source_count) &&
+      sources.length !== story.source_count
+    ) {
+      throw new Error(`${story.id}: ${field} 与 source_count 数量不同`);
+    }
+  }
+  if (
+    story.source_count !== undefined &&
+    (
+      !Number.isSafeInteger(story.source_count) ||
+      Number(story.source_count) <= 0 ||
+      Number(story.source_count) > MAX_REPOSITORY_JSON_SOURCES
+    )
+  ) {
+    throw new Error(`${story.id}: source_count 无效`);
+  }
+  if (story.source_format === 'general_voice_json') {
+    const translated = story.translated_units_cn;
+    const total = story.translation_units_total;
+    const rawReferences = story.raw_voice_references;
+    const groupsWithoutVoice = story.groups_without_voice;
+    if (
+      !Number.isSafeInteger(translated) ||
+      !Number.isSafeInteger(total) ||
+      !Number.isSafeInteger(rawReferences) ||
+      !Number.isSafeInteger(groupsWithoutVoice) ||
+      Number(translated) < 0 ||
+      Number(total) < 0 ||
+      Number(translated) > Number(total) ||
+      Number(rawReferences) < Number(total) ||
+      Number(groupsWithoutVoice) < 0 ||
+      story.percent !== (
+        Number(total) > 0
+          ? Math.round(Number(translated) * 100 / Number(total))
+          : 0
+      ) ||
+      typeof story.model_id !== 'string' ||
+      !/^\d{6}$/u.test(story.model_id) ||
+      typeof story.character_group_id !== 'string' ||
+      !/^\d{4}$/u.test(story.character_group_id) ||
+      story.character_group_id !== story.model_id.slice(0, 4)
+    ) {
+      throw new Error(`${story.id}: general_voice_json 汉化统计无效`);
+    }
+    if (
+      story.component_model_ids !== undefined &&
+      (
+        !Array.isArray(story.component_model_ids) ||
+        story.component_model_ids.length === 0 ||
+        story.component_model_ids.length > 8 ||
+        story.component_model_ids.some(
+          modelId =>
+            typeof modelId !== 'string' ||
+            !/^\d{6}$/u.test(modelId) ||
+            modelId.slice(0, 4) !== story.character_group_id ||
+            modelId === story.model_id,
+        ) ||
+        new Set(story.component_model_ids).size !== story.component_model_ids.length
+      )
+    ) {
+      throw new Error(`${story.id}: component_model_ids 无效`);
+    }
   }
   if (
     story.legacy_ids !== undefined &&

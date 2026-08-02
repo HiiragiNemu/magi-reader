@@ -104,21 +104,44 @@ div[id^="line-"] { padding-top: 0.15rem !important; padding-bottom: 0.15rem !imp
   z-index: -30;
   pointer-events: none;
   contain: strict;
-  opacity: 0.35;
+  opacity: 0.28;
+  animation: magi-balloon-arrival 9s cubic-bezier(0.2, 0.65, 0.3, 1) 1 both;
 
   background-image: 
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23ff99ad'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23ff99ad'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%2399ccff'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%2399ccff'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23ffff99'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23ffff99'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23b3ffb3'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23b3ffb3'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23b3ffb3'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23b3ffb3'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23d5b3ff'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23d5b3ff'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23ffc58f'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23ffc58f'/%3E%3C/svg%3E");
 
   background-repeat: no-repeat;
-  background-size: 40px 50px;
+  background-size:
+    30px 38px,
+    38px 48px,
+    28px 35px,
+    34px 43px,
+    26px 33px,
+    32px 40px;
   background-position: 
-    15% 10%, 
-    40% 25%, 
-    65% 15%, 
-    85% 35%;
+    4% 10%,
+    96% 16%,
+    7% 58%,
+    93% 66%,
+    24% 93%,
+    76% 90%;
+}
+
+@keyframes magi-balloon-arrival {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -28vh, 0);
+  }
+
+  to {
+    opacity: 0.28;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 /* 暗色模式滤镜 */
@@ -134,4 +157,46 @@ div[id^="line-"] { padding-top: 0.15rem !important; padding-bottom: 0.15rem !imp
   .magi-balloon-rain {
     display: none;
   }
+}
+
+/* Reader-only game fonts are activated by the FontFace runtime after an
+   explicit opt-in. There is deliberately no static @font-face declaration:
+   a first-time visitor must not download these large optional assets. */
+html[data-reader-font-chinese='ready'] .reader-font-cn-body {
+  font-family:
+    "MagiReaderGameChineseBody",
+    "Noto Serif SC",
+    "Source Han Serif SC",
+    "Songti SC",
+    serif;
+}
+
+html[data-reader-font-chinese='ready'] .reader-font-cn-title {
+  font-family:
+    "MagiReaderGameChineseTitle",
+    "Noto Sans SC",
+    "Source Han Sans SC",
+    "Microsoft YaHei",
+    sans-serif;
+}
+
+html[data-reader-font-japanese='ready'] .reader-font-jp-body {
+  font-family:
+    "MagiReaderGameJapaneseBody",
+    "Hiragino Kaku Gothic ProN",
+    "Yu Gothic",
+    Meiryo,
+    sans-serif;
+  font-synthesis: none;
+  font-weight: 500;
+}
+
+html[data-reader-font-japanese='ready'] .reader-font-jp-title {
+  font-family:
+    "MagiReaderGameJapaneseTitle",
+    "Hiragino Mincho ProN",
+    "Yu Mincho",
+    "Noto Serif JP",
+    serif;
+  font-synthesis: none;
 }

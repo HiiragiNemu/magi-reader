@@ -64,6 +64,15 @@ test('test deployment uses a dedicated KV and supports real Turnstile secrets', 
   assert.match(workflow, /npm run validate:feature/u);
   assert.doesNotMatch(workflow, /wrangler r2 object put/u);
   assert.match(workflow, /manual R2 upload/u);
+  assert.match(workflow, /EXPECTED_GENERAL_VOICE_PUBLISHED/u);
+  assert.match(workflow, /len\(published\) != 372/u);
+  assert.match(workflow, /Legacy component aliases are missing/u);
+  assert.match(workflow, /general_voice\/406200 must remain 0\/39 translated/u);
+  assert.doesNotMatch(
+    workflow,
+    /Unexpected general_voice story count:.*expected 410/u,
+  );
+  assert.doesNotMatch(workflow, /general_voice\/100100 index entry/u);
   assert.match(workflow, /for attempt in \$\(seq 1 30\)/u);
   assert.match(
     workflow,
@@ -76,7 +85,11 @@ test('test deployment uses a dedicated KV and supports real Turnstile secrets', 
   );
   assert.match(
     workflow,
-    /fetch_ready_asset\s+\\\s+"\$SITE_URL\/data\/general_voice\/100100\/100100_cn\.json"/u,
+    /fetch_ready_asset\s+\\\s+"\$SITE_URL\/data\/general_voice\/general_voice_manifest\.json"/u,
+  );
+  assert.match(
+    workflow,
+    /fetch_ready_asset\s+\\\s+"\$SITE_URL\$general_voice_json_path"/u,
   );
   assert.match(
     workflow,

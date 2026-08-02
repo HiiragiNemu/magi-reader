@@ -64,6 +64,117 @@ jobs:
           fi
           echo "EXPECTED_MACHINE_TOTAL=$total" >> "$GITHUB_ENV"
           echo "MACHINE_BASELINE_OK total=$total"
+          voice_release="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          public_root = Path('website/public')
+          manifest = json.loads(
+              (public_root / 'data/general_voice/general_voice_manifest.json')
+              .read_text(encoding='utf-8')
+          )
+          stories = json.loads(
+              (public_root / 'story_index.json').read_text(encoding='utf-8')
+          )
+          models = manifest.get('models') if isinstance(manifest, dict) else None
+          if (
+              manifest.get('version') != 1
+              or manifest.get('modelCount') != 410
+              or not isinstance(models, list)
+              or len(models) != 410
+          ):
+              raise SystemExit('Generated general_voice manifest is incomplete')
+          model_by_id = {
+              model.get('id'): model
+              for model in models
+              if isinstance(model, dict) and isinstance(model.get('id'), str)
+          }
+          if len(model_by_id) != len(models):
+              raise SystemExit('Generated general_voice manifest has duplicate model IDs')
+          published = {
+              model_id: model
+              for model_id, model in model_by_id.items()
+              if model.get('publishedModel') is True
+          }
+          components = {
+              model_id: model
+              for model_id, model in model_by_id.items()
+              if model.get('publishedModel') is False
+          }
+          if len(published) != 372 or len(components) != 38:
+              raise SystemExit(
+                  'Unexpected general_voice release boundary: '
+                  f'published={len(published)} components={len(components)}'
+              )
+          voice_story_list = [
+              story
+              for story in stories
+              if isinstance(story, dict)
+              and story.get('category') == 'general_voice'
+          ]
+          voice_stories = {
+              story.get('source_identity'): story
+              for story in voice_story_list
+          }
+          expected_identities = {
+              f'general_voice/{model_id}' for model_id in published
+          }
+          if (
+              len(voice_stories) != len(voice_story_list)
+              or set(voice_stories) != expected_identities
+          ):
+              raise SystemExit('story_index general_voice identities do not match the manifest')
+          for model_id, model in published.items():
+              story = voice_stories[f'general_voice/{model_id}']
+              component_ids = model.get('componentModelIds')
+              if not isinstance(component_ids, list):
+                  raise SystemExit(f'Invalid component list for {model_id}')
+              expected_legacy_ids = [f'voice_{item}' for item in component_ids]
+              if story.get('component_model_ids') != component_ids:
+                  raise SystemExit(f'Component metadata mismatch for {model_id}')
+              if component_ids:
+                  if story.get('legacy_ids') != expected_legacy_ids:
+                      raise SystemExit(f'Legacy component aliases are missing for {model_id}')
+              elif story.get('legacy_ids') not in (None, []):
+                  raise SystemExit(f'Unexpected legacy aliases for {model_id}')
+              if story.get('path_cn') != (
+                  f'/data/general_voice/{model_id}/{model_id}_cn.txt'
+              ):
+                  raise SystemExit(f'Unexpected public TXT path for {model_id}')
+              if story.get('json_paths_cn') != [
+                  f'/data/general_voice/{model_id}/{model_id}_cn.json'
+              ]:
+                  raise SystemExit(f'Unexpected public JSON path for {model_id}')
+          for model_id, model in components.items():
+              canonical_id = model.get('canonicalModelId')
+              canonical = published.get(canonical_id)
+              if (
+                  canonical is None
+                  or model_id not in canonical.get('componentModelIds', [])
+                  or f'general_voice/{model_id}' in voice_stories
+              ):
+                  raise SystemExit(f'Invalid component compatibility alias: {model_id}')
+          takina = published.get('406200')
+          takina_story = voice_stories.get('general_voice/406200')
+          if (
+              not isinstance(takina, dict)
+              or takina.get('translationPercent') != 0
+              or takina.get('translatedVoiceGroups') != 0
+              or takina.get('voiceGroups') != 39
+              or not isinstance(takina_story, dict)
+              or takina_story.get('percent') != 0
+              or takina_story.get('translated_units_cn') != 0
+              or takina_story.get('translation_units_total') != 39
+          ):
+              raise SystemExit('general_voice/406200 must remain 0/39 translated')
+          print(len(published), len(models), len(components))
+          PY
+          )"
+          read -r published_models manifest_models component_models <<< "$voice_release"
+          echo "EXPECTED_GENERAL_VOICE_PUBLISHED=$published_models" >> "$GITHUB_ENV"
+          echo "EXPECTED_GENERAL_VOICE_MODELS=$manifest_models" >> "$GITHUB_ENV"
+          echo "EXPECTED_GENERAL_VOICE_COMPONENTS=$component_models" >> "$GITHUB_ENV"
+          echo "GENERAL_VOICE_RELEASE_OK published=$published_models models=$manifest_models components=$component_models takina=0/39"
 
       - name: Install website dependencies
         working-directory: website
@@ -338,6 +449,9 @@ jobs:
             "$SITE_URL/story_index.json" \
             "$RUNNER_TEMP/story-index.json" 100 json
           fetch_ready_asset \
+            "$SITE_URL/data/general_voice/general_voice_manifest.json" \
+            "$RUNNER_TEMP/general-voice-manifest.json" 100 json
+          fetch_ready_asset \
             "$SITE_URL/api/proofreading/config" \
             "$RUNNER_TEMP/config.json" 2 json
           fetch_ready_asset \
@@ -349,7 +463,7 @@ jobs:
           fetch_ready_asset \
             "$SITE_URL/review/machine-translations" \
             "$RUNNER_TEMP/machine-review.html" 500 html
-          python3 - "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/exedra-wiki-smoke-assets.txt" <<'PY'
+          python3 - "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/general-voice-manifest.json" "$RUNNER_TEMP/general-voice-smoke-assets.txt" "$RUNNER_TEMP/exedra-wiki-smoke-assets.txt" <<'PY'
           import json
           import sys
           from pathlib import Path, PurePosixPath
@@ -357,25 +471,121 @@ jobs:
           stories = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
           if not isinstance(stories, list):
               raise SystemExit('Deployed story index is not a list')
-
-          voices = [
-              story for story in stories
-              if isinstance(story, dict) and story.get('category') == 'general_voice'
-          ]
-          if len(voices) != 410:
-              raise SystemExit(
-                  f'Unexpected general_voice story count: {len(voices)} (expected 410)'
-              )
-          known_voice = [
-              story for story in voices
-              if story.get('source_identity') == 'general_voice/100100'
-          ]
+          voice_manifest = json.loads(
+              Path(sys.argv[2]).read_text(encoding='utf-8')
+          )
+          models = (
+              voice_manifest.get('models')
+              if isinstance(voice_manifest, dict)
+              else None
+          )
           if (
-              len(known_voice) != 1
-              or known_voice[0].get('path_cn')
-              != '/data/general_voice/100100/100100_cn.txt'
+              voice_manifest.get('version') != 1
+              or voice_manifest.get('modelCount') != 410
+              or not isinstance(models, list)
+              or len(models) != 410
           ):
-              raise SystemExit('Known general_voice/100100 index entry is missing or invalid')
+              raise SystemExit('Deployed general_voice manifest is incomplete')
+          model_by_id = {
+              model.get('id'): model
+              for model in models
+              if isinstance(model, dict) and isinstance(model.get('id'), str)
+          }
+          if len(model_by_id) != len(models):
+              raise SystemExit('Deployed general_voice manifest has duplicate IDs')
+          published = {
+              model_id: model
+              for model_id, model in model_by_id.items()
+              if model.get('publishedModel') is True
+          }
+          components = {
+              model_id: model
+              for model_id, model in model_by_id.items()
+              if model.get('publishedModel') is False
+          }
+          if len(published) != 372 or len(components) != 38:
+              raise SystemExit(
+                  'Unexpected deployed general_voice boundary: '
+                  f'published={len(published)} components={len(components)}'
+              )
+          voice_story_list = [
+              story
+              for story in stories
+              if isinstance(story, dict)
+              and story.get('category') == 'general_voice'
+          ]
+          voice_stories = {
+              story.get('source_identity'): story
+              for story in voice_story_list
+          }
+          expected_identities = {
+              f'general_voice/{model_id}' for model_id in published
+          }
+          if (
+              len(voice_stories) != len(voice_story_list)
+              or set(voice_stories) != expected_identities
+          ):
+              raise SystemExit(
+                  'Deployed general_voice identities do not match the manifest'
+              )
+          for model_id, model in published.items():
+              story = voice_stories[f'general_voice/{model_id}']
+              component_ids = model.get('componentModelIds')
+              if not isinstance(component_ids, list):
+                  raise SystemExit(f'Invalid deployed component list for {model_id}')
+              expected_legacy_ids = [f'voice_{item}' for item in component_ids]
+              if story.get('component_model_ids') != component_ids:
+                  raise SystemExit(
+                      f'Deployed component metadata mismatch for {model_id}'
+                  )
+              if component_ids:
+                  if story.get('legacy_ids') != expected_legacy_ids:
+                      raise SystemExit(
+                          f'Deployed legacy component aliases missing for {model_id}'
+                      )
+              elif story.get('legacy_ids') not in (None, []):
+                  raise SystemExit(f'Unexpected deployed aliases for {model_id}')
+              if story.get('path_cn') != (
+                  f'/data/general_voice/{model_id}/{model_id}_cn.txt'
+              ):
+                  raise SystemExit(f'Unexpected deployed TXT path for {model_id}')
+              if story.get('json_paths_cn') != [
+                  f'/data/general_voice/{model_id}/{model_id}_cn.json'
+              ]:
+                  raise SystemExit(f'Unexpected deployed JSON path for {model_id}')
+          for model_id, model in components.items():
+              canonical_id = model.get('canonicalModelId')
+              canonical = published.get(canonical_id)
+              if (
+                  canonical is None
+                  or model_id not in canonical.get('componentModelIds', [])
+                  or f'general_voice/{model_id}' in voice_stories
+              ):
+                  raise SystemExit(
+                      f'Invalid deployed component compatibility alias: {model_id}'
+                  )
+          takina = published.get('406200')
+          takina_story = voice_stories.get('general_voice/406200')
+          if (
+              not isinstance(takina, dict)
+              or takina.get('translationPercent') != 0
+              or takina.get('translatedVoiceGroups') != 0
+              or takina.get('voiceGroups') != 39
+              or not isinstance(takina_story, dict)
+              or takina_story.get('percent') != 0
+              or takina_story.get('translated_units_cn') != 0
+              or takina_story.get('translation_units_total') != 39
+          ):
+              raise SystemExit('Deployed general_voice/406200 is not 0/39')
+          sample_id = sorted(published)[0]
+          sample_story = voice_stories[f'general_voice/{sample_id}']
+          sample_json_paths = sample_story.get('json_paths_cn')
+          if not isinstance(sample_json_paths, list) or len(sample_json_paths) != 1:
+              raise SystemExit('Unable to derive a general_voice JSON smoke asset')
+          Path(sys.argv[3]).write_text(
+              f"{sample_story['path_cn']}\n{sample_json_paths[0]}\n",
+              encoding='utf-8',
+          )
 
           repository_root = Path.cwd()
           public_root = repository_root / 'website' / 'public'
@@ -447,11 +657,18 @@ jobs:
                   'from story_index and provenance manifests'
               )
           _, wiki_txt_path, wiki_json_path = sorted(candidates)[0]
-          Path(sys.argv[2]).write_text(
+          Path(sys.argv[4]).write_text(
               f'{wiki_txt_path}\n{wiki_json_path}\n',
               encoding='utf-8',
           )
           PY
+          mapfile -t general_voice_assets < "$RUNNER_TEMP/general-voice-smoke-assets.txt"
+          if [ "${#general_voice_assets[@]}" -ne 2 ]; then
+            echo "Failed to derive general_voice smoke-test assets." >&2
+            exit 1
+          fi
+          general_voice_txt_path="${general_voice_assets[0]}"
+          general_voice_json_path="${general_voice_assets[1]}"
           mapfile -t wiki_assets < "$RUNNER_TEMP/exedra-wiki-smoke-assets.txt"
           if [ "${#wiki_assets[@]}" -ne 2 ]; then
             echo "Failed to resolve Exedra Wiki smoke-test assets." >&2
@@ -460,11 +677,11 @@ jobs:
           wiki_txt_path="${wiki_assets[0]}"
           wiki_json_path="${wiki_assets[1]}"
           fetch_ready_asset \
-            "$SITE_URL/data/general_voice/100100/100100_cn.txt" \
-            "$RUNNER_TEMP/general-voice-100100.txt" 100 text
+            "$SITE_URL$general_voice_txt_path" \
+            "$RUNNER_TEMP/general-voice-sample.txt" 100 text
           fetch_ready_asset \
-            "$SITE_URL/data/general_voice/100100/100100_cn.json" \
-            "$RUNNER_TEMP/general-voice-100100.json" 100 json
+            "$SITE_URL$general_voice_json_path" \
+            "$RUNNER_TEMP/general-voice-sample.json" 100 json
           fetch_ready_asset \
             "$SITE_URL$wiki_txt_path" \
             "$RUNNER_TEMP/exedra-wiki-cn.txt" 20 text
@@ -472,7 +689,7 @@ jobs:
             "$SITE_URL$wiki_json_path" \
             "$RUNNER_TEMP/exedra-wiki-cn.json" 2 json
           admin_code="$(curl --silent --show-error -o "$RUNNER_TEMP/admin.json" -w '%{http_code}' "$SITE_URL/api/admin/machine-review")"
-          python3 - "$RUNNER_TEMP/home.html" "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/config.json" "$RUNNER_TEMP/machine-status.json" "$RUNNER_TEMP/exedra-localization-status.json" "$RUNNER_TEMP/submissions.html" "$RUNNER_TEMP/machine-review.html" "$admin_code" "$EXPECTED_MACHINE_TOTAL" "$RUNNER_TEMP/general-voice-100100.txt" "$RUNNER_TEMP/general-voice-100100.json" "$RUNNER_TEMP/exedra-wiki-cn.txt" "$RUNNER_TEMP/exedra-wiki-cn.json" "$wiki_txt_path" "$wiki_json_path" <<'PY'
+          python3 - "$RUNNER_TEMP/home.html" "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/config.json" "$RUNNER_TEMP/machine-status.json" "$RUNNER_TEMP/exedra-localization-status.json" "$RUNNER_TEMP/submissions.html" "$RUNNER_TEMP/machine-review.html" "$admin_code" "$EXPECTED_MACHINE_TOTAL" "$RUNNER_TEMP/general-voice-manifest.json" "$EXPECTED_GENERAL_VOICE_PUBLISHED" "$EXPECTED_GENERAL_VOICE_MODELS" "$EXPECTED_GENERAL_VOICE_COMPONENTS" "$RUNNER_TEMP/general-voice-sample.txt" "$RUNNER_TEMP/general-voice-sample.json" "$general_voice_txt_path" "$general_voice_json_path" "$RUNNER_TEMP/exedra-wiki-cn.txt" "$RUNNER_TEMP/exedra-wiki-cn.json" "$wiki_txt_path" "$wiki_json_path" <<'PY'
           import json, sys
           from pathlib import Path
           home = Path(sys.argv[1]).read_text(encoding='utf-8', errors='replace')
@@ -486,20 +703,28 @@ jobs:
           machine_review = Path(sys.argv[7]).read_text(encoding='utf-8', errors='replace')
           admin_code = sys.argv[8]
           expected_total = int(sys.argv[9])
-          general_voice_txt = Path(sys.argv[10]).read_text(
+          general_voice_manifest = json.loads(
+              Path(sys.argv[10]).read_text(encoding='utf-8')
+          )
+          expected_voice_published = int(sys.argv[11])
+          expected_voice_models = int(sys.argv[12])
+          expected_voice_components = int(sys.argv[13])
+          general_voice_txt = Path(sys.argv[14]).read_text(
               encoding='utf-8', errors='strict'
           )
           general_voice_json = json.loads(
-              Path(sys.argv[11]).read_text(encoding='utf-8')
+              Path(sys.argv[15]).read_text(encoding='utf-8')
           )
-          exedra_wiki_txt = Path(sys.argv[12]).read_text(
+          general_voice_txt_path = sys.argv[16]
+          general_voice_json_path = sys.argv[17]
+          exedra_wiki_txt = Path(sys.argv[18]).read_text(
               encoding='utf-8', errors='strict'
           )
           exedra_wiki_json = json.loads(
-              Path(sys.argv[13]).read_text(encoding='utf-8')
+              Path(sys.argv[19]).read_text(encoding='utf-8')
           )
-          wiki_txt_path = sys.argv[14]
-          wiki_json_path = sys.argv[15]
+          wiki_txt_path = sys.argv[20]
+          wiki_json_path = sys.argv[21]
           if min(map(len, (home, submissions, machine_review))) < 500:
               raise SystemExit('Deployed site content is incomplete')
           if not isinstance(stories, list) or not stories:
@@ -508,9 +733,28 @@ jobs:
               story for story in stories
               if isinstance(story, dict) and story.get('category') == 'general_voice'
           ]
-          if len(general_voice_stories) != 410:
+          general_voice_models = general_voice_manifest.get('models')
+          if (
+              not isinstance(general_voice_models, list)
+              or len(general_voice_models) != expected_voice_models
+              or sum(
+                  1 for model in general_voice_models
+                  if isinstance(model, dict)
+                  and model.get('publishedModel') is True
+              ) != expected_voice_published
+              or sum(
+                  1 for model in general_voice_models
+                  if isinstance(model, dict)
+                  and model.get('publishedModel') is False
+              ) != expected_voice_components
+              or len(general_voice_stories) != expected_voice_published
+          ):
               raise SystemExit(
-                  f'Unexpected deployed general_voice count: {len(general_voice_stories)}'
+                  'Unexpected deployed general_voice release counts: '
+                  f'stories={len(general_voice_stories)} '
+                  f'published={expected_voice_published} '
+                  f'models={expected_voice_models} '
+                  f'components={expected_voice_components}'
               )
           if not config.get('submissions_enabled') or not config.get('turnstile_site_key'):
               raise SystemExit(f'Proofreading service is not enabled: {config}')
@@ -565,7 +809,7 @@ jobs:
               or not isinstance(general_voice_json.get('story'), dict)
               or not general_voice_json['story']
           ):
-              raise SystemExit('Known general_voice TXT/JSON assets are incomplete')
+              raise SystemExit('Derived general_voice TXT/JSON assets are incomplete')
           if (
               len(exedra_wiki_txt) < 20
               or '--- [Section 1]' not in exedra_wiki_txt
@@ -579,7 +823,10 @@ jobs:
           print(
               f"SITE_OK stories={len(stories)} machine_total={machine['total']} "
               f"verified={machine['verified']} remaining={machine['remaining']} "
-              f"general_voice={len(general_voice_stories)} "
+              f"general_voice={len(general_voice_stories)}/{expected_voice_models} "
+              f"voice_components={expected_voice_components} "
+              f"voice_txt={general_voice_txt_path} "
+              f"voice_json={general_voice_json_path} "
               f"exedra_localizations={len(entries)} "
               f"wiki_txt={wiki_txt_path} wiki_json={wiki_json_path} "
               f"turnstile_test_mode={config.get('turnstile_test_mode')} "

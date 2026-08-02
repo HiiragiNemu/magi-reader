@@ -355,30 +355,84 @@ class PipelineBuildTests(unittest.TestCase):
             ).is_file()
         )
 
+    def test_magireco_json_allowlist_requires_complete_same_directory_sources(
+        self,
+    ) -> None:
+        story_dir = self.jp / "event_story" / "fixture"
+        story_txt = story_dir / "123456_1-2.txt"
+        write_text(
+            story_txt,
+            "--- [Section 1] (Source: 123456-1.json) ---\n"
+            "旁白: 一\n"
+            "--- [Section 2 - Branch 1] (Source: 123456-1.json) ---\n"
+            "旁白: 二\n"
+            "--- [Section 3] (Source: 123456-2.json) ---\n"
+            "旁白: 三\n",
+        )
+        write_json(story_dir / "123456-1.json", {"story": {}})
+        write_json(story_dir / "123456-2.json", {"story": {}})
+
+        self.assertEqual(
+            generate._magireco_repository_json_sources(
+                story_txt,
+                source_root=self.jp,
+                repository_root=generate.MAGIRECO_JP_REPOSITORY_JSON_ROOT,
+            ),
+            [
+                "magireco-source-master/Scenarios_full/"
+                "event_story/fixture/123456-1.json",
+                "magireco-source-master/Scenarios_full/"
+                "event_story/fixture/123456-2.json",
+            ],
+        )
+
+        (story_dir / "123456-2.json").unlink()
+        self.assertEqual(
+            generate._magireco_repository_json_sources(
+                story_txt,
+                source_root=self.jp,
+                repository_root=generate.MAGIRECO_JP_REPOSITORY_JSON_ROOT,
+            ),
+            [],
+        )
+        write_text(
+            story_txt,
+            "--- [Section 1] (Source: ../outside.json) ---\n旁白: 越界\n",
+        )
+        with self.assertRaisesRegex(generate.PipelineError, "非规范 Section"):
+            generate._magireco_repository_json_sources(
+                story_txt,
+                source_root=self.jp,
+                repository_root=generate.MAGIRECO_JP_REPOSITORY_JSON_ROOT,
+            )
+
     def test_general_voice_snapshot_is_published_without_network(self) -> None:
         model_id = "100100"
         source_root = self.root / "voice-source"
         cn_root = self.root / "voice-cn"
-        source_json = source_root / model_id / f"{model_id}.json"
-        source_txt = cn_root / model_id / f"{model_id}_cn.txt"
-        write_json(
-            source_json,
-            {
-                "story": {
-                    "group_1": [
-                        {
-                            "chara": [
-                                {
-                                    "voice": "vo_test",
-                                    "textHome": "中文语音",
-                                }
-                            ]
-                        }
-                    ]
-                },
-                "version": 3,
+        family_folder = "1001 - 环彩羽（環 いろは）"
+        model_folder = "100100 - 环彩羽（環 いろは）"
+        relative_dir = f"{family_folder}/{model_folder}"
+        source_json = source_root / relative_dir / f"{model_id}.json"
+        cn_json = cn_root / relative_dir / f"{model_id}_cn.json"
+        source_txt = cn_root / relative_dir / f"{model_id}_cn.txt"
+        source_document = {
+            "story": {
+                "group_1": [
+                    {
+                        "chara": [
+                            {
+                                "voice": "vo_test",
+                                "textHome": "中文语音",
+                            }
+                        ]
+                    }
+                ]
             },
-        )
+            "version": 3,
+        }
+        write_json(source_json, source_document)
+        write_json(cn_json, source_document)
         write_text(
             source_txt,
             f"--- [Section 1] (Source: {model_id}.json) ---\n"
@@ -398,9 +452,31 @@ class PipelineBuildTests(unittest.TestCase):
                     "jsonSha256": hashlib.sha256(
                         source_json.read_bytes()
                     ).hexdigest(),
+                    "sourceJsonSha256": hashlib.sha256(
+                        source_json.read_bytes()
+                    ).hexdigest(),
+                    "cnJsonSha256": hashlib.sha256(
+                        cn_json.read_bytes()
+                    ).hexdigest(),
                     "txtSha256": hashlib.sha256(
                         source_txt.read_bytes()
                     ).hexdigest(),
+                    "voiceGroups": 1,
+                    "translatedVoiceGroups": 1,
+                    "untranslatedVoiceGroups": 0,
+                    "rawVoiceReferences": 1,
+                    "groupsWithoutVoice": 0,
+                    "translationPercent": 100,
+                    "familyId": "1001",
+                    "familyFolder": family_folder,
+                    "modelFolder": model_folder,
+                    "repositoryRelativeDir": relative_dir,
+                    "sourceRelativePath": f"{relative_dir}/{model_id}.json",
+                    "cnJsonRelativePath": f"{relative_dir}/{model_id}_cn.json",
+                    "cnTxtRelativePath": f"{relative_dir}/{model_id}_cn.txt",
+                    "publishedModel": True,
+                    "canonicalModelId": model_id,
+                    "componentModelIds": [],
                 }
             ],
         }
@@ -441,6 +517,16 @@ class PipelineBuildTests(unittest.TestCase):
             story["json_paths_cn"],
             [f"/data/general_voice/{model_id}/{model_id}_cn.json"],
         )
+        self.assertEqual(
+            story["json_sources_cn"],
+            [
+                "magireco-voice-translate-data-master/Scenarios_full/"
+                f"general_voice/{relative_dir}/{model_id}_cn.json"
+            ],
+        )
+        self.assertEqual(story["percent"], 100)
+        self.assertEqual(story["translated_units_cn"], 1)
+        self.assertEqual(story["translation_units_total"], 1)
         self.assertTrue(
             (
                 data
@@ -451,6 +537,87 @@ class PipelineBuildTests(unittest.TestCase):
         )
         self.assertEqual(stats["general_voice_models"], 1)
         audit.validate_manifest(generate.finalize_story_list(stories))
+
+    def test_general_voice_without_text_home_has_zero_coverage(self) -> None:
+        model_id = "406200"
+        source_root = self.root / "voice-source-untranslated"
+        cn_root = self.root / "voice-cn-untranslated"
+        family_folder = "4062 - 井之上泷奈（井ノ上 たきな）"
+        model_folder = "406200 - 井之上泷奈（井ノ上 たきな）"
+        relative_dir = f"{family_folder}/{model_folder}"
+        source_json = source_root / relative_dir / f"{model_id}.json"
+        cn_json = cn_root / relative_dir / f"{model_id}_cn.json"
+        source_txt = cn_root / relative_dir / f"{model_id}_cn.txt"
+        document = {
+            "story": {
+                "group_1": [{
+                    "autoTurnFirst": 20.1,
+                    "chara": [{
+                        "id": 406200,
+                        "voice": "vo_char_4062_00_01",
+                        "motion": 200,
+                    }],
+                }],
+            },
+            "version": 3,
+        }
+        write_json(source_json, document)
+        write_json(cn_json, document)
+        write_text(
+            source_txt,
+            f"--- [Section 1] (Source: {model_id}.json) ---\n"
+            "井之上泷奈：【vo_char_4062_00_01｜20.1秒】\n",
+        )
+        model = {
+            "id": model_id,
+            "charId": "4062",
+            "char": {"cn": "井之上泷奈", "jp": "井ノ上 たきな"},
+            "costume": {"cn": "井之上泷奈"},
+            "groups": 1,
+            "voices": 1,
+            "jsonSha256": hashlib.sha256(source_json.read_bytes()).hexdigest(),
+            "sourceJsonSha256": hashlib.sha256(source_json.read_bytes()).hexdigest(),
+            "cnJsonSha256": hashlib.sha256(cn_json.read_bytes()).hexdigest(),
+            "txtSha256": hashlib.sha256(source_txt.read_bytes()).hexdigest(),
+            "voiceGroups": 1,
+            "translatedVoiceGroups": 0,
+            "untranslatedVoiceGroups": 1,
+            "rawVoiceReferences": 1,
+            "groupsWithoutVoice": 0,
+            "translationPercent": 0,
+            "familyId": "4062",
+            "familyFolder": family_folder,
+            "modelFolder": model_folder,
+            "repositoryRelativeDir": relative_dir,
+            "sourceRelativePath": f"{relative_dir}/{model_id}.json",
+            "cnJsonRelativePath": f"{relative_dir}/{model_id}_cn.json",
+            "cnTxtRelativePath": f"{relative_dir}/{model_id}_cn.txt",
+            "publishedModel": True,
+            "canonicalModelId": model_id,
+            "componentModelIds": [],
+        }
+        manifest = {"version": 1, "modelCount": 1, "models": [model]}
+        write_json(source_root / generate.GENERAL_VOICE_MANIFEST_NAME, manifest)
+        write_json(cn_root / generate.GENERAL_VOICE_MANIFEST_NAME, manifest)
+        data = self.stage / "voice-zero-data"
+        data.mkdir()
+        stories: dict[str, dict] = {}
+        stats = Counter()
+        with mock.patch.object(generate, "GENERAL_VOICE_EXPECTED_MODELS", 1):
+            generate.scan_general_voice_sources(
+                source_dir=source_root,
+                cn_dir=cn_root,
+                staging_data_dir=data,
+                story_map=stories,
+                stats=stats,
+                source_audit=generate.SourceAudit(),
+            )
+        story = stories[f"voice_{model_id}"]
+        self.assertEqual(story["percent"], 0)
+        self.assertEqual(story["translated_units_cn"], 0)
+        self.assertEqual(story["translation_units_total"], 1)
+        self.assertIn("已汉化 0/1 条语音", story["title"])
+        self.assertEqual(stats["general_voice_untranslated_voice_groups"], 1)
 
     @unittest.skipUnless(os.name == "nt", "Windows junction semantics")
     def test_manifest_rejects_organized_directory_junction(self) -> None:
@@ -1249,6 +1416,13 @@ class PipelineBuildTests(unittest.TestCase):
         self.assertTrue(main_group["has_jp"])
         self.assertTrue(main_group["path_cn"].endswith("main_demo_cn.txt"))
         self.assertTrue(main_group["path_jp"].endswith("main_demo_jp.txt"))
+        self.assertEqual(
+            main_group["json_sources_jp"],
+            [
+                "magiraexedra-source-master/Scenarios_full/"
+                "1_Main/main_demo/main_demo_1.json"
+            ],
+        )
 
         battle = next(
             story
@@ -1461,6 +1635,13 @@ class PipelineBuildTests(unittest.TestCase):
             main_group["json_paths_cn"],
             [expected_web_path],
         )
+        self.assertEqual(
+            main_group["json_sources_cn"],
+            [
+                "magiraexedra-translate-data-master/Scenarios_full/"
+                "1_Main/main_demo/main_demo_1.json"
+            ],
+        )
         published = (
             self.stage
             / "data"
@@ -1512,6 +1693,82 @@ class PipelineBuildTests(unittest.TestCase):
                 self.exedra_cn,
                 [incomplete],
                 {incomplete.manifest_id: cn_txt},
+            )
+
+    def test_reaction_cn_sources_match_recursively_by_stable_identity(self) -> None:
+        group = generate.OrganizedExedraGroup(
+            manifest_id="exedra:6_Reaction:cv_100101",
+            raw_category="6_Reaction",
+            category="exedra_reaction",
+            group_key="cv_100101",
+            output_dir=Path("6_Reaction/cv_100101"),
+            text_file=Path("6_Reaction/cv_100101/cv_100101_jp.txt"),
+            source_paths=(
+                "6_Reaction/cv_100101/cv_100101_other_story_01.json",
+                "6_Reaction/cv_100101/cv_100101_other_story_02.json",
+            ),
+            source_names=(
+                "cv_100101_other_story_01.json",
+                "cv_100101_other_story_02.json",
+            ),
+            title="環いろは",
+        )
+        localized = self.exedra_cn / "语音" / "1001 - 环彩羽"
+        txt = localized / "cv_100101_cn.txt"
+        first = localized / "字幕" / group.source_names[0]
+        second = localized / "字幕" / group.source_names[1]
+        write_text(txt, "fixture\n")
+        write_json(first, {"story": {}})
+        write_json(second, {"story": {}})
+
+        text_matches = generate._find_exedra_cn_sources(
+            self.exedra_cn,
+            [group],
+        )
+        self.assertEqual(text_matches[group.manifest_id], txt)
+        json_matches = generate._find_exedra_cn_json_sources(
+            self.exedra_cn,
+            [group],
+            text_matches,
+        )
+        self.assertEqual(json_matches[group.manifest_id], (first, second))
+
+    def test_reaction_cn_duplicate_normalized_filename_is_rejected(self) -> None:
+        group = generate.OrganizedExedraGroup(
+            manifest_id="exedra:6_Reaction:cv_100101",
+            raw_category="6_Reaction",
+            category="exedra_reaction",
+            group_key="cv_100101",
+            output_dir=Path("6_Reaction/cv_100101"),
+            text_file=Path("6_Reaction/cv_100101/cv_100101_jp.txt"),
+            source_paths=(
+                "6_Reaction/cv_100101/cv_100101_other_story_01.json",
+            ),
+            source_names=("cv_100101_other_story_01.json",),
+            title="環いろは",
+        )
+        txt = self.exedra_cn / "中文语音" / "cv_100101_cn.txt"
+        write_text(txt, "fixture\n")
+        for parent in ("角色甲", "角色乙"):
+            write_json(
+                self.exedra_cn
+                / parent
+                / "cv_100101_other_story_01.json",
+                {"story": {}},
+            )
+
+        text_matches = generate._find_exedra_cn_sources(
+            self.exedra_cn,
+            [group],
+        )
+        with self.assertRaisesRegex(
+            generate.PipelineError,
+            "规范化文件名/Reaction ID 存在歧义",
+        ):
+            generate._find_exedra_cn_json_sources(
+                self.exedra_cn,
+                [group],
+                text_matches,
             )
 
     def test_cn_json_report_hash_mismatch_is_rejected(self) -> None:

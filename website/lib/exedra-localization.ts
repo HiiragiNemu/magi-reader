@@ -1,9 +1,12 @@
+import { fetchBoundedResponseBytes } from './http/bounded-response.ts';
+
 export const EXEDRA_CACHE_PREFIX = 'exedra-localization:v1:';
 const MAX_SOURCE_BYTES = 8 * 1024 * 1024;
 const MAX_CATALOG_BYTES = 32 * 1024 * 1024;
 const MAX_CATALOG_ENTRIES = 100_000;
 const MAX_BLOCKS_PER_SECTION = 4_000;
 const MAX_TEXT_LENGTH = 20_000;
+const ASSET_TIMEOUT_MS = 10_000;
 const EXEDRA_ID_RE = /^[A-Za-z0-9_.:-]{1,256}$/u;
 const SECTION_RE = /^---\s*\[Section\s+(\d+)\]\s*\(Source:\s*([^()\r\n]+\.json)\s*\)\s*---$/iu;
 
@@ -75,25 +78,7 @@ const splitDialogue = (line: string): [string, string] => {
   return [line.slice(0, separator).trim(), line.slice(separator + 1).trim()];
 };
 
-const readBoundedBytes = async (
-  response: Response,
-  label: string,
-  maxBytes: number,
-): Promise<ArrayBuffer> => {
-  if (!response.ok) throw new Error(`${label}读取失败（HTTP ${response.status}）`);
-  const declared = Number(response.headers.get('content-length'));
-  if (Number.isSafeInteger(declared) && declared > maxBytes) {
-    await response.body?.cancel(`${label}过大`);
-    throw new Error(`${label}超过 ${Math.floor(maxBytes / 1024 / 1024)} MiB`);
-  }
-  const bytes = await response.arrayBuffer();
-  if (bytes.byteLength > maxBytes) {
-    throw new Error(`${label}超过 ${Math.floor(maxBytes / 1024 / 1024)} MiB`);
-  }
-  return bytes;
-};
-
-const decodeUtf8 = (bytes: ArrayBuffer, label: string): string => {
+const decodeUtf8 = (bytes: Uint8Array, label: string): string => {
   try {
     return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
   } catch {
@@ -158,13 +143,15 @@ const loadCatalog = async ({
       const catalogRequest = new Request(new URL('/story_index.json', request.url), {
         headers: { Accept: 'application/json' },
       });
-      const response = env.ASSETS
-        ? await env.ASSETS.fetch(catalogRequest)
-        : await fetch(catalogRequest);
-      const bytes = await readBoundedBytes(
-        response,
-        '剧情目录',
-        MAX_CATALOG_BYTES,
+      const bytes = await fetchBoundedResponseBytes(
+        signal => env.ASSETS
+          ? env.ASSETS.fetch(new Request(catalogRequest, { signal }))
+          : fetch(new Request(catalogRequest, { signal, redirect: 'error' })),
+        {
+          label: '剧情目录',
+          maxBytes: MAX_CATALOG_BYTES,
+          timeoutMs: ASSET_TIMEOUT_MS,
+        },
       );
       let value: unknown;
       try {
@@ -262,12 +249,16 @@ export const readExedraJapaneseText = async ({
   const sourceRequest = new Request(new URL(entry.path_jp, request.url), {
     headers: { Accept: 'text/plain' },
   });
-  const response = env.ASSETS
-    ? await env.ASSETS.fetch(sourceRequest)
-    : await fetch(sourceRequest);
-  return decodeUtf8(
-    await readBoundedBytes(response, 'Exedra 日文剧情', MAX_SOURCE_BYTES),
-    'Exedra 日文剧情',
+  return decodeUtf8(await fetchBoundedResponseBytes(
+    signal => env.ASSETS
+      ? env.ASSETS.fetch(new Request(sourceRequest, { signal }))
+      : fetch(new Request(sourceRequest, { signal, redirect: 'error' })),
+    {
+      label: 'Exedra 日文剧情',
+      maxBytes: MAX_SOURCE_BYTES,
+      timeoutMs: ASSET_TIMEOUT_MS,
+    },
+  ), 'Exedra 日文剧情',
   );
 };
 

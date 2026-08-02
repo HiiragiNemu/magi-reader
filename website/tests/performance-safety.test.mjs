@@ -15,6 +15,25 @@ test('decorative layers stay viewport-bounded and avoid continuous GPU animation
   assert.match(globalCss, /\.magi-balloon-rain\s*\{[\s\S]*?\binset:\s*0;/u);
 });
 
+test('balloon decoration is a bounded six-image edge layer that cannot cover controls', () => {
+  const balloonRule = globalCss.match(
+    /\.magi-balloon-rain\s*\{([\s\S]*?)\n\}/u,
+  )?.[1] ?? '';
+  assert.equal(balloonRule.match(/\burl\(/gu)?.length, 6);
+  assert.match(balloonRule, /\bpointer-events:\s*none;/u);
+  assert.match(balloonRule, /\bz-index:\s*-\d+;/u);
+  assert.match(balloonRule, /\bcontain:\s*strict;/u);
+  assert.match(
+    balloonRule,
+    /\banimation:\s*magi-balloon-arrival\s+9s[\s\S]*?\s1\s+both;/u,
+  );
+  assert.doesNotMatch(balloonRule, /\binfinite\b/u);
+  assert.match(
+    globalCss,
+    /@keyframes\s+magi-balloon-arrival\s*\{[\s\S]*?translate3d\(0,\s*-28vh,\s*0\)[\s\S]*?translate3d\(0,\s*0,\s*0\)/u,
+  );
+});
+
 test('reduced-motion users do not receive decorative movement', () => {
   assert.match(globalCss, /@media\s*\(prefers-reduced-motion:\s*reduce\)/u);
   assert.match(

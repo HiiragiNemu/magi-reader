@@ -11,8 +11,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import sys
+import unicodedata
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable, Mapping
 from urllib.parse import quote
@@ -36,6 +38,9 @@ DEFAULT_OUTPUT = ROOT / "artifacts" / "exedra_voice_catalog.json"
 EXPECTED_REACTION_GROUPS = 86
 REACTION_CATEGORY = "6_Reaction"
 GROUP_KEY_RE = re.compile(r"^cv_(\d{6})$")
+REACTION_CN_STEM_RE = re.compile(
+    r"^cv_?(\d{6})(?:_(?:cn|zh|zh_cn|zh_hans|zhhans|hans|chs|sc))?$"
+)
 SAFE_COMPONENT_RE = re.compile(r"^[A-Za-z0-9_.-]{1,160}$")
 BOOK_SUFFIX_RE = re.compile(
     r"_(?:覚醒ボイス|魔法少女ストーリーボイス|ストーリーボイス|ボイス)_\d+$"
@@ -49,6 +54,9 @@ CHARACTER_TITLE_ALIASES = {
 CHARACTER_VARIANT_NAMES = {
     "鹿目まどか": ("アルティメットまどか",),
 }
+MAX_CN_SCAN_ENTRIES = 200_000
+MAX_CN_SCAN_DIRECTORIES = 50_000
+MAX_CN_SCAN_DEPTH = 32
 
 
 class CatalogError(RuntimeError):
@@ -186,6 +194,99 @@ def first_cn_speaker(path: Path) -> str | None:
     return None
 
 
+def _reaction_group_key_from_cn_filename(filename: str) -> str | None:
+    """Return the canonical Reaction group key encoded by a CN TXT filename.
+
+    The translation tree has used several language/category directory names over
+    time, so directory names are deliberately ignored.  NFKC plus separator
+    normalisation accepts harmless filename variants such as
+    ``CV－100101 ZH－CN.TXT`` while still requiring one exact six-digit Reaction
+    identifier.
+    """
+
+    normalised = unicodedata.normalize("NFKC", filename).strip().casefold()
+    if not normalised.endswith(".txt"):
+        return None
+    stem = normalised[:-4]
+    stem = re.sub(r"[\s.\-]+", "_", stem)
+    stem = re.sub(r"_+", "_", stem).strip("_")
+    match = REACTION_CN_STEM_RE.fullmatch(stem)
+    return f"cv_{match.group(1)}" if match else None
+
+
+def _index_reaction_cn_texts(
+    cn_root: Path,
+    expected_group_keys: set[str],
+) -> dict[str, Path]:
+    """Find CN Reaction TXT files recursively without trusting folder labels.
+
+    Traversal is iterative, link/junction-free and capped by entry, directory
+    and depth limits.  More than one filename mapping to the same Reaction ID is
+    always an error; silently choosing one could attach the wrong speaker name.
+    """
+
+    if _is_link_like(cn_root):
+        raise CatalogError(f"Exedra 中文剧情目录不允许是符号链接或目录联接: {cn_root}")
+    if not cn_root.exists():
+        return {}
+    root = _canonical_root(cn_root, label="Exedra 中文剧情目录")
+    matches: dict[str, list[Path]] = {}
+    stack: list[tuple[Path, int]] = [(root, 0)]
+    entry_count = 0
+    directory_count = 0
+
+    while stack:
+        directory, depth = stack.pop()
+        directory_count += 1
+        if directory_count > MAX_CN_SCAN_DIRECTORIES:
+            raise CatalogError(
+                "Exedra 中文剧情目录递归目录数超过安全上限 "
+                f"{MAX_CN_SCAN_DIRECTORIES}"
+            )
+        try:
+            with os.scandir(directory) as entries:
+                for entry in entries:
+                    entry_count += 1
+                    if entry_count > MAX_CN_SCAN_ENTRIES:
+                        raise CatalogError(
+                            "Exedra 中文剧情目录递归条目数超过安全上限 "
+                            f"{MAX_CN_SCAN_ENTRIES}"
+                        )
+                    path = Path(entry.path)
+                    if entry.is_symlink() or _is_link_like(path):
+                        raise CatalogError(
+                            "Exedra 中文剧情目录不允许包含符号链接或目录联接: "
+                            f"{path}"
+                        )
+                    if entry.is_dir(follow_symlinks=False):
+                        if depth >= MAX_CN_SCAN_DEPTH:
+                            raise CatalogError(
+                                "Exedra 中文剧情目录递归深度超过安全上限 "
+                                f"{MAX_CN_SCAN_DEPTH}: {path}"
+                            )
+                        stack.append((path, depth + 1))
+                        continue
+                    if not entry.is_file(follow_symlinks=False):
+                        continue
+                    group_key = _reaction_group_key_from_cn_filename(entry.name)
+                    if group_key in expected_group_keys:
+                        matches.setdefault(group_key, []).append(path)
+        except OSError as exc:
+            raise CatalogError(f"Exedra 中文剧情目录无法遍历: {directory}: {exc}") from exc
+
+    result: dict[str, Path] = {}
+    for group_key, candidates in sorted(matches.items()):
+        ordered = sorted(candidates, key=lambda path: path.as_posix().casefold())
+        if len(ordered) != 1:
+            relative_paths = [path.relative_to(root).as_posix() for path in ordered]
+            raise CatalogError(
+                f"中文 Reaction TXT 匹配歧义: {group_key}: "
+                + ", ".join(relative_paths)
+            )
+        result[group_key] = ordered[0]
+    return result
+
+
 def _normalise_book_base(book_title: str) -> str:
     base = BOOK_SUFFIX_RE.sub("", book_title.strip())
     if not base or base == book_title.strip():
@@ -303,7 +404,6 @@ def build_catalog(
     master_root = _canonical_root(master_root, label="Exedra 主表目录")
     audio_root = _canonical_root(audio_root, label="Exedra 语音目录")
     exedra_root = _canonical_root(exedra_root, label="Exedra 剧情目录")
-    cn_root = cn_root.resolve(strict=False)
 
     characters = _unique_int_map(
         _load_mst_list(master_root, "getCharacterMstList.json"),
@@ -335,6 +435,16 @@ def build_catalog(
             f"reaction 组数量不正确: {len(reaction_groups)}，"
             f"期望 {expected_group_count}"
         )
+
+    expected_cn_group_keys = {
+        str(group.get("groupKey") or "").strip()
+        for group in reaction_groups
+        if GROUP_KEY_RE.fullmatch(str(group.get("groupKey") or "").strip())
+    }
+    cn_text_by_group = _index_reaction_cn_texts(
+        cn_root,
+        expected_cn_group_keys,
+    )
 
     style_names_by_figure: dict[int, list[str]] = {}
     for row in styles:
@@ -482,13 +592,8 @@ def build_catalog(
                 f"{group_key} 的 bookTitle 角色/形态不一致: {book_bases}"
             )
         character_jp, form_jp = resolved_titles[0]
-        cn_text = (
-            cn_root
-            / REACTION_CATEGORY
-            / group_key
-            / f"{group_key}_cn.txt"
-        )
-        cn_speaker = first_cn_speaker(cn_text)
+        cn_text = cn_text_by_group.get(group_key)
+        cn_speaker = first_cn_speaker(cn_text) if cn_text is not None else None
         dictionary_name = explicit_names.get(character_jp)
         character_cn: str | None = None
         character_cn_source: str | None = None
