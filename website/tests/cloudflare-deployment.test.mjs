@@ -221,6 +221,14 @@ test('isolated Exedra deployment smoke-tests both voice systems and the decoder'
   const workflow = readFileSync(testDeploymentWorkflow, 'utf8');
   assert.match(
     workflow,
+    /\?__revision=\$\{GITHUB_SHA\}-\$\{attempt\}/u,
+  );
+  assert.match(
+    workflow,
+    /request_url="\$\{url\}\$\{separator\}__revision=\$\{GITHUB_SHA\}-\$\{attempt\}"/u,
+  );
+  assert.match(
+    workflow,
     /pub-70a248f1a6fe4ca597e7a10f8b95dfd8\.r2\.dev/u,
   );
   assert.match(

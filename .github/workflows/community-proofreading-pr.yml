@@ -53,9 +53,10 @@ jobs:
           voice_source_manifest=''
           voice_cn_manifest=''
           voice_report=''
-          if [[ "$txt" =~ ^magireco-voice-translate-data-master/Scenarios_full/general_voice/([0-9]{6})/\1_cn\.txt$ ]]; then
-            model="${BASH_REMATCH[1]}"
-            voice_json="magireco-voice-source-master/Scenarios_full/general_voice/$model/$model.json"
+          if [[ "$txt" =~ ^magireco-voice-translate-data-master/Scenarios_full/general_voice/([^/]+)/([^/]+)/([0-9]{6})_cn\.txt$ ]]; then
+            model="${BASH_REMATCH[3]}"
+            voice_relative_dir="${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
+            voice_json="magireco-voice-translate-data-master/Scenarios_full/general_voice/$voice_relative_dir/${model}_cn.json"
             voice_source_manifest="magireco-voice-source-master/Scenarios_full/general_voice/general_voice_manifest.json"
             voice_cn_manifest="magireco-voice-translate-data-master/Scenarios_full/general_voice/general_voice_manifest.json"
             voice_report="$directory/${model}_cn.proofreading-report.json"

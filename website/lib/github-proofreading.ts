@@ -100,6 +100,7 @@ const safePath = (value: string): string => {
 
 export const proofreadingRepositoryPath = (
   record: ProofreadingSubmission,
+  generalVoiceRelativePath?: string,
 ): string => {
   const exedra = record.source_identity.match(
     /^exedra:([A-Za-z0-9_.-]{1,128}):([A-Za-z0-9_.-]{1,96})$/u,
@@ -115,8 +116,24 @@ export const proofreadingRepositoryPath = (
   );
   if (generalVoice) {
     const modelId = generalVoice[1];
+    if (!generalVoiceRelativePath) {
+      throw new ProofreadingPullRequestError(
+        '魔法纪录语音路径必须由目标分支完整性清单解析',
+        'invalid',
+      );
+    }
+    const relative = safePath(generalVoiceRelativePath);
+    if (
+      !relative.endsWith(`/${modelId}_cn.txt`) ||
+      relative.split('/').length !== 3
+    ) {
+      throw new ProofreadingPullRequestError(
+        '魔法纪录语音中文路径与模型 ID 不一致',
+        'invalid',
+      );
+    }
     return safePath(
-      `magireco-voice-translate-data-master/Scenarios_full/general_voice/${modelId}/${modelId}_cn.txt`,
+      `magireco-voice-translate-data-master/Scenarios_full/general_voice/${relative}`,
     );
   }
   if (record.source_identity.includes(':')) {
@@ -125,6 +142,54 @@ export const proofreadingRepositoryPath = (
   return safePath(
     `magireco-translate-data-master/Scenarios_full/${record.source_identity}.txt`,
   );
+};
+
+const resolveGeneralVoiceTxtRelativePath = async (options: {
+  token: string;
+  repository: string;
+  baseSha: string;
+  modelId: string;
+  fetcher: typeof fetch;
+}): Promise<string> => {
+  const manifestPath =
+    'magireco-voice-source-master/Scenarios_full/general_voice/' +
+    'general_voice_manifest.json';
+  const encodedPath = manifestPath.split('/').map(encodeURIComponent).join('/');
+  const manifestFile = await githubRequest<GitHubContent>(
+    options.token,
+    `/repos/${options.repository}/contents/${encodedPath}?ref=${encodeURIComponent(options.baseSha)}`,
+    {},
+    options.fetcher,
+  );
+  if (
+    manifestFile.type !== 'file' ||
+    manifestFile.encoding !== 'base64' ||
+    typeof manifestFile.content !== 'string'
+  ) {
+    throw new ProofreadingPullRequestError('魔法纪录语音完整性清单无法读取');
+  }
+  let manifest: unknown;
+  try {
+    manifest = JSON.parse(decodeBase64(manifestFile.content));
+  } catch {
+    throw new ProofreadingPullRequestError('魔法纪录语音完整性清单不是有效 UTF-8 JSON', 'invalid');
+  }
+  const models = manifest && typeof manifest === 'object' && 'models' in manifest
+    ? (manifest as { models?: unknown }).models
+    : undefined;
+  const matches = Array.isArray(models)
+    ? models.filter(model =>
+        model && typeof model === 'object' &&
+        (model as { id?: unknown }).id === options.modelId)
+    : [];
+  if (matches.length !== 1) {
+    throw new ProofreadingPullRequestError('魔法纪录语音模型未唯一匹配完整性清单', 'invalid');
+  }
+  const relative = (matches[0] as { cnTxtRelativePath?: unknown }).cnTxtRelativePath;
+  if (typeof relative !== 'string') {
+    throw new ProofreadingPullRequestError('魔法纪录语音完整性清单缺少中文 TXT 路径', 'invalid');
+  }
+  return relative;
 };
 
 const sectionHeaders = (value: string): string[] => {
@@ -186,8 +251,6 @@ export const createProofreadingPullRequest = async (
   if (targetBranch !== 'EXEDRA-TEST') {
     throw new ProofreadingPullRequestError('投稿目标分支不是 EXEDRA-TEST', 'invalid');
   }
-  const path = proofreadingRepositoryPath(record);
-  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
   const encodedBranch = encodeURIComponent(targetBranch);
   const reference = await githubRequest<GitReference>(
     token,
@@ -199,6 +262,18 @@ export const createProofreadingPullRequest = async (
   if (!baseSha || !/^[a-f0-9]{40}$/iu.test(baseSha)) {
     throw new ProofreadingPullRequestError('无法解析目标分支提交');
   }
+  const generalVoiceMatch = record.source_identity.match(/^general_voice\/(\d{6})$/u);
+  const generalVoiceRelativePath = generalVoiceMatch
+    ? await resolveGeneralVoiceTxtRelativePath({
+        token,
+        repository,
+        baseSha,
+        modelId: generalVoiceMatch[1],
+        fetcher,
+      })
+    : undefined;
+  const path = proofreadingRepositoryPath(record, generalVoiceRelativePath);
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/');
 
   const currentFile = await githubRequest<GitHubContent>(
     token,

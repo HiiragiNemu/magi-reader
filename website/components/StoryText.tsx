@@ -8,6 +8,7 @@ type StoryTextProps = {
   text: string;
   query?: string;
   theme?: string;
+  showLineBreaks?: boolean;
 };
 
 type RichMatch = {
@@ -19,6 +20,11 @@ type RichMatch = {
 };
 
 const MAX_RICH_TEXT_RECURSION = 96;
+export const MAX_VISIBLE_LINE_BREAK_MARKERS = 200;
+
+type LineBreakMarkerBudget = {
+  remaining: number;
+};
 
 const COLOR_CLASSES: Record<string, string> = {
   red: 'text-red-500 font-bold',
@@ -95,7 +101,80 @@ const findFirstRichMatch = (text: string): RichMatch | null => {
   return candidates.sort((left, right) => left.index - right.index)[0] ?? null;
 };
 
-const renderPlainText = (text: string, query: string, keyPrefix: string): ReactNode =>
+const renderTextWithLineBreakMarkers = (
+  text: string,
+  keyPrefix: string,
+  markerBudget?: LineBreakMarkerBudget,
+  markerOnly = false,
+): ReactNode => {
+  const wrapText = (value: string, key: string): ReactNode =>
+    markerOnly
+      ? <span key={key} className="text-transparent">{value}</span>
+      : value;
+
+  if (!markerBudget || markerBudget.remaining <= 0 || !text.includes('\n')) {
+    return wrapText(text, `${keyPrefix}-plain`);
+  }
+
+  const nodes: ReactNode[] = [];
+  let cursor = 0;
+  let markerIndex = 0;
+  while (markerBudget.remaining > 0) {
+    const lineBreak = text.indexOf('\n', cursor);
+    if (lineBreak < 0) break;
+    nodes.push(
+      wrapText(
+        text.slice(cursor, lineBreak),
+        `${keyPrefix}-text-${markerIndex}`,
+      ),
+    );
+    nodes.push(
+      <Fragment key={`${keyPrefix}-break-${markerIndex}`}>
+        <span
+          aria-hidden="true"
+          data-line-break-marker="true"
+          className="pointer-events-none inline-block w-0 select-none overflow-visible text-[0.72em] font-black text-fuchsia-500/80"
+        >
+          ↵
+        </span>
+        {'\n'}
+      </Fragment>,
+    );
+    markerBudget.remaining -= 1;
+    markerIndex += 1;
+    cursor = lineBreak + 1;
+  }
+  nodes.push(
+    wrapText(text.slice(cursor), `${keyPrefix}-tail-${markerIndex}`),
+  );
+  return nodes;
+};
+
+export function LineBreakMarkerText({
+  text,
+  markerOnly = false,
+}: {
+  text: string;
+  markerOnly?: boolean;
+}) {
+  return (
+    <>
+      {renderTextWithLineBreakMarkers(
+        text,
+        'line-break-preview',
+        { remaining: MAX_VISIBLE_LINE_BREAK_MARKERS },
+        markerOnly,
+      )}
+    </>
+  );
+}
+
+const renderPlainText = (
+  text: string,
+  query: string,
+  keyPrefix: string,
+  markerBudget?: LineBreakMarkerBudget,
+): ReactNode =>
   splitHighlightSegments(text, query).map((segment, index) =>
     segment.highlight
       ? (
@@ -103,10 +182,22 @@ const renderPlainText = (text: string, query: string, keyPrefix: string): ReactN
             key={`${keyPrefix}-highlight-${index}`}
             className="bg-yellow-200 text-black outline outline-1 outline-yellow-400 rounded px-0.5 shadow-sm mx-0.5"
           >
-            {segment.text}
+            {renderTextWithLineBreakMarkers(
+              segment.text,
+              `${keyPrefix}-highlight-${index}`,
+              markerBudget,
+            )}
           </mark>
         )
-      : <Fragment key={`${keyPrefix}-text-${index}`}>{segment.text}</Fragment>,
+      : (
+          <Fragment key={`${keyPrefix}-text-${index}`}>
+            {renderTextWithLineBreakMarkers(
+              segment.text,
+              `${keyPrefix}-text-${index}`,
+              markerBudget,
+            )}
+          </Fragment>
+        ),
   );
 
 const renderRichText = (
@@ -114,13 +205,19 @@ const renderRichText = (
   query: string,
   keyPrefix: string,
   theme: string,
+  markerBudget?: LineBreakMarkerBudget,
   recursionDepth = 0,
 ): ReactNode => {
   if (recursionDepth >= MAX_RICH_TEXT_RECURSION) {
-    return renderPlainText(text, query, `${keyPrefix}-fallback`);
+    return renderPlainText(
+      text,
+      query,
+      `${keyPrefix}-fallback`,
+      markerBudget,
+    );
   }
   const match = findFirstRichMatch(text);
-  if (!match) return renderPlainText(text, query, keyPrefix);
+  if (!match) return renderPlainText(text, query, keyPrefix, markerBudget);
 
   const before = text.slice(0, match.index);
   const after = text.slice(match.index + match.full.length);
@@ -130,6 +227,7 @@ const renderRichText = (
     query,
     `${keyPrefix}-inner`,
     theme,
+    markerBudget,
     nextDepth,
   );
   let wrapped: ReactNode;
@@ -176,13 +274,35 @@ const renderRichText = (
 
   return (
     <>
-      {renderRichText(before, query, `${keyPrefix}-before`, theme, nextDepth)}
+      {renderRichText(
+        before,
+        query,
+        `${keyPrefix}-before`,
+        theme,
+        markerBudget,
+        nextDepth,
+      )}
       {wrapped}
-      {renderRichText(after, query, `${keyPrefix}-after`, theme, nextDepth)}
+      {renderRichText(
+        after,
+        query,
+        `${keyPrefix}-after`,
+        theme,
+        markerBudget,
+        nextDepth,
+      )}
     </>
   );
 };
 
-export default function StoryText({ text, query = '', theme = 'light' }: StoryTextProps) {
-  return <>{renderRichText(text, query, 'story', theme)}</>;
+export default function StoryText({
+  text,
+  query = '',
+  theme = 'light',
+  showLineBreaks = false,
+}: StoryTextProps) {
+  const markerBudget = showLineBreaks
+    ? { remaining: MAX_VISIBLE_LINE_BREAK_MARKERS }
+    : undefined;
+  return <>{renderRichText(text, query, 'story', theme, markerBudget)}</>;
 }

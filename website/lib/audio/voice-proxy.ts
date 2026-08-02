@@ -146,18 +146,77 @@ export function contentRangeTotalExceedsLimit(value: string | null): boolean {
 export function createBoundedVoiceStream(
   source: ReadableStream<Uint8Array>,
   maxBytes = MAX_VOICE_BYTES,
+  options: {
+    readTimeoutMs?: number;
+    onTimeout?: () => void;
+  } = {},
 ): ReadableStream<Uint8Array> {
   let received = 0;
-  return source.pipeThrough(
-    new TransformStream<Uint8Array, Uint8Array>({
-      transform(chunk, controller) {
-        received += chunk.byteLength;
-        if (received > maxBytes) {
-          controller.error(new RangeError('Voice object exceeds size limit'));
+  const reader = source.getReader();
+  let finished = false;
+  const readTimeoutMs = options.readTimeoutMs;
+  if (
+    readTimeoutMs !== undefined &&
+    (!Number.isSafeInteger(readTimeoutMs) || readTimeoutMs <= 0)
+  ) {
+    reader.releaseLock();
+    throw new RangeError('Voice stream timeout is invalid');
+  }
+
+  const release = () => {
+    if (finished) return;
+    finished = true;
+    try {
+      reader.releaseLock();
+    } catch {
+      // A pending read keeps the lock until its cancellation settles.
+    }
+  };
+
+  return new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const timeout = new Promise<never>((_resolve, reject) => {
+        if (readTimeoutMs === undefined) return;
+        timer = setTimeout(() => {
+          const error = new Error('Voice upstream read timed out');
+          reject(error);
+          options.onTimeout?.();
+          void reader.cancel(error.message).catch(() => undefined);
+        }, readTimeoutMs);
+      });
+      try {
+        const result = readTimeoutMs === undefined
+          ? await reader.read()
+          : await Promise.race([reader.read(), timeout]);
+        if (result.done) {
+          release();
+          controller.close();
           return;
         }
-        controller.enqueue(chunk);
-      },
-    }),
-  );
+        received += result.value.byteLength;
+        if (received > maxBytes) {
+          const error = new RangeError('Voice object exceeds size limit');
+          void reader.cancel(error.message).catch(() => undefined);
+          release();
+          controller.error(error);
+          return;
+        }
+        controller.enqueue(result.value);
+      } catch (error) {
+        void reader.cancel(
+          error instanceof Error ? error.message : 'Voice stream failed',
+        ).catch(() => undefined);
+        release();
+        controller.error(error);
+      } finally {
+        if (timer !== undefined) clearTimeout(timer);
+      }
+    },
+    cancel(reason) {
+      const cancellation = reader.cancel(reason).catch(() => undefined);
+      release();
+      return cancellation;
+    },
+  });
 }
