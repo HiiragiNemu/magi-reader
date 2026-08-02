@@ -6,7 +6,9 @@ import {
   useDeferredValue,
   useEffect,
   useMemo,
+  useRef,
   useState,
+  useSyncExternalStore,
 } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -23,9 +25,10 @@ import {
 } from 'lucide-react';
 
 import AboutModal from '@/components/AboutModal';
+import ReaderFontSettings from '@/components/ReaderFontSettings';
 import TurnstileWidget from '@/components/TurnstileWidget';
 import Sidebar, { type Story } from '@/components/Sidebar';
-import StoryText from '@/components/StoryText';
+import StoryText, { LineBreakMarkerText } from '@/components/StoryText';
 import { VoicePlayButton } from '@/components/voice/VoicePlayButton';
 import {
   speakerColorFor,
@@ -50,6 +53,27 @@ import {
 } from '@/lib/story-index';
 import { useDialog } from '@/lib/use-dialog';
 import { triggerUtf8Download } from '@/lib/browser-download';
+import { initializeReaderFonts } from '@/lib/reader-fonts';
+import {
+  READER_TEXT_WIDTH_MAX,
+  READER_TEXT_WIDTH_MIN,
+  READER_TEXT_WIDTH_STEP,
+  getReaderDisplayPreferencesServerSnapshot,
+  getReaderDisplayPreferencesSnapshot,
+  parseReaderDisplayPreferences,
+  subscribeReaderDisplayPreferences,
+  updateReaderDisplayPreferences,
+} from '@/lib/reader-display-preferences';
+import {
+  createEditedScenarioJsonDownload,
+  createOriginalScenarioJsonDownload,
+  triggerScenarioJsonDownload,
+} from '@/lib/scenario-json-download';
+import {
+  applyScenarioJsonUploadToAggregate,
+  buildScenarioJsonSourceOptions,
+  mapAggregateEditsToScenarioJson,
+} from '@/lib/scenario-json-selection';
 import {
   alignStoryLines,
   makeSectionAnchorId,
@@ -63,6 +87,7 @@ import {
 type ReaderMode = 'cn' | 'split' | 'jp';
 type EditSeed = 'empty' | 'jp' | 'current';
 type BilingualLayout = 'side-by-side' | 'stacked';
+type JsonDownloadBusy = 'jp' | 'cn' | 'edited' | null;
 
 type LoadedSource = {
   name: string;
@@ -82,6 +107,18 @@ type ProofreadingConfig = {
 const MAX_STORY_SOURCE_BYTES = 8 * 1024 * 1024;
 const BILINGUAL_LAYOUT_STORAGE_KEY = 'magi-reader-bilingual-layout-v1';
 const STORY_ROWS_PER_PAGE = 200;
+
+const countLineBreaks = (text: string): number => {
+  let count = 0;
+  let cursor = 0;
+  while (cursor < text.length) {
+    const next = text.indexOf('\n', cursor);
+    if (next < 0) break;
+    count += 1;
+    cursor = next + 1;
+  }
+  return count;
+};
 
 const THEME_STYLES: Record<string, string> = {
   light: 'bg-transparent text-gray-900',
@@ -170,18 +207,27 @@ const speakerColor = (speaker: string): string | undefined =>
 const parseLoadedSource = (name: string, raw: string): {
   source: LoadedSource;
   lines: StoryLine[];
+  eventLines: StoryLine[];
   title?: string;
   warnings: string[];
 } => {
-  const parsed = parseStoryContent(raw, {
+  const eventParsed = parseStoryContent(raw, {
+    filename: name,
+    mergeConsecutiveTextLines: false,
+  });
+  const displayParsed = parseStoryContent(raw, {
     filename: name,
     mergeConsecutiveTextLines: true,
   });
   return {
-    source: { name, raw, format: parsed.format },
-    lines: parsed.lines,
-    title: parsed.title,
-    warnings: parsed.warnings,
+    source: { name, raw, format: eventParsed.format },
+    lines: displayParsed.lines,
+    eventLines: eventParsed.lines,
+    title: displayParsed.title || eventParsed.title,
+    warnings: [...new Set([
+      ...eventParsed.warnings,
+      ...displayParsed.warnings,
+    ])],
   };
 };
 
@@ -195,6 +241,8 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
 
   const [cnLines, setCnLines] = useState<StoryLine[]>([]);
   const [jpLines, setJpLines] = useState<StoryLine[]>([]);
+  const [cnEventLines, setCnEventLines] = useState<StoryLine[]>([]);
+  const [jpEventLines, setJpEventLines] = useState<StoryLine[]>([]);
   const [cnSource, setCnSource] = useState<LoadedSource | null>(null);
   const [jpSource, setJpSource] = useState<LoadedSource | null>(null);
   const [storyTitle, setStoryTitle] = useState('');
@@ -208,6 +256,16 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const [lineHeight, setLineHeight] = useState(1.1);
   const [bilingualLayout, setBilingualLayout] =
     useState<BilingualLayout>('side-by-side');
+  const readerDisplayPreferencesSnapshot = useSyncExternalStore(
+    subscribeReaderDisplayPreferences,
+    getReaderDisplayPreferencesSnapshot,
+    getReaderDisplayPreferencesServerSnapshot,
+  );
+  const readerDisplayPreferences = useMemo(
+    () =>
+      parseReaderDisplayPreferences(readerDisplayPreferencesSnapshot),
+    [readerDisplayPreferencesSnapshot],
+  );
   const [allStories, setAllStories] = useState<Story[]>([]);
   const [storyIndexReady, setStoryIndexReady] = useState(false);
   const [storyIndexError, setStoryIndexError] = useState('');
@@ -224,6 +282,10 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const [submittingProofreading, setSubmittingProofreading] = useState(false);
   const [lastSubmissionId, setLastSubmissionId] = useState('');
   const [editedCnLines, setEditedCnLines] = useState<StoryLine[]>([]);
+  const [selectedJsonSourceKey, setSelectedJsonSourceKey] = useState('');
+  const [jsonDownloadBusy, setJsonDownloadBusy] =
+    useState<JsonDownloadBusy>(null);
+  const jsonDownloadBusyRef = useRef<JsonDownloadBusy>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentMatchIndex, setCurrentMatchIndex] = useState(-1);
   const [visiblePage, setVisiblePage] = useState(0);
@@ -321,6 +383,47 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     () => findStoryByRouteId(allStories, id),
     [allStories, id],
   );
+  const jsonSourceOptionsState = useMemo(() => {
+    if (!currentStory) return { options: [], error: '' };
+    try {
+      return {
+        options: buildScenarioJsonSourceOptions({
+          story: currentStory,
+          cnLines: cnEventLines,
+          jpLines: jpEventLines,
+        }),
+        error: '',
+      };
+    } catch (error) {
+      return {
+        options: [],
+        error:
+          error instanceof Error
+            ? error.message
+            : '剧情 JSON 来源清单无法读取。',
+      };
+    }
+  }, [cnEventLines, currentStory, jpEventLines]);
+  const selectedJsonSource = useMemo(
+    () =>
+      jsonSourceOptionsState.options.find(
+        option => option.key === selectedJsonSourceKey,
+      ) ?? jsonSourceOptionsState.options[0],
+    [jsonSourceOptionsState.options, selectedJsonSourceKey],
+  );
+
+  useEffect(() => {
+    if (
+      jsonSourceOptionsState.options.length === 0 ||
+      jsonSourceOptionsState.options.some(
+        option => option.key === selectedJsonSourceKey,
+      )
+    ) {
+      return;
+    }
+    setSelectedJsonSourceKey(jsonSourceOptionsState.options[0].key);
+  }, [jsonSourceOptionsState.options, selectedJsonSourceKey]);
+
   const sourceReady =
     isLocal ||
     Boolean(directSourceResolution.error) ||
@@ -370,10 +473,15 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     setParseWarnings([]);
     setCnLines([]);
     setJpLines([]);
+    setCnEventLines([]);
+    setJpEventLines([]);
     setCnSource(null);
     setJpSource(null);
     setStoryTitle('');
     setEditedCnLines([]);
+    setSelectedJsonSourceKey('');
+    setJsonDownloadBusy(null);
+    jsonDownloadBusyRef.current = null;
     setIsEditMode(false);
     setEditMessage('');
     setLastSubmissionId('');
@@ -451,12 +559,16 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
         if (!active) return;
         const nextCnLines = parsedCn?.lines ?? [];
         const nextJpLines = parsedJp?.lines ?? [];
+        const nextCnEventLines = parsedCn?.eventLines ?? [];
+        const nextJpEventLines = parsedJp?.eventLines ?? [];
         if (nextCnLines.length === 0 && nextJpLines.length === 0) {
           throw new Error('文件中没有找到可显示的剧情文本。');
         }
 
         setCnLines(nextCnLines);
         setJpLines(nextJpLines);
+        setCnEventLines(nextCnEventLines);
+        setJpEventLines(nextJpEventLines);
         setCnSource(parsedCn?.source ?? null);
         setJpSource(parsedJp?.source ?? null);
         setParseWarnings([...(parsedCn?.warnings ?? []), ...(parsedJp?.warnings ?? [])]);
@@ -495,9 +607,11 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
 
   const displayedCnLines =
     isEditMode && editedCnLines.length > 0 ? editedCnLines : cnLines;
+  const displayedJpLines =
+    isEditMode && jpEventLines.length > 0 ? jpEventLines : jpLines;
   const renderList = useMemo(
-    () => alignStoryLines(displayedCnLines, jpLines),
-    [displayedCnLines, jpLines],
+    () => alignStoryLines(displayedCnLines, displayedJpLines),
+    [displayedCnLines, displayedJpLines],
   );
   const pageCount = Math.max(1, Math.ceil(renderList.length / STORY_ROWS_PER_PAGE));
   const pageStart = visiblePage * STORY_ROWS_PER_PAGE;
@@ -524,6 +638,10 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     voicePlaybackController.stop();
     setVisiblePage(Math.floor(rowIndex / STORY_ROWS_PER_PAGE));
     setPendingRowScroll({ rowIndex, highlight });
+  }, []);
+
+  useEffect(() => {
+    void initializeReaderFonts();
   }, []);
 
   useEffect(() => {
@@ -642,13 +760,13 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   };
 
   const initializeEditing = (seed: EditSeed) => {
-    const next = seedEditableLines(cnLines, jpLines, seed);
+    const next = seedEditableLines(cnEventLines, jpEventLines, seed);
     if (next.length === 0) {
       setEditMessage('当前剧情没有可编辑的文本。');
       return;
     }
     setEditedCnLines(next);
-    setMode(jpLines.length > 0 ? 'split' : 'cn');
+    setMode(jpEventLines.length > 0 ? 'split' : 'cn');
     setEditMessage('');
   };
 
@@ -673,6 +791,189 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     );
   };
 
+  const fetchScenarioJson = async (
+    language: 'jp' | 'cn',
+    index: number,
+  ): Promise<string> => {
+    if (!currentStory || !selectedJsonSource) {
+      throw new Error('当前剧情没有可用的 JSON 来源。');
+    }
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 20_000);
+    try {
+      const response = await fetch(
+        `/api/story-json/${encodeURIComponent(currentStory.id)}/`
+        + `${language}/${index}`,
+        {
+          cache: 'no-store',
+          credentials: 'same-origin',
+          signal: controller.signal,
+        },
+      );
+      if (!response.ok) {
+        await response.body?.cancel('剧情 JSON 请求失败');
+        throw new Error(
+          `来源 JSON 读取失败（HTTP ${response.status}）。`,
+        );
+      }
+      const contentType = (
+        response.headers.get('content-type') || ''
+      ).split(';', 1)[0]?.trim().toLowerCase();
+      if (contentType !== 'application/json') {
+        await response.body?.cancel('剧情 JSON 类型异常');
+        throw new Error('来源 JSON 返回了非 JSON 内容。');
+      }
+      const payload = await readBoundedResponseBody(
+        response,
+        MAX_STORY_SOURCE_BYTES,
+        '来源 JSON',
+      );
+      try {
+        return new TextDecoder('utf-8', { fatal: true }).decode(payload);
+      } catch {
+        throw new Error('来源 JSON 不是有效的 UTF-8 文本。');
+      }
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw new Error('来源 JSON 读取超时。');
+      }
+      throw error;
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  };
+
+  const runJsonDownload = async (
+    kind: Exclude<JsonDownloadBusy, null>,
+    operation: () => Promise<string>,
+  ) => {
+    if (jsonDownloadBusyRef.current) return;
+    jsonDownloadBusyRef.current = kind;
+    setJsonDownloadBusy(kind);
+    setEditMessage('');
+    try {
+      setEditMessage(await operation());
+    } catch (error) {
+      setEditMessage(
+        error instanceof Error ? error.message : '剧情 JSON 下载失败。',
+      );
+    } finally {
+      jsonDownloadBusyRef.current = null;
+      setJsonDownloadBusy(null);
+    }
+  };
+
+  const downloadOriginalJson = async (language: 'jp' | 'cn') => {
+    const sourceIndex = selectedJsonSource?.[
+      language === 'jp' ? 'jpIndex' : 'cnIndex'
+    ];
+    if (
+      !selectedJsonSource ||
+      sourceIndex === undefined ||
+      !currentStory
+    ) {
+      setEditMessage(
+        language === 'jp'
+          ? '选中的 Section 没有日文原始 JSON。'
+          : '选中的 Section 没有中文原始 JSON。',
+      );
+      return;
+    }
+    await runJsonDownload(language, async () => {
+      const sourceJson = await fetchScenarioJson(language, sourceIndex);
+      const download = createOriginalScenarioJsonDownload({
+        sourceJson,
+        sourceFilename: selectedJsonSource.filename,
+        storyId:
+          `${currentStory.id}_`
+          + selectedJsonSource.filename.replace(/\.json$/iu, ''),
+        language,
+      });
+      triggerScenarioJsonDownload(download);
+      return `已生成 ${selectedJsonSource.filename} 的`
+        + `${language === 'jp' ? '日文' : '中文'}原始 JSON。`;
+    });
+  };
+
+  const downloadEditedJson = async () => {
+    if (!selectedJsonSource || !currentStory) {
+      setEditMessage('当前剧情没有可生成的 JSON 来源。');
+      return;
+    }
+    if (editedCnLines.length === 0) {
+      setEditMessage('请先初始化或上传中文编辑内容。');
+      return;
+    }
+    const sourceLanguage: 'cn' | 'jp' | null =
+      selectedJsonSource.cnIndex !== undefined
+        ? 'cn'
+        : selectedJsonSource.jpIndex !== undefined
+          ? 'jp'
+          : null;
+    if (!sourceLanguage) {
+      setEditMessage('选中的 Section 没有日文或中文结构 JSON。');
+      return;
+    }
+    const sourceIndex =
+      sourceLanguage === 'cn'
+        ? selectedJsonSource.cnIndex
+        : selectedJsonSource.jpIndex;
+    if (sourceIndex === undefined) return;
+
+    await runJsonDownload('edited', async () => {
+      const sourceJson = await fetchScenarioJson(
+        sourceLanguage,
+        sourceIndex,
+      );
+      const generalVoice =
+        currentStory.source_format === 'general_voice_json';
+      let download;
+      if (generalVoice) {
+        download = createEditedScenarioJsonDownload({
+          sourceJson,
+          sourceFilename: selectedJsonSource.filename,
+          storyId:
+            `${currentStory.id}_`
+            + selectedJsonSource.filename.replace(/\.json$/iu, ''),
+          baselineLines: cnEventLines,
+          editedLines: editedCnLines,
+        });
+      } else {
+        const editingBaselineLines =
+          cnEventLines.length > 0 ? cnEventLines : jpEventLines;
+        const sourceBaselineLines =
+          sourceLanguage === 'cn' ? cnEventLines : jpEventLines;
+        if (
+          editingBaselineLines.length === 0 ||
+          sourceBaselineLines.length === 0
+        ) {
+          throw new Error('当前缺少可验证的逐事件 TXT 基准。');
+        }
+        const mapped = mapAggregateEditsToScenarioJson({
+          sourceJson,
+          sourceFilename: selectedJsonSource.filename,
+          aggregateSourceBaselineLines: sourceBaselineLines,
+          aggregateEditingBaselineLines: editingBaselineLines,
+          aggregateEditedLines: editedCnLines,
+        });
+        download = createEditedScenarioJsonDownload({
+          sourceJson,
+          sourceFilename: selectedJsonSource.filename,
+          storyId:
+            `${currentStory.id}_`
+            + selectedJsonSource.filename.replace(/\.json$/iu, ''),
+          editedLines: mapped.editedLines,
+        });
+      }
+      triggerScenarioJsonDownload(download);
+      return sourceLanguage === 'cn'
+        ? `已按中文结构生成可播放编辑 JSON；仅改动 ${download.changedTextFields} 个文本字段。`
+        : `该 Section 没有中文 JSON；已明确使用日文 JSON 作为结构模板，`
+          + `并用当前中文编辑行生成可播放 JSON。仅改动 `
+          + `${download.changedTextFields} 个文本字段。`;
+    });
+  };
+
   const uploadTranslation = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = '';
@@ -681,10 +982,58 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       const source = await readScenarioFile(file);
       const parsed = parseStoryContent(source.raw, {
         filename: source.name,
-        mergeConsecutiveTextLines: true,
+        mergeConsecutiveTextLines: false,
       });
       if (parsed.lines.length === 0) throw new Error('文件中没有可编辑的剧情文本。');
-      const normalized = seedEditableLines(parsed.lines, jpLines, 'current');
+      if (
+        !isLocal &&
+        (parsed.format === 'magireco-json' ||
+          parsed.format === 'exedra-json')
+      ) {
+        if (!selectedJsonSource || !currentStory) {
+          throw new Error(
+            '请先在“来源 JSON”中选择该文件对应的 Section。',
+          );
+        }
+        const sourceLanguage: 'cn' | 'jp' | null =
+          selectedJsonSource.cnIndex !== undefined
+            ? 'cn'
+            : selectedJsonSource.jpIndex !== undefined
+              ? 'jp'
+              : null;
+        const sourceIndex =
+          sourceLanguage === 'cn'
+            ? selectedJsonSource.cnIndex
+            : selectedJsonSource.jpIndex;
+        if (!sourceLanguage || sourceIndex === undefined) {
+          throw new Error('选中的 Section 没有结构 JSON。');
+        }
+        const sourceJson = await fetchScenarioJson(
+          sourceLanguage,
+          sourceIndex,
+        );
+        const editingBaselineLines =
+          cnEventLines.length > 0 ? cnEventLines : jpEventLines;
+        const next = applyScenarioJsonUploadToAggregate({
+          sourceJson,
+          uploadedJson: source.raw,
+          sourceFilename: selectedJsonSource.filename,
+          aggregateEditingBaselineLines: editingBaselineLines,
+          aggregateCurrentEditedLines: editedCnLines,
+        });
+        setEditedCnLines(next);
+        setMode(jpEventLines.length > 0 ? 'split' : 'cn');
+        setEditMessage(
+          `已从 ${file.name} 导入 ${selectedJsonSource.label} 的逐事件文本；`
+          + '上传文件的动作、资源和其他播放字段不会直接写入。',
+        );
+        return;
+      }
+      const normalized = seedEditableLines(
+        parsed.lines,
+        jpEventLines,
+        'current',
+      );
       setEditedCnLines(normalized.length > 0 ? normalized : parsed.lines);
       setParseWarnings(previous => [...previous, ...parsed.warnings]);
       setEditMessage(`已载入 ${file.name}（${FORMAT_LABELS[parsed.format]}）。`);
@@ -874,7 +1223,11 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
               <Menu size={20} />
             </button>
             <div className="flex min-w-0 flex-col">
-              <span className="truncate text-[10px] opacity-50">
+              <span className={`truncate text-[10px] opacity-50 ${
+                mode === 'jp' && hasJapaneseDisplay
+                  ? 'reader-font-jp-title'
+                  : 'reader-font-cn-title'
+              }`}>
                 {isLocal ? '本地文件' : currentStory?.folder || '剧情阅读器'}
                 {storyTitle ? ` · ${storyTitle}` : ''}
               </span>
@@ -1003,11 +1356,14 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
           className="z-10 flex-1 overflow-y-auto scroll-smooth p-2 md:p-6"
           style={{ fontSize: `${fontSize}px`, lineHeight }}
         >
-          <div className={`mx-auto min-h-screen max-w-3xl rounded-lg pb-32 transition-all duration-500 ease-in-out ${
+          <div
+            className={`mx-auto min-h-screen w-full min-w-0 rounded-lg pb-32 transition-all duration-500 ease-in-out ${
             theme === 'paper' || theme === 'green'
               ? 'md:bg-white/40 md:px-12 md:py-8 md:shadow-sm md:backdrop-blur-[2px]'
               : ''
-          }`}>
+            }`}
+            style={{ maxWidth: `${readerDisplayPreferences.textWidthPx}px` }}
+          >
             {loadError && (
               <div role="alert" className="mb-4 rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-800">
                 <p className="font-bold">无法打开这段剧情</p>
@@ -1054,6 +1410,104 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   <button type="button" onClick={downloadTranslation} className="ml-auto rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow hover:bg-blue-700">
                     下载当前进度（UTF-8）
                   </button>
+                </div>
+
+                <div
+                  data-scenario-json-tools="true"
+                  className="mt-4 rounded-xl border border-sky-200 bg-sky-50/80 p-3 text-sky-950"
+                >
+                  <div className="flex flex-col gap-3">
+                    <label className="text-xs font-bold">
+                      来源 JSON（按 Section）
+                      <select
+                        aria-label="选择要下载或生成的来源 JSON"
+                        value={selectedJsonSource?.key ?? ''}
+                        onChange={event =>
+                          setSelectedJsonSourceKey(event.target.value)
+                        }
+                        disabled={
+                          jsonSourceOptionsState.options.length === 0 ||
+                          jsonDownloadBusy !== null
+                        }
+                        className="mt-1 min-h-11 w-full rounded-lg border border-sky-200 bg-white px-3 py-2 font-normal text-gray-900 outline-none focus:border-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {jsonSourceOptionsState.options.length === 0 ? (
+                          <option value="">当前剧情没有 JSON 来源清单</option>
+                        ) : (
+                          jsonSourceOptionsState.options.map(option => (
+                            <option key={option.key} value={option.key}>
+                              {option.label}
+                            </option>
+                          ))
+                        )}
+                      </select>
+                    </label>
+
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                      <button
+                        type="button"
+                        onClick={() => void downloadOriginalJson('jp')}
+                        disabled={
+                          jsonDownloadBusy !== null ||
+                          selectedJsonSource?.jpIndex === undefined
+                        }
+                        className="min-h-11 rounded-lg border border-blue-300 bg-white px-3 py-2 text-xs font-bold text-blue-700 shadow-sm hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        {jsonDownloadBusy === 'jp'
+                          ? '读取日文 JSON…'
+                          : '下载日文原始 JSON'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void downloadOriginalJson('cn')}
+                        disabled={
+                          jsonDownloadBusy !== null ||
+                          selectedJsonSource?.cnIndex === undefined
+                        }
+                        className="min-h-11 rounded-lg border border-emerald-300 bg-white px-3 py-2 text-xs font-bold text-emerald-700 shadow-sm hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        {jsonDownloadBusy === 'cn'
+                          ? '读取中文 JSON…'
+                          : '下载中文原始 JSON'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void downloadEditedJson()}
+                        disabled={
+                          jsonDownloadBusy !== null ||
+                          !selectedJsonSource ||
+                          (
+                            selectedJsonSource.cnIndex === undefined &&
+                            selectedJsonSource.jpIndex === undefined
+                          ) ||
+                          editedCnLines.length === 0
+                        }
+                        className="min-h-11 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-bold text-white shadow hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        {jsonDownloadBusy === 'edited'
+                          ? '校验并生成 JSON…'
+                          : '下载本次编辑 JSON'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {jsonSourceOptionsState.error ? (
+                    <p className="mt-2 text-xs font-bold text-red-700">
+                      {jsonSourceOptionsState.error}
+                    </p>
+                  ) : selectedJsonSource?.cnIndex === undefined &&
+                    selectedJsonSource?.jpIndex !== undefined ? (
+                      <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-2 py-1.5 text-[11px] text-amber-900">
+                        此 Section 没有中文源 JSON。生成编辑 JSON 时会明确使用日文
+                        JSON 作为结构模板，只把当前中文逐事件写入允许的文本字段；
+                        事件数量、动作、分支或位置不一致时会停止。
+                      </p>
+                    ) : (
+                      <p className="mt-2 text-[11px] text-sky-800/80">
+                        编辑 JSON 优先使用中文结构源；生成前会逐事件校验，且不会改动
+                        动作、资源、分支、位置或其他播放字段。
+                      </p>
+                    )}
                 </div>
 
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -1120,7 +1574,8 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                 </div>
 
                 <p className="mt-2 text-[10px] text-emerald-700/70">
-                  标题、分支、位置与动作信息会在初始化时保留。请定期下载 TXT 备份。
+                  编辑模式保留未合并的逐事件行；标题、分支、位置与动作信息不会被
+                  TXT 或 JSON 下载改写。请定期下载 TXT 备份。
                 </p>
                 {editMessage && (
                   <p role="status" className="mt-2 rounded bg-white/70 px-2 py-1 text-xs text-emerald-900">
@@ -1204,6 +1659,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   editIndex={row.cn ? (editedLineIndices.get(row.cn) ?? index) : index}
                   mode={mode}
                   bilingualLayout={bilingualLayout}
+                  showLineBreaks={readerDisplayPreferences.showLineBreaks}
                   theme={theme}
                   isEditMode={isEditMode}
                   editedLines={editedCnLines}
@@ -1241,7 +1697,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
               aria-modal="true"
               aria-labelledby="reader-settings-title"
               tabIndex={-1}
-              className={`w-full max-w-xs rounded-xl p-5 shadow-2xl ${
+              className={`max-h-[calc(100dvh-2rem)] w-full max-w-xs overflow-y-auto rounded-xl p-5 shadow-2xl ${
                 theme === 'dark' ? 'border border-gray-700 bg-gray-800' : 'bg-white'
               }`}
               onMouseDown={event => event.stopPropagation()}
@@ -1283,6 +1739,29 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   <span className="mb-1 block opacity-70">字号（{fontSize}px）</span>
                   <input type="range" min="12" max="22" value={fontSize} onChange={event => setFontSize(Number(event.target.value))} className="w-full" />
                 </label>
+                <label className="block">
+                  <span className="mb-1 block opacity-70">
+                    正文横向宽度（{readerDisplayPreferences.textWidthPx}px）
+                  </span>
+                  <input
+                    type="range"
+                    min={READER_TEXT_WIDTH_MIN}
+                    max={READER_TEXT_WIDTH_MAX}
+                    step={READER_TEXT_WIDTH_STEP}
+                    value={readerDisplayPreferences.textWidthPx}
+                    aria-valuetext={`${readerDisplayPreferences.textWidthPx} 像素`}
+                    onChange={event =>
+                      updateReaderDisplayPreferences({
+                        textWidthPx: Number(event.target.value),
+                      })
+                    }
+                    className="w-full"
+                  />
+                  <span className="mt-1 block text-[11px] opacity-60">
+                    同时作用于阅读和汉化输入；手机端自动限制为屏幕可用宽度。
+                  </span>
+                </label>
+                <ReaderFontSettings theme={theme} />
                 <div>
                   <p className="mb-2 opacity-70">中日对照排列</p>
                   <div className="grid grid-cols-2 gap-2">
@@ -1313,6 +1792,30 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                 <label className="block">
                   <span className="mb-1 block opacity-70">行高（{lineHeight}）</span>
                   <input type="range" min="1.1" max="2" step="0.1" value={lineHeight} onChange={event => setLineHeight(Number(event.target.value))} className="w-full" />
+                </label>
+                <label className={`flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-lg border px-3 py-2 ${
+                  theme === 'dark'
+                    ? 'border-gray-700 bg-white/5'
+                    : 'border-gray-200 bg-black/[0.02]'
+                }`}>
+                  <span>
+                    <span className="block font-bold">
+                      显示换行符 <span aria-hidden="true" className="text-fuchsia-500">↵</span>
+                    </span>
+                    <span className="block text-[11px] opacity-60">
+                      仅作视觉提示，不会写入翻译或下载文件。
+                    </span>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={readerDisplayPreferences.showLineBreaks}
+                    onChange={event =>
+                      updateReaderDisplayPreferences({
+                        showLineBreaks: event.target.checked,
+                      })
+                    }
+                    className="h-5 w-5 shrink-0 accent-fuchsia-600"
+                  />
                 </label>
               </div>
             </section>
@@ -1378,6 +1881,7 @@ type StoryRowProps = {
   editIndex: number;
   mode: ReaderMode;
   bilingualLayout: BilingualLayout;
+  showLineBreaks: boolean;
   theme: string;
   isEditMode: boolean;
   editedLines: StoryLine[];
@@ -1394,6 +1898,7 @@ function StoryRow({
   editIndex,
   mode,
   bilingualLayout,
+  showLineBreaks,
   theme,
   isEditMode,
   editedLines,
@@ -1403,7 +1908,17 @@ function StoryRow({
   focused,
   onChoice,
 }: StoryRowProps) {
-  const header = row.cn?.isHeader ? row.cn : row.jp?.isHeader ? row.jp : undefined;
+  const header = mode === 'jp'
+    ? row.jp?.isHeader
+      ? row.jp
+      : row.cn?.isHeader
+        ? row.cn
+        : undefined
+    : row.cn?.isHeader
+      ? row.cn
+      : row.jp?.isHeader
+        ? row.jp
+        : undefined;
   if (header) {
     const headerText = header.text.replace(/---/g, '').trim();
     const isBranch = Boolean(header.headerBranch);
@@ -1411,6 +1926,10 @@ function StoryRow({
       <div
         id={header.headerId}
         className={`mb-4 mt-6 border-t-2 pt-4 text-center ${
+          header === row.jp
+            ? 'reader-font-jp-title'
+            : 'reader-font-cn-title'
+        } ${
           isBranch
             ? 'rounded-lg border-amber-400/50 bg-amber-50/30 py-3'
             : 'border-dashed border-current opacity-50'
@@ -1439,17 +1958,27 @@ function StoryRow({
     );
   }
 
-  const choice = row.cn?.isChoice ? row.cn : row.jp?.isChoice ? row.jp : undefined;
+  const choice = mode === 'jp'
+    ? row.jp?.isChoice
+      ? row.jp
+      : row.cn?.isChoice
+        ? row.cn
+        : undefined
+    : row.cn?.isChoice
+      ? row.cn
+      : row.jp?.isChoice
+        ? row.jp
+        : undefined;
   if (choice) {
     const editableChoice = editedLines[editIndex];
     return (
       <div id={`line-${index}`} className="my-3 flex justify-center">
         {isEditMode ? (
-          <label className="flex w-full max-w-xl items-center gap-2 rounded-xl border-2 border-amber-300 bg-amber-50 p-2 text-xs font-bold text-amber-900">
+          <label className="reader-font-cn-title flex w-full max-w-xl items-center gap-2 rounded-xl border-2 border-amber-300 bg-amber-50 p-2 text-xs font-bold text-amber-900">
             选项
             <input
               aria-label={`第 ${index + 1} 行选项文本`}
-              className="min-w-0 flex-1 rounded border border-amber-200 bg-white px-2 py-1.5 font-normal text-black outline-none focus:ring-2 focus:ring-amber-400"
+              className="reader-font-cn-title min-w-0 flex-1 rounded border border-amber-200 bg-white px-2 py-1.5 font-normal text-black outline-none focus:ring-2 focus:ring-amber-400"
               value={editableChoice?.choiceLabel || editableChoice?.text || ''}
               onChange={event => {
                 const value = event.target.value;
@@ -1466,7 +1995,7 @@ function StoryRow({
           <button
             type="button"
             onClick={() => onChoice(index, choice)}
-            className={`cursor-pointer rounded-xl border-2 px-5 py-2.5 text-sm font-bold transition hover:scale-105 active:scale-95 ${
+            className={`${choice === row.jp ? 'reader-font-jp-title' : 'reader-font-cn-title'} cursor-pointer rounded-xl border-2 px-5 py-2.5 text-sm font-bold transition hover:scale-105 active:scale-95 ${
               theme === 'dark'
                 ? 'border-amber-700 bg-gradient-to-r from-amber-900/60 to-orange-900/60 text-amber-200'
                 : 'border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-800 shadow-sm'
@@ -1487,6 +2016,11 @@ function StoryRow({
     Boolean(normalizedQuery) &&
     normalizeSearchText(row.jp?.speaker || '').includes(normalizedQuery);
   const audioCueId = row.cn?.audioCueId || row.jp?.audioCueId;
+  const editedText = editedLines[editIndex]?.text || '';
+  const editedLineBreakCount = showLineBreaks
+    ? countLineBreaks(editedText)
+    : 0;
+  const lineBreakDescriptionId = `line-${index}-line-break-description`;
 
   return (
     <div
@@ -1504,7 +2038,7 @@ function StoryRow({
       }`}
     >
       {mode !== 'jp' && (
-        <div className={`flex gap-3 ${
+        <div className={`reader-font-cn-body flex min-w-0 gap-3 ${
           mode === 'split' && bilingualLayout === 'side-by-side'
             ? 'md:w-1/2'
             : 'w-full'
@@ -1520,7 +2054,7 @@ function StoryRow({
             <>
               <input
                 aria-label={`第 ${index + 1} 行角色名`}
-                className={`w-20 flex-shrink-0 rounded border px-1 py-1 text-right text-[11px] font-bold leading-tight outline-none focus:ring-2 focus:ring-emerald-500 md:w-24 ${
+                className={`reader-font-cn-title w-20 flex-shrink-0 rounded border px-1 py-1 text-right text-[11px] font-bold leading-tight outline-none focus:ring-2 focus:ring-emerald-500 md:w-24 ${
                   theme === 'dark'
                     ? 'border-gray-700 bg-gray-800 text-white'
                     : 'border-gray-200 bg-white text-black'
@@ -1539,35 +2073,71 @@ function StoryRow({
                   });
                 }}
               />
-              <textarea
-                aria-label={`第 ${index + 1} 行翻译`}
-                className={`flex-1 rounded border p-2 text-sm outline-none transition focus:ring-2 focus:ring-emerald-500 ${
-                  theme === 'dark'
-                    ? 'border-gray-700 bg-gray-800 text-white'
-                    : 'border-gray-200 bg-white text-black'
-                }`}
-                value={editedLines[editIndex]?.text || ''}
-                placeholder="在此输入翻译内容…"
-                onChange={event => {
-                  const value = event.target.value;
-                  setEditedLines(previous => {
-                    const next = [...previous];
-                    const basis = next[editIndex] || row.cn || row.jp || {
-                      speaker: '旁白',
-                      text: '',
-                    };
-                    next[editIndex] = { ...basis, text: value };
-                    return next;
-                  });
-                }}
-                rows={Math.max(1, (editedLines[editIndex]?.text || '').split('\n').length)}
-              />
+              <div className="relative min-w-0 flex-1">
+                <textarea
+                  aria-label={`第 ${index + 1} 行翻译`}
+                  aria-describedby={
+                    editedLineBreakCount > 0
+                      ? lineBreakDescriptionId
+                      : undefined
+                  }
+                  className={`reader-font-cn-body relative z-0 block w-full rounded border p-2 font-sans text-sm outline-none transition focus:ring-2 focus:ring-emerald-500 ${
+                    theme === 'dark'
+                      ? 'border-gray-700 bg-gray-800 text-white'
+                      : 'border-gray-200 bg-white text-black'
+                  }`}
+                  value={editedText}
+                  placeholder="在此输入翻译内容…"
+                  onChange={event => {
+                    const value = event.target.value;
+                    setEditedLines(previous => {
+                      const next = [...previous];
+                      const basis = next[editIndex] || row.cn || row.jp || {
+                        speaker: '旁白',
+                        text: '',
+                      };
+                      next[editIndex] = { ...basis, text: value };
+                      return next;
+                    });
+                  }}
+                  onScroll={event => {
+                    const overlay = event.currentTarget.nextElementSibling;
+                    if (
+                      overlay instanceof HTMLElement &&
+                      overlay.dataset.lineBreakOverlay === 'true'
+                    ) {
+                      overlay.scrollTop = event.currentTarget.scrollTop;
+                      overlay.scrollLeft = event.currentTarget.scrollLeft;
+                    }
+                  }}
+                  rows={Math.max(1, editedText.split('\n').length)}
+                />
+                {editedLineBreakCount > 0 && (
+                  <>
+                    <div
+                      aria-hidden="true"
+                      data-line-break-overlay="true"
+                      className="reader-font-cn-body pointer-events-none absolute inset-0 z-10 select-none overflow-hidden whitespace-pre-wrap break-words rounded border border-transparent p-2 font-sans text-sm"
+                    >
+                      <LineBreakMarkerText text={editedText} markerOnly />
+                    </div>
+                    <span id={lineBreakDescriptionId} className="sr-only">
+                      此输入框含 {editedLineBreakCount} 个手动换行符，视觉上以箭头标记。
+                    </span>
+                  </>
+                )}
+              </div>
             </>
           ) : row.cn ? (
             <>
-              <SpeakerLabel line={row.cn} highlighted={cnSpeakerMatches} />
-              <div className={`flex-1 whitespace-pre-wrap pt-0.5 ${lineTextAlignClass(row.cn)} ${lineKindClass(row.cn)}`}>
-                <StoryText text={row.cn.text} query={query} theme={theme} />
+              <SpeakerLabel line={row.cn} highlighted={cnSpeakerMatches} language="cn" />
+              <div className={`min-w-0 flex-1 break-words whitespace-pre-wrap pt-0.5 ${lineTextAlignClass(row.cn)} ${lineKindClass(row.cn)}`}>
+                <StoryText
+                  text={row.cn.text}
+                  query={query}
+                  theme={theme}
+                  showLineBreaks={showLineBreaks}
+                />
               </div>
             </>
           ) : (
@@ -1579,7 +2149,7 @@ function StoryRow({
       )}
 
       {mode !== 'cn' && (
-        <div className={`flex gap-2 ${
+        <div className={`reader-font-jp-body flex min-w-0 gap-2 ${
           mode === 'split'
             ? bilingualLayout === 'stacked'
               ? 'w-full border-t border-current border-opacity-10 pt-2'
@@ -1595,9 +2165,14 @@ function StoryRow({
           )}
           {row.jp ? (
             <>
-              <SpeakerLabel line={row.jp} highlighted={jpSpeakerMatches} faded />
-              <div className={`flex-1 whitespace-pre-wrap font-sans text-sm opacity-70 ${lineTextAlignClass(row.jp)} ${lineKindClass(row.jp)}`}>
-                <StoryText text={row.jp.text} query={query} theme={theme} />
+              <SpeakerLabel line={row.jp} highlighted={jpSpeakerMatches} faded language="jp" />
+              <div className={`min-w-0 flex-1 break-words whitespace-pre-wrap font-sans text-sm opacity-70 ${lineTextAlignClass(row.jp)} ${lineKindClass(row.jp)}`}>
+                <StoryText
+                  text={row.jp.text}
+                  query={query}
+                  theme={theme}
+                  showLineBreaks={showLineBreaks}
+                />
               </div>
             </>
           ) : (
@@ -1613,14 +2188,16 @@ function SpeakerLabel({
   line,
   highlighted,
   faded = false,
+  language,
 }: {
   line: StoryLine;
   highlighted: boolean;
   faded?: boolean;
+  language: 'cn' | 'jp';
 }) {
   return (
     <div
-      className={`h-fit w-20 flex-shrink-0 break-words rounded px-1 pt-1 text-right text-[11px] font-bold leading-tight md:w-24 ${
+      className={`${language === 'cn' ? 'reader-font-cn-title' : 'reader-font-jp-title'} h-fit w-20 flex-shrink-0 break-words rounded px-1 pt-1 text-right text-[11px] font-bold leading-tight md:w-24 ${
         highlighted ? 'ring-2 ring-yellow-400' : faded ? 'opacity-50' : ''
       }`}
       style={{ color: speakerColor(line.speaker) }}

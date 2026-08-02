@@ -5,8 +5,46 @@ import {
   parseCachedExedraLocalization,
   parseExedraStoryIndex,
   parseExedraTxt,
+  readExedraJapaneseText,
   serializeExedraSections,
 } from './exedra-localization.ts';
+
+test('Exedra asset reads stream with an abort signal and a fixed same-origin request', async () => {
+  const received: Request[] = [];
+  const text = await readExedraJapaneseText({
+    request: new Request('https://reader.example/api/exedra'),
+    env: {
+      ASSETS: {
+        fetch: async (request: Request) => {
+          received.push(request);
+          return new Response(new ReadableStream<Uint8Array>({
+            start(controller) {
+              controller.enqueue(new TextEncoder().encode(
+                '--- [Section 1] (Source: a.json) ---\n',
+              ));
+              controller.enqueue(new TextEncoder().encode('旁白：测试\n'));
+              controller.close();
+            },
+          }));
+        },
+      },
+    } as unknown as CloudflareEnv,
+    entry: {
+      id: 'test',
+      category: 'exedra_main',
+      folder: '测试',
+      title: '测试',
+      game: 'exedra',
+      path_cn: '',
+      path_jp: '/data/exedra_main/test/test_jp.txt',
+      source_identity: 'exedra:1_Main:test',
+    },
+  });
+  assert.match(text, /旁白：测试/u);
+  assert.equal(received.length, 1);
+  assert.equal(new URL(received[0]!.url).origin, 'https://reader.example');
+  assert.ok(received[0]!.signal instanceof AbortSignal);
+});
 
 test('Exedra runtime catalog accepts exact trusted source identities', () => {
   const stories = parseExedraStoryIndex([

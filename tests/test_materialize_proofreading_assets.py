@@ -69,8 +69,24 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
         *,
         model_id: str,
         source: Path,
+        cn_json: Path,
         txt: Path,
     ) -> tuple[Path, Path]:
+        cn_document = json.loads(cn_json.read_text(encoding="utf-8"))
+        translated, voice_groups, raw_references, groups_without_voice = (
+            materialize._general_voice_translation_stats(cn_document)
+        )
+        source_root = (
+            self.root
+            / "magireco-voice-source-master/Scenarios_full/general_voice"
+        )
+        cn_root = (
+            self.root
+            / "magireco-voice-translate-data-master/Scenarios_full/general_voice"
+        )
+        source_relative = source.relative_to(source_root).as_posix()
+        cn_json_relative = cn_json.relative_to(cn_root).as_posix()
+        txt_relative = txt.relative_to(cn_root).as_posix()
         manifest = {
             "version": 1,
             "sourceCommit": "6d921b630f41341a1c5aba66ec355ef9017e778d",
@@ -78,12 +94,30 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
             "models": [
                 {
                     "id": model_id,
-                    "groups": 2,
-                    "voices": 2,
+                    "groups": len(cn_document["story"]),
+                    "voices": raw_references,
                     "jsonSha256": materialize.sha256_bytes(
                         source.read_bytes()
                     ),
+                    "sourceJsonSha256": materialize.sha256_bytes(
+                        source.read_bytes()
+                    ),
+                    "cnJsonSha256": materialize.sha256_bytes(
+                        cn_json.read_bytes()
+                    ),
                     "txtSha256": materialize.sha256_bytes(txt.read_bytes()),
+                    "voiceGroups": voice_groups,
+                    "translatedVoiceGroups": translated,
+                    "untranslatedVoiceGroups": voice_groups - translated,
+                    "rawVoiceReferences": raw_references,
+                    "groupsWithoutVoice": groups_without_voice,
+                    "translationPercent": (
+                        round(translated * 100 / voice_groups)
+                        if voice_groups else 0
+                    ),
+                    "sourceRelativePath": source_relative,
+                    "cnJsonRelativePath": cn_json_relative,
+                    "cnTxtRelativePath": txt_relative,
                 }
             ],
         }
@@ -204,6 +238,7 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
             / model_id
             / f"{model_id}.json"
         )
+        cn_json = txt.with_name(f"{model_id}_cn.json")
         original = {
             "story": {
                 "group_1": [
@@ -245,6 +280,8 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
             "version": 3,
         }
         write_json(source, original)
+        write_json(cn_json, original)
+        immutable_source = source.read_bytes()
         txt.parent.mkdir(parents=True, exist_ok=True)
         base = (
             f"--- [Section 1] (Source: {model_id}.json) ---\n"
@@ -257,6 +294,7 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
         source_manifest, cn_manifest = self.write_voice_manifests(
             model_id=model_id,
             source=source,
+            cn_json=cn_json,
             txt=txt,
         )
         reviewed = (
@@ -271,7 +309,8 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
             reviewed_text=reviewed,
         )
 
-        output = json.loads(source.read_text(encoding="utf-8"))
+        output = json.loads(cn_json.read_text(encoding="utf-8"))
+        self.assertEqual(source.read_bytes(), immutable_source)
         first = output["story"]["group_1"][0]["chara"][0]
         self.assertEqual(first["textHome"], "修正句@修正后句")
         self.assertEqual(first["voice"], "vo_keep_01")
@@ -287,8 +326,8 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
         )
         self.assertEqual(report["game"], "magireco_voice")
         self.assertIn(
-            "magireco-voice-source-master/Scenarios_full/general_voice/"
-            "100100/100100.json",
+            "magireco-voice-translate-data-master/Scenarios_full/"
+            "general_voice/100100/100100_cn.json",
             report["materializedPaths"],
         )
         self.assertIn(
@@ -315,7 +354,15 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
         model = manifest["models"][0]
         self.assertEqual(
             model["jsonSha256"],
-            materialize.sha256_bytes(source.read_bytes()),
+            materialize.sha256_bytes(immutable_source),
+        )
+        self.assertEqual(
+            model["sourceJsonSha256"],
+            materialize.sha256_bytes(immutable_source),
+        )
+        self.assertEqual(
+            model["cnJsonSha256"],
+            materialize.sha256_bytes(cn_json.read_bytes()),
         )
         self.assertEqual(
             model["txtSha256"],
@@ -337,6 +384,7 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
             / model_id
             / f"{model_id}.json"
         )
+        cn_json = txt.with_name(f"{model_id}_cn.json")
         write_json(
             source,
             {
@@ -347,6 +395,10 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
                 }
             },
         )
+        write_json(
+            cn_json,
+            json.loads(source.read_text(encoding="utf-8")),
+        )
         txt.parent.mkdir(parents=True, exist_ok=True)
         base = (
             f"--- [Section 1] (Source: {model_id}.json) ---\n"
@@ -356,12 +408,13 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
         _source_manifest, cn_manifest = self.write_voice_manifests(
             model_id=model_id,
             source=source,
+            cn_json=cn_json,
             txt=txt,
         )
         cn_manifest.write_text("{}\n", encoding="utf-8")
         with self.assertRaisesRegex(
             materialize.MaterializeError,
-            "来源/中文完整性清单不一致",
+            "来源/中文完整性清单.*不一致",
         ):
             materialize.materialize(
                 txt,
@@ -385,6 +438,7 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
             / model_id
             / f"{model_id}.json"
         )
+        cn_json = txt.with_name(f"{model_id}_cn.json")
         write_json(
             source,
             {
@@ -402,12 +456,22 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
                 }
             },
         )
+        write_json(
+            cn_json,
+            json.loads(source.read_text(encoding="utf-8")),
+        )
         txt.parent.mkdir(parents=True, exist_ok=True)
         base = (
             f"--- [Section 1] (Source: {model_id}.json) ---\n"
             "环彩羽：【vo_keep_01｜2.5秒】旧句\n"
         )
         txt.write_text(base, encoding="utf-8")
+        self.write_voice_manifests(
+            model_id=model_id,
+            source=source,
+            cn_json=cn_json,
+            txt=txt,
+        )
         reviewed = base.replace("vo_keep_01", "vo_tampered")
 
         with self.assertRaises(materialize.MaterializeError):
@@ -417,6 +481,170 @@ class MaterializeProofreadingAssetsTests(unittest.TestCase):
                 write=False,
                 reviewed_text=reviewed,
             )
+
+    def test_general_voice_adds_missing_text_home_only_to_cn_json(self) -> None:
+        model_id = "406200"
+        txt = (
+            self.root
+            / "magireco-voice-translate-data-master/Scenarios_full/"
+            "general_voice"
+            / model_id
+            / f"{model_id}_cn.txt"
+        )
+        source = (
+            self.root
+            / "magireco-voice-source-master/Scenarios_full/general_voice"
+            / model_id
+            / f"{model_id}.json"
+        )
+        cn_json = txt.with_name(f"{model_id}_cn.json")
+        original = {
+            "story": {
+                "group_1": [{
+                    "autoTurnFirst": 20.1,
+                    "chara": [{
+                        "id": 406200,
+                        "voice": "vo_char_4062_00_01",
+                        "motion": 200,
+                        "face": "keep.exp.json",
+                    }],
+                }],
+            },
+            "version": 3,
+        }
+        write_json(source, original)
+        write_json(cn_json, original)
+        immutable_source = source.read_bytes()
+        base = (
+            f"--- [Section 1] (Source: {model_id}.json) ---\n"
+            "井之上泷奈：【vo_char_4062_00_01｜20.1秒】\n"
+        )
+        txt.parent.mkdir(parents=True, exist_ok=True)
+        txt.write_text(base, encoding="utf-8")
+        self.write_voice_manifests(
+            model_id=model_id,
+            source=source,
+            cn_json=cn_json,
+            txt=txt,
+        )
+
+        report = materialize.materialize(
+            txt,
+            repo_root=self.root,
+            write=True,
+            reviewed_text=base.rstrip() + "这是新增的中文字幕\n",
+        )
+
+        output = json.loads(cn_json.read_text(encoding="utf-8"))
+        chara = output["story"]["group_1"][0]["chara"][0]
+        self.assertEqual(chara["textHome"], "这是新增的中文字幕")
+        self.assertEqual(chara["voice"], "vo_char_4062_00_01")
+        self.assertEqual(chara["motion"], 200)
+        self.assertEqual(chara["face"], "keep.exp.json")
+        self.assertEqual(without_text_home(output), without_text_home(original))
+        self.assertEqual(source.read_bytes(), immutable_source)
+        self.assertTrue(report["validation"]["generalVoiceManifestHashesUpdated"])
+        manifest = json.loads(
+            (
+                self.root
+                / "magireco-voice-translate-data-master/Scenarios_full/"
+                "general_voice/general_voice_manifest.json"
+            ).read_text(encoding="utf-8")
+        )
+        model = manifest["models"][0]
+        self.assertEqual(model["translatedVoiceGroups"], 1)
+        self.assertEqual(model["translationPercent"], 100)
+
+    def test_general_voice_duo_subtitle_is_one_row_and_updates_all_charas(
+        self,
+    ) -> None:
+        group = [{
+            "chara": [
+                {"id": 111801, "voice": "vo_duo_01", "textHome": "旧字幕"},
+                {"id": 111802, "voice": "vo_duo_01", "textHome": "旧字幕"},
+            ]
+        }]
+        immutable = materialize.ReviewedSection(
+            "1",
+            None,
+            "111800.json",
+            (materialize.ReviewedLine("text", "天音姐妹", "【vo_duo_01｜2秒】旧字幕"),),
+        )
+        reviewed = materialize.ReviewedSection(
+            "1",
+            None,
+            "111800.json",
+            (materialize.ReviewedLine("text", "天音姐妹", "【vo_duo_01｜2秒】新字幕"),),
+        )
+
+        rendered = materialize.apply_general_voice_section(
+            group=group,
+            reviewed=reviewed,
+            immutable=immutable,
+            label="111800/group_1",
+        )
+
+        self.assertEqual(len(rendered), 1)
+        self.assertEqual(group[0]["chara"][0]["textHome"], "新字幕")
+        self.assertEqual(group[0]["chara"][1]["textHome"], "新字幕")
+
+    def test_general_voice_missing_duo_subtitle_inserts_into_all_charas(
+        self,
+    ) -> None:
+        group = [{
+            "chara": [
+                {"id": 111801, "voice": "vo_duo_02"},
+                {"id": 111802, "voice": "vo_duo_02"},
+            ]
+        }]
+        immutable = materialize.ReviewedSection(
+            "1",
+            None,
+            "111800.json",
+            (materialize.ReviewedLine("text", "天音姐妹", "【vo_duo_02｜2秒】"),),
+        )
+        reviewed = materialize.ReviewedSection(
+            "1",
+            None,
+            "111800.json",
+            (materialize.ReviewedLine("text", "天音姐妹", "【vo_duo_02｜2秒】补充字幕"),),
+        )
+
+        materialize.apply_general_voice_section(
+            group=group,
+            reviewed=reviewed,
+            immutable=immutable,
+            label="111800/group_2",
+        )
+
+        self.assertEqual(group[0]["chara"][0]["textHome"], "补充字幕")
+        self.assertEqual(group[0]["chara"][1]["textHome"], "补充字幕")
+
+    def test_general_voice_conflicting_duo_subtitles_fail_before_mutation(
+        self,
+    ) -> None:
+        group = [{
+            "chara": [
+                {"id": 111801, "voice": "vo_duo_03", "textHome": "字幕甲"},
+                {"id": 111802, "voice": "vo_duo_03", "textHome": "字幕乙"},
+            ]
+        }]
+        before = json.loads(json.dumps(group, ensure_ascii=False))
+        section = materialize.ReviewedSection(
+            "1",
+            None,
+            "111800.json",
+            (materialize.ReviewedLine("text", "天音姐妹", "【vo_duo_03｜2秒】字幕甲"),),
+        )
+
+        with self.assertRaisesRegex(materialize.MaterializeError, "内容冲突"):
+            materialize.apply_general_voice_section(
+                group=group,
+                reviewed=section,
+                immutable=section,
+                label="111800/group_3",
+            )
+        self.assertEqual(group, before)
 
     def _write_exedra_fixture(
         self, *, reviewed_speaker: str = "角色"

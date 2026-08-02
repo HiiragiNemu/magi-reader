@@ -259,6 +259,54 @@ class VoiceCatalogGenerationTests(unittest.TestCase):
                 "cn_txt_speaker",
             )
 
+    def test_cn_txt_is_found_under_arbitrary_nested_language_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture = VoiceCatalogFixture(Path(temporary))
+            cn_path = (
+                fixture.cn_root
+                / "任意语言目录"
+                / "zh-Hans"
+                / "角色语音"
+                / "更深一层"
+                / "CV－100101 ZH－CN.TXT"
+            )
+            cn_path.parent.mkdir(parents=True, exist_ok=True)
+            cn_path.write_text(
+                "--- [Section 1] (Source: voice.json) ---\n"
+                "圆神：任意嵌套目录中的中文台词\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+
+            group = fixture.build()["groups"][0]
+            self.assertEqual(group["characterNameCn"], "圆神")
+            self.assertEqual(
+                group["characterNameCnSource"],
+                "cn_txt_speaker",
+            )
+
+    def test_multiple_cn_txt_candidates_for_one_reaction_group_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture = VoiceCatalogFixture(Path(temporary))
+            candidates = [
+                fixture.cn_root / "简体中文" / "cv_100101_cn.txt",
+                fixture.cn_root / "另一语言目录" / "CV-100101-ZH-CN.txt",
+            ]
+            for index, cn_path in enumerate(candidates, start=1):
+                cn_path.parent.mkdir(parents=True, exist_ok=True)
+                cn_path.write_text(
+                    "--- [Section 1] (Source: voice.json) ---\n"
+                    f"圆神：候选 {index}\n",
+                    encoding="utf-8",
+                    newline="\n",
+                )
+
+            with self.assertRaisesRegex(
+                voice_catalog.CatalogError,
+                r"中文 Reaction TXT 匹配歧义: cv_100101",
+            ):
+                fixture.build()
+
     def test_manifest_path_traversal_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             fixture = VoiceCatalogFixture(Path(temporary))

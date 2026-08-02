@@ -214,7 +214,8 @@ def update_general_voice_manifests(
     reader: BlobReader,
     model_id: str,
     source_json_rel: PurePosixPath,
-    source_json_payload: bytes,
+    cn_json_rel: PurePosixPath,
+    cn_json_payload: bytes,
     cn_txt_rel: PurePosixPath,
     cn_txt_payload: bytes,
 ) -> dict[str, bytes]:
@@ -254,27 +255,83 @@ def update_general_voice_manifests(
             f"魔法纪录语音完整性清单模型不唯一：{model_id}"
         )
     model = matches[0]
-    base_json = reader.read(source_json_rel)
+    base_source_json = reader.read(source_json_rel)
+    base_cn_json = reader.read(cn_json_rel)
     base_txt = reader.read(cn_txt_rel)
-    if base_json is None or base_txt is None:
+    if base_source_json is None or base_cn_json is None or base_txt is None:
         raise MaterializeError(
             f"目标分支缺少魔法纪录语音 JSON/TXT：{model_id}"
         )
     if (
-        model.get("jsonSha256") != sha256_bytes(base_json)
+        model.get("jsonSha256") != sha256_bytes(base_source_json)
+        or model.get("sourceJsonSha256", model.get("jsonSha256"))
+        != sha256_bytes(base_source_json)
+        or model.get("cnJsonSha256") != sha256_bytes(base_cn_json)
         or model.get("txtSha256") != sha256_bytes(base_txt)
     ):
         raise MaterializeError(
             f"目标分支魔法纪录语音清单哈希失配：{model_id}"
         )
 
-    model["jsonSha256"] = sha256_bytes(source_json_payload)
+    output_document = load_json_bytes(cn_json_payload, str(cn_json_rel))
+    translated, total, raw_references, without_voice = (
+        _general_voice_translation_stats(output_document)
+    )
+    model["cnJsonSha256"] = sha256_bytes(cn_json_payload)
     model["txtSha256"] = sha256_bytes(cn_txt_payload)
+    model["voiceGroups"] = total
+    model["translatedVoiceGroups"] = translated
+    model["untranslatedVoiceGroups"] = total - translated
+    model["rawVoiceReferences"] = raw_references
+    model["groupsWithoutVoice"] = without_voice
+    model["translationPercent"] = round(translated * 100 / total) if total else 0
     encoded = json_bytes_like(manifest, source_raw)
     return {
         source_manifest_rel.as_posix(): encoded,
         cn_manifest_rel.as_posix(): encoded,
     }
+
+
+def general_voice_model_paths_for_txt(
+    *,
+    reader: BlobReader,
+    relative_txt: PurePosixPath,
+) -> tuple[str, PurePosixPath, PurePosixPath]:
+    source_manifest_rel = MAGIRECO_VOICE_JSON_REL / GENERAL_VOICE_MANIFEST_NAME
+    cn_manifest_rel = MAGIRECO_VOICE_CN_REL / GENERAL_VOICE_MANIFEST_NAME
+    source_raw = reader.read(source_manifest_rel)
+    cn_raw = reader.read(cn_manifest_rel)
+    if source_raw is None or cn_raw is None or source_raw != cn_raw:
+        raise MaterializeError("魔法纪录语音来源/中文完整性清单缺失或不一致")
+    manifest = load_json_bytes(source_raw, str(source_manifest_rel))
+    models = manifest.get("models")
+    try:
+        txt_relative = relative_txt.relative_to(MAGIRECO_VOICE_CN_REL).as_posix()
+    except ValueError as exc:
+        raise MaterializeError("魔法纪录语音 TXT 不在中文语音根目录") from exc
+    matches = [
+        model
+        for model in models if isinstance(models, list) and isinstance(model, dict)
+        if model.get("cnTxtRelativePath") == txt_relative
+    ] if isinstance(models, list) else []
+    if len(matches) != 1:
+        raise MaterializeError("魔法纪录语音 TXT 未唯一匹配完整性清单")
+    model = matches[0]
+    model_id = str(model.get("id") or "")
+    if not re.fullmatch(r"\d{6}", model_id):
+        raise MaterializeError("魔法纪录语音模型 ID 无效")
+    source_relative = safe_repo_path(str(model.get("sourceRelativePath") or ""))
+    cn_relative = safe_repo_path(str(model.get("cnJsonRelativePath") or ""))
+    source_json_rel = MAGIRECO_VOICE_JSON_REL / source_relative
+    cn_json_rel = MAGIRECO_VOICE_CN_REL / cn_relative
+    if (
+        source_json_rel.name != f"{model_id}.json"
+        or cn_json_rel.name != f"{model_id}_cn.json"
+        or source_relative.parent != cn_relative.parent
+        or relative_txt.parent != cn_json_rel.parent
+    ):
+        raise MaterializeError("魔法纪录语音来源/中文 JSON/TXT 层级不一致")
+    return model_id, source_json_rel, cn_json_rel
 
 
 def split_dialogue(value: str) -> tuple[str, str]:
@@ -779,11 +836,26 @@ def magireco_events(group: list[Any]) -> list[MagirecoEvent]:
     return events
 
 
-VOICE_LINE_RE = re.compile(r"^(【[^】\r\n]{1,512}】)(.+)$")
+VOICE_LINE_RE = re.compile(r"^(【[^】\r\n]{1,512}】)(.*)$")
 
 
-def _voice_text_home_references(group: list[Any]) -> list[dict[str, Any]]:
-    matches: list[dict[str, Any]] = []
+def _voice_text_home_references(
+    group: list[Any],
+    *,
+    label: str,
+) -> list[list[dict[str, Any]]]:
+    """Return one reference group for each logical subtitle row.
+
+    Ensemble cards intentionally repeat one voice resource on multiple Live2D
+    characters so every model can lip-sync.  Those mirrors are one subtitle,
+    and proofreading must keep their ``textHome`` values synchronized.  A
+    textHome-only continuation remains a separate logical row.
+    """
+
+    voice_references: list[dict[str, Any]] = []
+    voice_ids: list[str] = []
+    voice_texts: list[str] = []
+    continuation_references: dict[str, list[dict[str, Any]]] = {}
     for turn in group:
         if not isinstance(turn, dict):
             continue
@@ -791,20 +863,55 @@ def _voice_text_home_references(group: list[Any]) -> list[dict[str, Any]]:
         if not isinstance(charas, list):
             continue
         for chara in charas:
-            if (
-                isinstance(chara, dict)
-                and isinstance(chara.get("textHome"), str)
-                and str(chara["textHome"]).strip()
-            ):
-                matches.append(chara)
-    return matches
+            if not isinstance(chara, dict):
+                continue
+            voice = (
+                str(chara.get("voice")).strip()
+                if isinstance(chara.get("voice"), str)
+                else ""
+            )
+            text_home = (
+                str(chara.get("textHome")).strip()
+                if isinstance(chara.get("textHome"), str)
+                else ""
+            )
+            if voice:
+                voice_references.append(chara)
+                if voice not in voice_ids:
+                    voice_ids.append(voice)
+                if text_home and text_home not in voice_texts:
+                    voice_texts.append(text_home)
+            elif text_home:
+                continuation_references.setdefault(text_home, []).append(chara)
+
+    if len(voice_ids) > 1:
+        raise MaterializeError(
+            f"{label} 同一语音组含多个不同语音资源：{voice_ids}"
+        )
+    if len(voice_texts) > 1:
+        raise MaterializeError(
+            f"{label} 重复语音角色的 textHome 内容冲突"
+        )
+
+    references: list[list[dict[str, Any]]] = []
+    if voice_references:
+        # Keep a logical row even when textHome is absent so proofreading can
+        # insert the subtitle into every duplicated voice-bearing character.
+        references.append(voice_references)
+    references.extend(continuation_references.values())
+    return references
 
 
-def _voice_line_parts(line: ReviewedLine, label: str) -> tuple[str, str]:
+def _voice_line_parts(
+    line: ReviewedLine,
+    label: str,
+    *,
+    allow_empty: bool = False,
+) -> tuple[str, str]:
     if line.kind != "text":
         raise MaterializeError(f"{label} 语音行类型被改写")
     match = VOICE_LINE_RE.fullmatch(line.text)
-    if not match or not match.group(2).strip():
+    if not match or (not allow_empty and not match.group(2).strip()):
         raise MaterializeError(f"{label} 语音资源标签或正文无效")
     return match.group(1), match.group(2).strip()
 
@@ -818,7 +925,7 @@ def apply_general_voice_section(
 ) -> tuple[ReviewedLine, ...]:
     if reviewed.branch is not None:
         raise MaterializeError(f"{label} 语音 Section 结构发生变化")
-    references = _voice_text_home_references(group)
+    references = _voice_text_home_references(group, label=label)
     if not references:
         if reviewed.lines != immutable.lines:
             raise MaterializeError(
@@ -836,7 +943,7 @@ def apply_general_voice_section(
         )
 
     rendered: list[ReviewedLine] = []
-    for position, (chara, reviewed_line, immutable_line) in enumerate(
+    for position, (reference_group, reviewed_line, immutable_line) in enumerate(
         zip(references, reviewed.lines, immutable.lines),
         1,
     ):
@@ -847,6 +954,7 @@ def apply_general_voice_section(
         immutable_prefix, _ = _voice_line_parts(
             immutable_line,
             f"{label}/textHome[{position}]",
+            allow_empty=True,
         )
         if (
             reviewed_line.speaker != immutable_line.speaker
@@ -857,8 +965,10 @@ def apply_general_voice_section(
             )
         # Playable JSON uses @ as an in-game line separator while canonical
         # TXT renders it as ／.  Only the proven textHome cell is assigned.
-        chara["textHome"] = reviewed_body.replace("／", "@")
-        rendered_body = str(chara["textHome"]).replace("@", "／").strip()
+        encoded_body = reviewed_body.replace("／", "@")
+        for chara in reference_group:
+            chara["textHome"] = encoded_body
+        rendered_body = encoded_body.replace("@", "／").strip()
         if not rendered_body:
             raise MaterializeError(
                 f"{label} 第 {position} 个校对正文为空"
@@ -871,6 +981,41 @@ def apply_general_voice_section(
             )
         )
     return tuple(rendered)
+
+
+def _general_voice_translation_stats(
+    document: Mapping[str, Any],
+) -> tuple[int, int, int, int]:
+    story = document.get("story")
+    if not isinstance(story, dict) or not story:
+        raise MaterializeError("魔法纪录语音 JSON 缺少 story")
+    translated = 0
+    total = 0
+    raw_references = 0
+    without_voice = 0
+    for turns in story.values():
+        if not isinstance(turns, list):
+            raise MaterializeError("魔法纪录语音 JSON 分组不是数组")
+        first: dict[str, Any] | None = None
+        for turn in turns:
+            if not isinstance(turn, dict) or not isinstance(turn.get("chara"), list):
+                continue
+            for chara in turn["chara"]:
+                if (
+                    isinstance(chara, dict)
+                    and isinstance(chara.get("voice"), str)
+                    and chara["voice"].strip()
+                ):
+                    raw_references += 1
+                    if first is None:
+                        first = chara
+        if first is None:
+            without_voice += 1
+            continue
+        total += 1
+        if isinstance(first.get("textHome"), str) and first["textHome"].strip():
+            translated += 1
+    return translated, total, raw_references, without_voice
 
 
 class ExedraEvent:
@@ -1379,6 +1524,12 @@ def materialize(
     category = folder.parent.as_posix() if game == "exedra" else ""
     exedra_group: dict[str, Any] | None = None
     exedra_sources: list[str] = []
+    voice_model_paths: tuple[str, PurePosixPath, PurePosixPath] | None = None
+    if game == "magireco_voice":
+        voice_model_paths = general_voice_model_paths_for_txt(
+            reader=reader,
+            relative_txt=relative_txt,
+        )
     if game == "exedra":
         if len(folder.parts) != 2:
             raise MaterializeError("Exedra 中文 TXT 必须位于分类/逻辑组目录")
@@ -1409,8 +1560,10 @@ def materialize(
     json_meta: list[dict[str, Any]] = []
     for source, indexed_sections in sections_by_source.items():
         if game == "magireco_voice":
-            cn_json_rel = jp_root_rel / folder / source
-            jp_json_rel = cn_json_rel
+            assert voice_model_paths is not None
+            model_id, jp_json_rel, cn_json_rel = voice_model_paths
+            if source != f"{model_id}.json":
+                raise MaterializeError("魔法纪录语音 Source 与模型 ID 不一致")
         else:
             cn_json_rel = cn_root_rel / folder / source
             jp_json_rel = jp_root_rel / folder / source
@@ -1576,34 +1729,33 @@ def materialize(
 
     voice_pair_paths: tuple[str, str] | None = None
     if game == "magireco_voice":
-        model_id = folder.name
+        assert voice_model_paths is not None
+        model_id, expected_source_json_rel, expected_cn_json_rel = voice_model_paths
         expected_source = f"{model_id}.json"
-        expected_json_rel = (
-            MAGIRECO_VOICE_JSON_REL / folder / expected_source
-        )
         if (
             not re.fullmatch(r"\d{6}", model_id)
             or relative_txt.name != f"{model_id}_cn.txt"
             or len(json_meta) != 1
             or json_meta[0].get("source") != expected_source
-            or json_meta[0].get("output") != expected_json_rel.as_posix()
+            or json_meta[0].get("output") != expected_cn_json_rel.as_posix()
         ):
             raise MaterializeError("魔法纪录语音 JSON/TXT 配对路径无效")
-        source_json_payload = payloads.get(expected_json_rel.as_posix())
-        if source_json_payload is None:
+        cn_json_payload = payloads.get(expected_cn_json_rel.as_posix())
+        if cn_json_payload is None:
             raise MaterializeError("魔法纪录语音缺少配对的可播放 JSON")
         payloads.update(
             update_general_voice_manifests(
                 reader=reader,
                 model_id=model_id,
-                source_json_rel=expected_json_rel,
-                source_json_payload=source_json_payload,
+                source_json_rel=expected_source_json_rel,
+                cn_json_rel=expected_cn_json_rel,
+                cn_json_payload=cn_json_payload,
                 cn_txt_rel=relative_txt,
                 cn_txt_payload=canonical_payload,
             )
         )
         voice_pair_paths = (
-            expected_json_rel.as_posix(),
+            expected_cn_json_rel.as_posix(),
             relative_txt.as_posix(),
         )
 

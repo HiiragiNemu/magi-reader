@@ -2,11 +2,13 @@ import {
   parseExedraTxt,
   type ExedraStoryEntry,
   type ExedraProvenance,
-} from '@/lib/exedra-localization';
+} from './exedra-localization.ts';
+import { fetchBoundedResponseBytes } from './http/bounded-response.ts';
 
 const CACHE_PREFIX = 'exedra-localization:v1:';
 const WIKI_BASE_DEFAULT = 'https://exedra.wiki';
 const MAX_WIKI_BYTES = 8 * 1024 * 1024;
+const WIKI_TIMEOUT_MS = 10_000;
 
 const CHARACTER_WIKI_SLUGS: Record<string, string[]> = {
   character_arina: ['Alina_Gray'],
@@ -183,18 +185,6 @@ const exactTitles = (entry: ExedraStoryEntry): string[] => {
   ]);
 };
 
-const readJsonBounded = async (response: Response): Promise<unknown> => {
-  if (!response.ok) throw new Error(`Wiki API HTTP ${response.status}`);
-  const declared = Number(response.headers.get('content-length'));
-  if (Number.isSafeInteger(declared) && declared > MAX_WIKI_BYTES) {
-    await response.body?.cancel('Wiki response too large');
-    throw new Error('Wiki API 响应过大');
-  }
-  const bytes = await response.arrayBuffer();
-  if (bytes.byteLength > MAX_WIKI_BYTES) throw new Error('Wiki API 响应过大');
-  return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)) as unknown;
-};
-
 const pageHtml = async (base: string, title: string): Promise<string | null> => {
   const api = `${base.replace(/\/$/u, '')}/w/api.php`;
   const url = new URL(api);
@@ -207,7 +197,24 @@ const pageHtml = async (base: string, title: string): Promise<string | null> => 
     formatversion: '2',
     origin: '*',
   }).toString();
-  const value = await readJsonBounded(await fetch(url, { headers: { Accept: 'application/json' } }));
+  const bytes = await fetchBoundedResponseBytes(
+    signal => fetch(url, {
+      headers: { Accept: 'application/json' },
+      redirect: 'error',
+      signal,
+    }),
+    {
+      label: 'Wiki API',
+      maxBytes: MAX_WIKI_BYTES,
+      timeoutMs: WIKI_TIMEOUT_MS,
+    },
+  );
+  let value: unknown;
+  try {
+    value = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)) as unknown;
+  } catch {
+    throw new Error('Wiki API 不是有效的 UTF-8 JSON');
+  }
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   const parse = (value as { parse?: unknown }).parse;
   if (!parse || typeof parse !== 'object' || Array.isArray(parse)) return null;
