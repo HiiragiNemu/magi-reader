@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 test('story index validation rejects paths outside the public data boundary', async () => {
@@ -51,6 +52,69 @@ test('story index validation rejects paths outside the public data boundary', as
       /json_paths_cn/i,
     );
   }
+});
+
+test('story index accepts only language-scoped repository JSON allowlists', async () => {
+  const {
+    isSafeRepositoryStoryJsonPath,
+    parseStoryIndex,
+  } = await import('../lib/story-index.ts');
+  const validStory = {
+    id: 'repository-json-story',
+    category: 'character_story',
+    folder: 'fixture',
+    percent: 100,
+    has_cn: true,
+    has_jp: true,
+    path_cn: '/data/character_story/fixture/story_cn.txt',
+    path_jp: '/data/character_story/fixture/story_jp.txt',
+    json_sources_jp: [
+      'magireco-source-master/Scenarios_full/'
+        + 'character_story/fixture/story-1.json',
+    ],
+    json_sources_cn: [
+      'magireco-translate-data-master/Scenarios_full/'
+        + 'character_story/fixture/story-1.json',
+    ],
+    game: 'magireco',
+  };
+
+  assert.deepEqual(parseStoryIndex([validStory]), [validStory]);
+  assert.equal(
+    isSafeRepositoryStoryJsonPath(validStory.json_sources_jp[0]!, 'jp'),
+    true,
+  );
+  for (const unsafePath of [
+    '/magireco-source-master/Scenarios_full/story.json',
+    'magireco-source-master/Scenarios_full/../secret.json',
+    String.raw`magireco-source-master\Scenarios_full\story.json`,
+    'magireco-source-master/Scenarios_full/%2e%2e/secret.json',
+    'magireco-source-master/Scenarios_full/story.txt',
+    'magireco-translate-data-master/Scenarios_full/story.json',
+  ]) {
+    assert.equal(
+      isSafeRepositoryStoryJsonPath(unsafePath, 'jp'),
+      false,
+      unsafePath,
+    );
+    assert.throws(
+      () => parseStoryIndex([{
+        ...validStory,
+        json_sources_jp: [unsafePath],
+      }]),
+      /json_sources_jp/iu,
+    );
+  }
+  assert.throws(
+    () => parseStoryIndex([{
+      ...validStory,
+      json_sources_jp: [
+        validStory.json_sources_jp[0],
+        validStory.json_sources_jp[0].toUpperCase(),
+      ],
+    }]),
+    /json_sources_jp/iu,
+  );
 });
 
 test('legacy routes resolve only to one validated canonical Magia Record story', async () => {
@@ -130,6 +194,41 @@ test('reader resolves safe query paths without waiting for the full story index'
       optionalCn: false,
       kind: 'query',
     },
+  );
+});
+
+test('combo component voice routes retain their own playable JSON and TXT', async () => {
+  const { findStoryByRouteId, parseStoryIndex } = await import(
+    '../lib/story-index.ts'
+  );
+  const raw = JSON.parse(
+    readFileSync(
+      new URL('../public/story_index.json', import.meta.url),
+      'utf8',
+    ),
+  );
+  const stories = parseStoryIndex(raw);
+  const canonical = findStoryByRouteId(stories, 'voice_111800');
+  const component = findStoryByRouteId(stories, 'voice_111801');
+
+  assert.equal(canonical?.id, 'voice_111800');
+  assert.equal(component?.id, 'voice_111801');
+  assert.notEqual(component?.id, canonical?.id);
+  assert.equal(
+    component?.path_cn,
+    '/data/general_voice/111801/111801_cn.txt',
+  );
+  assert.deepEqual(
+    component?.json_paths_cn,
+    ['/data/general_voice/111801/111801_cn.json'],
+  );
+  assert.ok(component?.json_sources_cn?.[0]?.endsWith('/111801_cn.json'));
+  assert.equal(component?.source_count, 1);
+  assert.equal(component?.voice_model_role, 'comboComponent');
+  assert.doesNotMatch(component?.title ?? '', /legacy|alias/iu);
+  assert.equal(
+    canonical?.legacy_ids?.includes('voice_111801') ?? false,
+    false,
   );
 });
 
@@ -438,4 +537,62 @@ test('trusted Exedra status failures safely preserve the static catalog', async 
   } finally {
     console.warn = originalWarn;
   }
+});
+
+test('general voice coverage is derived from translated textHome units', async () => {
+  const { parseStoryIndex, isSafeRepositoryStoryJsonPath } = await import(
+    '../lib/story-index.ts'
+  );
+  const untranslated = {
+    id: 'voice_406200',
+    category: 'general_voice',
+    folder: '4062 - 井之上泷奈（井ノ上 たきな）',
+    percent: 0,
+    has_cn: true,
+    has_jp: false,
+    path_cn: '/data/general_voice/406200/406200_cn.txt',
+    json_paths_cn: ['/data/general_voice/406200/406200_cn.json'],
+    json_sources_cn: [
+      'magireco-voice-translate-data-master/Scenarios_full/'
+        + 'general_voice/406200/406200_cn.json',
+    ],
+    game: 'magireco',
+    source_format: 'general_voice_json',
+    source_count: 1,
+    source_identity: 'general_voice/406200',
+    translated_units_cn: 0,
+    translation_units_total: 39,
+    raw_voice_references: 39,
+    groups_without_voice: 0,
+    model_id: '406200',
+    character_group_id: '4062',
+    canonical_model_id: '406200',
+    voice_model_role: 'standalone',
+  };
+  assert.deepEqual(parseStoryIndex([untranslated]), [untranslated]);
+  assert.equal(
+    isSafeRepositoryStoryJsonPath(untranslated.json_sources_cn[0], 'cn'),
+    true,
+  );
+  assert.throws(
+    () => parseStoryIndex([{ ...untranslated, percent: 100 }]),
+    /汉化统计无效/u,
+  );
+  assert.throws(
+    () => parseStoryIndex([{
+      ...untranslated,
+      translated_units_cn: 40,
+    }]),
+    /汉化统计无效/u,
+  );
+  assert.throws(
+    () => parseStoryIndex([{
+      ...untranslated,
+      json_sources_cn: [
+        'magireco-voice-source-master/Scenarios_full/'
+          + 'general_voice/406200/406200.json',
+      ],
+    }]),
+    /json_sources_cn/u,
+  );
 });

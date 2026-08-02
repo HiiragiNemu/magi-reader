@@ -289,7 +289,10 @@ export default function Sidebar({
                               : 'text-gray-500';
 
                         return (
-                          <div key={folder}>
+                          <div
+                            key={folder}
+                            className={folderOpen ? '' : 'magi-sidebar-folder-collapsed'}
+                          >
                           <button
                             type="button"
                             aria-expanded={folderOpen}
@@ -338,6 +341,7 @@ export default function Sidebar({
                                     <Link
                                       id={`nav-item-${story.id}`}
                                       href={`/reader/${encodeURIComponent(story.id)}?cn=${encodeURIComponent(story.path_cn || '')}&jp=${encodeURIComponent(story.path_jp || '')}`}
+                                      prefetch={false}
                                       onClick={onClose}
                                       title={label}
                                       className={`block truncate rounded-sm border-l-2 px-2 py-1.5 font-mono text-xs transition-all ${

@@ -141,3 +141,23 @@ test('bounded stream stops before forwarding more than its byte ceiling', async 
   assert.deepEqual(Array.from((await reader.read()).value ?? []), [1, 2]);
   await assert.rejects(reader.read(), /Voice object exceeds size limit/);
 });
+
+test('bounded voice stream cancels a stalled upstream on its read timeout', async () => {
+  let cancelled = false;
+  let timedOut = false;
+  const source = new ReadableStream<Uint8Array>({
+    cancel() {
+      cancelled = true;
+    },
+  });
+  const reader = createBoundedVoiceStream(source, 8, {
+    readTimeoutMs: 20,
+    onTimeout: () => {
+      timedOut = true;
+    },
+  }).getReader();
+  await assert.rejects(reader.read(), /timed out/u);
+  await new Promise(resolve => setTimeout(resolve, 0));
+  assert.equal(timedOut, true);
+  assert.equal(cancelled, true);
+});

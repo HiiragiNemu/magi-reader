@@ -12,6 +12,7 @@ import {
   voiceRangeToR2Range,
 } from '@/lib/audio/voice-proxy';
 import { isMagirecoVoiceId } from '@/lib/audio/voice-cue';
+import { cancelResponseBody } from '@/lib/http/bounded-response';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,7 @@ const ERROR_HEADERS = {
   ...SECURITY_HEADERS,
   'Cache-Control': 'no-store',
 };
+const UPSTREAM_TIMEOUT_MS = 10_000;
 
 async function getFromR2(
   bucket: CloudflareR2Bucket,
@@ -83,7 +85,9 @@ async function getFromR2(
   }
 
   return new Response(
-    createBoundedVoiceStream(object.body, metadata.contentLength),
+    createBoundedVoiceStream(object.body, metadata.contentLength, {
+      readTimeoutMs: UPSTREAM_TIMEOUT_MS,
+    }),
     {
       status: metadata.status,
       headers,
@@ -101,21 +105,30 @@ async function getFromPublicOrigin(
   if (safeRange) upstreamHeaders.set('Range', safeRange);
 
   let upstream: Response;
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(new Error('Magia Record voice upstream timed out')),
+    UPSTREAM_TIMEOUT_MS,
+  );
   try {
     upstream = await fetch(getMagirecoVoiceUpstreamUrl(voiceId), {
       cache: 'no-store',
       headers: upstreamHeaders,
-      redirect: 'follow',
+      redirect: 'error',
+      signal: controller.signal,
     });
   } catch (error) {
+    clearTimeout(timeout);
     console.error('Magia Record voice upstream request failed', error);
     return Response.json(
       { error: '魔法纪录语音源暂时不可用' },
       { status: 502, headers: ERROR_HEADERS },
     );
   }
+  clearTimeout(timeout);
 
   if (upstream.status !== 200 && upstream.status !== 206) {
+    await cancelResponseBody(upstream, `Voice upstream HTTP ${upstream.status}`);
     return Response.json(
       {
         error:
@@ -143,7 +156,7 @@ async function getFromPublicOrigin(
     (contentLength !== null && contentLength > MAX_VOICE_BYTES) ||
     contentRangeTotalExceedsLimit(upstream.headers.get('content-range'))
   ) {
-    void upstream.body.cancel('Voice object exceeds size limit');
+    await cancelResponseBody(upstream, 'Voice object exceeds size limit');
     return Response.json(
       { error: '语音文件超过 8 MiB 安全上限' },
       { status: 413, headers: ERROR_HEADERS },
@@ -161,7 +174,12 @@ async function getFromPublicOrigin(
   const etag = upstream.headers.get('etag');
   if (etag) headers.set('ETag', etag);
 
-  return new Response(createBoundedVoiceStream(upstream.body), {
+  return new Response(createBoundedVoiceStream(upstream.body, MAX_VOICE_BYTES, {
+    readTimeoutMs: UPSTREAM_TIMEOUT_MS,
+    onTimeout: () => controller.abort(
+      new Error('Magia Record voice upstream body timed out'),
+    ),
+  }), {
     status: upstream.status,
     headers,
   });

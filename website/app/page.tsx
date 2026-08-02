@@ -318,7 +318,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
         machinePending > 0
           ? isDark ? 'border-amber-700 ring-1 ring-amber-700/40' : 'border-amber-400 ring-1 ring-amber-300'
           : isDark ? 'border-gray-700' : 'border-black/10'
-      }`}
+      } ${isOpen ? '' : 'magi-folder-card-collapsed'}`}
     >
       <button
         type="button"
@@ -393,6 +393,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                     href={`/reader/${encodeURIComponent(story.id)}?cn=${encodeURIComponent(
                       story.path_cn || '',
                     )}&jp=${encodeURIComponent(story.path_jp || '')}`}
+                    prefetch={false}
                     className={`rounded border transition-all hover:scale-[1.01] ${buttonClass} overflow-hidden ${
                       snippet ? 'w-full' : ''
                     }`}

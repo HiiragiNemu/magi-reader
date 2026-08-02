@@ -1,3 +1,5 @@
+import { fetchBoundedResponseBytes } from './http/bounded-response.ts';
+
 export const GENERAL_VOICE_SOURCE_COMMIT =
   '6d921b630f41341a1c5aba66ec355ef9017e778d';
 
@@ -10,6 +12,7 @@ const MAX_MANIFEST_BYTES = 2 * 1024 * 1024;
 const MAX_SCRIPT_BYTES = 2 * 1024 * 1024;
 const MAX_MODELS = 2_000;
 const MODEL_ID_RE = /^\d{6}$/u;
+const UPSTREAM_TIMEOUT_MS = 10_000;
 
 export type GeneralVoiceLanguage = 'cn' | 'en';
 
@@ -50,17 +53,9 @@ const cleanText = (value: unknown, maxLength: number): string =>
     ? value.replace(/[\u0000-\u001f\u007f]/gu, ' ').trim().slice(0, maxLength)
     : '';
 
-const boundedJson = async (response: Response, maxBytes: number, label: string) => {
-  if (!response.ok) throw new Error(`${label}读取失败（HTTP ${response.status}）`);
-  const declared = Number(response.headers.get('content-length'));
-  if (Number.isSafeInteger(declared) && declared > maxBytes) {
-    await response.body?.cancel(`${label}超过大小限制`);
-    throw new Error(`${label}超过大小限制`);
-  }
-  const buffer = await response.arrayBuffer();
-  if (buffer.byteLength > maxBytes) throw new Error(`${label}超过大小限制`);
+const decodeJson = (bytes: Uint8Array, label: string): unknown => {
   try {
-    return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(buffer)) as unknown;
+    return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)) as unknown;
   } catch {
     throw new Error(`${label}不是有效的 UTF-8 JSON`);
   }
@@ -74,11 +69,18 @@ const fetchFromUpstreams = async (
   let lastError: unknown;
   for (const base of GENERAL_VOICE_UPSTREAM_BASES) {
     try {
-      const response = await fetch(`${base}/${relativePath}`, {
-        headers: { Accept: 'application/json' },
-        redirect: 'follow',
-      });
-      return await boundedJson(response, maxBytes, label);
+      const baseUrl = new URL(base);
+      const url = new URL(relativePath, `${baseUrl.href.replace(/\/$/u, '')}/`);
+      if (url.origin !== baseUrl.origin) throw new Error(`${label}路径无效`);
+      const bytes = await fetchBoundedResponseBytes(
+        signal => fetch(url, {
+          headers: { Accept: 'application/json' },
+          redirect: 'error',
+          signal,
+        }),
+        { label, maxBytes, timeoutMs: UPSTREAM_TIMEOUT_MS },
+      );
+      return decodeJson(bytes, label);
     } catch (error) {
       lastError = error;
     }
@@ -230,7 +232,9 @@ export const generalVoiceScriptToTxt = (
     const voiceLabel = [...new Set(voices)].join(', ') || groupKey;
     const durationLabel = `${Math.round(duration * 10) / 10}秒`;
     if (texts.length === 0) {
-      lines.push(`${speaker}：【${voiceLabel}｜${durationLabel}】语音资源：${voiceLabel}`);
+      // Keep the playback identity immutable while leaving an explicitly empty
+      // subtitle body.  The editor may then add textHome after the closing 】.
+      lines.push(`${speaker}：【${voiceLabel}｜${durationLabel}】`);
     } else if (texts.length === 1) {
       lines.push(`${speaker}：【${voiceLabel}｜${durationLabel}】${texts[0]}`);
     } else {
@@ -260,12 +264,14 @@ export const generalVoiceCatalogEntries = (manifest: GeneralVoiceManifest) =>
         id: `voice_${model.id}`,
         category: 'general_voice',
         folder,
-        percent: 100,
+        // This network fallback manifest has group/voice counts but no audited
+        // textHome coverage.  Never present mere file availability as 100%.
+        percent: 0,
         has_cn: true,
         has_jp: false,
         filename_cn: `${model.id}_cn.txt`,
         path_cn: `/data/general_voice/${model.id}/${model.id}_cn.txt`,
-        title: `${costume} · ${count} 条语音`,
+        title: `${model.id} · ${costume} · ${count} 条语音 · 字幕汉化率待读取`,
         game: 'magireco',
         source_identity: `general_voice/${model.id}`,
       };
