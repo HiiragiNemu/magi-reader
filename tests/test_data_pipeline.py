@@ -477,6 +477,7 @@ class PipelineBuildTests(unittest.TestCase):
                     "publishedModel": True,
                     "canonicalModelId": model_id,
                     "componentModelIds": [],
+                    "modelRole": "standalone",
                 }
             ],
         }
@@ -538,6 +539,45 @@ class PipelineBuildTests(unittest.TestCase):
         self.assertEqual(stats["general_voice_models"], 1)
         audit.validate_manifest(generate.finalize_story_list(stories))
 
+    def test_general_voice_hidden_component_requires_exact_payload_hashes(self) -> None:
+        hashes = {
+            "sourceJsonSha256": "a" * 64,
+            "cnJsonSha256": "b" * 64,
+            "txtSha256": "c" * 64,
+        }
+        canonical = {
+            "id": "111800",
+            "publishedModel": True,
+            "canonicalModelId": "111800",
+            "componentModelIds": ["111801"],
+            **hashes,
+        }
+        component = {
+            "id": "111801",
+            "publishedModel": False,
+            "canonicalModelId": "111800",
+            "componentModelIds": [],
+            **{**hashes, "txtSha256": "d" * 64},
+        }
+        with self.assertRaisesRegex(
+            generate.PipelineError,
+            "隐藏组件并非内容等价别名",
+        ):
+            generate._validate_general_voice_release_relationships(
+                {"111800": canonical, "111801": component}
+            )
+
+        component["publishedModel"] = True
+        generate._validate_general_voice_release_relationships(
+            {"111800": canonical, "111801": component}
+        )
+
+        component["publishedModel"] = False
+        component["txtSha256"] = hashes["txtSha256"]
+        generate._validate_general_voice_release_relationships(
+            {"111800": canonical, "111801": component}
+        )
+
     def test_general_voice_without_text_home_has_zero_coverage(self) -> None:
         model_id = "406200"
         source_root = self.root / "voice-source-untranslated"
@@ -595,6 +635,7 @@ class PipelineBuildTests(unittest.TestCase):
             "publishedModel": True,
             "canonicalModelId": model_id,
             "componentModelIds": [],
+            "modelRole": "standalone",
         }
         manifest = {"version": 1, "modelCount": 1, "models": [model]}
         write_json(source_root / generate.GENERAL_VOICE_MANIFEST_NAME, manifest)

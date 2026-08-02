@@ -26,6 +26,8 @@ export type StoryIndexEntry = {
   model_id?: string;
   character_group_id?: string;
   component_model_ids?: string[];
+  canonical_model_id?: string;
+  voice_model_role?: 'standalone' | 'comboCanonical' | 'comboComponent';
 };
 
 export type LoadedStoryIndex = {
@@ -442,6 +444,35 @@ const parseStory = (value: unknown, index: number): StoryIndexEntry => {
       typeof story.character_group_id !== 'string' ||
       !/^\d{4}$/u.test(story.character_group_id) ||
       story.character_group_id !== story.model_id.slice(0, 4)
+      || typeof story.canonical_model_id !== 'string'
+      || !/^\d{6}$/u.test(story.canonical_model_id)
+      || story.canonical_model_id.slice(0, 4) !== story.character_group_id
+      || typeof story.voice_model_role !== 'string'
+      || ![
+        'standalone',
+        'comboCanonical',
+        'comboComponent',
+      ].includes(story.voice_model_role)
+      || (
+        story.voice_model_role === 'standalone'
+        && story.canonical_model_id !== story.model_id
+      )
+      || (
+        story.voice_model_role === 'comboCanonical'
+        && story.canonical_model_id !== story.model_id
+      )
+      || (
+        story.voice_model_role === 'comboComponent'
+        && story.canonical_model_id === story.model_id
+      )
+      || (
+        story.voice_model_role === 'comboCanonical'
+        && !Array.isArray(story.component_model_ids)
+      )
+      || (
+        story.voice_model_role !== 'comboCanonical'
+        && story.component_model_ids !== undefined
+      )
     ) {
       throw new Error(`${story.id}: general_voice_json 汉化统计无效`);
     }

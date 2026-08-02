@@ -5,6 +5,7 @@ import test from 'node:test';
 const globalCss = readFileSync('app/globals.css', 'utf8');
 const homeSource = readFileSync('app/page.tsx', 'utf8');
 const readerSource = readFileSync('app/reader/[id]/page.tsx', 'utf8');
+const sidebarSource = readFileSync('components/Sidebar.tsx', 'utf8');
 const searchWorker = readFileSync('public/search-worker.js', 'utf8');
 
 test('decorative layers stay viewport-bounded and avoid continuous GPU animation', () => {
@@ -50,6 +51,36 @@ test('reader bounds mounted story rows instead of rendering a whole long script'
   );
   assert.match(readerSource, /useDeferredValue\(searchQuery\)/u);
   assert.doesNotMatch(readerSource, /renderList\.map\(\(row, index\)/u);
+});
+
+test('bulk story links do not trigger route prefetch waves', () => {
+  assert.match(
+    homeSource,
+    /href=\{`\/reader\/\$\{encodeURIComponent\(story\.id\)\}[\s\S]*?prefetch=\{false\}/u,
+  );
+  assert.match(
+    sidebarSource,
+    /id=\{`nav-item-\$\{story\.id\}`\}[\s\S]*?prefetch=\{false\}/u,
+  );
+});
+
+test('closed folder cards use intrinsic-size containment without hiding open folders', () => {
+  assert.match(
+    homeSource,
+    /isOpen \? '' : 'magi-folder-card-collapsed'/u,
+  );
+  assert.match(
+    sidebarSource,
+    /folderOpen \? '' : 'magi-sidebar-folder-collapsed'/u,
+  );
+  assert.match(
+    globalCss,
+    /\.magi-folder-card-collapsed\s*\{[\s\S]*?content-visibility:\s*auto;[\s\S]*?contain-intrinsic-size:\s*auto 68px;/u,
+  );
+  assert.match(
+    globalCss,
+    /\.magi-sidebar-folder-collapsed\s*\{[\s\S]*?content-visibility:\s*auto;[\s\S]*?contain-intrinsic-size:\s*auto 44px;/u,
+  );
 });
 
 test('large full-text search is explicit and keeps one compact parsed object graph', () => {

@@ -87,6 +87,20 @@
 .glass-panel { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .whitespace-pre-wrap { margin-top: -0.1em; margin-bottom: -0.1em; display: block; }
 div[id^="line-"] { padding-top: 0.15rem !important; padding-bottom: 0.15rem !important; }
+
+/* Skip layout and paint work for closed, off-screen navigation cards while
+   keeping an intrinsic placeholder. Open/current folders deliberately do not
+   receive these classes, so their measured content and controls stay live. */
+.magi-folder-card-collapsed {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 68px;
+}
+
+.magi-sidebar-folder-collapsed {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 44px;
+}
+
 .bg-red-100.text-red-700.outline {
   background-color: rgba(254, 226, 226, 0.8) !important;
   color: #b91c1c !important; 

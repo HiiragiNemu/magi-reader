@@ -96,15 +96,21 @@ jobs:
               for model_id, model in model_by_id.items()
               if model.get('publishedModel') is True
           }
-          components = {
+          hidden_aliases = {
               model_id: model
               for model_id, model in model_by_id.items()
               if model.get('publishedModel') is False
           }
-          if len(published) != 372 or len(components) != 38:
+          components = {
+              model_id: model
+              for model_id, model in model_by_id.items()
+              if model.get('canonicalModelId') != model_id
+          }
+          if len(published) != 410 or hidden_aliases or len(components) != 38:
               raise SystemExit(
                   'Unexpected general_voice release boundary: '
-                  f'published={len(published)} components={len(components)}'
+                  f'published={len(published)} hidden={len(hidden_aliases)} '
+                  f'components={len(components)}'
               )
           voice_story_list = [
               story
@@ -129,13 +135,9 @@ jobs:
               component_ids = model.get('componentModelIds')
               if not isinstance(component_ids, list):
                   raise SystemExit(f'Invalid component list for {model_id}')
-              expected_legacy_ids = [f'voice_{item}' for item in component_ids]
-              if story.get('component_model_ids') != component_ids:
+              if story.get('component_model_ids', []) != component_ids:
                   raise SystemExit(f'Component metadata mismatch for {model_id}')
-              if component_ids:
-                  if story.get('legacy_ids') != expected_legacy_ids:
-                      raise SystemExit(f'Legacy component aliases are missing for {model_id}')
-              elif story.get('legacy_ids') not in (None, []):
+              if story.get('legacy_ids') not in (None, []):
                   raise SystemExit(f'Unexpected legacy aliases for {model_id}')
               if story.get('path_cn') != (
                   f'/data/general_voice/{model_id}/{model_id}_cn.txt'
@@ -151,9 +153,9 @@ jobs:
               if (
                   canonical is None
                   or model_id not in canonical.get('componentModelIds', [])
-                  or f'general_voice/{model_id}' in voice_stories
+                  or f'general_voice/{model_id}' not in voice_stories
               ):
-                  raise SystemExit(f'Invalid component compatibility alias: {model_id}')
+                  raise SystemExit(f'Component story was not losslessly published: {model_id}')
           takina = published.get('406200')
           takina_story = voice_stories.get('general_voice/406200')
           if (
@@ -498,15 +500,21 @@ jobs:
               for model_id, model in model_by_id.items()
               if model.get('publishedModel') is True
           }
-          components = {
+          hidden_aliases = {
               model_id: model
               for model_id, model in model_by_id.items()
               if model.get('publishedModel') is False
           }
-          if len(published) != 372 or len(components) != 38:
+          components = {
+              model_id: model
+              for model_id, model in model_by_id.items()
+              if model.get('canonicalModelId') != model_id
+          }
+          if len(published) != 410 or hidden_aliases or len(components) != 38:
               raise SystemExit(
                   'Unexpected deployed general_voice boundary: '
-                  f'published={len(published)} components={len(components)}'
+                  f'published={len(published)} hidden={len(hidden_aliases)} '
+                  f'components={len(components)}'
               )
           voice_story_list = [
               story
@@ -533,17 +541,11 @@ jobs:
               component_ids = model.get('componentModelIds')
               if not isinstance(component_ids, list):
                   raise SystemExit(f'Invalid deployed component list for {model_id}')
-              expected_legacy_ids = [f'voice_{item}' for item in component_ids]
-              if story.get('component_model_ids') != component_ids:
+              if story.get('component_model_ids', []) != component_ids:
                   raise SystemExit(
                       f'Deployed component metadata mismatch for {model_id}'
                   )
-              if component_ids:
-                  if story.get('legacy_ids') != expected_legacy_ids:
-                      raise SystemExit(
-                          f'Deployed legacy component aliases missing for {model_id}'
-                      )
-              elif story.get('legacy_ids') not in (None, []):
+              if story.get('legacy_ids') not in (None, []):
                   raise SystemExit(f'Unexpected deployed aliases for {model_id}')
               if story.get('path_cn') != (
                   f'/data/general_voice/{model_id}/{model_id}_cn.txt'
@@ -559,10 +561,10 @@ jobs:
               if (
                   canonical is None
                   or model_id not in canonical.get('componentModelIds', [])
-                  or f'general_voice/{model_id}' in voice_stories
+                  or f'general_voice/{model_id}' not in voice_stories
               ):
                   raise SystemExit(
-                      f'Invalid deployed component compatibility alias: {model_id}'
+                      f'Deployed component story is missing: {model_id}'
                   )
           takina = published.get('406200')
           takina_story = voice_stories.get('general_voice/406200')
@@ -745,8 +747,13 @@ jobs:
               or sum(
                   1 for model in general_voice_models
                   if isinstance(model, dict)
-                  and model.get('publishedModel') is False
+                  and model.get('canonicalModelId') != model.get('id')
               ) != expected_voice_components
+              or any(
+                  isinstance(model, dict)
+                  and model.get('publishedModel') is False
+                  for model in general_voice_models
+              )
               or len(general_voice_stories) != expected_voice_published
           ):
               raise SystemExit(

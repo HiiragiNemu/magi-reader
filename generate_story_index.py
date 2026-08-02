@@ -3600,6 +3600,59 @@ def _general_voice_manifest_file(
     return candidate, pure.as_posix()
 
 
+def _validate_general_voice_release_relationships(
+    model_by_id: Mapping[str, Mapping[str, Any]],
+) -> None:
+    """Validate combo links and fail closed for every lossy hidden component."""
+
+    for model_id, model in model_by_id.items():
+        canonical_id = str(model.get("canonicalModelId") or "")
+        canonical = model_by_id.get(canonical_id)
+        components = (
+            canonical.get("componentModelIds")
+            if isinstance(canonical, Mapping)
+            else None
+        )
+        if model_id == canonical_id:
+            if model.get("publishedModel") is not True:
+                raise PipelineError(f"魔法纪录组合语音主记录不可隐藏: {model_id}")
+            continue
+        if (
+            not isinstance(components, list)
+            or model_id not in components
+            or canonical_id[:4] != model_id[:4]
+        ):
+            raise PipelineError(f"魔法纪录组合语音反向关系无效: {model_id}")
+        if model.get("publishedModel") is False:
+            hash_fields = ("sourceJsonSha256", "cnJsonSha256", "txtSha256")
+            if any(
+                not re.fullmatch(
+                    r"[a-f0-9]{64}",
+                    str(model.get(field) or "").casefold(),
+                )
+                or str(model.get(field) or "").casefold()
+                != str(canonical.get(field) or "").casefold()
+                for field in hash_fields
+            ):
+                raise PipelineError(
+                    f"隐藏组件并非内容等价别名，必须独立发布: {model_id}"
+                )
+    for canonical_id, canonical in model_by_id.items():
+        components = canonical.get("componentModelIds")
+        if not isinstance(components, list):
+            continue
+        reverse_components = sorted(
+            model_id
+            for model_id, model in model_by_id.items()
+            if model_id != canonical_id
+            and str(model.get("canonicalModelId") or "") == canonical_id
+        )
+        if sorted(components) != reverse_components:
+            raise PipelineError(
+                f"魔法纪录组合语音正反关系不完整: {canonical_id}"
+            )
+
+
 def scan_general_voice_sources(
     *,
     source_dir: Path,
@@ -3647,17 +3700,7 @@ def scan_general_voice_sources(
     }
     if len(model_by_id) != len(models):
         raise PipelineError("魔法纪录语音清单存在重复或无效模型 ID")
-    for model_id, model in model_by_id.items():
-        canonical_id = str(model.get("canonicalModelId") or "")
-        if model.get("publishedModel") is False:
-            canonical = model_by_id.get(canonical_id)
-            components = canonical.get("componentModelIds") if isinstance(canonical, dict) else None
-            if (
-                not isinstance(components, list)
-                or model_id not in components
-                or canonical_id[:4] != model_id[:4]
-            ):
-                raise PipelineError(f"魔法纪录组合语音反向关系无效: {model_id}")
+    _validate_general_voice_release_relationships(model_by_id)
     for index, model in enumerate(models, 1):
         if not isinstance(model, dict):
             raise PipelineError(f"魔法纪录语音清单第 {index} 项不是对象")
@@ -3769,6 +3812,7 @@ def scan_general_voice_sources(
         published_model = model.get("publishedModel")
         canonical_model_id = str(model.get("canonicalModelId") or "")
         component_model_ids = model.get("componentModelIds")
+        model_role = str(model.get("modelRole") or "")
         if (
             not isinstance(published_model, bool)
             or not GENERAL_VOICE_MODEL_RE.fullmatch(canonical_model_id)
@@ -3780,8 +3824,14 @@ def scan_general_voice_sources(
                 for component in component_model_ids
             )
             or len(component_model_ids) != len(set(component_model_ids))
-            or (published_model and canonical_model_id != model_id)
             or (not published_model and component_model_ids)
+            or model_role
+            not in {"standalone", "comboCanonical", "comboComponent"}
+            or (model_role == "standalone" and canonical_model_id != model_id)
+            or (model_role == "comboCanonical" and canonical_model_id != model_id)
+            or (model_role == "comboCanonical" and not component_model_ids)
+            or (model_role == "comboComponent" and canonical_model_id == model_id)
+            or (model_role != "comboCanonical" and component_model_ids)
         ):
             raise PipelineError(f"魔法纪录组合语音发布关系无效: {model_id}")
 
@@ -3794,8 +3844,9 @@ def scan_general_voice_sources(
             total_units - translated_units
         )
         stats["general_voice_groups_without_voice"] += no_voice_groups
-        if not published_model:
+        if canonical_model_id != model_id:
             stats["general_voice_component_models"] += 1
+        if not published_model:
             continue
 
         story_id = f"voice_{model_id}"
@@ -3821,6 +3872,13 @@ def scan_general_voice_sources(
             if costume_jp and costume_jp != costume_name
             else ""
         )
+        role_label = (
+            " · 组合看板"
+            if model_role == "comboCanonical"
+            else " · 角色分体"
+            if model_role == "comboComponent"
+            else ""
+        )
         family_name = folder.partition(" - ")[2]
         record = _new_story_record(
             story_id=story_id,
@@ -3830,7 +3888,7 @@ def scan_general_voice_sources(
             folder=folder,
             title=(
                 f"{model_id} · {family_name} · {readable_costume} · "
-                f"已汉化 {translated_units}/{total_units} 条语音"
+                f"已汉化 {translated_units}/{total_units} 条语音{role_label}"
             ),
         )
         destination_dir = destination_root / model_id
@@ -3862,7 +3920,8 @@ def scan_general_voice_sources(
                 "groups_without_voice": no_voice_groups,
                 "model_id": model_id,
                 "character_group_id": char_id,
-                "component_model_ids": component_model_ids,
+                "canonical_model_id": canonical_model_id,
+                "voice_model_role": model_role,
                 "json_paths_cn": [
                     f"/data/general_voice/{model_id}/{json_name}"
                 ],
@@ -3873,8 +3932,15 @@ def scan_general_voice_sources(
             }
         )
         if component_model_ids:
+            record["component_model_ids"] = component_model_ids
+        hidden_alias_ids = [
+            component
+            for component in component_model_ids
+            if model_by_id[component].get("publishedModel") is False
+        ]
+        if hidden_alias_ids:
             record["legacy_ids"] = [
-                f"voice_{component}" for component in component_model_ids
+                f"voice_{component}" for component in hidden_alias_ids
             ]
         source_audit.expect(source_txt)
         source_audit.claim(
@@ -3952,6 +4018,8 @@ def finalize_story_list(
             "model_id",
             "character_group_id",
             "component_model_ids",
+            "canonical_model_id",
+            "voice_model_role",
         ):
             if extra_key in value:
                 entry[extra_key] = value[extra_key]

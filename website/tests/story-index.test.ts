@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 test('story index validation rejects paths outside the public data boundary', async () => {
@@ -193,6 +194,41 @@ test('reader resolves safe query paths without waiting for the full story index'
       optionalCn: false,
       kind: 'query',
     },
+  );
+});
+
+test('combo component voice routes retain their own playable JSON and TXT', async () => {
+  const { findStoryByRouteId, parseStoryIndex } = await import(
+    '../lib/story-index.ts'
+  );
+  const raw = JSON.parse(
+    readFileSync(
+      new URL('../public/story_index.json', import.meta.url),
+      'utf8',
+    ),
+  );
+  const stories = parseStoryIndex(raw);
+  const canonical = findStoryByRouteId(stories, 'voice_111800');
+  const component = findStoryByRouteId(stories, 'voice_111801');
+
+  assert.equal(canonical?.id, 'voice_111800');
+  assert.equal(component?.id, 'voice_111801');
+  assert.notEqual(component?.id, canonical?.id);
+  assert.equal(
+    component?.path_cn,
+    '/data/general_voice/111801/111801_cn.txt',
+  );
+  assert.deepEqual(
+    component?.json_paths_cn,
+    ['/data/general_voice/111801/111801_cn.json'],
+  );
+  assert.ok(component?.json_sources_cn?.[0]?.endsWith('/111801_cn.json'));
+  assert.equal(component?.source_count, 1);
+  assert.equal(component?.voice_model_role, 'comboComponent');
+  assert.doesNotMatch(component?.title ?? '', /legacy|alias/iu);
+  assert.equal(
+    canonical?.legacy_ids?.includes('voice_111801') ?? false,
+    false,
   );
 });
 
@@ -530,6 +566,8 @@ test('general voice coverage is derived from translated textHome units', async (
     groups_without_voice: 0,
     model_id: '406200',
     character_group_id: '4062',
+    canonical_model_id: '406200',
+    voice_model_role: 'standalone',
   };
   assert.deepEqual(parseStoryIndex([untranslated]), [untranslated]);
   assert.equal(

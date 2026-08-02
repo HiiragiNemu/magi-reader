@@ -102,8 +102,30 @@ def _localized_name(entry: dict, field: str, language: str) -> str:
     return clean(value.get(language), 160)
 
 
+def _is_exact_payload_alias(model: dict, canonical: dict) -> bool:
+    """Return true only for byte-identical, fully hashed source/CN/TXT payloads.
+
+    A shared first-four-digit family or a duplicated costume label is not proof
+    that two voice scripts carry the same cues.  Hiding a component is therefore
+    allowed only when all three persisted payload hashes are present and equal.
+    Missing/legacy hashes deliberately fail closed and keep the model public.
+    """
+
+    hash_fields = ("sourceJsonSha256", "cnJsonSha256", "txtSha256")
+    for field in hash_fields:
+        value = str(model.get(field) or "").casefold()
+        canonical_value = str(canonical.get(field) or "").casefold()
+        if (
+            not re.fullmatch(r"[a-f0-9]{64}", value)
+            or not re.fullmatch(r"[a-f0-9]{64}", canonical_value)
+            or value != canonical_value
+        ):
+            return False
+    return True
+
+
 def build_hierarchy_metadata(models: list[dict]) -> dict[str, dict]:
-    """Build deterministic readable repository paths and combo aliases."""
+    """Build readable paths while preserving every distinct combo payload."""
 
     by_family: dict[str, list[dict]] = {}
     for model in models:
@@ -144,6 +166,15 @@ def build_hierarchy_metadata(models: list[dict]) -> dict[str, dict]:
             [str(model["id"]) for model in members if model["id"] != base_id]
             if is_combo_family else []
         )
+        exact_alias_ids = {
+            str(model["id"])
+            for model in members
+            if (
+                is_combo_family
+                and model["id"] != base_id
+                and _is_exact_payload_alias(model, base)
+            )
+        }
         for model in members:
             model_id = str(model["id"])
             costume_cn = _localized_name(model, "costume", "cn")
@@ -154,6 +185,8 @@ def build_hierarchy_metadata(models: list[dict]) -> dict[str, dict]:
                 model_label += f"（{costume_jp}）"
             if is_combo_family and model_id == base_id:
                 model_label += " - 组合看板"
+            elif is_combo_family:
+                model_label += " - 角色分体"
             model_folder = safe_folder_component(model_label, limit=84)
             relative_dir = Path(family_folder, model_folder).as_posix()
             canonical_id = base_id if is_combo_family else model_id
@@ -165,9 +198,19 @@ def build_hierarchy_metadata(models: list[dict]) -> dict[str, dict]:
                 "sourceRelativePath": f"{relative_dir}/{model_id}.json",
                 "cnJsonRelativePath": f"{relative_dir}/{model_id}_cn.json",
                 "cnTxtRelativePath": f"{relative_dir}/{model_id}_cn.txt",
-                "publishedModel": model_id == canonical_id,
+                # Component scripts frequently contain cues absent from the
+                # combo base script.  Publish them unless byte-for-byte payload
+                # equivalence has been proven by all persisted hashes.
+                "publishedModel": model_id not in exact_alias_ids,
                 "canonicalModelId": canonical_id,
                 "componentModelIds": component_ids if model_id == canonical_id else [],
+                "modelRole": (
+                    "comboCanonical"
+                    if is_combo_family and model_id == base_id
+                    else "comboComponent"
+                    if is_combo_family
+                    else "standalone"
+                ),
             }
     return result
 
@@ -606,6 +649,7 @@ def rebuild_existing(*, check: bool) -> int:
                     "publishedModel",
                     "canonicalModelId",
                     "componentModelIds",
+                    "modelRole",
                 )
             }
             for item in rebuilt_models

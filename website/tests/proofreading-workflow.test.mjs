@@ -65,8 +65,8 @@ test('test deployment uses a dedicated KV and supports real Turnstile secrets', 
   assert.doesNotMatch(workflow, /wrangler r2 object put/u);
   assert.match(workflow, /manual R2 upload/u);
   assert.match(workflow, /EXPECTED_GENERAL_VOICE_PUBLISHED/u);
-  assert.match(workflow, /len\(published\) != 372/u);
-  assert.match(workflow, /Legacy component aliases are missing/u);
+  assert.match(workflow, /len\(published\) != 410/u);
+  assert.match(workflow, /Component story was not losslessly published/u);
   assert.match(workflow, /general_voice\/406200 must remain 0\/39 translated/u);
   assert.doesNotMatch(
     workflow,
