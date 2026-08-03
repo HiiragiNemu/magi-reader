@@ -27,16 +27,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/source-assets"
-          gh release download latest \
-            --pattern 'Scenarios.7z' \
-            --pattern 'Manifests.7z' \
-            --dir "$RUNNER_TEMP/source-assets" \
-            --repo "$GITHUB_REPOSITORY"
-          scenarios="$RUNNER_TEMP/source-assets/Scenarios.7z"
-          manifests="$RUNNER_TEMP/source-assets/Manifests.7z"
-          test "$(sha256sum "$scenarios" | cut -d' ' -f1)" = "698b4df4d3167602262f3a91e4ab0e82435a92a314b0f4e8af91ea4eb3bc9495"
-          test "$(sha256sum "$manifests" | cut -d' ' -f1)" = "ab630d158c1edeb11107d0c23c11d4139c7ea4cf73fc4bc22dd37f6bc4da12ec"
+          download="$RUNNER_TEMP/downloaded-release-assets"
+          source="$RUNNER_TEMP/source-assets"
+          mkdir -p "$download" "$source"
+          gh release download latest --dir "$download" --repo "$GITHUB_REPOSITORY"
+          find "$download" -maxdepth 1 -type f -print0 | sort -z | xargs -0 sha256sum
+          scenarios="$(find "$download" -maxdepth 1 -type f -print0 | xargs -0 sha256sum | awk '$1=="698b4df4d3167602262f3a91e4ab0e82435a92a314b0f4e8af91ea4eb3bc9495" {sub(/^[^ ]+  /,""); print; exit}')"
+          manifests="$(find "$download" -maxdepth 1 -type f -print0 | xargs -0 sha256sum | awk '$1=="ab630d158c1edeb11107d0c23c11d4139c7ea4cf73fc4bc22dd37f6bc4da12ec" {sub(/^[^ ]+  /,""); print; exit}')"
+          test -n "$scenarios"
+          test -n "$manifests"
+          cp "$scenarios" "$source/Scenarios.7z"
+          cp "$manifests" "$source/Manifests.7z"
 
       - name: Install conversion tools
         shell: bash
