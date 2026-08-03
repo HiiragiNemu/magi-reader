@@ -44,15 +44,57 @@ fs.rmSync(outputRoot, { recursive: true, force: true });
 fs.mkdirSync(outputRoot, { recursive: true });
 fs.cpSync(assetRoot, outputRoot, { recursive: true, force: true });
 
-// OpenNext already owns static asset resolution through the ASSETS binding.
-// Delegating every request to the generated worker preserves Next.js RSC/Flight
-// headers and dynamic route handling. A Pages-level ASSETS-first shortcut can
-// return ordinary HTML for client-navigation requests and make the router flash
-// before falling back to the current page.
+// Pages must serve the generated static catalogue and public files directly.
+// Next.js dynamic routes and RSC/Flight navigation must bypass the Pages asset
+// fallback and reach the generated OpenNext worker. Sending every request to
+// either side is unsafe: ASSETS-first can swallow RSC navigation, while routing
+// static catalogue files through OpenNext can leave the client waiting forever.
 const wrapper = String.raw`import appWorker from "../.open-next/worker.js";
 
+const isRscRequest = (request, url) => {
+  const accept = request.headers.get("accept") || "";
+  return (
+    url.searchParams.has("_rsc") ||
+    request.headers.get("rsc") === "1" ||
+    request.headers.has("next-router-state-tree") ||
+    request.headers.has("next-router-prefetch") ||
+    accept.includes("text/x-component")
+  );
+};
+
+const shouldTryStaticAsset = (request, url) => {
+  if (request.method !== "GET" && request.method !== "HEAD") return false;
+  if (isRscRequest(request, url)) return false;
+
+  const pathname = url.pathname;
+  if (
+    pathname.startsWith("/api/") ||
+    pathname.startsWith("/reader/") ||
+    pathname.startsWith("/review/")
+  ) {
+    return false;
+  }
+
+  return (
+    pathname === "/" ||
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/data/") ||
+    pathname.startsWith("/audio/") ||
+    pathname.startsWith("/fonts/") ||
+    /\/[^/]+\.[A-Za-z0-9]{1,16}$/.test(pathname)
+  );
+};
+
 export default {
-  fetch(request, env, ctx) {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    if (shouldTryStaticAsset(request, url)) {
+      const assetResponse = await env.ASSETS.fetch(request);
+      if (assetResponse.status !== 404) {
+        return assetResponse;
+      }
+      await assetResponse.body?.cancel();
+    }
     return appWorker.fetch(request, env, ctx);
   },
 };
