@@ -28,6 +28,7 @@ def main() -> int:
     manifest_root = args.manifest_root.resolve(strict=True)
     report = import_corpus(scenario_root, manifest_root)
 
+    run(sys.executable, "tools/patch_tw_deploy_workflow.py")
     run(sys.executable, "generate_story_index.py")
     run(sys.executable, "tools/apply_tw_official_features.py")
     run(
