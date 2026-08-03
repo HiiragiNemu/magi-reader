@@ -93,6 +93,7 @@ jobs:
             --latest --repo "$GITHUB_REPOSITORY"
 
       - name: Upload workflow audit artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: simplified-tw-data-audit
@@ -102,10 +103,35 @@ jobs:
             ${{ runner.temp }}/release-assets/RELEASE_NOTES.md
           retention-days: 14
 
-      - name: Remove temporary release branch
-        if: success()
+      - name: Record workflow result
+        if: always()
         env:
-          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
         shell: bash
         run: |
-          gh api --method DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${GITHUB_REF_NAME}" || true
+          set -u
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          target = Path('release-status/publish-simplified-tw-data.json')
+          target.parent.mkdir(parents=True, exist_ok=True)
+          result = {
+              'status': os.environ['JOB_STATUS'],
+              'runId': int(os.environ['RUN_ID']),
+              'runAttempt': int(os.environ['RUN_ATTEMPT']),
+              'sourceCommit': os.environ['GITHUB_SHA'],
+              'sourceScenariosSha256': '698b4df4d3167602262f3a91e4ab0e82435a92a314b0f4e8af91ea4eb3bc9495',
+              'sourceManifestsSha256': 'ab630d158c1edeb11107d0c23c11d4139c7ea4cf73fc4bc22dd37f6bc4da12ec',
+          }
+          report = Path(os.environ['RUNNER_TEMP']) / 'release-assets' / 'localization-report.json'
+          if report.exists():
+              result['localizationReport'] = json.loads(report.read_text(encoding='utf-8'))
+          target.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add release-status/publish-simplified-tw-data.json
+          git commit -m "Record Simplified Chinese release workflow result" || true
+          git push origin "HEAD:${GITHUB_REF_NAME}" || true
