@@ -9,13 +9,23 @@ permissions:
   contents: read
 
 jobs:
-  inspect:
+  export-current-data:
     runs-on: ubuntu-latest
     steps:
-      - name: Print current release assets
+      - name: Download current story release asset
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          gh release view latest --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[] | [.name, .size, .url] | @tsv'
+          mkdir -p "$RUNNER_TEMP/current-release"
+          gh release download latest --repo "$GITHUB_REPOSITORY" --pattern magireader_story_data.zip --dir "$RUNNER_TEMP/current-release"
+          sha256sum "$RUNNER_TEMP/current-release/magireader_story_data.zip"
+
+      - name: Upload current story data for diff
+        uses: actions/upload-artifact@v4
+        with:
+          name: current-story-data-for-diff
+          path: ${{ runner.temp }}/current-release/magireader_story_data.zip
+          compression-level: 0
+          retention-days: 1
