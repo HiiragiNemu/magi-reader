@@ -2,108 +2,20 @@ name: Publish simplified TW data
 
 on:
   pull_request:
-    branches:
-      - main
-    types:
-      - opened
-      - synchronize
-      - reopened
+    branches: [main]
+    types: [opened, synchronize, reopened]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  publish:
+  inspect:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Download and verify source release assets
+      - name: Print current release assets
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          download="$RUNNER_TEMP/downloaded-release-assets"
-          source="$RUNNER_TEMP/source-assets"
-          mkdir -p "$download" "$source"
-          gh release download latest --dir "$download" --repo "$GITHUB_REPOSITORY"
-          find "$download" -maxdepth 1 -type f -print0 | sort -z | xargs -0 sha256sum
-          scenarios="$(find "$download" -maxdepth 1 -type f -print0 | xargs -0 sha256sum | awk '$1=="698b4df4d3167602262f3a91e4ab0e82435a92a314b0f4e8af91ea4eb3bc9495" {sub(/^[^ ]+  /,""); print; exit}')"
-          manifests="$(find "$download" -maxdepth 1 -type f -print0 | xargs -0 sha256sum | awk '$1=="ab630d158c1edeb11107d0c23c11d4139c7ea4cf73fc4bc22dd37f6bc4da12ec" {sub(/^[^ ]+  /,""); print; exit}')"
-          test -n "$scenarios"
-          test -n "$manifests"
-          cp "$scenarios" "$source/Scenarios.7z"
-          cp "$manifests" "$source/Manifests.7z"
-
-      - name: Install conversion tools
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y p7zip-full
-          python -m pip install --disable-pip-version-check opencc-python-reimplemented
-
-      - name: Extract source scenarios and build inventory
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/source-scenarios"
-          7z x -y -o"$RUNNER_TEMP/source-scenarios" "$RUNNER_TEMP/source-assets/Scenarios.7z"
-          python release-input/make_scenario_inventory.py \
-            --root "$RUNNER_TEMP/source-scenarios" \
-            --archive "$RUNNER_TEMP/source-assets/Scenarios.7z" \
-            --out "$RUNNER_TEMP/scenario_inventory.json"
-          python - <<'PY'
-          import json, os
-          from pathlib import Path
-          p = json.loads((Path(os.environ['RUNNER_TEMP']) / 'scenario_inventory.json').read_text(encoding='utf-8'))
-          assert p['schemaVersion'] == 2
-          assert p['fileCount'] == 2780
-          assert p['sourceArchiveSha256'] == '698b4df4d3167602262f3a91e4ab0e82435a92a314b0f4e8af91ea4eb3bc9495'
-          PY
-
-      - name: Build and validate Simplified Chinese assets
-        shell: bash
-        run: |
-          set -euo pipefail
-          python release-input/publish_release_assets.py \
-            --repo "$GITHUB_WORKSPACE" \
-            --inventory "$RUNNER_TEMP/scenario_inventory.json" \
-            --manifests "$RUNNER_TEMP/source-assets/Manifests.7z" \
-            --work "$RUNNER_TEMP/localization-work" \
-            --out "$RUNNER_TEMP/release-assets"
-          7z t "$RUNNER_TEMP/release-assets/Scenarios.7z"
-          7z t "$RUNNER_TEMP/release-assets/Manifests.7z"
-
-      - name: Update latest release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          assets="$RUNNER_TEMP/release-assets"
-          gh release upload latest \
-            "$assets/Scenarios.7z" \
-            "$assets/Manifests.7z" \
-            "$assets/localization-report.json" \
-            "$assets/SHA256SUMS.txt" \
-            --clobber --repo "$GITHUB_REPOSITORY"
-          gh release edit latest \
-            --title "Latest Data" \
-            --notes-file "$assets/RELEASE_NOTES.md" \
-            --latest --repo "$GITHUB_REPOSITORY"
-
-      - name: Upload workflow audit artifact
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: simplified-tw-data-audit
-          path: |
-            ${{ runner.temp }}/release-assets/localization-report.json
-            ${{ runner.temp }}/release-assets/SHA256SUMS.txt
-            ${{ runner.temp }}/release-assets/RELEASE_NOTES.md
-          retention-days: 14
+          gh release view latest --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[] | [.name, .size, .url] | @tsv'
