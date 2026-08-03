@@ -44,17 +44,15 @@ fs.rmSync(outputRoot, { recursive: true, force: true });
 fs.mkdirSync(outputRoot, { recursive: true });
 fs.cpSync(assetRoot, outputRoot, { recursive: true, force: true });
 
+// OpenNext already owns static asset resolution through the ASSETS binding.
+// Delegating every request to the generated worker preserves Next.js RSC/Flight
+// headers and dynamic route handling. A Pages-level ASSETS-first shortcut can
+// return ordinary HTML for client-navigation requests and make the router flash
+// before falling back to the current page.
 const wrapper = String.raw`import appWorker from "../.open-next/worker.js";
 
 export default {
-  async fetch(request, env, ctx) {
-    if (request.method === "GET" || request.method === "HEAD") {
-      const assetResponse = await env.ASSETS.fetch(request);
-      if (assetResponse.status !== 404) {
-        return assetResponse;
-      }
-      await assetResponse.body?.cancel();
-    }
+  fetch(request, env, ctx) {
     return appWorker.fetch(request, env, ctx);
   },
 };
