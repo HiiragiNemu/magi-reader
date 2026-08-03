@@ -9,23 +9,26 @@ permissions:
   contents: read
 
 jobs:
-  export-current-data:
+  export-exedra-baselines:
     runs-on: ubuntu-latest
     steps:
-      - name: Download current story release asset
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Package Exedra source and translated JSON baselines
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/current-release"
-          gh release download latest --repo "$GITHUB_REPOSITORY" --pattern magireader_story_data.zip --dir "$RUNNER_TEMP/current-release"
-          sha256sum "$RUNNER_TEMP/current-release/magireader_story_data.zip"
+          mkdir -p "$RUNNER_TEMP/exedra-baselines"
+          cp -a magiraexedra-source-master/Scenarios_full "$RUNNER_TEMP/exedra-baselines/source"
+          cp -a magiraexedra-translate-data-master/Scenarios_full "$RUNNER_TEMP/exedra-baselines/translated"
+          find "$RUNNER_TEMP/exedra-baselines" -type f -name '*.json' | wc -l
 
-      - name: Upload current story data for diff
+      - name: Upload Exedra baselines for local diff
         uses: actions/upload-artifact@v4
         with:
-          name: current-story-data-for-diff
-          path: ${{ runner.temp }}/current-release/magireader_story_data.zip
-          compression-level: 0
+          name: exedra-json-baselines-for-diff
+          path: ${{ runner.temp }}/exedra-baselines
+          compression-level: 6
           retention-days: 1
