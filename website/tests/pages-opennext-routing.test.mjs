@@ -11,7 +11,9 @@ test('Pages wrapper serves public assets without routing them through OpenNext',
   assert.match(wrapperSource, /env\.ASSETS\.fetch\(request\)/u);
   assert.match(wrapperSource, /pathname\.startsWith\(\"\/data\/\"\)/u);
   assert.match(wrapperSource, /pathname\.startsWith\(\"\/_next\/\"\)/u);
-  assert.match(wrapperSource, /\/\\\.\[A-Za-z0-9\]\{1,16\}\$/u);
+  assert.ok(
+    wrapperSource.includes('/\\/[^/]+\\.[A-Za-z0-9]{1,16}$/'),
+  );
 });
 
 test('Pages wrapper sends dynamic and RSC requests to OpenNext', () => {
