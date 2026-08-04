@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+
 
 def apply_story_metadata(metadata: dict[str, dict[str, Any]]) -> None:
     path = ROOT / "website/public/story_index.json"
@@ -35,6 +35,7 @@ def apply_story_metadata(metadata: dict[str, dict[str, Any]]) -> None:
     )
     print(f"TW_STORY_METADATA_OK stories={applied}")
 
+
 def replace_once(path: Path, old: str, new: str) -> None:
     text = path.read_text(encoding="utf-8")
     count = text.count(old)
@@ -42,12 +43,6 @@ def replace_once(path: Path, old: str, new: str) -> None:
         raise RuntimeError(f"补丁锚点数量异常：{path}: {count}: {old[:80]!r}")
     path.write_text(text.replace(old, new, 1), encoding="utf-8")
 
-def regex_once(path: Path, pattern: str, replacement: str, flags: int = 0) -> None:
-    text = path.read_text(encoding="utf-8")
-    updated, count = re.subn(pattern, replacement, text, count=1, flags=flags)
-    if count != 1:
-        raise RuntimeError(f"正则补丁锚点数量异常：{path}: {count}: {pattern[:100]}")
-    path.write_text(updated, encoding="utf-8")
 
 def patch_sidebar() -> None:
     path = ROOT / "website/components/Sidebar.tsx"
@@ -57,7 +52,7 @@ def patch_sidebar() -> None:
     replace_once(
         path,
         "import { useEffect, useMemo, useState, type ComponentType } from 'react';",
-        "import { useEffect, useMemo, useState, type ComponentType, type PointerEvent as ReactPointerEvent } from 'react';",
+        "import { useEffect, useMemo, useRef, useState, type ComponentType, type PointerEvent as ReactPointerEvent } from 'react';",
     )
     replace_once(
         path,
@@ -72,12 +67,7 @@ def patch_sidebar() -> None:
     replace_once(
         path,
         "  const [folderOverrides, setFolderOverrides] = useState<Record<string, boolean>>({});\n  const sidebarRef = useDialog<HTMLElement>(isOpen, onClose);",
-        "  const [folderOverrides, setFolderOverrides] = useState<Record<string, boolean>>({});\n  const [sidebarWidth, setSidebarWidth] = useState(288);\n  const sidebarRef = useDialog<HTMLElement>(isOpen, onClose);\n\n  useEffect(() => {\n    const stored = Number(window.localStorage.getItem(SIDEBAR_WIDTH_STORAGE_KEY));\n    if (Number.isFinite(stored)) {\n      setSidebarWidth(Math.min(SIDEBAR_WIDTH_MAX, Math.max(SIDEBAR_WIDTH_MIN, stored)));\n    }\n  }, []);\n\n  const startSidebarResize = (event: ReactPointerEvent<HTMLButtonElement>) => {\n    event.preventDefault();\n    const startX = event.clientX;\n    const startWidth = sidebarWidth;\n    const move = (moveEvent: PointerEvent) => {\n      const next = Math.min(\n        SIDEBAR_WIDTH_MAX,\n        Math.max(SIDEBAR_WIDTH_MIN, startWidth + moveEvent.clientX - startX),\n      );\n      setSidebarWidth(next);\n    };\n    const stop = () => {\n      window.removeEventListener('pointermove', move);\n      window.removeEventListener('pointerup', stop);\n      window.localStorage.setItem(SIDEBAR_WIDTH_STORAGE_KEY, String(Math.round(sidebarWidth)));\n    };\n    window.addEventListener('pointermove', move);\n    window.addEventListener('pointerup', stop, { once: true });\n  };",
-    )
-    replace_once(
-        path,
-        "  const currentStory = useMemo(",
-        "  useEffect(() => {\n    window.localStorage.setItem(SIDEBAR_WIDTH_STORAGE_KEY, String(Math.round(sidebarWidth)));\n  }, [sidebarWidth]);\n\n  const currentStory = useMemo(",
+        "  const [folderOverrides, setFolderOverrides] = useState<Record<string, boolean>>({});\n  const [sidebarWidth, setSidebarWidth] = useState(288);\n  const sidebarWidthRef = useRef(288);\n  const sidebarRef = useDialog<HTMLElement>(isOpen, onClose);\n\n  useEffect(() => {\n    const stored = Number(window.localStorage.getItem(SIDEBAR_WIDTH_STORAGE_KEY));\n    if (Number.isFinite(stored)) {\n      const normalized = Math.min(SIDEBAR_WIDTH_MAX, Math.max(SIDEBAR_WIDTH_MIN, stored));\n      sidebarWidthRef.current = normalized;\n      setSidebarWidth(normalized);\n    }\n  }, []);\n\n  const startSidebarResize = (event: ReactPointerEvent<HTMLButtonElement>) => {\n    event.preventDefault();\n    const startX = event.clientX;\n    const startWidth = sidebarWidthRef.current;\n    const move = (moveEvent: PointerEvent) => {\n      const next = Math.min(\n        SIDEBAR_WIDTH_MAX,\n        Math.max(SIDEBAR_WIDTH_MIN, startWidth + moveEvent.clientX - startX),\n      );\n      sidebarWidthRef.current = next;\n      setSidebarWidth(next);\n    };\n    const stop = () => {\n      window.removeEventListener('pointermove', move);\n      window.removeEventListener('pointerup', stop);\n      window.localStorage.setItem(SIDEBAR_WIDTH_STORAGE_KEY, String(Math.round(sidebarWidthRef.current)));\n    };\n    window.addEventListener('pointermove', move);\n    window.addEventListener('pointerup', stop, { once: true });\n  };",
     )
     replace_once(
         path,
@@ -96,6 +86,7 @@ def patch_sidebar() -> None:
         "        </div>\n      </aside>",
         "        </div>\n        <button\n          type=\"button\"\n          aria-label=\"拖动调整侧边栏宽度\"\n          title={`侧边栏宽度：${sidebarWidth}px`}\n          onPointerDown={startSidebarResize}\n          className=\"absolute inset-y-0 right-0 hidden w-2 cursor-col-resize touch-none md:block hover:bg-blue-400/20\"\n        />\n      </aside>",
     )
+
 
 def patch_home() -> None:
     path = ROOT / "website/app/page.tsx"
@@ -178,6 +169,7 @@ def patch_home() -> None:
     anchor = "              <div className=\"flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5 border border-gray-200 dark:border-gray-700 shrink-0\">"
     replace_once(path, anchor, scope_ui + anchor)
 
+
 def patch_reader() -> None:
     path = ROOT / "website/app/reader/[id]/page.tsx"
     text = path.read_text(encoding="utf-8")
@@ -193,6 +185,7 @@ def patch_reader() -> None:
             "max-h-[calc(100dvh-2rem)] w-full max-w-xs overflow-y-auto",
             "max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto md:max-w-2xl",
         )
+
 
 def main() -> int:
     metadata_value = json.loads(
