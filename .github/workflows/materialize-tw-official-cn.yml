@@ -1,26 +1,29 @@
-name: Materialize TW Official Simplified Chinese
+name: Materialize TW Official Simplified Chinese into EXEDRA-TEST
 
 on:
+  push:
+    branches: [EXEDRA-TEST]
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: materialize-tw-official-cn
+  group: materialize-tw-official-cn-exedra-test
   cancel-in-progress: false
 
 jobs:
   materialize:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      !startsWith(github.event.head_commit.message, '[tw-materialized]')
     runs-on: ubuntu-latest
     timeout-minutes: 240
-    env:
-      SOURCE_TAG: tw-source-zh-cn-2026-08-04
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: feature/tw-official-cn-complete
+          ref: EXEDRA-TEST
 
       - uses: actions/setup-python@v5
         with:
@@ -32,42 +35,21 @@ jobs:
           cache: npm
           cache-dependency-path: website/package-lock.json
 
-      - name: Download and authenticate supplied source archives
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Authenticate and reconstruct supplied TW source corpus
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .tw-official-source/downloads
-          gh release download "$SOURCE_TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --dir .tw-official-source/downloads \
-            --pattern 'Scenarios_zh-CN.7z' \
-            --pattern 'Manifests_zh-CN.7z'
-          printf '%s  %s\n' \
-            '64c86700651b845b484f6100fed61a8c2b860028cda8130456a57979ee907452' \
-            '.tw-official-source/downloads/Scenarios_zh-CN.7z' \
-            '9125ae75d02ac69572fafc08fe2c1479ff872f6394d03b77f5bd046471ebda74' \
-            '.tw-official-source/downloads/Manifests_zh-CN.7z' \
-            | sha256sum --check --strict
-
-      - name: Extract supplied archives
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq p7zip-full
           mkdir -p .tw-official-source/scenarios .tw-official-source/manifests
-          7z x -y .tw-official-source/downloads/Scenarios_zh-CN.7z \
-            -o.tw-official-source/scenarios >/dev/null
-          7z x -y .tw-official-source/downloads/Manifests_zh-CN.7z \
-            -o.tw-official-source/manifests >/dev/null
+          python tools/extract_tw_compact_sources.py \
+            --source-dir sources/tw-official-zh-cn \
+            --scenario-output .tw-official-source/scenarios \
+            --manifest-output .tw-official-source/manifests
           test -f .tw-official-source/manifests/getFieldStageMstList.json
           test -f .tw-official-source/manifests/getAdvMstList.json
           test -f .tw-official-source/manifests/getCollectionConditionMstList.json
-          test -n "$(find .tw-official-source/scenarios -name '*.json' -print -quit)"
+          test "$(find .tw-official-source/scenarios -name '*.json' | wc -l)" -eq 2780
 
-      - name: Inject official TW text and materialize feature branch
+      - name: Inject official TW text and materialize EXEDRA-TEST
         run: >-
           python tools/materialize_tw_official_cn.py
           --scenario-root .tw-official-source/scenarios
@@ -78,16 +60,62 @@ jobs:
         run: npm ci
 
       - name: Run complete repository validation
+        shell: bash
         run: |
+          set -euo pipefail
           python -m unittest discover -s tests -p 'test_*.py'
           cd website
           npm run check
           npm run build:worker
+          npm run verify:cloudflare-output
 
       - name: Verify split search objects
         run: python tools/build_split_search_indexes.py --validate-only
 
-      - name: Commit certified materialized result
+      - name: Verify official TW coverage and naming
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path('artifacts/exedra_official_tw_import_report.json').read_text(
+                  encoding='utf-8'
+              )
+          )
+          stats = report.get('stats', {})
+          if stats.get('official_tw_groups', 0) <= 0:
+              raise SystemExit(f'No official TW groups were materialized: {stats}')
+          if stats.get('failed_groups', 0):
+              raise SystemExit(f'TW structural failures remain: {stats}')
+
+          stories = json.loads(
+              Path('website/public/story_index.json').read_text(encoding='utf-8')
+          )
+          official = [
+              item for item in stories
+              if isinstance(item, dict) and item.get('official_tw') is True
+          ]
+          if len(official) != stats['official_tw_groups']:
+              raise SystemExit(
+                  f'Official story metadata mismatch: {len(official)} != '
+                  f"{stats['official_tw_groups']}"
+              )
+          if not any(item.get('official_tw_chapter_title') for item in official):
+              raise SystemExit('getFieldStageMstList chapter names were not applied')
+          if not any(item.get('official_tw_section_titles') for item in official):
+              raise SystemExit('getAdvMstList subsection names were not applied')
+          print(
+              'TW_OFFICIAL_CERTIFIED '
+              f"groups={stats['official_tw_groups']} "
+              f"json={stats.get('official_tw_json_files', 0)} "
+              f"events={stats.get('official_tw_text_events', 0)}"
+          )
+          PY
+
+      - name: Commit certified materialized result to EXEDRA-TEST
         shell: bash
         run: |
           set -euo pipefail
@@ -99,5 +127,5 @@ jobs:
             echo 'No materialized changes were produced.' >&2
             exit 1
           fi
-          git commit -m '[tw-materialized] Inject official TW zh-CN corpus and reader features'
-          git push origin HEAD:feature/tw-official-cn-complete
+          git commit -m '[tw-materialized] Official TW zh-CN data, UI and split search'
+          git push origin HEAD:EXEDRA-TEST
