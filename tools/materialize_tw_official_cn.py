@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Materialize official TW zh-CN data and all feature-branch outputs."""
+"""Materialize official TW zh-CN data and all EXEDRA-TEST outputs."""
 from __future__ import annotations
 
 import argparse
@@ -27,6 +27,12 @@ def main() -> int:
     scenario_root = args.scenario_root.resolve(strict=True)
     manifest_root = args.manifest_root.resolve(strict=True)
     report = import_corpus(scenario_root, manifest_root)
+    run(
+        sys.executable,
+        "tools/validate_tw_official_coverage.py",
+        "--scenario-root",
+        str(scenario_root),
+    )
 
     run(sys.executable, "tools/patch_tw_deploy_workflow.py")
     run(sys.executable, "generate_story_index.py")
@@ -54,6 +60,8 @@ def main() -> int:
     stats = report.get("stats") if isinstance(report, dict) else None
     if not isinstance(stats, dict) or not stats.get("official_tw_groups"):
         raise RuntimeError("没有生成任何台服官方中文剧情组")
+    if stats.get("failed_groups"):
+        raise RuntimeError(f"台服导入仍有结构失败：{stats}")
     print(json.dumps(stats, ensure_ascii=False))
     return 0
 
