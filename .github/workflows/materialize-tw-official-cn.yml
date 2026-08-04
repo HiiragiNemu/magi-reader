@@ -49,9 +49,6 @@ jobs:
             .tw-official-source/manifests \
             .tw-official-source/normalized
 
-          # The six Scenario files are independently Base64-encoded binary
-          # chunks. Decode each part first, concatenate the binary XZ stream,
-          # and encode it once so the strict extractor sees one canonical part.
           python - <<'PY'
           import base64
           import re
@@ -78,9 +75,18 @@ jobs:
                   raise SystemExit(
                       f'Non-contiguous TW payload parts for {prefix}: {actual}'
                   )
-              for _number, path in sorted(parts):
+              for number, path in sorted(parts):
                   encoded = ''.join(path.read_text(encoding='ascii').split())
-                  binary_parts.append(base64.b64decode(encoded, validate=True))
+                  canonical = encoded.rstrip('=')
+                  canonical += '=' * ((-len(canonical)) % 4)
+                  try:
+                      binary_parts.append(
+                          base64.b64decode(canonical, validate=True)
+                      )
+                  except Exception as exc:
+                      raise SystemExit(
+                          f'Invalid Base64 part {prefix}#{number}: {exc}'
+                      ) from exc
               combined = b''.join(binary_parts)
               output = target / f'{prefix}.part001'
               output.write_text(
