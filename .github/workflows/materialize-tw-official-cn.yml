@@ -51,52 +51,122 @@ jobs:
 
           python - <<'PY'
           import base64
+          import json
+          import lzma
           import re
           from collections import defaultdict
           from pathlib import Path
 
-          source = Path('sources/tw-official-zh-cn')
+          roots = [
+              Path('sources/tw-official-zh-cn'),
+              Path('sources/tw-official-zh-cn-v3'),
+              Path('sources/tw-official-zh-cn-valid'),
+          ]
           target = Path('.tw-official-source/normalized')
           pattern = re.compile(r'^(?P<prefix>.+\.xz\.b64)\.part(?P<number>\d+)$')
-          groups = defaultdict(list)
-          for path in source.glob('*.part*'):
-              match = pattern.fullmatch(path.name)
-              if match:
-                  groups[match.group('prefix')].append(
-                      (int(match.group('number')), path)
-                  )
-          if not groups:
-              raise SystemExit('No compact TW payload parts found')
-          for prefix, parts in sorted(groups.items()):
-              expected = list(range(1, len(parts) + 1))
-              actual = [number for number, _ in sorted(parts)]
-              if actual != expected:
-                  raise SystemExit(
-                      f'Non-contiguous TW payload parts for {prefix}: {actual}'
-                  )
-              encoded_parts = []
-              for number, path in sorted(parts):
-                  encoded = ''.join(path.read_text(encoding='ascii').split())
-                  if not encoded:
-                      raise SystemExit(f'Empty Base64 part {prefix}#{number}')
-                  encoded_parts.append(encoded.rstrip('='))
-              canonical = ''.join(encoded_parts)
-              canonical += '=' * ((-len(canonical)) % 4)
-              try:
-                  combined = base64.b64decode(canonical, validate=True)
-              except Exception as exc:
-                  raise SystemExit(
-                      f'Invalid joined Base64 stream {prefix}: {exc}'
-                  ) from exc
-              output = target / f'{prefix}.part001'
-              output.write_text(
-                  base64.b64encode(combined).decode('ascii') + '\n',
+          scenario = None
+          names = None
+          diagnostics = []
+
+          def canonical_decode(text):
+              value = ''.join(text.split()).rstrip('=')
+              value += '=' * ((-len(value)) % 4)
+              return base64.b64decode(value, validate=True)
+
+          for root in roots:
+              if not root.is_dir():
+                  continue
+              groups = defaultdict(list)
+              for path in root.glob('*.part*'):
+                  match = pattern.fullmatch(path.name)
+                  if match:
+                      groups[match.group('prefix')].append(
+                          (int(match.group('number')), path)
+                      )
+              for prefix, parts in sorted(groups.items()):
+                  ordered = [path for _number, path in sorted(parts)]
+                  numbers = [number for number, _path in sorted(parts)]
+                  if numbers != list(range(1, len(numbers) + 1)):
+                      diagnostics.append(
+                          f'SKIP non-contiguous {root}/{prefix}: {numbers}'
+                      )
+                      continue
+                  texts = [path.read_text(encoding='ascii') for path in ordered]
+                  binary_candidates = []
+                  try:
+                      binary_candidates.append((
+                          'joined-unpadded',
+                          canonical_decode(''.join(text.rstrip().rstrip('=') for text in texts)),
+                      ))
+                  except Exception as exc:
+                      diagnostics.append(f'{root}/{prefix} joined-unpadded base64: {exc}')
+                  try:
+                      binary_candidates.append((
+                          'independent-parts',
+                          b''.join(canonical_decode(text) for text in texts),
+                      ))
+                  except Exception as exc:
+                      diagnostics.append(f'{root}/{prefix} independent base64: {exc}')
+                  if len(texts) == 1:
+                      try:
+                          binary_candidates.append((
+                              'single-part',
+                              canonical_decode(texts[0]),
+                          ))
+                      except Exception as exc:
+                          diagnostics.append(f'{root}/{prefix} single base64: {exc}')
+
+                  seen = set()
+                  for strategy, compressed in binary_candidates:
+                      marker = (len(compressed), compressed[:32], compressed[-32:])
+                      if marker in seen:
+                          continue
+                      seen.add(marker)
+                      try:
+                          raw = lzma.decompress(compressed)
+                          value = json.loads(raw.decode('utf-8'))
+                      except Exception as exc:
+                          diagnostics.append(
+                              f'{root}/{prefix} {strategy}: invalid xz/json: {exc}'
+                          )
+                          continue
+                      if not isinstance(value, dict):
+                          diagnostics.append(
+                              f'{root}/{prefix} {strategy}: top-level is not object'
+                          )
+                          continue
+                      files = value.get('files')
+                      titles = value.get('titles')
+                      diagnostics.append(
+                          f'VALID {root}/{prefix} {strategy} '
+                          f'keys={sorted(value)[:8]} '
+                          f'files={len(files) if isinstance(files, dict) else 0} '
+                          f'titles={len(titles) if isinstance(titles, dict) else 0}'
+                      )
+                      if (
+                          scenario is None
+                          and isinstance(files, dict)
+                          and len(files) == 2780
+                      ):
+                          scenario = compressed
+                      if names is None and isinstance(titles, dict) and len(titles) == 1608:
+                          names = compressed
+
+          print('\n'.join(diagnostics))
+          if scenario is None:
+              raise SystemExit('No valid 2780-file TW Scenario payload found')
+          if names is None:
+              raise SystemExit('No valid 1608-title TW naming payload found')
+
+          for filename, compressed in (
+              ('Selected-Scenarios.xz.b64.part001', scenario),
+              ('Selected-Names.xz.b64.part001', names),
+          ):
+              (target / filename).write_text(
+                  base64.b64encode(compressed).decode('ascii') + '\n',
                   encoding='ascii',
               )
-              print(
-                  f'TW_PARTS_NORMALIZED prefix={prefix} '
-                  f'parts={len(parts)} bytes={len(combined)}'
-              )
+              print(f'TW_PAYLOAD_SELECTED file={filename} bytes={len(compressed)}')
           PY
 
           python tools/extract_tw_compact_sources.py \
@@ -128,16 +198,17 @@ jobs:
               )
           )
           stats = report.get('stats', {})
-          if stats.get('official_tw_groups', 0) <= 0:
-              raise SystemExit(f'No official TW groups were materialized: {stats}')
-          if stats.get('failed_groups', 0):
-              raise SystemExit(f'TW structural failures remain: {stats}')
-          if stats.get('tw_source_files') != 2780:
-              raise SystemExit(f'Unexpected TW source count: {stats}')
-          if stats.get('tw_source_files_used') != 2780:
-              raise SystemExit(f'Not every TW source was used: {stats}')
-          if stats.get('tw_source_files_unused') != 0:
-              raise SystemExit(f'Unused TW sources remain: {stats}')
+          required = {
+              'official_tw_groups': lambda value: value > 0,
+              'failed_groups': lambda value: value == 0,
+              'tw_source_files': lambda value: value == 2780,
+              'tw_source_files_used': lambda value: value == 2780,
+              'tw_source_files_unused': lambda value: value == 0,
+          }
+          for key, predicate in required.items():
+              value = stats.get(key)
+              if not isinstance(value, int) or not predicate(value):
+                  raise SystemExit(f'Invalid TW import statistic {key}={value}: {stats}')
           stories = json.loads(
               Path('website/public/story_index.json').read_text(encoding='utf-8')
           )
@@ -213,4 +284,3 @@ jobs:
           git push origin HEAD:EXEDRA-TEST
           if [ "$MATERIALIZE_EXIT_CODE" != 0 ]; then
             exit "$MATERIALIZE_EXIT_CODE"
-          fi
