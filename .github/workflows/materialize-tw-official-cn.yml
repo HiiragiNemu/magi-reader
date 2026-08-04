@@ -10,13 +10,14 @@ permissions:
 
 concurrency:
   group: materialize-tw-official-cn-exedra-test
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   materialize:
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      !startsWith(github.event.head_commit.message, '[tw-materialized]')
+      (!startsWith(github.event.head_commit.message, '[tw-materialized]') &&
+       !startsWith(github.event.head_commit.message, '[tw-status]'))
     runs-on: ubuntu-latest
     timeout-minutes: 240
     steps:
@@ -35,10 +36,14 @@ jobs:
           cache: npm
           cache-dependency-path: website/package-lock.json
 
-      - name: Authenticate and reconstruct supplied TW source corpus
+      - name: Materialize, validate and build
+        id: materialize
+        continue-on-error: true
         shell: bash
         run: |
-          set -euo pipefail
+          set +e
+          set -o pipefail
+          bash -euo pipefail <<'BUILD' 2>&1 | tee "$RUNNER_TEMP/tw-materialization.log"
           mkdir -p .tw-official-source/scenarios .tw-official-source/manifests
           python tools/extract_tw_compact_sources.py \
             --source-dir sources/tw-official-zh-cn \
@@ -49,37 +54,20 @@ jobs:
           test -f .tw-official-source/manifests/getCollectionConditionMstList.json
           test "$(find .tw-official-source/scenarios -name '*.json' | wc -l)" -eq 2780
 
-      - name: Inject official TW text and materialize EXEDRA-TEST
-        run: >-
-          python tools/materialize_tw_official_cn.py
-          --scenario-root .tw-official-source/scenarios
-          --manifest-root .tw-official-source/manifests
+          python tools/materialize_tw_official_cn.py \
+            --scenario-root .tw-official-source/scenarios \
+            --manifest-root .tw-official-source/manifests
 
-      - name: Install website dependencies
-        working-directory: website
-        run: npm ci
-
-      - name: Run complete repository validation
-        shell: bash
-        run: |
-          set -euo pipefail
+          npm --prefix website ci
           python -m unittest discover -s tests -p 'test_*.py'
-          cd website
-          npm run check
-          npm run build:worker
-          npm run verify:cloudflare-output
+          npm --prefix website run check
+          npm --prefix website run build:worker
+          npm --prefix website run verify:cloudflare-output
+          python tools/build_split_search_indexes.py --validate-only
 
-      - name: Verify split search objects
-        run: python tools/build_split_search_indexes.py --validate-only
-
-      - name: Verify official TW coverage and naming
-        shell: bash
-        run: |
-          set -euo pipefail
           python - <<'PY'
           import json
           from pathlib import Path
-
           report = json.loads(
               Path('artifacts/exedra_official_tw_import_report.json').read_text(
                   encoding='utf-8'
@@ -90,7 +78,6 @@ jobs:
               raise SystemExit(f'No official TW groups were materialized: {stats}')
           if stats.get('failed_groups', 0):
               raise SystemExit(f'TW structural failures remain: {stats}')
-
           stories = json.loads(
               Path('website/public/story_index.json').read_text(encoding='utf-8')
           )
@@ -114,18 +101,55 @@ jobs:
               f"events={stats.get('official_tw_text_events', 0)}"
           )
           PY
+          BUILD
+          code="${PIPESTATUS[0]}"
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
 
-      - name: Commit certified materialized result to EXEDRA-TEST
+      - name: Commit materialized result or diagnostic status
         shell: bash
+        env:
+          MATERIALIZE_EXIT_CODE: ${{ steps.materialize.outputs.exit_code }}
         run: |
           set -euo pipefail
           rm -rf .tw-official-source
+          python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          log_path = Path(os.environ['RUNNER_TEMP']) / 'tw-materialization.log'
+          log = log_path.read_text(encoding='utf-8', errors='replace') if log_path.exists() else ''
+          status = {
+              'version': 1,
+              'generatedAt': datetime.now(timezone.utc).isoformat(),
+              'sourceCommit': os.environ['GITHUB_SHA'],
+              'exitCode': int(os.environ.get('MATERIALIZE_EXIT_CODE') or 999),
+              'success': os.environ.get('MATERIALIZE_EXIT_CODE') == '0',
+              'logTail': log.splitlines()[-300:],
+          }
+          path = Path('artifacts/tw-materialization-status.json')
+          path.parent.mkdir(exist_ok=True)
+          path.write_text(
+              json.dumps(status, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
           git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
+          git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
+          if [ "$MATERIALIZE_EXIT_CODE" = 0 ]; then
+            git add -A
+            message='[tw-materialized] Official TW zh-CN data, UI and split search'
+          else
+            git add -f artifacts/tw-materialization-status.json
+            message="[tw-status] Materialization failed with code $MATERIALIZE_EXIT_CODE"
+          fi
           if git diff --cached --quiet; then
-            echo 'No materialized changes were produced.' >&2
+            echo 'No materialization or diagnostic changes were produced.' >&2
             exit 1
           fi
-          git commit -m '[tw-materialized] Official TW zh-CN data, UI and split search'
+          git commit -m "$message"
           git push origin HEAD:EXEDRA-TEST
+          if [ "$MATERIALIZE_EXIT_CODE" != 0 ]; then
+            exit "$MATERIALIZE_EXIT_CODE"
+          fi
