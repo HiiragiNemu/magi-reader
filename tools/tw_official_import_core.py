@@ -2,7 +2,6 @@
 """Inject already-simplified official Taiwan Exedra text into JP schemas."""
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import shutil
@@ -70,18 +69,13 @@ def title_catalog(root: Path) -> dict[str, dict[str, Any]]:
             raise RuntimeError(f"advResourceName 重复：{resource}")
         name = str(row.get("name") or "").strip()
         sub_name = str(row.get("subName") or "").strip()
-        section_title = sub_name or name or PurePosixPath(key).name
-        if name and sub_name and name != sub_name and not name.startswith(sub_name):
-            section_title = f"{name} · {sub_name}"
+        section_title = name or sub_name or PurePosixPath(key).name
         choices = sorted(links.get(adv_id, []), key=rank)
         stage = choices[0] if choices else {}
+        chapter_name = str(stage.get("name") or "").strip()
+        chapter_subtitle = str(stage.get("subTitle") or "").strip()
         chapter_title = " · ".join(
-            item
-            for item in (
-                str(stage.get("subTitle") or "").strip(),
-                str(stage.get("name") or "").strip(),
-            )
-            if item
+            item for item in (chapter_subtitle, chapter_name) if item
         )
         result[key] = {
             "advMstId": adv_id,
@@ -127,6 +121,7 @@ def import_corpus(scenario_root: Path, manifest_root: Path) -> dict[str, Any]:
     metadata: dict[str, dict[str, Any]] = {}
     stats: Counter[str] = Counter()
     failures: list[dict[str, str]] = []
+    used_tw_paths: set[str] = set()
 
     for number, group in enumerate(tw.load_groups(), 1):
         category = str(group.get("category") or "")
@@ -150,6 +145,7 @@ def import_corpus(scenario_root: Path, manifest_root: Path) -> dict[str, Any]:
                 if PurePosixPath(source).name != section.source:
                     raise RuntimeError(f"manifest/Section 来源不同：{source}")
                 tw_json = index.resolve(source)
+                used_tw_paths.add(index.relative_name(tw_json).casefold())
                 jp_json = tw.JP_ROOT / category / key / section.source
                 jp_rows, tw_rows = tw.extract_rows(jp_json), tw.extract_rows(tw_json)
                 tw.validate_row_alignment(section.source, jp_rows, tw_rows, section)
@@ -266,6 +262,11 @@ def import_corpus(scenario_root: Path, manifest_root: Path) -> dict[str, Any]:
         if number % 25 == 0:
             print(f"TW_IMPORT_PROGRESS {number}/443 {dict(stats)}")
 
+    all_tw_paths = set(index.relative)
+    unused_tw_paths = sorted(all_tw_paths - used_tw_paths)
+    stats["tw_source_files"] = len(all_tw_paths)
+    stats["tw_source_files_used"] = len(used_tw_paths)
+    stats["tw_source_files_unused"] = len(unused_tw_paths)
     value = {
         "version": 2,
         "generatedAt": datetime.now(timezone.utc).isoformat(),
@@ -273,6 +274,7 @@ def import_corpus(scenario_root: Path, manifest_root: Path) -> dict[str, Any]:
         "manifestArchiveSha256": MANIFEST_SHA256,
         "stats": dict(stats),
         "failures": failures,
+        "unusedTwSourceFiles": unused_tw_paths,
     }
     artifacts = ROOT / "artifacts"
     artifacts.mkdir(exist_ok=True)
@@ -295,4 +297,8 @@ def import_corpus(scenario_root: Path, manifest_root: Path) -> dict[str, Any]:
     )
     if stats["failed_groups"]:
         raise RuntimeError(f"台服导入结构失败：{stats['failed_groups']}")
+    if stats["tw_source_files_unused"]:
+        raise RuntimeError(
+            f"仍有台服 Scenario 未注入：{stats['tw_source_files_unused']}"
+        )
     return value
