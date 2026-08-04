@@ -9,22 +9,32 @@ import json
 import lzma
 import re
 import shutil
+import sys
 from collections import defaultdict
 from pathlib import Path, PurePosixPath
 from typing import Any
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+import generate_story_index as pipeline  # noqa: E402
+
+JP_ROOT = ROOT / "magiraexedra-source-master/Scenarios_full"
+JP_MANIFEST = JP_ROOT / "exedra_manifest.json"
 SCENARIO_ARCHIVE_SHA256 = "64c86700651b845b484f6100fed61a8c2b860028cda8130456a57979ee907452"
 MANIFEST_ARCHIVE_SHA256 = "9125ae75d02ac69572fafc08fe2c1479ff872f6394d03b77f5bd046471ebda74"
 PART_RE = re.compile(r"^(?P<prefix>.+\.xz\.b64)\.part(?P<number>\d+)$")
+
+
+def load_json(path: Path) -> Any:
+    return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
 def load_payloads(source_dir: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     grouped: dict[str, list[tuple[int, Path]]] = defaultdict(list)
     for path in sorted(source_dir.glob("*.part*")):
         match = PART_RE.fullmatch(path.name)
-        if not match:
-            continue
-        grouped[match.group("prefix")].append((int(match.group("number")), path))
+        if match:
+            grouped[match.group("prefix")].append((int(match.group("number")), path))
 
     scenario: dict[str, Any] | None = None
     names: dict[str, Any] | None = None
@@ -40,9 +50,9 @@ def load_payloads(source_dir: Path) -> tuple[dict[str, Any], dict[str, Any]]:
             raise RuntimeError(f"紧凑来源无法解码：{prefix}: {exc}") from exc
         if not isinstance(value, dict):
             raise RuntimeError(f"紧凑来源顶层不是对象：{prefix}")
-        digest = hashlib.sha256(compressed).hexdigest()
         diagnostics.append(
-            f"{prefix}: xz_sha256={digest} json_bytes={len(raw)} keys={sorted(value)[:8]}"
+            f"{prefix}: xz_sha256={hashlib.sha256(compressed).hexdigest()} "
+            f"json_bytes={len(raw)} keys={sorted(value)[:8]}"
         )
         if isinstance(value.get("files"), dict):
             if scenario is not None:
@@ -76,19 +86,85 @@ def safe_relative_path(value: str) -> Path:
     return Path(*path.parts)
 
 
+def build_jp_source_map() -> dict[str, Path]:
+    manifest = load_json(JP_MANIFEST)
+    groups = manifest.get("groups") if isinstance(manifest, dict) else None
+    if not isinstance(groups, list):
+        raise RuntimeError("日服 Exedra manifest 无效")
+    result: dict[str, Path] = {}
+    for group in groups:
+        if not isinstance(group, dict):
+            continue
+        category = str(group.get("category") or "")
+        group_key = str(group.get("groupKey") or "")
+        sources = group.get("sources")
+        if not category or not group_key or not isinstance(sources, list):
+            continue
+        for source in sources:
+            source_path = str(source)
+            key = PurePosixPath(source_path).as_posix().casefold()
+            target = JP_ROOT / category / group_key / PurePosixPath(source_path).name
+            if key in result and result[key] != target:
+                raise RuntimeError(f"日服来源路径重复：{source_path}")
+            result[key] = target
+    return result
+
+
+def rows_from_jp(relative_name: str, texts: list[Any], source_map: dict[str, Path]) -> list[list[Any]]:
+    key = PurePosixPath(relative_name).as_posix().casefold()
+    jp_path = source_map.get(key)
+    if jp_path is None:
+        raise RuntimeError(f"日服 manifest 不含台服来源路径：{relative_name}")
+    document = load_json(jp_path)
+    if not isinstance(document, dict):
+        raise RuntimeError(f"日服 JSON 顶层无效：{jp_path}")
+    jp_rows, diagnostics = pipeline.extract_exedra_dialogue_rows(document)
+    serious = [item for item in diagnostics if "重复" not in item]
+    if serious:
+        raise RuntimeError(f"日服 JSON 结构诊断失败：{relative_name}: {serious[:3]}")
+    if len(jp_rows) != len(texts):
+        raise RuntimeError(
+            f"台服正文/日服事件数不同：{relative_name}: "
+            f"TW={len(texts)} JP={len(jp_rows)}"
+        )
+    rows: list[list[Any]] = []
+    for index, (jp_row, text) in enumerate(zip(jp_rows, texts), 1):
+        if not isinstance(text, str) or not text.strip():
+            raise RuntimeError(f"台服正文为空：{relative_name}#{index}")
+        rows.append(
+            [
+                int(jp_row.get("sheet_index") or 0),
+                int(jp_row.get("row_number") or 0),
+                str(jp_row.get("action") or ""),
+                str(jp_row.get("speaker") or ""),
+                text,
+            ]
+        )
+    return rows
+
+
 def materialize_scenarios(value: dict[str, Any], output: Path) -> None:
     files = value.get("files")
     if not isinstance(files, dict) or len(files) != 2780:
-        raise RuntimeError(f"Scenario 紧凑文件数异常：{len(files) if isinstance(files, dict) else 'invalid'}")
+        raise RuntimeError(
+            f"Scenario 紧凑文件数异常：{len(files) if isinstance(files, dict) else 'invalid'}"
+        )
+    source_map = build_jp_source_map()
     shutil.rmtree(output, ignore_errors=True)
     output.mkdir(parents=True)
     row_total = 0
     for relative_name, record in sorted(files.items()):
-        if not isinstance(relative_name, str) or not isinstance(record, dict):
-            raise RuntimeError("Scenario 紧凑记录格式无效")
-        rows = record.get("rows")
+        if not isinstance(relative_name, str):
+            raise RuntimeError("Scenario 紧凑来源名无效")
+        if isinstance(record, dict):
+            rows = record.get("rows")
+        elif isinstance(record, list):
+            rows = rows_from_jp(relative_name, record, source_map)
+        else:
+            raise RuntimeError(f"Scenario 紧凑记录格式无效：{relative_name}")
         if not isinstance(rows, list):
             raise RuntimeError(f"Scenario 紧凑记录缺少 rows：{relative_name}")
+
         sheets: dict[int, list[dict[str, Any]]] = defaultdict(list)
         for position, row in enumerate(rows, 1):
             if not isinstance(row, list) or len(row) != 5:
@@ -155,7 +231,9 @@ def mst_wrapper(rows: list[dict[str, Any]]) -> dict[str, Any]:
 def materialize_names(value: dict[str, Any], output: Path) -> None:
     titles = value.get("titles")
     if not isinstance(titles, dict) or len(titles) != 1608:
-        raise RuntimeError(f"官方命名数量异常：{len(titles) if isinstance(titles, dict) else 'invalid'}")
+        raise RuntimeError(
+            f"官方命名数量异常：{len(titles) if isinstance(titles, dict) else 'invalid'}"
+        )
     shutil.rmtree(output, ignore_errors=True)
     output.mkdir(parents=True)
     adv_rows: list[dict[str, Any]] = []
@@ -190,11 +268,7 @@ def materialize_names(value: dict[str, Any], output: Path) -> None:
                 },
             )
             link_rows.append(
-                {
-                    "objectType": 6,
-                    "objectId": adv_id,
-                    "fieldStageMstId": stage_id,
-                }
+                {"objectType": 6, "objectId": adv_id, "fieldStageMstId": stage_id}
             )
     outputs = {
         "getAdvMstList.json": mst_wrapper(adv_rows),
