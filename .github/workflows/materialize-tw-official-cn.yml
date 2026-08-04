@@ -68,26 +68,26 @@ jobs:
           if not groups:
               raise SystemExit('No compact TW payload parts found')
           for prefix, parts in sorted(groups.items()):
-              binary_parts = []
               expected = list(range(1, len(parts) + 1))
               actual = [number for number, _ in sorted(parts)]
               if actual != expected:
                   raise SystemExit(
                       f'Non-contiguous TW payload parts for {prefix}: {actual}'
                   )
+              encoded_parts = []
               for number, path in sorted(parts):
                   encoded = ''.join(path.read_text(encoding='ascii').split())
-                  canonical = encoded.rstrip('=')
-                  canonical += '=' * ((-len(canonical)) % 4)
-                  try:
-                      binary_parts.append(
-                          base64.b64decode(canonical, validate=True)
-                      )
-                  except Exception as exc:
-                      raise SystemExit(
-                          f'Invalid Base64 part {prefix}#{number}: {exc}'
-                      ) from exc
-              combined = b''.join(binary_parts)
+                  if not encoded:
+                      raise SystemExit(f'Empty Base64 part {prefix}#{number}')
+                  encoded_parts.append(encoded.rstrip('='))
+              canonical = ''.join(encoded_parts)
+              canonical += '=' * ((-len(canonical)) % 4)
+              try:
+                  combined = base64.b64decode(canonical, validate=True)
+              except Exception as exc:
+                  raise SystemExit(
+                      f'Invalid joined Base64 stream {prefix}: {exc}'
+                  ) from exc
               output = target / f'{prefix}.part001'
               output.write_text(
                   base64.b64encode(combined).decode('ascii') + '\n',
