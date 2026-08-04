@@ -44,9 +44,57 @@ jobs:
           set +e
           set -o pipefail
           bash -euo pipefail <<'BUILD' 2>&1 | tee "$RUNNER_TEMP/tw-materialization.log"
-          mkdir -p .tw-official-source/scenarios .tw-official-source/manifests
+          mkdir -p \
+            .tw-official-source/scenarios \
+            .tw-official-source/manifests \
+            .tw-official-source/normalized
+
+          # The six Scenario files are independently Base64-encoded binary
+          # chunks. Decode each part first, concatenate the binary XZ stream,
+          # and encode it once so the strict extractor sees one canonical part.
+          python - <<'PY'
+          import base64
+          import re
+          from collections import defaultdict
+          from pathlib import Path
+
+          source = Path('sources/tw-official-zh-cn')
+          target = Path('.tw-official-source/normalized')
+          pattern = re.compile(r'^(?P<prefix>.+\.xz\.b64)\.part(?P<number>\d+)$')
+          groups = defaultdict(list)
+          for path in source.glob('*.part*'):
+              match = pattern.fullmatch(path.name)
+              if match:
+                  groups[match.group('prefix')].append(
+                      (int(match.group('number')), path)
+                  )
+          if not groups:
+              raise SystemExit('No compact TW payload parts found')
+          for prefix, parts in sorted(groups.items()):
+              binary_parts = []
+              expected = list(range(1, len(parts) + 1))
+              actual = [number for number, _ in sorted(parts)]
+              if actual != expected:
+                  raise SystemExit(
+                      f'Non-contiguous TW payload parts for {prefix}: {actual}'
+                  )
+              for _number, path in sorted(parts):
+                  encoded = ''.join(path.read_text(encoding='ascii').split())
+                  binary_parts.append(base64.b64decode(encoded, validate=True))
+              combined = b''.join(binary_parts)
+              output = target / f'{prefix}.part001'
+              output.write_text(
+                  base64.b64encode(combined).decode('ascii') + '\n',
+                  encoding='ascii',
+              )
+              print(
+                  f'TW_PARTS_NORMALIZED prefix={prefix} '
+                  f'parts={len(parts)} bytes={len(combined)}'
+              )
+          PY
+
           python tools/extract_tw_compact_sources.py \
-            --source-dir sources/tw-official-zh-cn \
+            --source-dir .tw-official-source/normalized \
             --scenario-output .tw-official-source/scenarios \
             --manifest-output .tw-official-source/manifests
           test -f .tw-official-source/manifests/getFieldStageMstList.json
@@ -78,6 +126,12 @@ jobs:
               raise SystemExit(f'No official TW groups were materialized: {stats}')
           if stats.get('failed_groups', 0):
               raise SystemExit(f'TW structural failures remain: {stats}')
+          if stats.get('tw_source_files') != 2780:
+              raise SystemExit(f'Unexpected TW source count: {stats}')
+          if stats.get('tw_source_files_used') != 2780:
+              raise SystemExit(f'Not every TW source was used: {stats}')
+          if stats.get('tw_source_files_unused') != 0:
+              raise SystemExit(f'Unused TW sources remain: {stats}')
           stories = json.loads(
               Path('website/public/story_index.json').read_text(encoding='utf-8')
           )
@@ -98,7 +152,8 @@ jobs:
               'TW_OFFICIAL_CERTIFIED '
               f"groups={stats['official_tw_groups']} "
               f"json={stats.get('official_tw_json_files', 0)} "
-              f"events={stats.get('official_tw_text_events', 0)}"
+              f"events={stats.get('official_tw_text_events', 0)} "
+              f"sources={stats.get('tw_source_files_used', 0)}/2780"
           )
           PY
           BUILD
