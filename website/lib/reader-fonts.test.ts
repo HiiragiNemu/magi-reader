@@ -5,6 +5,7 @@ import test from 'node:test';
 
 import {
   READER_FONT_BUNDLES,
+  READER_FONT_BUNDLE_IDS,
   READER_FONT_PREFERENCES_STORAGE_KEY,
   disableReaderFontBundle,
   enableReaderFontBundle,
@@ -12,6 +13,7 @@ import {
   initializeReaderFonts,
   parseReaderFontPreferences,
   parseReaderFontRuntimeSnapshot,
+  readSfntInternalNames,
   removeReaderFontBundleCache,
 } from './reader-fonts.ts';
 
@@ -39,16 +41,28 @@ test('reader font preferences are opt-in and reject non-boolean values', () => {
   assert.deepEqual(parseReaderFontPreferences(null), {
     chineseEnabled: false,
     japaneseEnabled: false,
+    exedraChineseEnabled: false,
+    exedraChineseFallbackEnabled: false,
+    exedraJapaneseEnabled: false,
   });
   assert.deepEqual(
     parseReaderFontPreferences(
       JSON.stringify({ chineseEnabled: 'true', japaneseEnabled: true }),
     ),
-    { chineseEnabled: false, japaneseEnabled: true },
+    {
+      chineseEnabled: false,
+      japaneseEnabled: true,
+      exedraChineseEnabled: false,
+      exedraChineseFallbackEnabled: false,
+      exedraJapaneseEnabled: false,
+    },
   );
   assert.deepEqual(parseReaderFontPreferences('{broken'), {
     chineseEnabled: false,
     japaneseEnabled: false,
+    exedraChineseEnabled: false,
+    exedraChineseFallbackEnabled: false,
+    exedraJapaneseEnabled: false,
   });
 });
 
@@ -70,7 +84,8 @@ test('full WOFF2 assets match the pinned manifest and runtime definitions', () =
     assert.ok(record.unicodeCodePoints > 7_000);
   }
 
-  for (const bundle of Object.values(READER_FONT_BUNDLES)) {
+  for (const bundleId of ['chinese', 'japanese'] as const) {
+    const bundle = READER_FONT_BUNDLES[bundleId];
     assert.equal(
       bundle.totalBytes,
       bundle.faces.reduce((total, face) => total + face.bytes, 0),
@@ -82,6 +97,82 @@ test('full WOFF2 assets match the pinned manifest and runtime definitions', () =
       assert.equal(record.woff2Sha256, face.sha256);
     }
   }
+});
+
+test('Exedra font definitions pin open downloads and local-only commercial files', () => {
+  assert.deepEqual(READER_FONT_BUNDLE_IDS, [
+    'chinese',
+    'japanese',
+    'exedraChinese',
+    'exedraChineseFallback',
+    'exedraJapanese',
+  ]);
+  const chinese = READER_FONT_BUNDLES.exedraChinese;
+  assert.equal(chinese.scope, 'exedra-only');
+  assert.equal(chinese.activation, 'download');
+  assert.equal(chinese.totalBytes, 2_881_764);
+  assert.equal(
+    chinese.faces[0].sha256,
+    'ea4e2e85cc49ed7a0ea9f2347a9c5e6e9c3ea1a1c9130280796cceb77e0dc800',
+  );
+  assert.match(chinese.licenseUrl ?? '', /LICENSE\.txt/u);
+
+  const fallback = READER_FONT_BUNDLES.exedraChineseFallback;
+  assert.equal(fallback.activation, 'local-import');
+  assert.equal(fallback.totalBytes, 14_663_464);
+  assert.equal(
+    fallback.faces[0].sha256,
+    '1c5c623f008eabef10c45135a48b01b46311f9369c28857355872cfe05f48dc0',
+  );
+
+  const japanese = READER_FONT_BUNDLES.exedraJapanese;
+  assert.equal(japanese.scope, 'exedra-only');
+  assert.equal(japanese.activation, 'local-import');
+  assert.equal(japanese.faces.length, 2);
+  assert.ok(japanese.faces.every(face => face.delivery === 'local-import'));
+  assert.deepEqual(
+    japanese.faces.map(face => [face.bytes, face.sha256]),
+    [
+      [
+        5_710_884,
+        '3e13805dacb081d44d06c16213319b45f044b777989afde7985fa2afaaf9684a',
+      ],
+      [
+        4_697_304,
+        'e40f4d90a8010404511b6f113e95c54d5a56a39619076bcd8da4d42fafb3aee5',
+      ],
+    ],
+  );
+});
+
+test('local font validation reads internal SFNT full names instead of file names', () => {
+  const name = 'FOT-TsukuOldGothic Std B';
+  const encoded = new Uint8Array(name.length * 2);
+  for (let index = 0; index < name.length; index += 1) {
+    encoded[index * 2] = name.charCodeAt(index) >> 8;
+    encoded[index * 2 + 1] = name.charCodeAt(index) & 0xff;
+  }
+  const nameOffset = 28;
+  const nameLength = 18 + encoded.byteLength;
+  const data = new ArrayBuffer(nameOffset + nameLength);
+  const bytes = new Uint8Array(data);
+  const view = new DataView(data);
+  view.setUint32(0, 0x00010000, false);
+  view.setUint16(4, 1, false);
+  bytes.set(new TextEncoder().encode('name'), 12);
+  view.setUint32(20, nameOffset, false);
+  view.setUint32(24, nameLength, false);
+  view.setUint16(nameOffset, 0, false);
+  view.setUint16(nameOffset + 2, 1, false);
+  view.setUint16(nameOffset + 4, 18, false);
+  view.setUint16(nameOffset + 6, 3, false);
+  view.setUint16(nameOffset + 8, 1, false);
+  view.setUint16(nameOffset + 10, 0x0409, false);
+  view.setUint16(nameOffset + 12, 4, false);
+  view.setUint16(nameOffset + 14, encoded.byteLength, false);
+  view.setUint16(nameOffset + 16, 0, false);
+  bytes.set(encoded, nameOffset + 18);
+  assert.deepEqual(readSfntInternalNames(data), [name]);
 });
 
 test('default initialization fetches nothing; manual enable caches and disable restores system fonts', async () => {
@@ -266,9 +357,22 @@ test('reader page assigns distinct body/title roles without static font preloads
   assert.match(page, /reader-font-jp-body/u);
   assert.match(page, /reader-font-jp-title/u);
   assert.match(page, /initializeReaderFonts/u);
+  assert.match(page, /data-reader-game=\{isExedraStory/u);
+  assert.match(page, /isExedraStory=\{isExedraStory\}/u);
+  assert.match(page, /lang="zh-Hans"/u);
+  assert.match(page, /lang="ja"/u);
   assert.match(settings, /游戏字体（按需下载）/u);
   assert.match(settings, /下载并启用/u);
+  assert.match(settings, /JP 原生字体是/u);
+  assert.match(settings, /importReaderFontBundleFiles/u);
   assert.match(settings, /全部恢复系统字体/u);
+  assert.match(css, /data-reader-font-exedra-chinese/u);
+  assert.match(css, /data-reader-font-exedra-chinese-fallback/u);
+  assert.match(css, /\.exedra-reader/u);
+  assert.match(css, /:lang\(zh-Hans\)/u);
+  assert.match(css, /:lang\(ja\)/u);
+  assert.match(css, /Resource Han Rounded CN/u);
+  assert.match(css, /Noto Sans SC/u);
   assert.doesNotMatch(css, /@font-face\s*\{/u);
   assert.doesNotMatch(layout, /preload[^\n]+fonts/u);
 });

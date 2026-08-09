@@ -85,6 +85,13 @@ GitHub Actions 会完整重建并再次验证索引，完成网站构建后先�
 
 本地 `public/search_content.json` 只用于开发调试。Cloudflare 构建会在转换期间把它移到可恢复的本地备份目录，并在成功或失败后恢复，避免它进入部署产物。
 
+## Exedra 专用字体
+
+Exedra 剧情页提供显式、可撤销的简中与日文字体选项。简中主字体使用固定并校验
+SHA-256 的 OFL 猫啃网糖圆体；GBK 回退和 Fontworks JP 原生字体仅接受本机导入，
+商业字体不会进入仓库或服务器。完整哈希、覆盖范围、CSS 作用域和用户流程见
+[`docs/exedra-font-packs.md`](docs/exedra-font-packs.md)。
+
 ## 部署
 
 手动部署：

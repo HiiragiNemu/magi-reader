@@ -383,6 +383,10 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     () => findStoryByRouteId(allStories, id),
     [allStories, id],
   );
+  const isExedraStory =
+    currentStory?.game === 'exedra' ||
+    cnSource?.format === 'exedra-json' ||
+    jpSource?.format === 'exedra-json';
   const jsonSourceOptionsState = useMemo(() => {
     if (!currentStory) return { options: [], error: '' };
     try {
@@ -1202,7 +1206,12 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     !loadError;
 
   return (
-    <div className={`flex h-screen h-[100dvh] overflow-hidden ${THEME_STYLES[theme]}`}>
+    <div
+      data-reader-game={isExedraStory ? 'exedra' : 'magireco'}
+      className={`flex h-screen h-[100dvh] overflow-hidden ${
+        isExedraStory ? 'exedra-reader ' : ''
+      }${THEME_STYLES[theme]}`}
+    >
       <Sidebar
         stories={allStories}
         currentId={currentStory?.id ?? id}
@@ -1223,11 +1232,14 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
               <Menu size={20} />
             </button>
             <div className="flex min-w-0 flex-col">
-              <span className={`truncate text-[10px] opacity-50 ${
-                mode === 'jp' && hasJapaneseDisplay
-                  ? 'reader-font-jp-title'
-                  : 'reader-font-cn-title'
-              }`}>
+              <span
+                lang={mode === 'jp' && hasJapaneseDisplay ? 'ja' : 'zh-Hans'}
+                className={`truncate text-[10px] opacity-50 ${
+                 mode === 'jp' && hasJapaneseDisplay
+                   ? 'reader-font-jp-title'
+                   : 'reader-font-cn-title'
+                }`}
+              >
                 {isLocal ? '本地文件' : currentStory?.folder || '剧情阅读器'}
                 {storyTitle ? ` · ${storyTitle}` : ''}
               </span>
@@ -1761,7 +1773,10 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                     同时作用于阅读和汉化输入；手机端自动限制为屏幕可用宽度。
                   </span>
                 </label>
-                <ReaderFontSettings theme={theme} />
+                <ReaderFontSettings
+                  theme={theme}
+                  isExedraStory={isExedraStory}
+                />
                 <div>
                   <p className="mb-2 opacity-70">中日对照排列</p>
                   <div className="grid grid-cols-2 gap-2">
@@ -1925,6 +1940,7 @@ function StoryRow({
     return (
       <div
         id={header.headerId}
+        lang={header === row.jp ? 'ja' : 'zh-Hans'}
         className={`mb-4 mt-6 border-t-2 pt-4 text-center ${
           header === row.jp
             ? 'reader-font-jp-title'
@@ -1974,7 +1990,10 @@ function StoryRow({
     return (
       <div id={`line-${index}`} className="my-3 flex justify-center">
         {isEditMode ? (
-          <label className="reader-font-cn-title flex w-full max-w-xl items-center gap-2 rounded-xl border-2 border-amber-300 bg-amber-50 p-2 text-xs font-bold text-amber-900">
+          <label
+            lang="zh-Hans"
+            className="reader-font-cn-title flex w-full max-w-xl items-center gap-2 rounded-xl border-2 border-amber-300 bg-amber-50 p-2 text-xs font-bold text-amber-900"
+          >
             选项
             <input
               aria-label={`第 ${index + 1} 行选项文本`}
@@ -1994,6 +2013,7 @@ function StoryRow({
         ) : (
           <button
             type="button"
+            lang={choice === row.jp ? 'ja' : 'zh-Hans'}
             onClick={() => onChoice(index, choice)}
             className={`${choice === row.jp ? 'reader-font-jp-title' : 'reader-font-cn-title'} cursor-pointer rounded-xl border-2 px-5 py-2.5 text-sm font-bold transition hover:scale-105 active:scale-95 ${
               theme === 'dark'
@@ -2038,7 +2058,7 @@ function StoryRow({
       }`}
     >
       {mode !== 'jp' && (
-        <div className={`reader-font-cn-body flex min-w-0 gap-3 ${
+        <div lang="zh-Hans" className={`reader-font-cn-body flex min-w-0 gap-3 ${
           mode === 'split' && bilingualLayout === 'side-by-side'
             ? 'md:w-1/2'
             : 'w-full'
@@ -2149,7 +2169,7 @@ function StoryRow({
       )}
 
       {mode !== 'cn' && (
-        <div className={`reader-font-jp-body flex min-w-0 gap-2 ${
+        <div lang="ja" className={`reader-font-jp-body flex min-w-0 gap-2 ${
           mode === 'split'
             ? bilingualLayout === 'stacked'
               ? 'w-full border-t border-current border-opacity-10 pt-2'
@@ -2197,6 +2217,7 @@ function SpeakerLabel({
 }) {
   return (
     <div
+      lang={language === 'cn' ? 'zh-Hans' : 'ja'}
       className={`${language === 'cn' ? 'reader-font-cn-title' : 'reader-font-jp-title'} h-fit w-20 flex-shrink-0 break-words rounded px-1 pt-1 text-right text-[11px] font-bold leading-tight md:w-24 ${
         highlighted ? 'ring-2 ring-yellow-400' : faded ? 'opacity-50' : ''
       }`}

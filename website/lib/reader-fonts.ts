@@ -1,4 +1,9 @@
-export type ReaderFontBundleId = 'chinese' | 'japanese';
+export type ReaderFontBundleId =
+  | 'chinese'
+  | 'japanese'
+  | 'exedraChinese'
+  | 'exedraChineseFallback'
+  | 'exedraJapanese';
 
 export type ReaderFontBundleStatus =
   | 'idle'
@@ -12,13 +17,16 @@ export type ReaderFontBundleStatus =
 export type ReaderFontPreferences = {
   chineseEnabled: boolean;
   japaneseEnabled: boolean;
+  exedraChineseEnabled: boolean;
+  exedraChineseFallbackEnabled: boolean;
+  exedraJapaneseEnabled: boolean;
 };
 
 export type ReaderFontBundleRuntime = {
   status: ReaderFontBundleStatus;
   cached: boolean;
   loadedBytes: number;
-  source: 'cache' | 'network' | 'mixed' | null;
+  source: 'cache' | 'network' | 'local' | 'mixed' | null;
   error: string;
 };
 
@@ -33,6 +41,8 @@ type ReaderFontFaceDefinition = {
   bytes: number;
   sha256: string;
   weight: string;
+  delivery?: 'network' | 'local-import';
+  acceptedInternalNames?: readonly string[];
 };
 
 export type ReaderFontBundleDefinition = {
@@ -41,12 +51,24 @@ export type ReaderFontBundleDefinition = {
   description: string;
   totalBytes: number;
   faces: readonly ReaderFontFaceDefinition[];
+  activation?: 'download' | 'local-import';
+  scope?: 'all-readers' | 'exedra-only';
+  licenseUrl?: string;
+  sourceUrl?: string;
 };
 
 export const READER_FONT_PREFERENCES_STORAGE_KEY =
-  'magi-reader-font-preferences-v1';
+  'magi-reader-font-preferences-v2';
 export const READER_FONT_CACHE_NAME =
-  'magi-reader-fonts-v1-55b5dffd-9d7f95bc-3f691caf-b9c8b6b8';
+  'magi-reader-fonts-v2-exedra-ea4e2e85-3e13805d-e40f4d90';
+
+export const READER_FONT_BUNDLE_IDS = [
+  'chinese',
+  'japanese',
+  'exedraChinese',
+  'exedraChineseFallback',
+  'exedraJapanese',
+] as const satisfies readonly ReaderFontBundleId[];
 
 export const READER_FONT_BUNDLES: Record<
   ReaderFontBundleId,
@@ -102,11 +124,107 @@ export const READER_FONT_BUNDLES: Record<
       },
     ],
   },
+  exedraChinese: {
+    id: 'exedraChinese',
+    label: 'Exedra 简体中文字体',
+    description:
+      '猫啃网糖圆体 v0.12beta（粉圆直系简中衍生，GB2312 6763/6763）；生僻字回退到 Resource Han Rounded CN、Noto Sans SC。',
+    totalBytes: 2_881_764,
+    activation: 'download',
+    scope: 'exedra-only',
+    licenseUrl:
+      'https://github.com/NightFurySL2001/TangYuan-font/blob/561190610f7c34939396bd9f745a5393f4815ddd/LICENSE.txt',
+    sourceUrl:
+      'https://github.com/NightFurySL2001/TangYuan-font/releases/tag/v0.12beta',
+    faces: [
+      {
+        family: 'MagiReaderExedraTangYuan',
+        url: '/api/fonts/exedra-tangyuan/v0.12beta',
+        bytes: 2_881_764,
+        sha256:
+          'ea4e2e85cc49ed7a0ea9f2347a9c5e6e9c3ea1a1c9130280796cceb77e0dc800',
+        weight: '400',
+      },
+    ],
+  },
+  exedraJapanese: {
+    id: 'exedraJapanese',
+    label: 'Exedra 日文原生字体',
+    description:
+      '本地导入 JP 客户端的 FOT-TsukuOldGothic Std B 与 FOT-NewCinemaA Std D；文件不会上传。',
+    totalBytes: 10_408_188,
+    activation: 'local-import',
+    scope: 'exedra-only',
+    licenseUrl: 'https://fontworks.co.jp/products/font-license/',
+    sourceUrl: 'https://lets.fontworks.co.jp/fonts',
+    faces: [
+      {
+        family: 'MagiReaderExedraTsukuOldGothic',
+        url: '/__magi-reader-local-fonts/exedra-tsukuoldgothic-v2.100.otf',
+        bytes: 5_710_884,
+        sha256:
+          '3e13805dacb081d44d06c16213319b45f044b777989afde7985fa2afaaf9684a',
+        weight: '700',
+        delivery: 'local-import',
+        acceptedInternalNames: [
+          'FOT-TsukuOldGothic Std B',
+          'FOT-筑紫オールドゴシック Std B',
+          'TsukuOldGothicStd-B',
+        ],
+      },
+      {
+        family: 'MagiReaderExedraNewCinemaA',
+        url: '/__magi-reader-local-fonts/exedra-newcinemaa-v1.300.otf',
+        bytes: 4_697_304,
+        sha256:
+          'e40f4d90a8010404511b6f113e95c54d5a56a39619076bcd8da4d42fafb3aee5',
+        weight: '400',
+        delivery: 'local-import',
+        acceptedInternalNames: [
+          'FOT-NewCinemaA Std D',
+          'FOT-ニューシネマA Std D',
+          'NewCinemaAStd-D',
+        ],
+      },
+    ],
+  },
+  exedraChineseFallback: {
+    id: 'exedraChineseFallback',
+    label: 'Exedra 简中 GBK 回退（可选）',
+    description:
+      '本地导入 Resource Han Rounded CN v0.990；实测覆盖 GBK 汉字 20902/20902，仅在糖圆体缺字时使用。',
+    totalBytes: 14_663_464,
+    activation: 'local-import',
+    scope: 'exedra-only',
+    licenseUrl:
+      'https://github.com/CyanoHao/Resource-Han-Rounded/blob/master/LICENSE.txt',
+    sourceUrl:
+      'https://github.com/CyanoHao/Resource-Han-Rounded/releases/tag/v0.990',
+    faces: [
+      {
+        family: 'MagiReaderExedraChineseGbKFallback',
+        url: '/__magi-reader-local-fonts/resource-han-rounded-cn-v0.990.ttf',
+        bytes: 14_663_464,
+        sha256:
+          '1c5c623f008eabef10c45135a48b01b46311f9369c28857355872cfe05f48dc0',
+        weight: '400',
+        delivery: 'local-import',
+        acceptedInternalNames: [
+          'Resource Han Rounded CN',
+          'Resource Han Rounded CN Regular',
+          'Resource-Han-Rounded-CN-Regular',
+        ],
+      },
+    ],
+  },
 };
 
 const DEFAULT_PREFERENCES: ReaderFontPreferences = {
   chineseEnabled: false,
   japaneseEnabled: false,
+  exedraChineseEnabled: false,
+  exedraChineseFallbackEnabled: false,
+  exedraJapaneseEnabled: false,
 };
 
 const defaultBundleRuntime = (): ReaderFontBundleRuntime => ({
@@ -122,6 +240,9 @@ const defaultRuntimeSnapshot = (): ReaderFontRuntimeSnapshot => ({
   bundles: {
     chinese: defaultBundleRuntime(),
     japanese: defaultBundleRuntime(),
+    exedraChinese: defaultBundleRuntime(),
+    exedraChineseFallback: defaultBundleRuntime(),
+    exedraJapanese: defaultBundleRuntime(),
   },
 });
 
@@ -144,13 +265,27 @@ const listeners = new Set<() => void>();
 const loadedFaces: Record<ReaderFontBundleId, FontFace[]> = {
   chinese: [],
   japanese: [],
+  exedraChinese: [],
+  exedraChineseFallback: [],
+  exedraJapanese: [],
 };
+const importedFaceData = new Map<string, ArrayBuffer>();
 const pendingLoads: Partial<Record<ReaderFontBundleId, Promise<boolean>>> = {};
+
+const PREFERENCE_KEYS: Record<
+  ReaderFontBundleId,
+  keyof ReaderFontPreferences
+> = {
+  chinese: 'chineseEnabled',
+  japanese: 'japaneseEnabled',
+  exedraChinese: 'exedraChineseEnabled',
+  exedraChineseFallback: 'exedraChineseFallbackEnabled',
+  exedraJapanese: 'exedraJapaneseEnabled',
+};
 
 const preferenceKeyFor = (
   bundleId: ReaderFontBundleId,
-): keyof ReaderFontPreferences =>
-  bundleId === 'chinese' ? 'chineseEnabled' : 'japaneseEnabled';
+): keyof ReaderFontPreferences => PREFERENCE_KEYS[bundleId];
 
 export const parseReaderFontPreferences = (
   snapshot: string | null,
@@ -165,6 +300,10 @@ export const parseReaderFontPreferences = (
     return {
       chineseEnabled: record.chineseEnabled === true,
       japaneseEnabled: record.japaneseEnabled === true,
+      exedraChineseEnabled: record.exedraChineseEnabled === true,
+      exedraChineseFallbackEnabled:
+        record.exedraChineseFallbackEnabled === true,
+      exedraJapaneseEnabled: record.exedraJapaneseEnabled === true,
     };
   } catch {
     return { ...DEFAULT_PREFERENCES };
@@ -207,6 +346,7 @@ export const parseReaderFontRuntimeSnapshot = (
       const source =
         bundle.source === 'cache' ||
         bundle.source === 'network' ||
+        bundle.source === 'local' ||
         bundle.source === 'mixed'
           ? bundle.source
           : null;
@@ -223,6 +363,9 @@ export const parseReaderFontRuntimeSnapshot = (
       bundles: {
         chinese: normalizeBundle('chinese'),
         japanese: normalizeBundle('japanese'),
+        exedraChinese: normalizeBundle('exedraChinese'),
+        exedraChineseFallback: normalizeBundle('exedraChineseFallback'),
+        exedraJapanese: normalizeBundle('exedraJapanese'),
       },
     };
   } catch {
@@ -311,9 +454,14 @@ const setRootFontState = (
   active: boolean,
 ): void => {
   if (typeof document === 'undefined') return;
-  const key = bundleId === 'chinese'
-    ? 'readerFontChinese'
-    : 'readerFontJapanese';
+  const keys: Record<ReaderFontBundleId, string> = {
+    chinese: 'readerFontChinese',
+    japanese: 'readerFontJapanese',
+    exedraChinese: 'readerFontExedraChinese',
+    exedraChineseFallback: 'readerFontExedraChineseFallback',
+    exedraJapanese: 'readerFontExedraJapanese',
+  };
+  const key = keys[bundleId];
   if (active) document.documentElement.dataset[key] = 'ready';
   else delete document.documentElement.dataset[key];
 };
@@ -357,9 +505,83 @@ const validateFontBytes = async (
   }
 };
 
+const decodeUtf16Be = (bytes: Uint8Array): string => {
+  let value = '';
+  for (let index = 0; index + 1 < bytes.byteLength; index += 2) {
+    value += String.fromCharCode((bytes[index] << 8) | bytes[index + 1]);
+  }
+  return value.replace(/\0/gu, '').trim();
+};
+
+/** Read the user-facing family/full/PostScript names without trusting a file name. */
+export const readSfntInternalNames = (data: ArrayBuffer): string[] => {
+  const bytes = new Uint8Array(data);
+  const view = new DataView(data);
+  if (bytes.byteLength < 12) return [];
+  const signature = String.fromCharCode(...bytes.subarray(0, 4));
+  const isTrueType = view.getUint32(0, false) === 0x00010000;
+  if (!isTrueType && signature !== 'OTTO' && signature !== 'true') return [];
+  const tableCount = view.getUint16(4, false);
+  if (12 + tableCount * 16 > bytes.byteLength) return [];
+
+  let nameOffset = -1;
+  let nameLength = 0;
+  for (let index = 0; index < tableCount; index += 1) {
+    const offset = 12 + index * 16;
+    const tag = String.fromCharCode(...bytes.subarray(offset, offset + 4));
+    if (tag !== 'name') continue;
+    nameOffset = view.getUint32(offset + 8, false);
+    nameLength = view.getUint32(offset + 12, false);
+    break;
+  }
+  if (
+    nameOffset < 0 ||
+    nameLength < 6 ||
+    nameOffset + nameLength > bytes.byteLength
+  ) return [];
+
+  const recordCount = view.getUint16(nameOffset + 2, false);
+  const stringOffset = view.getUint16(nameOffset + 4, false);
+  const recordsEnd = nameOffset + 6 + recordCount * 12;
+  if (recordsEnd > nameOffset + nameLength) return [];
+  const names = new Set<string>();
+  for (let index = 0; index < recordCount; index += 1) {
+    const record = nameOffset + 6 + index * 12;
+    const platform = view.getUint16(record, false);
+    const nameId = view.getUint16(record + 6, false);
+    if (nameId !== 1 && nameId !== 4 && nameId !== 6 && nameId !== 16) {
+      continue;
+    }
+    const length = view.getUint16(record + 8, false);
+    const relativeOffset = view.getUint16(record + 10, false);
+    const start = nameOffset + stringOffset + relativeOffset;
+    const end = start + length;
+    if (start < nameOffset || end > nameOffset + nameLength) continue;
+    const raw = bytes.subarray(start, end);
+    const decoded = platform === 0 || platform === 3
+      ? decodeUtf16Be(raw)
+      : new TextDecoder('latin1').decode(raw).replace(/\0/gu, '').trim();
+    if (decoded) names.add(decoded);
+  }
+  return [...names];
+};
+
+const validateImportedFontIdentity = (
+  face: ReaderFontFaceDefinition,
+  data: ArrayBuffer,
+): void => {
+  if (!face.acceptedInternalNames?.length) return;
+  const names = readSfntInternalNames(data);
+  if (!face.acceptedInternalNames.some(expected => names.includes(expected))) {
+    throw new Error(
+      `${face.family} 内部字体名不符（读到：${names.slice(0, 4).join(' / ') || '无'}）。`,
+    );
+  }
+};
+
 type LoadedFaceData = {
   data: ArrayBuffer;
-  source: 'cache' | 'network';
+  source: 'cache' | 'network' | 'local';
   cached: boolean;
 };
 
@@ -382,6 +604,16 @@ const readFaceData = async (
         await cache.delete(face.url).catch(() => false);
       }
     }
+  }
+
+  const imported = importedFaceData.get(face.url);
+  if (imported) {
+    await validateFontBytes(face, imported);
+    return { data: imported.slice(0), source: 'local', cached: false };
+  }
+
+  if (face.delivery === 'local-import') {
+    throw new Error(`${face.family} 尚未从本机导入。`);
   }
 
   const controller = new AbortController();
@@ -470,7 +702,7 @@ const loadAndEnableReaderFontBundle = async (
     error: '',
   });
   const nextFaces: FontFace[] = [];
-  const sources = new Set<'cache' | 'network'>();
+  const sources = new Set<'cache' | 'network' | 'local'>();
   let loadedBytes = 0;
   let allCached = true;
   try {
@@ -569,6 +801,85 @@ export const enableReaderFontBundle = (
   return operation;
 };
 
+export const importReaderFontBundleFiles = async (
+  bundleId: ReaderFontBundleId,
+  files: readonly File[],
+): Promise<boolean> => {
+  const bundle = READER_FONT_BUNDLES[bundleId];
+  if (bundle.activation !== 'local-import') {
+    throw new Error(`${bundle.label} 不接受本地字体导入。`);
+  }
+  if (files.length !== bundle.faces.length) {
+    updateBundleRuntime(bundleId, {
+      status: 'error',
+      error: `请选择 ${bundle.faces.length} 个字体文件。`,
+      loadedBytes: 0,
+      source: null,
+    });
+    return false;
+  }
+
+  updateBundleRuntime(bundleId, {
+    status: 'checking',
+    error: '',
+    loadedBytes: 0,
+    source: null,
+  });
+  try {
+    const validated = new Map<ReaderFontFaceDefinition, ArrayBuffer>();
+    for (const file of files) {
+      if (file.size > 16 * 1024 * 1024) {
+        throw new Error(`${file.name} 超过 16 MiB 本地导入上限。`);
+      }
+      const data = await file.arrayBuffer();
+      const digest = await digestSha256(data);
+      if (!digest) throw new Error('当前浏览器缺少 SHA-256 完整性校验能力。');
+      const face = bundle.faces.find(
+        candidate => candidate.sha256 === digest && !validated.has(candidate),
+      );
+      if (!face) {
+        throw new Error(`${file.name} 不是 ${bundle.label} 的已核验字体。`);
+      }
+      await validateFontBytes(face, data);
+      validateImportedFontIdentity(face, data);
+      validated.set(face, data);
+    }
+    if (validated.size !== bundle.faces.length) {
+      throw new Error(`需要导入 ${bundle.faces.length} 份不同的已核验字体。`);
+    }
+
+    const cacheStorage = getCacheStorage();
+    const cache = cacheStorage
+      ? await cacheStorage.open(READER_FONT_CACHE_NAME).catch(() => null)
+      : null;
+    for (const face of bundle.faces) {
+      const data = validated.get(face);
+      if (!data) throw new Error(`${face.family} 未通过本地校验。`);
+      importedFaceData.set(face.url, data.slice(0));
+      if (cache) {
+        await cache.put(
+          face.url,
+          new Response(data, {
+            status: 200,
+            headers: { 'content-type': 'font/otf' },
+          }),
+        ).catch(() => undefined);
+      }
+    }
+    return await enableReaderFontBundle(bundleId);
+  } catch (error) {
+    updateBundleRuntime(bundleId, {
+      status: 'error',
+      error:
+        `${error instanceof Error ? error.message : '字体导入失败。'}`
+        + ' 已继续使用系统字体。',
+      loadedBytes: 0,
+      source: null,
+    });
+    return false;
+  }
+};
+
 const disableReaderFontBundleInternal = (
   bundleId: ReaderFontBundleId,
   persist: boolean,
@@ -605,6 +916,9 @@ export const removeReaderFontBundleCache = async (
   bundleId: ReaderFontBundleId,
 ): Promise<void> => {
   disableReaderFontBundleInternal(bundleId, true);
+  for (const face of READER_FONT_BUNDLES[bundleId].faces) {
+    importedFaceData.delete(face.url);
+  }
   const cacheStorage = getCacheStorage();
   if (cacheStorage) {
     try {
@@ -622,8 +936,9 @@ export const removeReaderFontBundleCache = async (
 };
 
 export const restoreSystemReaderFonts = (): void => {
-  disableReaderFontBundleInternal('chinese', false);
-  disableReaderFontBundleInternal('japanese', false);
+  for (const bundleId of READER_FONT_BUNDLE_IDS) {
+    disableReaderFontBundleInternal(bundleId, false);
+  }
   persistPreferences({ ...DEFAULT_PREFERENCES });
 };
 
@@ -632,14 +947,14 @@ export const initializeReaderFonts = (): Promise<void> => {
   if (initialization) return initialization;
   initialization = (async () => {
     await Promise.all(
-      (['chinese', 'japanese'] as const).map(async bundleId => {
+      READER_FONT_BUNDLE_IDS.map(async bundleId => {
         const cached = await inspectBundleCache(bundleId);
         updateBundleRuntime(bundleId, { cached });
       }),
     );
     // Persisted opt-in may load from the dedicated cache. New users keep both
     // flags false, so initialization performs no font network request.
-    for (const bundleId of ['chinese', 'japanese'] as const) {
+    for (const bundleId of READER_FONT_BUNDLE_IDS) {
       if (runtime.preferences[preferenceKeyFor(bundleId)]) {
         await loadAndEnableReaderFontBundle(bundleId, false);
       }

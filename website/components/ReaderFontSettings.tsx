@@ -4,10 +4,12 @@ import { useMemo, useSyncExternalStore } from 'react';
 import {
   CheckCircle2,
   Download,
+  ExternalLink,
   LoaderCircle,
   RotateCcw,
   Trash2,
   TriangleAlert,
+  Upload,
 } from 'lucide-react';
 
 import {
@@ -17,6 +19,7 @@ import {
   formatReaderFontBytes,
   getReaderFontRuntimeServerSnapshot,
   getReaderFontRuntimeSnapshot,
+  importReaderFontBundleFiles,
   parseReaderFontRuntimeSnapshot,
   removeReaderFontBundleCache,
   restoreSystemReaderFonts,
@@ -28,6 +31,7 @@ import {
 const BUSY_STATUSES = new Set(['checking', 'downloading', 'loading']);
 
 const bundleStatusText = (
+  bundleId: ReaderFontBundleId,
   runtime: ReaderFontBundleRuntime,
   totalBytes: number,
 ): string => {
@@ -50,6 +54,13 @@ const bundleStatusText = (
     case 'unsupported':
       return runtime.error;
     default:
+      if (
+        READER_FONT_BUNDLES[bundleId].activation === 'local-import'
+      ) {
+        return runtime.cached
+          ? '已在本机缓存；尚未启用。'
+          : '尚未导入；当前使用系统字体。';
+      }
       return runtime.cached
         ? '已下载但未启用；当前使用系统字体。'
         : '尚未下载；当前使用系统字体。';
@@ -63,10 +74,19 @@ const actionLabel = (
   const label = READER_FONT_BUNDLES[bundleId].label;
   if (BUSY_STATUSES.has(runtime.status)) return '正在处理…';
   if (runtime.status === 'ready') return '恢复系统字体';
+  if (READER_FONT_BUNDLES[bundleId].activation === 'local-import') {
+    return runtime.cached ? `启用已导入的${label}` : `导入并启用${label}`;
+  }
   return runtime.cached ? `启用已下载的${label}` : `下载并启用${label}`;
 };
 
-export default function ReaderFontSettings({ theme }: { theme: string }) {
+export default function ReaderFontSettings({
+  theme,
+  isExedraStory,
+}: {
+  theme: string;
+  isExedraStory: boolean;
+}) {
   const snapshot = useSyncExternalStore(
     subscribeReaderFontRuntime,
     getReaderFontRuntimeSnapshot,
@@ -76,8 +96,11 @@ export default function ReaderFontSettings({ theme }: { theme: string }) {
     () => parseReaderFontRuntimeSnapshot(snapshot),
     [snapshot],
   );
-  const anyReady = Object.values(state.bundles).some(
-    bundle => bundle.status === 'ready',
+  const bundleIds: readonly ReaderFontBundleId[] = isExedraStory
+    ? ['exedraChinese', 'exedraChineseFallback', 'exedraJapanese']
+    : ['chinese', 'japanese'];
+  const anyReady = bundleIds.some(
+    bundleId => state.bundles[bundleId].status === 'ready',
   );
 
   return (
@@ -93,12 +116,21 @@ export default function ReaderFontSettings({ theme }: { theme: string }) {
         游戏字体（按需下载）
       </summary>
       <p className="mt-2 text-[11px] leading-relaxed opacity-65">
-        默认不请求字体文件。下载的是完整 WOFF2，不裁掉字形；遇到缺字时会继续使用
-        系统 CJK 字体。浏览器缓存可用时，后续启用无需再次联网。
+        默认不请求或读取字体文件，只有明确选择后才启用。字体只作用于当前游戏的
+        对应语言；遇到缺字会继续使用声明的 CJK 回退字体。
       </p>
 
+      {isExedraStory && (
+        <p className="mt-2 rounded border border-amber-300/60 bg-amber-50/60 p-2 text-[10px] leading-relaxed text-amber-900">
+          简中主包从作者的固定 OFL Release 下载并校验 SHA-256；可选 GBK
+          回退包同样只在本机导入。JP 原生字体是 Fontworks 商业字体，本站不分发；
+          只接受你从合法副本选择的两份文件，在浏览器本机校验、缓存和使用，
+          文件不会上传。
+        </p>
+      )}
+
       <div className="mt-3 space-y-3">
-        {(['chinese', 'japanese'] as const).map(bundleId => {
+        {bundleIds.map(bundleId => {
           const definition = READER_FONT_BUNDLES[bundleId];
           const runtime = state.bundles[bundleId];
           const busy = BUSY_STATUSES.has(runtime.status);
@@ -144,33 +176,59 @@ export default function ReaderFontSettings({ theme }: { theme: string }) {
                 ) : runtime.status === 'ready' ? (
                   <CheckCircle2 className="mt-0.5 shrink-0" size={12} />
                 ) : null}
-                <span>{bundleStatusText(runtime, definition.totalBytes)}</span>
+                <span>
+                  {bundleStatusText(bundleId, runtime, definition.totalBytes)}
+                </span>
               </p>
 
               <div className="mt-2 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => {
-                    if (runtime.status === 'ready') {
-                      disableReaderFontBundle(bundleId);
-                    } else {
-                      void enableReaderFontBundle(bundleId);
-                    }
-                  }}
-                  className={`flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold text-white transition disabled:cursor-wait disabled:opacity-50 ${
-                    runtime.status === 'ready'
-                      ? 'bg-gray-600 hover:bg-gray-700'
-                      : 'bg-blue-600 hover:bg-blue-700'
-                  }`}
-                >
-                  {runtime.status === 'ready' ? (
-                    <RotateCcw size={13} />
-                  ) : (
-                    <Download size={13} />
-                  )}
-                  {actionLabel(bundleId, runtime)}
-                </button>
+                {definition.activation === 'local-import' &&
+                !runtime.cached && runtime.status !== 'ready' ? (
+                  <label
+                    className={`flex min-h-10 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-center text-xs font-bold text-white transition hover:bg-blue-700 ${
+                      busy ? 'pointer-events-none cursor-wait opacity-50' : ''
+                    }`}
+                  >
+                    <Upload size={13} />
+                    {actionLabel(bundleId, runtime)}
+                    <input
+                      type="file"
+                      multiple
+                      accept=".otf,.ttf,font/otf,font/ttf"
+                      disabled={busy}
+                      className="sr-only"
+                      onChange={event => {
+                        const files = [...(event.currentTarget.files ?? [])];
+                        event.currentTarget.value = '';
+                        void importReaderFontBundleFiles(bundleId, files);
+                      }}
+                    />
+                  </label>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      if (runtime.status === 'ready') {
+                        disableReaderFontBundle(bundleId);
+                      } else {
+                        void enableReaderFontBundle(bundleId);
+                      }
+                    }}
+                    className={`flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold text-white transition disabled:cursor-wait disabled:opacity-50 ${
+                      runtime.status === 'ready'
+                        ? 'bg-gray-600 hover:bg-gray-700'
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
+                  >
+                    {runtime.status === 'ready' ? (
+                      <RotateCcw size={13} />
+                    ) : (
+                      <Download size={13} />
+                    )}
+                    {actionLabel(bundleId, runtime)}
+                  </button>
+                )}
                 {runtime.cached && runtime.status !== 'ready' && !busy && (
                   <button
                     type="button"
@@ -182,6 +240,30 @@ export default function ReaderFontSettings({ theme }: { theme: string }) {
                   </button>
                 )}
               </div>
+              {(definition.sourceUrl || definition.licenseUrl) && (
+                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px]">
+                  {definition.sourceUrl && (
+                    <a
+                      href={definition.sourceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-blue-600 underline"
+                    >
+                      官方来源 <ExternalLink size={10} />
+                    </a>
+                  )}
+                  {definition.licenseUrl && (
+                    <a
+                      href={definition.licenseUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-blue-600 underline"
+                    >
+                      授权说明 <ExternalLink size={10} />
+                    </a>
+                  )}
+                </div>
+              )}
             </section>
           );
         })}
