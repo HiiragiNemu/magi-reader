@@ -43,6 +43,43 @@ export const resolveNpmInvocation = ({
 export const stripAnsi = (value) =>
   value.replace(/\u001b\[[0-9;]*m/gu, '');
 
+const extractJsonCandidates = (output) => {
+  const candidates = [];
+  for (let start = 0; start < output.length; start += 1) {
+    const opener = output[start];
+    if (opener !== '[' && opener !== '{') continue;
+    const stack = [];
+    let inString = false;
+    let escaped = false;
+    for (let index = start; index < output.length; index += 1) {
+      const character = output[index];
+      if (inString) {
+        if (escaped) {
+          escaped = false;
+        } else if (character === '\\') {
+          escaped = true;
+        } else if (character === '"') {
+          inString = false;
+        }
+        continue;
+      }
+      if (character === '"') {
+        inString = true;
+      } else if (character === '[' || character === '{') {
+        stack.push(character);
+      } else if (character === ']' || character === '}') {
+        const expected = character === ']' ? '[' : '{';
+        if (stack.pop() !== expected) break;
+        if (stack.length === 0) {
+          candidates.push(output.slice(start, index + 1));
+          break;
+        }
+      }
+    }
+  }
+  return candidates;
+};
+
 export const collectNamespaceObjects = (value, result = []) => {
   if (Array.isArray(value)) {
     for (const item of value) collectNamespaceObjects(item, result);
@@ -96,18 +133,7 @@ const uniqueNamespaceId = (matches, exactTitle) => {
 
 export const parseNamespaceList = (raw, exactTitle) => {
   const output = stripAnsi(String(raw)).trim();
-  const jsonCandidates = [output];
-
-  const firstArray = output.indexOf('[');
-  const lastArray = output.lastIndexOf(']');
-  if (firstArray >= 0 && lastArray > firstArray) {
-    jsonCandidates.push(output.slice(firstArray, lastArray + 1));
-  }
-  const firstObject = output.indexOf('{');
-  const lastObject = output.lastIndexOf('}');
-  if (firstObject >= 0 && lastObject > firstObject) {
-    jsonCandidates.push(output.slice(firstObject, lastObject + 1));
-  }
+  const jsonCandidates = [output, ...extractJsonCandidates(output)];
 
   let parsedStructuredOutput = false;
   const structuredMatches = [];

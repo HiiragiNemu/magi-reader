@@ -48,6 +48,14 @@ test('namespace parser accepts Wrangler JSON output', () => {
   assert.equal(parseNamespaceList(output, TITLE), ID);
 });
 
+test('namespace parser ignores a bracketed warning after multiline JSON', () => {
+  const output = `${JSON.stringify([
+    { id: 'f'.repeat(32), title: 'magi-submissions' },
+    { id: ID, title: TITLE },
+  ], null, 2)}\n\n▲ [WARNING] Proxy environment variables detected.`;
+  assert.equal(parseNamespaceList(output, TITLE), ID);
+});
+
 test('namespace parser accepts table output and rejects a longer similar title', () => {
   const output = [
     `│ ${'a'.repeat(32)} │ ${TITLE}-copy │`,
