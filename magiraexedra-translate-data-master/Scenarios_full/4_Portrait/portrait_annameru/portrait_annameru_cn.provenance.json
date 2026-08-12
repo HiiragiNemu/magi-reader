@@ -1,125 +1,100 @@
 {
-  "version": 1,
+  "version": 3,
   "sourceIdentity": "exedra:4_Portrait:portrait_annameru",
-  "provenance": "rounddora_0728_human",
+  "provenance": "official_tw_human",
   "machineTranslation": false,
-  "generatedAt": "2026-07-29T11:19:40.770540+00:00",
+  "officialTw": true,
+  "sourceProvider": "exedra-wiki-sp",
+  "sourceContract": {
+    "schemaVersion": 1,
+    "contractName": "exedra-tw-sp-handoff",
+    "provenance": {
+      "provider": "exedra-wiki-sp",
+      "locale": "zh-Hant-TW",
+      "authority": "official-tw-client",
+      "originalTextUnmodified": true,
+      "textTransformation": "reader-tw2sp"
+    },
+    "sourceRevisions": {
+      "sp": "80f8436079eeb63720e80b4b3dab396526f66c97",
+      "scenarios": "8c50b9cfa3ed416b590475d6b6caca6c",
+      "manifests": "a18e6ffd3e6fb84b8544509ee12191df"
+    },
+    "scenarioCatalogSha256": "34b7e5bee2bbbe2994ee63959161121d98b2da27d13b8d0b04e560ee9b0a31a9",
+    "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
+    "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
+    "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "sourceTreeSha256": "6fc3fb7f07ab8294dfb5145092ffbb3967f1acf0e1f8229bd921af3e5e6a99f3",
+  "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
+  "generatedAt": "2026-08-08T12:45:17.310896+00:00",
   "jpSha256": "1d9518bc8951a884630647b2266abde021604c72bc46dd68b3fc18cd7c2628a8",
-  "cnSha256": "87757662bd912082370eb98b57f09270c2719a95d89444d5e00d2d5cd2c2953a",
-  "episodes": [
+  "cnSha256": "a99fd7533f6489143d2d69305d0674e5913759ed9dc54134eb8abb8443ac3e04",
+  "chapterTitle": "",
+  "sections": [
+    {
+      "section": 1,
+      "source": "portrait_annameru_1.json",
+      "resource": "4_portrait/portrait_annameru_1",
+      "advMstId": 40019001,
+      "advTitleMstId": 141,
+      "duplicateAdvMstIds": [
+        40019001
+      ],
+      "nameAliases": [
+        "Episode1"
+      ],
+      "subNameAliases": [],
+      "name": "Episode1",
+      "subName": "",
+      "sectionTitle": "Episode1",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 2,
+      "source": "portrait_annameru_2.json",
+      "resource": "4_portrait/portrait_annameru_2",
+      "advMstId": 40019002,
+      "advTitleMstId": 141,
+      "duplicateAdvMstIds": [
+        40019002
+      ],
+      "nameAliases": [
+        "Episode2"
+      ],
+      "subNameAliases": [],
+      "name": "Episode2",
+      "subName": "",
+      "sectionTitle": "Episode2",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    }
+  ],
+  "sourceJson": [
     {
       "source": "portrait_annameru_1.json",
+      "manifestSourcePath": "4_Portrait/portrait_annameru_1/portrait_annameru_1.json",
+      "twPath": "4_Portrait/portrait_annameru_1/portrait_annameru_1.json",
+      "twSha256": "d66ae4fedcd3cb720d254b42adf8558305fff51c276e2f74f9eb5136f2e52669",
       "jpSha256": "de3a1b7c3025aa97697affd2df301dea125d2cec89908c42bcfe7507807956dc",
-      "cnSha256": "77bb0005d233b2428d05385de88d79545bafe4d39b61b976ed50d76feb982168",
-      "provenance": "rounddora_0728_human",
-      "sourceName": "AnnaMeru_BonusStory.ass",
-      "sourceUrl": "",
-      "sourceSha256": "f7ecdaaf04ed1292a377c6eaee989ca01cb58d8dc2350f1f4e64e5e885ea2622",
+      "cnSha256": "033815273cc69b6896bce020e5050e52f23828bcbe9772477e2ca947a0fe28a7",
+      "simplifiedJsonSha256": "033815273cc69b6896bce020e5050e52f23828bcbe9772477e2ca947a0fe28a7",
       "eventCount": 69,
-      "alignment": {
-        "method": "explicit_rounddora_ass_identity_plus_exact_event_count_and_exact_japanese_wiki_group_anchor",
-        "prealignedAssPage": true,
-        "japaneseWikiUrl": "https://exedra.wiki/wiki/Defying_Destiny:_Forbidden_Cards_Call/Bonus_Story/Japanese",
-        "japaneseWikiSha256": "e5d6703e7a1ee74a44bb51da502df8173a13534c5832a1311ce7fe8bc5803b0f",
-        "pageEpisodeNumbers": [
-          1,
-          2
-        ],
-        "pageToGroup": [
-          {
-            "sourceStart": 0,
-            "sourceCount": 1,
-            "targetStart": 0,
-            "targetCount": 1
-          },
-          {
-            "sourceStart": 1,
-            "sourceCount": 1,
-            "targetStart": 1,
-            "targetCount": 1
-          }
-        ],
-        "assSources": [
-          {
-            "name": "AnnaMeru_BonusStory.ass",
-            "sha256": "f1639b86a3a7e08aaeda0074eda7ba07ed5317b091f0e12c78f26b3ed300a6f4",
-            "eventCount": 129,
-            "metadata": {
-              "Title": "MagiaTimeline Generated",
-              "Original Script": "MagiaTimeline",
-              "Audio File": "../00 MEX/mp4/MSS/AnnaMeru_BonusStory.mp4",
-              "Video File": "../00 MEX/mp4/MSS/AnnaMeru_BonusStory.mp4"
-            },
-            "mediaIdentity": "../00 MEX/mp4/MSS/AnnaMeru_BonusStory.mp4"
-          }
-        ],
-        "assEvents": 129,
-        "jsonEvents": 129,
-        "groupSection": 1
-      },
-      "mutationProof": {
-        "nonCommentFieldsMatch": true,
-        "playableCommentSequenceMatches": true,
-        "mutableCommentCellCount": 69,
-        "canonicalEventCount": 69
-      }
+      "provenance": "official_tw_human"
     },
     {
       "source": "portrait_annameru_2.json",
+      "manifestSourcePath": "4_Portrait/portrait_annameru_2/portrait_annameru_2.json",
+      "twPath": "4_Portrait/portrait_annameru_2/portrait_annameru_2.json",
+      "twSha256": "4f1c842a152c9598782ab5a9fe9ebf931f35e1690af7629ab13fdd3bffe172c9",
       "jpSha256": "d9f7faeb733dc94befa8f5024d340cc3eb6ec47ae53a90204c767b266aa79a86",
-      "cnSha256": "2c6f9b14cb42a964bbf816262fc8bfb89e8a50cfae76aea06c3e26f8a09154a8",
-      "provenance": "rounddora_0728_human",
-      "sourceName": "AnnaMeru_BonusStory.ass",
-      "sourceUrl": "",
-      "sourceSha256": "f7ecdaaf04ed1292a377c6eaee989ca01cb58d8dc2350f1f4e64e5e885ea2622",
+      "cnSha256": "c08d5d9a97502410baf0d41c33ce8df5b99041cb2ca6b11d8f09a116cf242ae1",
+      "simplifiedJsonSha256": "c08d5d9a97502410baf0d41c33ce8df5b99041cb2ca6b11d8f09a116cf242ae1",
       "eventCount": 60,
-      "alignment": {
-        "method": "explicit_rounddora_ass_identity_plus_exact_event_count_and_exact_japanese_wiki_group_anchor",
-        "prealignedAssPage": true,
-        "japaneseWikiUrl": "https://exedra.wiki/wiki/Defying_Destiny:_Forbidden_Cards_Call/Bonus_Story/Japanese",
-        "japaneseWikiSha256": "e5d6703e7a1ee74a44bb51da502df8173a13534c5832a1311ce7fe8bc5803b0f",
-        "pageEpisodeNumbers": [
-          1,
-          2
-        ],
-        "pageToGroup": [
-          {
-            "sourceStart": 0,
-            "sourceCount": 1,
-            "targetStart": 0,
-            "targetCount": 1
-          },
-          {
-            "sourceStart": 1,
-            "sourceCount": 1,
-            "targetStart": 1,
-            "targetCount": 1
-          }
-        ],
-        "assSources": [
-          {
-            "name": "AnnaMeru_BonusStory.ass",
-            "sha256": "f1639b86a3a7e08aaeda0074eda7ba07ed5317b091f0e12c78f26b3ed300a6f4",
-            "eventCount": 129,
-            "metadata": {
-              "Title": "MagiaTimeline Generated",
-              "Original Script": "MagiaTimeline",
-              "Audio File": "../00 MEX/mp4/MSS/AnnaMeru_BonusStory.mp4",
-              "Video File": "../00 MEX/mp4/MSS/AnnaMeru_BonusStory.mp4"
-            },
-            "mediaIdentity": "../00 MEX/mp4/MSS/AnnaMeru_BonusStory.mp4"
-          }
-        ],
-        "assEvents": 129,
-        "jsonEvents": 129,
-        "groupSection": 2
-      },
-      "mutationProof": {
-        "nonCommentFieldsMatch": true,
-        "playableCommentSequenceMatches": true,
-        "mutableCommentCellCount": 60,
-        "canonicalEventCount": 60
-      }
+      "provenance": "official_tw_human"
     }
   ]
 }

@@ -65,9 +65,12 @@ jobs:
         run: |
           set -euo pipefail
           python generate_story_index.py
+          python tools/apply_tw_official_metadata.py
           python generate_machine_translation_manifest.py \
             --translation-base 65f221f2aaa5a9fe161ed32e03e4dfbb93d4746d \
             --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb
+          python tools/build_split_search_indexes.py
+          python tools/build_split_search_indexes.py --validate-only
           python - <<'PY'
           import json
           from pathlib import Path

@@ -28,6 +28,12 @@ export type StoryIndexEntry = {
   component_model_ids?: string[];
   canonical_model_id?: string;
   voice_model_role?: 'standalone' | 'comboCanonical' | 'comboComponent';
+  official_tw?: boolean;
+  official_tw_label?: string;
+  official_tw_provenance?: string;
+  official_tw_chapter_title?: string;
+  official_tw_chapter_titles?: string[];
+  official_tw_section_titles?: string[];
 };
 
 export type LoadedStoryIndex = {

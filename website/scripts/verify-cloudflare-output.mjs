@@ -4,31 +4,43 @@ import {
   readFileSync,
   renameSync,
 } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import process from 'node:process';
 
-const buildCloudflareOutput = () => {
-  const localPayload = path.resolve('public', 'search_content.json');
-  const backupDirectory = path.resolve('.magi-reader-generation-backups');
-  const heldPayload = path.join(
-    backupDirectory,
-    'search_content.build-hold.json',
-  );
+const searchScopes = ['magireco', 'exedra'];
+const searchPayloadNames = [
+  'search_content.json',
+  ...searchScopes.map((scope) => `search_content.${scope}.json`),
+];
 
-  if (existsSync(heldPayload)) {
-    if (existsSync(localPayload)) {
+const buildCloudflareOutput = () => {
+  const backupDirectory = path.resolve('.magi-reader-generation-backups');
+  const payloads = searchPayloadNames.map((name) => ({
+    local: path.resolve('public', name),
+    held: path.join(
+      backupDirectory,
+      name.replace(/\.json$/u, '.build-hold.json'),
+    ),
+  }));
+
+  for (const payload of payloads) {
+    if (!existsSync(payload.held)) continue;
+    if (existsSync(payload.local)) {
       throw new Error(
-        '发现未恢复的搜索文件备份，且 public 中也存在同名文件；为避免覆盖，已停止构建。',
+        `发现未恢复的搜索文件备份，且 public 中也存在 ${path.basename(payload.local)}；为避免覆盖，已停止构建。`,
       );
     }
-    renameSync(heldPayload, localPayload);
+    renameSync(payload.held, payload.local);
   }
 
-  const shouldHoldPayload = existsSync(localPayload);
-  if (shouldHoldPayload) {
+  const payloadsToHold = payloads.filter((payload) => existsSync(payload.local));
+  if (payloadsToHold.length > 0) {
     mkdirSync(backupDirectory, { recursive: true });
-    renameSync(localPayload, heldPayload);
+    for (const payload of payloadsToHold) {
+      renameSync(payload.local, payload.held);
+    }
   }
 
   try {
@@ -53,8 +65,10 @@ const buildCloudflareOutput = () => {
       throw new Error(`OpenNext Cloudflare 构建失败（退出码 ${result.status}）`);
     }
   } finally {
-    if (shouldHoldPayload && existsSync(heldPayload)) {
-      renameSync(heldPayload, localPayload);
+    for (const payload of payloadsToHold) {
+      if (existsSync(payload.held)) {
+        renameSync(payload.held, payload.local);
+      }
     }
   }
 };
@@ -71,12 +85,13 @@ if (process.argv.includes('--build')) {
 const outputRoot = path.resolve('.open-next');
 const workerEntry = path.join(outputRoot, 'worker.js');
 const assetsRoot = path.join(outputRoot, 'assets');
-const searchPayload = path.join(assetsRoot, 'search_content.json');
-const searchManifest = path.join(assetsRoot, 'search_index_manifest.json');
-const sourceSearchManifest = path.resolve(
-  'public',
-  'search_index_manifest.json',
-);
+const searchPayloads = searchPayloadNames.map((name) => path.join(assetsRoot, name));
+const searchManifests = searchScopes.map((scope) => ({
+  scope,
+  built: path.join(assetsRoot, `search_index_manifest.${scope}.json`),
+  source: path.resolve('public', `search_index_manifest.${scope}.json`),
+}));
+const sourceStoryIndex = path.resolve('public', 'story_index.json');
 const forbiddenAssetEntries = [
   '.build',
   '_worker.js',
@@ -86,13 +101,13 @@ const forbiddenAssetEntries = [
   'server-functions',
 ];
 
-const isValidSearchManifest = (manifest) => {
+const isValidSearchManifest = (manifest, scope) => {
   const sha256 =
     typeof manifest.sha256 === 'string' ? manifest.sha256.toLowerCase() : '';
   const commonValid =
     (manifest.version === 1 || manifest.version === 2) &&
     /^[a-f0-9]{64}$/u.test(sha256) &&
-    manifest.object_key === `search/${sha256}.json` &&
+    manifest.object_key === `search/${scope}/${sha256}.json` &&
     Number.isSafeInteger(manifest.bytes) &&
     manifest.bytes > 0 &&
     manifest.bytes <= 256 * 1024 * 1024 &&
@@ -130,6 +145,15 @@ const isValidSearchManifest = (manifest) => {
 };
 
 const errors = [];
+let storyIndexSha256 = '';
+
+if (!existsSync(sourceStoryIndex)) {
+  errors.push('public 缺少 story_index.json');
+} else {
+  storyIndexSha256 = createHash('sha256')
+    .update(readFileSync(sourceStoryIndex))
+    .digest('hex');
+}
 
 if (!existsSync(workerEntry)) {
   errors.push('缺少 OpenNext Worker 入口 .open-next/worker.js');
@@ -137,27 +161,36 @@ if (!existsSync(workerEntry)) {
 if (!existsSync(assetsRoot)) {
   errors.push('缺少 OpenNext 静态资源目录 .open-next/assets');
 }
-if (existsSync(searchPayload)) {
-  errors.push('搜索大文件不能打包进 Worker 静态资源');
+for (const searchPayload of searchPayloads) {
+  if (existsSync(searchPayload)) {
+    errors.push(`搜索大文件不能打包进 Worker 静态资源: ${path.basename(searchPayload)}`);
+  }
 }
-if (!existsSync(searchManifest)) {
-  errors.push('静态资源缺少 search_index_manifest.json');
-} else {
+for (const searchManifest of searchManifests) {
+  if (!existsSync(searchManifest.built)) {
+    errors.push(`静态资源缺少 ${path.basename(searchManifest.built)}`);
+    continue;
+  }
   try {
-    const builtManifestSource = readFileSync(searchManifest, 'utf8');
-    if (!existsSync(sourceSearchManifest)) {
-      errors.push('public 缺少 search_index_manifest.json');
+    const builtManifestSource = readFileSync(searchManifest.built, 'utf8');
+    if (!existsSync(searchManifest.source)) {
+      errors.push(`public 缺少 ${path.basename(searchManifest.source)}`);
     } else if (
-      builtManifestSource !== readFileSync(sourceSearchManifest, 'utf8')
+      builtManifestSource !== readFileSync(searchManifest.source, 'utf8')
     ) {
-      errors.push('构建后的搜索清单与 public 源文件不一致');
+      errors.push(`构建后的 ${searchManifest.scope} 搜索清单与 public 源文件不一致`);
     }
     const manifest = JSON.parse(builtManifestSource);
-    if (!isValidSearchManifest(manifest)) {
-      errors.push('search_index_manifest.json 格式或内容寻址键无效');
+    if (!isValidSearchManifest(manifest, searchManifest.scope)) {
+      errors.push(`${path.basename(searchManifest.built)} 格式或内容寻址键无效`);
+    } else if (
+      storyIndexSha256 &&
+      manifest.story_index_sha256 !== storyIndexSha256
+    ) {
+      errors.push(`${searchManifest.scope} 搜索清单与当前 story_index.json 不匹配`);
     }
   } catch {
-    errors.push('search_index_manifest.json 不是有效 JSON');
+    errors.push(`${path.basename(searchManifest.built)} 不是有效 JSON`);
   }
 }
 

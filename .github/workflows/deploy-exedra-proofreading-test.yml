@@ -48,6 +48,7 @@ jobs:
         run: |
           set -euo pipefail
           python generate_story_index.py
+          python tools/apply_tw_official_metadata.py
           python generate_machine_translation_manifest.py \
             --translation-base 65f221f2aaa5a9fe161ed32e03e4dfbb93d4746d \
             --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb
@@ -193,32 +194,35 @@ jobs:
           npm run type-check
           npm test
 
-      - name: Generate matching search manifest
+      - name: Generate matching split search manifests
         id: search
         shell: bash
         run: |
           set -euo pipefail
-          payload="$RUNNER_TEMP/search_content.json"
-          python build_search_index_v6.py --output "$payload"
-          python build_search_index_v6.py --output "$payload" --validate-only
-          object_key="$(python - <<'PY'
+          python tools/build_split_search_indexes.py
+          python tools/build_split_search_indexes.py --validate-only
+          keys="$(python - <<'PY'
           import json
           import re
           from pathlib import Path
 
-          manifest = json.loads(
-              Path("website/public/search_index_manifest.json").read_text(
-                  encoding="utf-8"
+          values = []
+          for scope in ("magireco", "exedra"):
+              manifest = json.loads(
+                  Path(f"website/public/search_index_manifest.{scope}.json")
+                  .read_text(encoding="utf-8")
               )
-          )
-          object_key = manifest.get("object_key", "")
-          if not re.fullmatch(r"search/[a-f0-9]{64}\.json", object_key):
-              raise SystemExit(f"Invalid search object key: {object_key!r}")
-          print(object_key)
+              object_key = manifest.get("object_key", "")
+              if not re.fullmatch(rf"search/{scope}/[a-f0-9]{{64}}\.json", object_key):
+                  raise SystemExit(f"Invalid {scope} search object key: {object_key!r}")
+              values.append(object_key)
+          print(" ".join(values))
           PY
           )"
-          echo "object_key=$object_key" >> "$GITHUB_OUTPUT"
-          echo "Full-text payload is validated for manual R2 upload: $object_key"
+          read -r magireco_key exedra_key <<< "$keys"
+          echo "magireco_key=$magireco_key" >> "$GITHUB_OUTPUT"
+          echo "exedra_key=$exedra_key" >> "$GITHUB_OUTPUT"
+          echo "Split full-text payloads are validated for manual R2 upload: $magireco_key $exedra_key"
 
       - name: Build Cloudflare Worker output
         working-directory: website

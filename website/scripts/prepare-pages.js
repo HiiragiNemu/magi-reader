@@ -44,11 +44,52 @@ fs.rmSync(outputRoot, { recursive: true, force: true });
 fs.mkdirSync(outputRoot, { recursive: true });
 fs.cpSync(assetRoot, outputRoot, { recursive: true, force: true });
 
+// Pages must serve generated catalogue/public files directly, but Next.js
+// dynamic routes and RSC/Flight navigation must reach OpenNext.  A blanket
+// ASSETS-first policy can return the current HTML document for a client-side
+// /reader/... navigation, which appears in Chromium as a flash and reload back
+// to the catalogue.  Conversely, routing every public data file through
+// OpenNext can leave initial catalogue loading waiting indefinitely.
 const wrapper = String.raw`import appWorker from "../.open-next/worker.js";
+
+const isRscRequest = (request, url) => {
+  const accept = request.headers.get("accept") || "";
+  return (
+    url.searchParams.has("_rsc") ||
+    request.headers.get("rsc") === "1" ||
+    request.headers.has("next-router-state-tree") ||
+    request.headers.has("next-router-prefetch") ||
+    accept.includes("text/x-component")
+  );
+};
+
+const shouldTryStaticAsset = (request, url) => {
+  if (request.method !== "GET" && request.method !== "HEAD") return false;
+  if (isRscRequest(request, url)) return false;
+
+  const pathname = url.pathname;
+  if (
+    pathname.startsWith("/api/") ||
+    pathname.startsWith("/reader/") ||
+    pathname.startsWith("/review/")
+  ) {
+    return false;
+  }
+
+  return (
+    pathname === "/" ||
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/data/") ||
+    pathname.startsWith("/audio/") ||
+    pathname.startsWith("/fonts/") ||
+    /\/[^/]+\.[A-Za-z0-9]{1,16}$/.test(pathname)
+  );
+};
 
 export default {
   async fetch(request, env, ctx) {
-    if (request.method === "GET" || request.method === "HEAD") {
+    const url = new URL(request.url);
+    if (shouldTryStaticAsset(request, url)) {
       const assetResponse = await env.ASSETS.fetch(request);
       if (assetResponse.status !== 404) {
         return assetResponse;

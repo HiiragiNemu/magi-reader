@@ -1,261 +1,432 @@
 {
   "schemaVersion": 1,
   "status": "validated",
-  "generatedAt": "2026-07-26T18:17:17+00:00",
+  "provenance": "official_tw_human",
+  "sourceRoot": "official-tw-exedra-wiki-sp#6fc3fb7f07ab8294dfb5145092ffbb3967f1acf0e1f8229bd921af3e5e6a99f3",
   "group": {
     "category": "3_Character",
     "groupKey": "character_seika"
   },
-  "wiki": {
-    "page": "Seika Kumi/Story/Chinese",
-    "revisionId": 61697,
-    "timestamp": "2025-08-08T13:19:26Z",
-    "author": "Chie",
-    "sha1": "e7541554875effd65f1ced7c9e317beae11e1d05",
-    "contentSha256": "49e74c91a89ea11bbb342bc6d1c0065065f1b05b2decb9db9e1940b14d058991",
-    "source": "https://exedra.wiki/w/api.php"
+  "validation": {
+    "passed": true,
+    "mismatchCount": 0,
+    "usesLcs": false,
+    "usesFuzzyMatching": false,
+    "allowsReordering": false
   },
+  "mismatches": [],
   "jp": {
-    "path": "D:\\magia\\MyProducts\\magi-reader\\magiraexedra-source-master\\Scenarios_full\\3_Character\\character_seika\\character_seika_jp.txt",
     "contentSha256": "58ebaf8d65920782ed406a5a23bfff3364e201c6bc3f286e14a9430a4ffbd0e7",
     "sectionCount": 8,
-    "rawEventCount": 369,
     "readerNormalizedBlockCount": 203
   },
   "cn": {
-    "target": "D:\\magia\\MyProducts\\magi-reader\\magiraexedra-translate-data-master\\Scenarios_full\\3_Character\\character_seika\\character_seika_cn.txt",
+    "renderedSha256": "90f4b0f11ec05554c487beb69670424f1e2202b66a965aae1ac132139f5a7b7f",
     "sectionCount": 8,
-    "rawEventCount": 370,
-    "readerNormalizedBlockCount": 203,
-    "renderedSha256": "2b5a7ccb95e63dd1c6721568b44637bedc719e691c1bf4882a4257459fc9b322"
-  },
-  "speakerMapping": {
-    "dictionaryPath": "D:\\magia\\MyProducts\\magi-reader\\website\\app\\config\\dictionary.ts",
-    "dictionarySha256": "3420af436a261955e4d20b12589aeca1483aba80909bde9cf8f1204e55531452",
-    "builtInAliasGroup": null,
-    "builtInAliases": {},
-    "extraMapPath": null,
-    "extraMapSha256": null,
-    "unmappedJapaneseSpeakers": []
-  },
-  "validation": {
-    "passed": true,
-    "policy": "same Section index, same reader-normalized block count, same exact mapped speaker and narration/dialogue kind at every block index",
-    "preservesWikiRawEvents": true,
-    "usesLcs": false,
-    "usesFuzzyMatching": false,
-    "allowsReordering": false,
-    "mismatchCount": 0
+    "readerNormalizedBlockCount": 203
   },
   "sections": [
     {
       "section": 1,
-      "wikiEpisode": 0,
       "source": "character_seika_0.json",
-      "rawEvents": {
-        "jp": 3,
-        "cn": 3,
-        "difference": 0
-      },
+      "wikiEpisode": 0,
       "readerNormalizedBlocks": {
         "jp": 1,
         "cn": 1,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 2,
-        "cn": 2,
-        "jpMergeRuns": 1,
-        "cnMergeRuns": 1
-      },
       "speakerSequenceSha256": {
-        "jp": "5f8f94b14539d3dbf83536c726c97df8bfc258085c88dfcd519b6b1006942dd0",
-        "cn": "5f8f94b14539d3dbf83536c726c97df8bfc258085c88dfcd519b6b1006942dd0"
+        "jp": "1f2e1f54dfaafff2cc03da81e60759325d860ea0159af8c636ad4d9ee1dd0e5a",
+        "cn": "1f2e1f54dfaafff2cc03da81e60759325d860ea0159af8c636ad4d9ee1dd0e5a"
       }
     },
     {
       "section": 2,
-      "wikiEpisode": 1,
       "source": "character_seika_1.json",
-      "rawEvents": {
-        "jp": 47,
-        "cn": 47,
-        "difference": 0
-      },
+      "wikiEpisode": 1,
       "readerNormalizedBlocks": {
         "jp": 14,
         "cn": 14,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 33,
-        "cn": 33,
-        "jpMergeRuns": 11,
-        "cnMergeRuns": 11
-      },
       "speakerSequenceSha256": {
-        "jp": "4256d2f32424a9de46f298f327091cfb1391762d6feaf6133a70282236d7f4ad",
-        "cn": "4256d2f32424a9de46f298f327091cfb1391762d6feaf6133a70282236d7f4ad"
+        "jp": "9dfb15ac048534aacbad3a8310650162aa8fdea7ec5cf689dfd4f3500245beea",
+        "cn": "9dfb15ac048534aacbad3a8310650162aa8fdea7ec5cf689dfd4f3500245beea"
       }
     },
     {
       "section": 3,
-      "wikiEpisode": 2,
       "source": "character_seika_2.json",
-      "rawEvents": {
-        "jp": 59,
-        "cn": 59,
-        "difference": 0
-      },
+      "wikiEpisode": 2,
       "readerNormalizedBlocks": {
         "jp": 31,
         "cn": 31,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 28,
-        "cn": 28,
-        "jpMergeRuns": 14,
-        "cnMergeRuns": 14
-      },
       "speakerSequenceSha256": {
-        "jp": "c696a4577fc33b21f3e04232cab3a689dd5d739824e6eb245b62bf30401c0d7f",
-        "cn": "c696a4577fc33b21f3e04232cab3a689dd5d739824e6eb245b62bf30401c0d7f"
+        "jp": "4e01823a20ab7e1bcbc8fd6723c3763ec82d3bc0a8442e70d0a0b958f304d851",
+        "cn": "4e01823a20ab7e1bcbc8fd6723c3763ec82d3bc0a8442e70d0a0b958f304d851"
       }
     },
     {
       "section": 4,
-      "wikiEpisode": 3,
       "source": "character_seika_3.json",
-      "rawEvents": {
-        "jp": 69,
-        "cn": 69,
-        "difference": 0
-      },
+      "wikiEpisode": 3,
       "readerNormalizedBlocks": {
         "jp": 31,
         "cn": 31,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 38,
-        "cn": 38,
-        "jpMergeRuns": 12,
-        "cnMergeRuns": 12
-      },
       "speakerSequenceSha256": {
-        "jp": "28cf7a63ccc5e4efae41faca61f8eec52a8ddeb6c9ba9a09aaedf102174dcfc7",
-        "cn": "28cf7a63ccc5e4efae41faca61f8eec52a8ddeb6c9ba9a09aaedf102174dcfc7"
+        "jp": "ada4a5a7d4ae1a510514683b67b3e3f5ee87f31379b7344276c1139e4a2aeb28",
+        "cn": "ada4a5a7d4ae1a510514683b67b3e3f5ee87f31379b7344276c1139e4a2aeb28"
       }
     },
     {
       "section": 5,
-      "wikiEpisode": 4,
       "source": "character_seika_4.json",
-      "rawEvents": {
-        "jp": 50,
-        "cn": 50,
-        "difference": 0
-      },
+      "wikiEpisode": 4,
       "readerNormalizedBlocks": {
         "jp": 32,
         "cn": 32,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 18,
-        "cn": 18,
-        "jpMergeRuns": 11,
-        "cnMergeRuns": 11
-      },
       "speakerSequenceSha256": {
-        "jp": "87ec9ae23d995c3c156217cdc39f5cb6ade6d7c296662a9ec0d775e263cfc61b",
-        "cn": "87ec9ae23d995c3c156217cdc39f5cb6ade6d7c296662a9ec0d775e263cfc61b"
+        "jp": "4f3ae298804738dbca5bf00b666cfdb4d000b886b3d6142fe91fc2f150c62477",
+        "cn": "4f3ae298804738dbca5bf00b666cfdb4d000b886b3d6142fe91fc2f150c62477"
       }
     },
     {
       "section": 6,
-      "wikiEpisode": 5,
       "source": "character_seika_5.json",
-      "rawEvents": {
-        "jp": 37,
-        "cn": 37,
-        "difference": 0
-      },
+      "wikiEpisode": 5,
       "readerNormalizedBlocks": {
         "jp": 30,
         "cn": 30,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 7,
-        "cn": 7,
-        "jpMergeRuns": 6,
-        "cnMergeRuns": 6
-      },
       "speakerSequenceSha256": {
-        "jp": "346c5effe54d06af053b3642fd571cccb08b84b144f9d55b48fc6cf043758f94",
-        "cn": "346c5effe54d06af053b3642fd571cccb08b84b144f9d55b48fc6cf043758f94"
+        "jp": "d1562838e961b15505416ee7e6c9d2b04d7761d5aa3e24a322390970da83c991",
+        "cn": "d1562838e961b15505416ee7e6c9d2b04d7761d5aa3e24a322390970da83c991"
       }
     },
     {
       "section": 7,
-      "wikiEpisode": 6,
       "source": "character_seika_6.json",
-      "rawEvents": {
-        "jp": 24,
-        "cn": 24,
-        "difference": 0
-      },
+      "wikiEpisode": 6,
       "readerNormalizedBlocks": {
         "jp": 14,
         "cn": 14,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 10,
-        "cn": 10,
-        "jpMergeRuns": 8,
-        "cnMergeRuns": 8
-      },
       "speakerSequenceSha256": {
-        "jp": "4b56cb0f7c1f9be10cf2fd23def27a866ee138598f0c123d3eada222c860b37b",
-        "cn": "4b56cb0f7c1f9be10cf2fd23def27a866ee138598f0c123d3eada222c860b37b"
+        "jp": "7139ec337b2f0acd3274b414cd6e082d24faa46b314e26d3377ae7cce6c6a386",
+        "cn": "7139ec337b2f0acd3274b414cd6e082d24faa46b314e26d3377ae7cce6c6a386"
       }
     },
     {
       "section": 8,
-      "wikiEpisode": 7,
       "source": "character_seika_7.json",
-      "rawEvents": {
-        "jp": 80,
-        "cn": 81,
-        "difference": -1
-      },
+      "wikiEpisode": 7,
       "readerNormalizedBlocks": {
         "jp": 50,
         "cn": 50,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 30,
-        "cn": 31,
-        "jpMergeRuns": 18,
-        "cnMergeRuns": 19
-      },
       "speakerSequenceSha256": {
-        "jp": "470983ebefb5a8833a1e67ae07cd094a0aa5a9aac158f615960cf15751cfea7b",
-        "cn": "470983ebefb5a8833a1e67ae07cd094a0aa5a9aac158f615960cf15751cfea7b"
+        "jp": "5d5a4193ecfcf5c20f0b3e8336a4d78bee663ad9fa8e9fc07e56cd8048b4798f",
+        "cn": "5d5a4193ecfcf5c20f0b3e8336a4d78bee663ad9fa8e9fc07e56cd8048b4798f"
       }
     }
   ],
-  "mismatches": []
+  "sourceJson": [
+    {
+      "source": "character_seika_0.json",
+      "manifestSourcePath": "3_Character/character_seika_0/character_seika_0.json",
+      "twPath": "3_Character/character_seika_0/character_seika_0.json",
+      "twSha256": "0129497a131b610a8aa76b6af4e0e3ecb5664ef922db692960f9518f31227697",
+      "jpSha256": "7e37a2e2e3971348a0c5a934877c0d29e2381f1dfde73ebbc10ee19bc279958b",
+      "cnSha256": "1db5e1a946b92b1c8e99ea7cb8a0d5ada140af93d0481a817c9fcd1e6ed2ea64",
+      "simplifiedJsonSha256": "1db5e1a946b92b1c8e99ea7cb8a0d5ada140af93d0481a817c9fcd1e6ed2ea64",
+      "eventCount": 3,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_seika_1.json",
+      "manifestSourcePath": "3_Character/character_seika_1/character_seika_1.json",
+      "twPath": "3_Character/character_seika_1/character_seika_1.json",
+      "twSha256": "2695a9027d8cc16912a5fb4fd12d7676da4fd9cec80dc830f5aa4a10df88b1bc",
+      "jpSha256": "a7f2d51c6f7ac1eb5b84e139042721a7db9362d799bb8db3cf41bd4d76c51347",
+      "cnSha256": "90fcc649a63a901853d4b8b8aca47bc6ca97a05a26b66db93d8440df64485066",
+      "simplifiedJsonSha256": "90fcc649a63a901853d4b8b8aca47bc6ca97a05a26b66db93d8440df64485066",
+      "eventCount": 47,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_seika_2.json",
+      "manifestSourcePath": "3_Character/character_seika_2/character_seika_2.json",
+      "twPath": "3_Character/character_seika_2/character_seika_2.json",
+      "twSha256": "9506cb06120987d3827efc3eeeb8d0faa591e5bc6630f587f433e04c0ffd3bcb",
+      "jpSha256": "1fbf2db4af15688c724cce6497945b37a93b6252e7fef1b1c5b7f5ba2f7141b1",
+      "cnSha256": "2aff4001d65997cfd44dccf7eeaf220dc7d0c5faf9c9e3e3038f1f49e1ca95e8",
+      "simplifiedJsonSha256": "2aff4001d65997cfd44dccf7eeaf220dc7d0c5faf9c9e3e3038f1f49e1ca95e8",
+      "eventCount": 59,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_seika_3.json",
+      "manifestSourcePath": "3_Character/character_seika_3/character_seika_3.json",
+      "twPath": "3_Character/character_seika_3/character_seika_3.json",
+      "twSha256": "84c86e99e9711bdcea4c936845979a52eddfad1044510ef77ad30e64ed92a019",
+      "jpSha256": "3a981c26408afa97f23a8102e67a02d04c0cf0fb1c2917d67b64acdf604d7d87",
+      "cnSha256": "0ea1f5620052270d3ef5efe93d3a75737c8b81387ad6b8d49ccd1cd0812b9318",
+      "simplifiedJsonSha256": "0ea1f5620052270d3ef5efe93d3a75737c8b81387ad6b8d49ccd1cd0812b9318",
+      "eventCount": 69,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_seika_4.json",
+      "manifestSourcePath": "3_Character/character_seika_4/character_seika_4.json",
+      "twPath": "3_Character/character_seika_4/character_seika_4.json",
+      "twSha256": "3e527d6f203ab1dac8c44953c0b09167b5e5395a849d666f994fbd4e11475bf9",
+      "jpSha256": "22836ba3030dbccf8fc8ffd9dfa83e0e7d7dac249c8090f0abf7f44830a88089",
+      "cnSha256": "1ac95051bf01129b7d0c19662f346a4f7e19e2b7fc23542de486ca4b29353465",
+      "simplifiedJsonSha256": "1ac95051bf01129b7d0c19662f346a4f7e19e2b7fc23542de486ca4b29353465",
+      "eventCount": 50,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_seika_5.json",
+      "manifestSourcePath": "3_Character/character_seika_5/character_seika_5.json",
+      "twPath": "3_Character/character_seika_5/character_seika_5.json",
+      "twSha256": "fefb100586b52cca8e8eb6a422c431d58f5acbb8035eaa1396d548120dc1ad30",
+      "jpSha256": "320382b29378d73b5b83b1f7c6af4a4c751b2e0137475790c951710f044d4ccb",
+      "cnSha256": "cfd77949423d54088bea736d057c98126b865a0294587b26f9784fa686808ab8",
+      "simplifiedJsonSha256": "cfd77949423d54088bea736d057c98126b865a0294587b26f9784fa686808ab8",
+      "eventCount": 37,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_seika_6.json",
+      "manifestSourcePath": "3_Character/character_seika_6/character_seika_6.json",
+      "twPath": "3_Character/character_seika_6/character_seika_6.json",
+      "twSha256": "fb6defc7728548977a34acb95de5c19e6691ad19295768fd4cd803101ad78f5f",
+      "jpSha256": "79c8e5f6b3b87434e50d03bfc6bcc42d22dbc0c7800a9715d6bf0c1b3488cbb8",
+      "cnSha256": "0067af2b5d62cd00cbcdb173a169f23e200ad05864d80215107c5480a8858984",
+      "simplifiedJsonSha256": "0067af2b5d62cd00cbcdb173a169f23e200ad05864d80215107c5480a8858984",
+      "eventCount": 24,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_seika_7.json",
+      "manifestSourcePath": "3_Character/character_seika_7/character_seika_7.json",
+      "twPath": "3_Character/character_seika_7/character_seika_7.json",
+      "twSha256": "3afc9570133aeeb81ed0e55ca805d994602c7ff0b8a4d93dc15d34c8596555ce",
+      "jpSha256": "7b6496f1ec6af0f73a2ce069f69b8b73657da3184b061a14b2cfbdaed01b8187",
+      "cnSha256": "d40f7706849f1f24016b4f65b9d55eaab0ff9d8576acde2547e12c5f99e2f798",
+      "simplifiedJsonSha256": "d40f7706849f1f24016b4f65b9d55eaab0ff9d8576acde2547e12c5f99e2f798",
+      "eventCount": 80,
+      "provenance": "official_tw_human"
+    }
+  ],
+  "sourceTreeSha256": "6fc3fb7f07ab8294dfb5145092ffbb3967f1acf0e1f8229bd921af3e5e6a99f3",
+  "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
+  "officialTitles": [
+    {
+      "section": 1,
+      "source": "character_seika_0.json",
+      "resource": "3_character/character_seika_0",
+      "advMstId": 30107000,
+      "advTitleMstId": 29,
+      "duplicateAdvMstIds": [
+        30107000
+      ],
+      "nameAliases": [
+        "Episode0"
+      ],
+      "subNameAliases": [
+        "Episode0"
+      ],
+      "name": "Episode0",
+      "subName": "Episode0",
+      "sectionTitle": "Episode0",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 2,
+      "source": "character_seika_1.json",
+      "resource": "3_character/character_seika_1",
+      "advMstId": 30107001,
+      "advTitleMstId": 29,
+      "duplicateAdvMstIds": [
+        30107001
+      ],
+      "nameAliases": [
+        "Episode1"
+      ],
+      "subNameAliases": [
+        "Episode1"
+      ],
+      "name": "Episode1",
+      "subName": "Episode1",
+      "sectionTitle": "Episode1",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 3,
+      "source": "character_seika_2.json",
+      "resource": "3_character/character_seika_2",
+      "advMstId": 30107002,
+      "advTitleMstId": 29,
+      "duplicateAdvMstIds": [
+        30107002
+      ],
+      "nameAliases": [
+        "Episode2"
+      ],
+      "subNameAliases": [
+        "Episode2"
+      ],
+      "name": "Episode2",
+      "subName": "Episode2",
+      "sectionTitle": "Episode2",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 4,
+      "source": "character_seika_3.json",
+      "resource": "3_character/character_seika_3",
+      "advMstId": 30107003,
+      "advTitleMstId": 29,
+      "duplicateAdvMstIds": [
+        30107003
+      ],
+      "nameAliases": [
+        "Episode3"
+      ],
+      "subNameAliases": [
+        "Episode3"
+      ],
+      "name": "Episode3",
+      "subName": "Episode3",
+      "sectionTitle": "Episode3",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 5,
+      "source": "character_seika_4.json",
+      "resource": "3_character/character_seika_4",
+      "advMstId": 30107004,
+      "advTitleMstId": 29,
+      "duplicateAdvMstIds": [
+        30107004
+      ],
+      "nameAliases": [
+        "Episode4"
+      ],
+      "subNameAliases": [
+        "Episode4"
+      ],
+      "name": "Episode4",
+      "subName": "Episode4",
+      "sectionTitle": "Episode4",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 6,
+      "source": "character_seika_5.json",
+      "resource": "3_character/character_seika_5",
+      "advMstId": 30107005,
+      "advTitleMstId": 29,
+      "duplicateAdvMstIds": [
+        30107005
+      ],
+      "nameAliases": [
+        "Episode5"
+      ],
+      "subNameAliases": [
+        "Episode5"
+      ],
+      "name": "Episode5",
+      "subName": "Episode5",
+      "sectionTitle": "Episode5",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 7,
+      "source": "character_seika_6.json",
+      "resource": "3_character/character_seika_6",
+      "advMstId": 30107006,
+      "advTitleMstId": 29,
+      "duplicateAdvMstIds": [
+        30107006
+      ],
+      "nameAliases": [
+        "Episode6"
+      ],
+      "subNameAliases": [
+        "Episode6"
+      ],
+      "name": "Episode6",
+      "subName": "Episode6",
+      "sectionTitle": "Episode6",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 8,
+      "source": "character_seika_7.json",
+      "resource": "3_character/character_seika_7",
+      "advMstId": 30107007,
+      "advTitleMstId": 29,
+      "duplicateAdvMstIds": [
+        30107007
+      ],
+      "nameAliases": [
+        "Episode7"
+      ],
+      "subNameAliases": [
+        "Episode7"
+      ],
+      "name": "Episode7",
+      "subName": "Episode7",
+      "sectionTitle": "Episode7",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    }
+  ],
+  "sourceContract": {
+    "schemaVersion": 1,
+    "contractName": "exedra-tw-sp-handoff",
+    "provenance": {
+      "provider": "exedra-wiki-sp",
+      "locale": "zh-Hant-TW",
+      "authority": "official-tw-client",
+      "originalTextUnmodified": true,
+      "textTransformation": "reader-tw2sp"
+    },
+    "sourceRevisions": {
+      "sp": "80f8436079eeb63720e80b4b3dab396526f66c97",
+      "scenarios": "8c50b9cfa3ed416b590475d6b6caca6c",
+      "manifests": "a18e6ffd3e6fb84b8544509ee12191df"
+    },
+    "scenarioCatalogSha256": "34b7e5bee2bbbe2994ee63959161121d98b2da27d13b8d0b04e560ee9b0a31a9",
+    "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
+    "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
+    "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  }
 }

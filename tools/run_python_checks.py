@@ -19,6 +19,17 @@ CRITICAL_FILES = (
     ROOT / "tools/import_exedra_human_text.py",
     ROOT / "tools/import_exedra_wiki_voice.py",
     ROOT / "tools/generate_exedra_voice_catalog.py",
+    ROOT / "tools/fetch_tw_sp_source_bundle.py",
+    ROOT / "tools/tw_sp_handoff_contract.py",
+    ROOT / "tools/tw_official_import_core.py",
+    ROOT / "tools/materialize_tw_official_cn.py",
+    ROOT / "tools/apply_tw_official_metadata.py",
+    ROOT / "tools/generate_exedra_localization_audit.py",
+    ROOT / "tools/build_split_search_indexes.py",
+    ROOT / "tools/build_story_release_archive.py",
+    ROOT / "tools/build_deepseek_retranslation_inventory.py",
+    ROOT / "tools/build_authoritative_glossary.py",
+    ROOT / "tools/stage_deepseek_translation_batch.py",
     ROOT / "scripts/materialize_proofreading_assets.py",
 )
 TEST_ROOT = ROOT / "tests"

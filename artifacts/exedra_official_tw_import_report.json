@@ -1,0 +1,425 @@
+{
+  "version": 3,
+  "status": "materialized",
+  "generatedAt": "2026-08-08T12:45:17.310896+00:00",
+  "sourceProvider": "exedra-wiki-sp",
+  "sourceContract": {
+    "schemaVersion": 1,
+    "contractName": "exedra-tw-sp-handoff",
+    "provenance": {
+      "provider": "exedra-wiki-sp",
+      "locale": "zh-Hant-TW",
+      "authority": "official-tw-client",
+      "originalTextUnmodified": true,
+      "textTransformation": "reader-tw2sp"
+    },
+    "sourceRevisions": {
+      "sp": "80f8436079eeb63720e80b4b3dab396526f66c97",
+      "scenarios": "8c50b9cfa3ed416b590475d6b6caca6c",
+      "manifests": "a18e6ffd3e6fb84b8544509ee12191df"
+    },
+    "scenarioCatalogSha256": "34b7e5bee2bbbe2994ee63959161121d98b2da27d13b8d0b04e560ee9b0a31a9",
+    "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
+    "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
+    "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "scenarioTreeSha256": "6fc3fb7f07ab8294dfb5145092ffbb3967f1acf0e1f8229bd921af3e5e6a99f3",
+  "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
+  "sourceInventory": {
+    "scenarioFiles": 2780,
+    "scenarioBytes": 243182601,
+    "manifestFiles": 13,
+    "manifestBytes": 3571213
+  },
+  "stats": {
+    "official_tw_groups": 395,
+    "official_tw_json_files": 2708,
+    "official_tw_text_events": 93697,
+    "official_tw_no_text_groups": 4,
+    "official_tw_no_text_files": 7,
+    "missing_tw_groups": 44,
+    "tw_source_files": 2780,
+    "tw_source_files_used": 2708,
+    "tw_source_files_unused": 72,
+    "tw_source_files_deferred_partial": 37,
+    "tw_source_files_tw_only_without_jp": 28,
+    "tw_source_files_no_text": 7,
+    "tw_source_files_unexpected_unused": 0,
+    "retained_non_tw_groups": 48
+  },
+  "failures": [
+    {
+      "group": "1_Main/main_crisis0",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：1_Main/main_crisis0_3/main_crisis0_3.json"
+    },
+    {
+      "group": "1_Main/main_magirekozero3",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：1_Main/main_magirekozero3_1/main_magirekozero3_1.json"
+    },
+    {
+      "group": "1_Main/main_nightmare",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：1_Main/main_nightmare_7/main_nightmare_7 (2).json"
+    },
+    {
+      "group": "1_Main/main_tart2",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：1_Main/main_tart2_1/main_tart2_1.json"
+    },
+    {
+      "group": "2_Sub/sub_1stanniv",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：2_Sub/sub_1stanniv_1/sub_1stanniv_1.json"
+    },
+    {
+      "group": "2_Sub/sub_april2026",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：2_Sub/sub_april2026_1/sub_april2026_1.json"
+    },
+    {
+      "group": "2_Sub/sub_collabo1",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：2_Sub/sub_collabo1_1/sub_collabo1_1.json"
+    },
+    {
+      "group": "3_Character/character_darc",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：3_Character/character_darc_0/character_darc_0.json"
+    },
+    {
+      "group": "3_Character/character_fuka",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：3_Character/character_fuka_0/character_fuka_0.json"
+    },
+    {
+      "group": "3_Character/character_liz",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：3_Character/character_liz_0/character_liz_0.json"
+    },
+    {
+      "group": "3_Character/character_mayoi",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：3_Character/character_mayoi_0/character_mayoi_0.json"
+    },
+    {
+      "group": "3_Character/character_melissa",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：3_Character/character_melissa_0/character_melissa_0.json"
+    },
+    {
+      "group": "3_Character/character_senpai",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：3_Character/character_senpai_0/character_senpai_0.json"
+    },
+    {
+      "group": "3_Character/character_shinobu",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：3_Character/character_shinobu_0/character_shinobu_0.json"
+    },
+    {
+      "group": "3_Character/character_sumire",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：3_Character/character_sumire_0/character_sumire_0.json"
+    },
+    {
+      "group": "3_Character/character_yotsugi",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：3_Character/character_yotsugi_0/character_yotsugi_0.json"
+    },
+    {
+      "group": "4_Portrait/portrait_magirekozero3",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：4_Portrait/portrait_magirekozero3_1/portrait_magirekozero3_1.json"
+    },
+    {
+      "group": "4_Portrait/portrait_tart2",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：4_Portrait/portrait_tart2_1/portrait_tart2_1.json"
+    },
+    {
+      "group": "6_Reaction/cv_111601",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_111601_other_evo_fee_01/cv_111601_other_evo_fee_01.json"
+    },
+    {
+      "group": "6_Reaction/cv_111701",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_111701_other_evo_fee_01/cv_111701_other_evo_fee_01.json"
+    },
+    {
+      "group": "6_Reaction/cv_113401",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_113401_1/cv_113401_1.json"
+    },
+    {
+      "group": "6_Reaction/cv_113501",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_113501_1/cv_113501_1.json"
+    },
+    {
+      "group": "6_Reaction/cv_113601",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_113601_1/cv_113601_1.json"
+    },
+    {
+      "group": "6_Reaction/cv_114401",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_114401_other_evo_fee_01/cv_114401_other_evo_fee_01.json"
+    },
+    {
+      "group": "6_Reaction/cv_114501",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_114501_other_evo_fee_01/cv_114501_other_evo_fee_01.json"
+    },
+    {
+      "group": "6_Reaction/cv_114601",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_114601_other_evo_fee_01/cv_114601_other_evo_fee_01.json"
+    },
+    {
+      "group": "6_Reaction/cv_114801",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_114801_1/cv_114801_1.json"
+    },
+    {
+      "group": "6_Reaction/cv_114901",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_114901_other_evo_fee_01/cv_114901_other_evo_fee_01.json"
+    },
+    {
+      "group": "6_Reaction/cv_115001",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_115001_other_evo_fee_01/cv_115001_other_evo_fee_01.json"
+    },
+    {
+      "group": "6_Reaction/cv_115101",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_115101_other_evo_fee_01/cv_115101_other_evo_fee_01.json"
+    },
+    {
+      "group": "6_Reaction/cv_115201",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：6_Reaction/cv_115201_other_evo_fee_01/cv_115201_other_evo_fee_01.json"
+    },
+    {
+      "group": "7_Namae/act_lock_tart",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：7_Namae/act1_lock_tart_02/act1_lock_tart_02.json"
+    },
+    {
+      "group": "7_Namae/act_open_tart",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：7_Namae/act2_open_tart_02/act2_open_tart_02.json"
+    },
+    {
+      "group": "7_Namae/crisis",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：7_Namae/crisis0_1/crisis0_1.json"
+    },
+    {
+      "group": "7_Namae/gateopen_episode",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：7_Namae/gateopen_episode0_03/gateopen_episode0_03.json"
+    },
+    {
+      "group": "7_Namae/gateopen_tart",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：7_Namae/gateopen_tart_02/gateopen_tart_02.json"
+    },
+    {
+      "group": "7_Namae/pp_complete_episode",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：7_Namae/pp_complete_episode0/pp_complete_episode0.json"
+    },
+    {
+      "group": "7_Namae/pp_complete_tart",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：7_Namae/pp_complete_tart/pp_complete_tart.json"
+    },
+    {
+      "group": "7_Namae/pp_monogatari_episode_nightmare",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：7_Namae/pp_monogatari_episode0_nightmare_03/pp_monogatari_episode0_nightmare_03.json"
+    },
+    {
+      "group": "7_Namae/pp_monogatari_episode_normal",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：7_Namae/pp_monogatari_episode0_normal_03/pp_monogatari_episode0_normal_03.json"
+    },
+    {
+      "group": "7_Namae/pp_monogatari_tart_nightmare",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：7_Namae/pp_monogatari_tart_nightmare_02/pp_monogatari_tart_nightmare_02.json"
+    },
+    {
+      "group": "7_Namae/pp_monogatari_tart_normal",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：7_Namae/pp_monogatari_tart_normal_02/pp_monogatari_tart_normal_02.json"
+    },
+    {
+      "group": "7_Namae/story_namae",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：7_Namae/story_namae13/story_namae13.json"
+    },
+    {
+      "group": "10_Battle/battle_tart2",
+      "kind": "missing_source",
+      "reason": "缺少台服 JSON：10_Battle/battle_tart2_1/battle_tart2_1.json"
+    }
+  ],
+  "unusedTwSourceFiles": [
+    "1_main/main_baraen1_prologue1/main_baraen1_prologue1.json",
+    "1_main/main_baraen1_prologue2/main_baraen1_prologue2.json",
+    "1_main/main_baraen1_prologue3/main_baraen1_prologue3.json",
+    "1_main/main_nightmare_1/main_nightmare_1.json",
+    "1_main/main_nightmare_10/main_nightmare_10.json",
+    "1_main/main_nightmare_11/main_nightmare_11.json",
+    "1_main/main_nightmare_12/main_nightmare_12.json",
+    "1_main/main_nightmare_13/main_nightmare_13.json",
+    "1_main/main_nightmare_14/main_nightmare_14.json",
+    "1_main/main_nightmare_15/main_nightmare_15.json",
+    "1_main/main_nightmare_2/main_nightmare_2.json",
+    "1_main/main_nightmare_3/main_nightmare_3.json",
+    "1_main/main_nightmare_4/main_nightmare_4.json",
+    "1_main/main_nightmare_5/main_nightmare_5.json",
+    "1_main/main_nightmare_6/main_nightmare_6.json",
+    "1_main/main_nightmare_7/main_nightmare_7.json",
+    "1_main/main_nightmare_8/main_nightmare_8.json",
+    "1_main/main_nightmare_9/main_nightmare_9.json",
+    "1_main/main_scene0_film02_movie1/main_scene0_film02_movie1.json",
+    "1_main/main_scene0_film02_movie2/main_scene0_film02_movie2.json",
+    "1_main/main_scene0_film14_1_2/main_scene0_film14_1_2.json",
+    "2_sub/sub_100memorial_1/sub_100memorial_1.json",
+    "2_sub/sub_100memorial_2/sub_100memorial_2.json",
+    "2_sub/sub_100memorial_3/sub_100memorial_3.json",
+    "2_sub/sub_100memorial_4/sub_100memorial_4.json",
+    "2_sub/sub_100memorial_5/sub_100memorial_5.json",
+    "2_sub/sub_100memorial_6/sub_100memorial_6.json",
+    "2_sub/sub_100memorial_7/sub_100memorial_7.json",
+    "2_sub/sub_100memorial_8/sub_100memorial_8.json",
+    "4_portrait/portrait_hangyaku_homura_1/portrait_hangyaku_homura_1.json",
+    "4_portrait/portrait_hangyaku_homura_2/portrait_hangyaku_homura_2.json",
+    "4_portrait/portrait_hangyaku_mami_1/portrait_hangyaku_mami_1.json",
+    "4_portrait/portrait_hangyaku_mami_2/portrait_hangyaku_mami_2.json",
+    "4_portrait/portrait_kurumiwari_1/portrait_kurumiwari_1.json",
+    "4_portrait/portrait_kurumiwari_2/portrait_kurumiwari_2.json",
+    "4_portrait/portrait_nightmare_1/portrait_nightmare_1.json",
+    "4_portrait/portrait_nightmare_2/portrait_nightmare_2.json",
+    "6_reaction/test_madoka_kakusei_1/test_madoka_kakusei_1.json",
+    "6_reaction/test_madoka_kakusei_2/test_madoka_kakusei_2.json",
+    "6_reaction/test_madoka_kakusei_3/test_madoka_kakusei_3.json",
+    "6_reaction/test_madoka_kakusei_4/test_madoka_kakusei_4.json",
+    "6_reaction/test_madoka_kakusei_5/test_madoka_kakusei_5.json",
+    "6_reaction/test_madoka_kakusei_6/test_madoka_kakusei_6.json",
+    "6_reaction/test_madoka_kakusei_7/test_madoka_kakusei_7.json",
+    "7_namae/contents_tutorial_gve_1/contents_tutorial_gve_1.json",
+    "7_namae/contents_tutorial_gve_2/contents_tutorial_gve_2.json",
+    "7_namae/contents_tutorial_gvg_1/contents_tutorial_gvg_1.json",
+    "7_namae/contents_tutorial_gvg_2/contents_tutorial_gvg_2.json",
+    "7_namae/gateopen_episode0_01/gateopen_episode0_01.json",
+    "7_namae/gateopen_episode0_02/gateopen_episode0_02.json",
+    "7_namae/gateopen_tart_01/gateopen_tart_01.json",
+    "7_namae/map_chubossclose/map_chubossclose.json",
+    "7_namae/pp_monogatari_episode0_nightmare_01/pp_monogatari_episode0_nightmare_01.json",
+    "7_namae/pp_monogatari_episode0_nightmare_02/pp_monogatari_episode0_nightmare_02.json",
+    "7_namae/pp_monogatari_episode0_normal_01/pp_monogatari_episode0_normal_01.json",
+    "7_namae/pp_monogatari_episode0_normal_02/pp_monogatari_episode0_normal_02.json",
+    "7_namae/pp_monogatari_tart_nightmare_01/pp_monogatari_tart_nightmare_01.json",
+    "7_namae/pp_monogatari_tart_normal_01/pp_monogatari_tart_normal_01.json",
+    "7_namae/story_namae00/story_namae00.json",
+    "7_namae/story_namae01/story_namae01.json",
+    "7_namae/story_namae02/story_namae02.json",
+    "7_namae/story_namae03/story_namae03.json",
+    "7_namae/story_namae04/story_namae04.json",
+    "7_namae/story_namae05/story_namae05.json",
+    "7_namae/story_namae06/story_namae06.json",
+    "7_namae/story_namae07/story_namae07.json",
+    "7_namae/story_namae08/story_namae08.json",
+    "7_namae/story_namae09/story_namae09.json",
+    "7_namae/story_namae10/story_namae10.json",
+    "7_namae/story_namae11/story_namae11.json",
+    "7_namae/story_namae12/story_namae12.json",
+    "7_namae/story_prologue/story_prologue.json"
+  ],
+  "deferredPartialTwSourceFiles": [
+    "1_main/main_nightmare_1/main_nightmare_1.json",
+    "1_main/main_nightmare_10/main_nightmare_10.json",
+    "1_main/main_nightmare_11/main_nightmare_11.json",
+    "1_main/main_nightmare_12/main_nightmare_12.json",
+    "1_main/main_nightmare_13/main_nightmare_13.json",
+    "1_main/main_nightmare_14/main_nightmare_14.json",
+    "1_main/main_nightmare_15/main_nightmare_15.json",
+    "1_main/main_nightmare_2/main_nightmare_2.json",
+    "1_main/main_nightmare_3/main_nightmare_3.json",
+    "1_main/main_nightmare_4/main_nightmare_4.json",
+    "1_main/main_nightmare_5/main_nightmare_5.json",
+    "1_main/main_nightmare_6/main_nightmare_6.json",
+    "1_main/main_nightmare_7/main_nightmare_7.json",
+    "1_main/main_nightmare_8/main_nightmare_8.json",
+    "1_main/main_nightmare_9/main_nightmare_9.json",
+    "7_namae/gateopen_episode0_01/gateopen_episode0_01.json",
+    "7_namae/gateopen_episode0_02/gateopen_episode0_02.json",
+    "7_namae/gateopen_tart_01/gateopen_tart_01.json",
+    "7_namae/pp_monogatari_episode0_nightmare_01/pp_monogatari_episode0_nightmare_01.json",
+    "7_namae/pp_monogatari_episode0_nightmare_02/pp_monogatari_episode0_nightmare_02.json",
+    "7_namae/pp_monogatari_episode0_normal_01/pp_monogatari_episode0_normal_01.json",
+    "7_namae/pp_monogatari_episode0_normal_02/pp_monogatari_episode0_normal_02.json",
+    "7_namae/pp_monogatari_tart_nightmare_01/pp_monogatari_tart_nightmare_01.json",
+    "7_namae/pp_monogatari_tart_normal_01/pp_monogatari_tart_normal_01.json",
+    "7_namae/story_namae00/story_namae00.json",
+    "7_namae/story_namae01/story_namae01.json",
+    "7_namae/story_namae02/story_namae02.json",
+    "7_namae/story_namae03/story_namae03.json",
+    "7_namae/story_namae04/story_namae04.json",
+    "7_namae/story_namae05/story_namae05.json",
+    "7_namae/story_namae06/story_namae06.json",
+    "7_namae/story_namae07/story_namae07.json",
+    "7_namae/story_namae08/story_namae08.json",
+    "7_namae/story_namae09/story_namae09.json",
+    "7_namae/story_namae10/story_namae10.json",
+    "7_namae/story_namae11/story_namae11.json",
+    "7_namae/story_namae12/story_namae12.json"
+  ],
+  "twOnlyWithoutJpSourceFiles": [
+    "2_sub/sub_100memorial_1/sub_100memorial_1.json",
+    "2_sub/sub_100memorial_2/sub_100memorial_2.json",
+    "2_sub/sub_100memorial_3/sub_100memorial_3.json",
+    "2_sub/sub_100memorial_4/sub_100memorial_4.json",
+    "2_sub/sub_100memorial_5/sub_100memorial_5.json",
+    "2_sub/sub_100memorial_6/sub_100memorial_6.json",
+    "2_sub/sub_100memorial_7/sub_100memorial_7.json",
+    "2_sub/sub_100memorial_8/sub_100memorial_8.json",
+    "4_portrait/portrait_hangyaku_homura_1/portrait_hangyaku_homura_1.json",
+    "4_portrait/portrait_hangyaku_homura_2/portrait_hangyaku_homura_2.json",
+    "4_portrait/portrait_hangyaku_mami_1/portrait_hangyaku_mami_1.json",
+    "4_portrait/portrait_hangyaku_mami_2/portrait_hangyaku_mami_2.json",
+    "4_portrait/portrait_kurumiwari_1/portrait_kurumiwari_1.json",
+    "4_portrait/portrait_kurumiwari_2/portrait_kurumiwari_2.json",
+    "4_portrait/portrait_nightmare_1/portrait_nightmare_1.json",
+    "4_portrait/portrait_nightmare_2/portrait_nightmare_2.json",
+    "6_reaction/test_madoka_kakusei_1/test_madoka_kakusei_1.json",
+    "6_reaction/test_madoka_kakusei_2/test_madoka_kakusei_2.json",
+    "6_reaction/test_madoka_kakusei_3/test_madoka_kakusei_3.json",
+    "6_reaction/test_madoka_kakusei_4/test_madoka_kakusei_4.json",
+    "6_reaction/test_madoka_kakusei_5/test_madoka_kakusei_5.json",
+    "6_reaction/test_madoka_kakusei_6/test_madoka_kakusei_6.json",
+    "6_reaction/test_madoka_kakusei_7/test_madoka_kakusei_7.json",
+    "7_namae/contents_tutorial_gve_1/contents_tutorial_gve_1.json",
+    "7_namae/contents_tutorial_gve_2/contents_tutorial_gve_2.json",
+    "7_namae/contents_tutorial_gvg_1/contents_tutorial_gvg_1.json",
+    "7_namae/contents_tutorial_gvg_2/contents_tutorial_gvg_2.json",
+    "7_namae/map_chubossclose/map_chubossclose.json"
+  ],
+  "noTextTwSourceFiles": [
+    "1_main/main_baraen1_prologue1/main_baraen1_prologue1.json",
+    "1_main/main_baraen1_prologue2/main_baraen1_prologue2.json",
+    "1_main/main_baraen1_prologue3/main_baraen1_prologue3.json",
+    "1_main/main_scene0_film02_movie1/main_scene0_film02_movie1.json",
+    "1_main/main_scene0_film02_movie2/main_scene0_film02_movie2.json",
+    "1_main/main_scene0_film14_1_2/main_scene0_film14_1_2.json",
+    "7_namae/story_prologue/story_prologue.json"
+  ],
+  "unexpectedUnusedTwSourceFiles": []
+}

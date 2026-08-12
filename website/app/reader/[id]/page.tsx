@@ -53,6 +53,8 @@ import {
 } from '@/lib/story-index';
 import { useDialog } from '@/lib/use-dialog';
 import { triggerUtf8Download } from '@/lib/browser-download';
+import { initializeExedraFonts } from '@/lib/exedra-fonts';
+import { resolveOfficialSectionTitle } from '@/lib/official-tw-titles';
 import { initializeReaderFonts } from '@/lib/reader-fonts';
 import {
   READER_TEXT_WIDTH_MAX,
@@ -383,6 +385,10 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     () => findStoryByRouteId(allStories, id),
     [allStories, id],
   );
+  const isExedraStory =
+    currentStory?.game === 'exedra' ||
+    currentStory?.category.startsWith('exedra_') === true ||
+    directSourceResolution.sources?.kind === 'exedra-trusted-runtime';
   const jsonSourceOptionsState = useMemo(() => {
     if (!currentStory) return { options: [], error: '' };
     try {
@@ -642,7 +648,8 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
 
   useEffect(() => {
     void initializeReaderFonts();
-  }, []);
+    if (isExedraStory) void initializeExedraFonts();
+  }, [isExedraStory]);
 
   useEffect(() => {
     const stopForHiddenPage = () => {
@@ -1223,16 +1230,27 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
               <Menu size={20} />
             </button>
             <div className="flex min-w-0 flex-col">
-              <span className={`truncate text-[10px] opacity-50 ${
+              <span
+                lang={isExedraStory && mode === 'jp' ? 'ja' : undefined}
+                className={`${isExedraStory && mode === 'jp' ? 'exedra-page ' : ''}truncate text-[10px] opacity-50 ${
                 mode === 'jp' && hasJapaneseDisplay
                   ? 'reader-font-jp-title'
                   : 'reader-font-cn-title'
-              }`}>
+              }`}
+              >
                 {isLocal ? '本地文件' : currentStory?.folder || '剧情阅读器'}
                 {storyTitle ? ` · ${storyTitle}` : ''}
               </span>
               <div className="flex min-w-0 flex-wrap items-center gap-2 text-sm font-bold">
                 <span className="truncate font-mono text-emerald-600">{id}</span>
+                {currentStory?.official_tw && (
+                  <span
+                    className="rounded-full border border-stone-400/35 bg-stone-200/35 px-2 py-0.5 text-[10px] font-medium tracking-wide text-stone-600 dark:border-stone-500/40 dark:bg-stone-700/35 dark:text-stone-300"
+                    title="中文正文来自 Magia Exedra 台服官方文本，并已转换为简体中文"
+                  >
+                    {currentStory.official_tw_label || '台服'}
+                  </span>
+                )}
                 {cnSource && (
                   <button
                     type="button"
@@ -1661,6 +1679,8 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   bilingualLayout={bilingualLayout}
                   showLineBreaks={readerDisplayPreferences.showLineBreaks}
                   theme={theme}
+                   isExedra={isExedraStory}
+                   officialSectionTitles={currentStory?.official_tw_section_titles}
                   isEditMode={isEditMode}
                   editedLines={editedCnLines}
                   setEditedLines={setEditedCnLines}
@@ -1697,7 +1717,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
               aria-modal="true"
               aria-labelledby="reader-settings-title"
               tabIndex={-1}
-              className={`max-h-[calc(100dvh-2rem)] w-full max-w-xs overflow-y-auto rounded-xl p-5 shadow-2xl ${
+              className={`max-h-[calc(100dvh-2rem)] w-full max-w-3xl overflow-y-auto rounded-xl p-5 shadow-2xl ${
                 theme === 'dark' ? 'border border-gray-700 bg-gray-800' : 'bg-white'
               }`}
               onMouseDown={event => event.stopPropagation()}
@@ -1761,7 +1781,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                     同时作用于阅读和汉化输入；手机端自动限制为屏幕可用宽度。
                   </span>
                 </label>
-                <ReaderFontSettings theme={theme} />
+                <ReaderFontSettings theme={theme} isExedra={isExedraStory} />
                 <div>
                   <p className="mb-2 opacity-70">中日对照排列</p>
                   <div className="grid grid-cols-2 gap-2">
@@ -1883,6 +1903,8 @@ type StoryRowProps = {
   bilingualLayout: BilingualLayout;
   showLineBreaks: boolean;
   theme: string;
+  isExedra: boolean;
+  officialSectionTitles?: string[];
   isEditMode: boolean;
   editedLines: StoryLine[];
   setEditedLines: React.Dispatch<React.SetStateAction<StoryLine[]>>;
@@ -1900,6 +1922,8 @@ function StoryRow({
   bilingualLayout,
   showLineBreaks,
   theme,
+  isExedra,
+  officialSectionTitles,
   isEditMode,
   editedLines,
   setEditedLines,
@@ -1922,10 +1946,20 @@ function StoryRow({
   if (header) {
     const headerText = header.text.replace(/---/g, '').trim();
     const isBranch = Boolean(header.headerBranch);
+    const displayedHeaderText = isBranch
+      ? headerText
+      : resolveOfficialSectionTitle(
+          officialSectionTitles,
+          header.headerSection,
+          headerText,
+        );
     return (
       <div
         id={header.headerId}
+        lang={isExedra ? (header === row.jp ? 'ja' : 'zh-Hans') : undefined}
         className={`mb-4 mt-6 border-t-2 pt-4 text-center ${
+          isExedra ? 'exedra-page ' : ''
+        }${
           header === row.jp
             ? 'reader-font-jp-title'
             : 'reader-font-cn-title'
@@ -1951,7 +1985,7 @@ function StoryRow({
           </div>
         ) : (
           <span className="rounded-full border border-current px-3 py-1 font-mono text-xs opacity-70">
-            {headerText}
+            {displayedHeaderText}
           </span>
         )}
       </div>
@@ -1994,8 +2028,9 @@ function StoryRow({
         ) : (
           <button
             type="button"
+            lang={isExedra && choice === row.jp ? 'ja' : undefined}
             onClick={() => onChoice(index, choice)}
-            className={`${choice === row.jp ? 'reader-font-jp-title' : 'reader-font-cn-title'} cursor-pointer rounded-xl border-2 px-5 py-2.5 text-sm font-bold transition hover:scale-105 active:scale-95 ${
+            className={`${isExedra && choice === row.jp ? 'exedra-page ' : ''}${choice === row.jp ? 'reader-font-jp-title' : 'reader-font-cn-title'} cursor-pointer rounded-xl border-2 px-5 py-2.5 text-sm font-bold transition hover:scale-105 active:scale-95 ${
               theme === 'dark'
                 ? 'border-amber-700 bg-gradient-to-r from-amber-900/60 to-orange-900/60 text-amber-200'
                 : 'border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-800 shadow-sm'
@@ -2038,11 +2073,14 @@ function StoryRow({
       }`}
     >
       {mode !== 'jp' && (
-        <div className={`reader-font-cn-body flex min-w-0 gap-3 ${
-          mode === 'split' && bilingualLayout === 'side-by-side'
-            ? 'md:w-1/2'
-            : 'w-full'
-        }`}>
+        <div
+          lang={isExedra ? 'zh-Hans' : undefined}
+          className={`reader-font-cn-body ${isExedra ? 'exedra-page ' : ''}flex min-w-0 gap-3 ${
+            mode === 'split' && bilingualLayout === 'side-by-side'
+              ? 'md:w-1/2'
+              : 'w-full'
+          }`}
+        >
           {audioCueId && (
             <VoicePlayButton
               cueId={audioCueId}
@@ -2149,13 +2187,16 @@ function StoryRow({
       )}
 
       {mode !== 'cn' && (
-        <div className={`reader-font-jp-body flex min-w-0 gap-2 ${
-          mode === 'split'
-            ? bilingualLayout === 'stacked'
-              ? 'w-full border-t border-current border-opacity-10 pt-2'
-              : 'mt-1 border-current border-opacity-10 md:mt-0 md:w-1/2 md:border-l md:pl-4'
-            : 'w-full'
-        }`}>
+        <div
+          lang={isExedra ? 'ja' : undefined}
+          className={`reader-font-jp-body ${isExedra ? 'exedra-page ' : ''}flex min-w-0 gap-2 ${
+            mode === 'split'
+              ? bilingualLayout === 'stacked'
+                ? 'w-full border-t border-current border-opacity-10 pt-2'
+                : 'mt-1 border-current border-opacity-10 md:mt-0 md:w-1/2 md:border-l md:pl-4'
+              : 'w-full'
+          }`}
+        >
           {mode === 'jp' && audioCueId && (
             <VoicePlayButton
               cueId={audioCueId}
@@ -2166,7 +2207,7 @@ function StoryRow({
           {row.jp ? (
             <>
               <SpeakerLabel line={row.jp} highlighted={jpSpeakerMatches} faded language="jp" />
-              <div className={`min-w-0 flex-1 break-words whitespace-pre-wrap font-sans text-sm opacity-70 ${lineTextAlignClass(row.jp)} ${lineKindClass(row.jp)}`}>
+              <div className={`exedra-jp-story-text min-w-0 flex-1 break-words whitespace-pre-wrap font-sans text-sm opacity-70 ${lineTextAlignClass(row.jp)} ${lineKindClass(row.jp)}`}>
                 <StoryText
                   text={row.jp.text}
                   query={query}

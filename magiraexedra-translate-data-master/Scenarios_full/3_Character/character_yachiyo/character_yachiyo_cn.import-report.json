@@ -1,261 +1,432 @@
 {
   "schemaVersion": 1,
   "status": "validated",
-  "generatedAt": "2026-07-26T18:17:21+00:00",
+  "provenance": "official_tw_human",
+  "sourceRoot": "official-tw-exedra-wiki-sp#6fc3fb7f07ab8294dfb5145092ffbb3967f1acf0e1f8229bd921af3e5e6a99f3",
   "group": {
     "category": "3_Character",
     "groupKey": "character_yachiyo"
   },
-  "wiki": {
-    "page": "Yachiyo Nanami/Story/Chinese",
-    "revisionId": 59627,
-    "timestamp": "2025-07-28T08:25:39Z",
-    "author": "Chie",
-    "sha1": "dc024013091d25e9d984efd441a929b71ddc80cc",
-    "contentSha256": "57fe6cd40dfeb4c7a479dc35cf34fc5f7dbae4582fd7d9cf848cafcbb8cd8285",
-    "source": "https://exedra.wiki/w/api.php"
+  "validation": {
+    "passed": true,
+    "mismatchCount": 0,
+    "usesLcs": false,
+    "usesFuzzyMatching": false,
+    "allowsReordering": false
   },
+  "mismatches": [],
   "jp": {
-    "path": "D:\\magia\\MyProducts\\magi-reader\\magiraexedra-source-master\\Scenarios_full\\3_Character\\character_yachiyo\\character_yachiyo_jp.txt",
     "contentSha256": "4466f2e9c9c44481d97fee75293c10c59096b7f3bab50bf45a7da2c3f8a50cc5",
     "sectionCount": 8,
-    "rawEventCount": 349,
     "readerNormalizedBlockCount": 137
   },
   "cn": {
-    "target": "D:\\magia\\MyProducts\\magi-reader\\magiraexedra-translate-data-master\\Scenarios_full\\3_Character\\character_yachiyo\\character_yachiyo_cn.txt",
+    "renderedSha256": "8303ca97a19d4a30e7cba51255594a9e3f9c779de178aaf7f5fadf37b927857a",
     "sectionCount": 8,
-    "rawEventCount": 349,
-    "readerNormalizedBlockCount": 137,
-    "renderedSha256": "fe10917478ffeaf298439c6066fc340c57f4ed10b3d57562856fdf3e30ea0b5b"
-  },
-  "speakerMapping": {
-    "dictionaryPath": "D:\\magia\\MyProducts\\magi-reader\\website\\app\\config\\dictionary.ts",
-    "dictionarySha256": "3420af436a261955e4d20b12589aeca1483aba80909bde9cf8f1204e55531452",
-    "builtInAliasGroup": null,
-    "builtInAliases": {},
-    "extraMapPath": null,
-    "extraMapSha256": null,
-    "unmappedJapaneseSpeakers": []
-  },
-  "validation": {
-    "passed": true,
-    "policy": "same Section index, same reader-normalized block count, same exact mapped speaker and narration/dialogue kind at every block index",
-    "preservesWikiRawEvents": true,
-    "usesLcs": false,
-    "usesFuzzyMatching": false,
-    "allowsReordering": false,
-    "mismatchCount": 0
+    "readerNormalizedBlockCount": 137
   },
   "sections": [
     {
       "section": 1,
-      "wikiEpisode": 0,
       "source": "character_yachiyo_0.json",
-      "rawEvents": {
-        "jp": 3,
-        "cn": 3,
-        "difference": 0
-      },
+      "wikiEpisode": 0,
       "readerNormalizedBlocks": {
         "jp": 1,
         "cn": 1,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 2,
-        "cn": 2,
-        "jpMergeRuns": 1,
-        "cnMergeRuns": 1
-      },
       "speakerSequenceSha256": {
-        "jp": "3edb97aa66632310cdffead75b3bd24b99a15cd54fad8747bacce4cb455b3a63",
-        "cn": "3edb97aa66632310cdffead75b3bd24b99a15cd54fad8747bacce4cb455b3a63"
+        "jp": "21774948de64d7100fa1a18d2ac2fb46bfabcdab45d70909e59d1abcfe01e533",
+        "cn": "21774948de64d7100fa1a18d2ac2fb46bfabcdab45d70909e59d1abcfe01e533"
       }
     },
     {
       "section": 2,
-      "wikiEpisode": 1,
       "source": "character_yachiyo_1.json",
-      "rawEvents": {
-        "jp": 42,
-        "cn": 42,
-        "difference": 0
-      },
+      "wikiEpisode": 1,
       "readerNormalizedBlocks": {
         "jp": 12,
         "cn": 12,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 30,
-        "cn": 30,
-        "jpMergeRuns": 9,
-        "cnMergeRuns": 9
-      },
       "speakerSequenceSha256": {
-        "jp": "b2f99bd3f51acabaf322e0a6c0589ecfecd97c28989d856db4c6f8a878554df0",
-        "cn": "b2f99bd3f51acabaf322e0a6c0589ecfecd97c28989d856db4c6f8a878554df0"
+        "jp": "e54e05931875c6f668aca7f64d9a6de695c8bff7f1bc0e1f7f6e5498f5b0bab4",
+        "cn": "e54e05931875c6f668aca7f64d9a6de695c8bff7f1bc0e1f7f6e5498f5b0bab4"
       }
     },
     {
       "section": 3,
-      "wikiEpisode": 2,
       "source": "character_yachiyo_2.json",
-      "rawEvents": {
-        "jp": 48,
-        "cn": 48,
-        "difference": 0
-      },
+      "wikiEpisode": 2,
       "readerNormalizedBlocks": {
         "jp": 17,
         "cn": 17,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 31,
-        "cn": 31,
-        "jpMergeRuns": 8,
-        "cnMergeRuns": 8
-      },
       "speakerSequenceSha256": {
-        "jp": "5e36463c4fd29bf7fec8096a5c59262cbe1c7ec64dd5d79926710040a9df4dfe",
-        "cn": "5e36463c4fd29bf7fec8096a5c59262cbe1c7ec64dd5d79926710040a9df4dfe"
+        "jp": "f88be04362a939fb66d2a6e2ff517cb5edaa1d9680b25a3570f0bbfdb5336c79",
+        "cn": "f88be04362a939fb66d2a6e2ff517cb5edaa1d9680b25a3570f0bbfdb5336c79"
       }
     },
     {
       "section": 4,
-      "wikiEpisode": 3,
       "source": "character_yachiyo_3.json",
-      "rawEvents": {
-        "jp": 62,
-        "cn": 62,
-        "difference": 0
-      },
+      "wikiEpisode": 3,
       "readerNormalizedBlocks": {
         "jp": 23,
         "cn": 23,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 39,
-        "cn": 39,
-        "jpMergeRuns": 15,
-        "cnMergeRuns": 15
-      },
       "speakerSequenceSha256": {
-        "jp": "32b2ea77fe334bf3d41cd90f7924989b256b3cafdd307b86ad8a11303012613c",
-        "cn": "32b2ea77fe334bf3d41cd90f7924989b256b3cafdd307b86ad8a11303012613c"
+        "jp": "bbc7023df3748c486c5ffc37d3b57fb163eabf0e5f7613739d2dd2b109a24aa9",
+        "cn": "bbc7023df3748c486c5ffc37d3b57fb163eabf0e5f7613739d2dd2b109a24aa9"
       }
     },
     {
       "section": 5,
-      "wikiEpisode": 4,
       "source": "character_yachiyo_4.json",
-      "rawEvents": {
-        "jp": 65,
-        "cn": 65,
-        "difference": 0
-      },
+      "wikiEpisode": 4,
       "readerNormalizedBlocks": {
         "jp": 25,
         "cn": 25,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 40,
-        "cn": 40,
-        "jpMergeRuns": 17,
-        "cnMergeRuns": 17
-      },
       "speakerSequenceSha256": {
-        "jp": "90696250b79a34886a4f08931df80a277eb5dca49b0004717a22309b73775734",
-        "cn": "90696250b79a34886a4f08931df80a277eb5dca49b0004717a22309b73775734"
+        "jp": "4601eedec1a5b473fc160abd5585f6a87ec607540c05ae39661ab3a0001db94d",
+        "cn": "4601eedec1a5b473fc160abd5585f6a87ec607540c05ae39661ab3a0001db94d"
       }
     },
     {
       "section": 6,
-      "wikiEpisode": 5,
       "source": "character_yachiyo_5.json",
-      "rawEvents": {
-        "jp": 35,
-        "cn": 35,
-        "difference": 0
-      },
+      "wikiEpisode": 5,
       "readerNormalizedBlocks": {
         "jp": 26,
         "cn": 26,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 9,
-        "cn": 9,
-        "jpMergeRuns": 6,
-        "cnMergeRuns": 6
-      },
       "speakerSequenceSha256": {
-        "jp": "ff503c2d5cd05f12cae74b5f33aa8184c2f8b4440f619d3781642959998dc42a",
-        "cn": "ff503c2d5cd05f12cae74b5f33aa8184c2f8b4440f619d3781642959998dc42a"
+        "jp": "b64393f47f82f5cf8def6f96986d38213099fcd9f02a623d6eb4c577c591d2f2",
+        "cn": "b64393f47f82f5cf8def6f96986d38213099fcd9f02a623d6eb4c577c591d2f2"
       }
     },
     {
       "section": 7,
-      "wikiEpisode": 6,
       "source": "character_yachiyo_6.json",
-      "rawEvents": {
-        "jp": 50,
-        "cn": 50,
-        "difference": 0
-      },
+      "wikiEpisode": 6,
       "readerNormalizedBlocks": {
         "jp": 19,
         "cn": 19,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 31,
-        "cn": 31,
-        "jpMergeRuns": 10,
-        "cnMergeRuns": 10
-      },
       "speakerSequenceSha256": {
-        "jp": "b6b56c3c2f35e65badd3ca5db6e63a897b54d88aa490e6bfbea8c9c233badb70",
-        "cn": "b6b56c3c2f35e65badd3ca5db6e63a897b54d88aa490e6bfbea8c9c233badb70"
+        "jp": "352ac34898fba3f23a2d671e4f1285928a76a86312230f0b2499975af3eda2f7",
+        "cn": "352ac34898fba3f23a2d671e4f1285928a76a86312230f0b2499975af3eda2f7"
       }
     },
     {
       "section": 8,
-      "wikiEpisode": 7,
       "source": "character_yachiyo_7.json",
-      "rawEvents": {
-        "jp": 44,
-        "cn": 44,
-        "difference": 0
-      },
+      "wikiEpisode": 7,
       "readerNormalizedBlocks": {
         "jp": 14,
         "cn": 14,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 30,
-        "cn": 30,
-        "jpMergeRuns": 11,
-        "cnMergeRuns": 11
-      },
       "speakerSequenceSha256": {
-        "jp": "03467c37e24a76e4208e5f3262ea1fb589a23ce205d165c2d693b41e0731e52c",
-        "cn": "03467c37e24a76e4208e5f3262ea1fb589a23ce205d165c2d693b41e0731e52c"
+        "jp": "d24e7fc1fe6e623322f8c8dc317da0625c8aa0e528b861af35cfdae7b7600e91",
+        "cn": "d24e7fc1fe6e623322f8c8dc317da0625c8aa0e528b861af35cfdae7b7600e91"
       }
     }
   ],
-  "mismatches": []
+  "sourceJson": [
+    {
+      "source": "character_yachiyo_0.json",
+      "manifestSourcePath": "3_Character/character_yachiyo_0/character_yachiyo_0.json",
+      "twPath": "3_Character/character_yachiyo_0/character_yachiyo_0.json",
+      "twSha256": "55b223a9841d5647eb4c9cac46f15bf6ebed108088fbcdf1e4aa27d94e31be39",
+      "jpSha256": "302102b3b5867338d7007a050bae6afb225f97016ae2d0d9d87a26c9f25020c4",
+      "cnSha256": "225131984b2c396ba8af4ed80d5fdd8b4fd2b73282548bd8e1de6f8cabffa11a",
+      "simplifiedJsonSha256": "225131984b2c396ba8af4ed80d5fdd8b4fd2b73282548bd8e1de6f8cabffa11a",
+      "eventCount": 3,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_yachiyo_1.json",
+      "manifestSourcePath": "3_Character/character_yachiyo_1/character_yachiyo_1.json",
+      "twPath": "3_Character/character_yachiyo_1/character_yachiyo_1.json",
+      "twSha256": "0c3bd52135efbc1db34e9f6d3641a36c060584dfa2df6e3c0db9fb4f16a91247",
+      "jpSha256": "c1734b6bc6a184c9285a7158a4a9135a86e83772d61cf3dd903952aa8a3be44a",
+      "cnSha256": "09ec02f4608d9d47d22d14be27f59d82fc7c1f85e4c2b225fe51e390cee7248d",
+      "simplifiedJsonSha256": "09ec02f4608d9d47d22d14be27f59d82fc7c1f85e4c2b225fe51e390cee7248d",
+      "eventCount": 42,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_yachiyo_2.json",
+      "manifestSourcePath": "3_Character/character_yachiyo_2/character_yachiyo_2.json",
+      "twPath": "3_Character/character_yachiyo_2/character_yachiyo_2.json",
+      "twSha256": "2ff03e27764b1fd32de3330f7cdfb5d12b7fff36a9000d279e29e7c7fdbae958",
+      "jpSha256": "7467b13b7f6c1a4c327c606e3c4916ad6e21056f8df29a51f1d6172ff785aab5",
+      "cnSha256": "6dc61ef9cc4b230cd7bdcbdb8ee9b6ef494760e7fc54b71fce7179dff29aa052",
+      "simplifiedJsonSha256": "6dc61ef9cc4b230cd7bdcbdb8ee9b6ef494760e7fc54b71fce7179dff29aa052",
+      "eventCount": 48,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_yachiyo_3.json",
+      "manifestSourcePath": "3_Character/character_yachiyo_3/character_yachiyo_3.json",
+      "twPath": "3_Character/character_yachiyo_3/character_yachiyo_3.json",
+      "twSha256": "c2e64527a706ef1577fcad213197d7170c3aee098d1184a06a3d6842f734c70c",
+      "jpSha256": "5d309813984ca6eb52d72b46e1256b539ff660a8e4bc3753fd889c17be59e030",
+      "cnSha256": "e9948113f776ac65e3deee84932184be4fa000de2d441ba55fd53ef51033d164",
+      "simplifiedJsonSha256": "e9948113f776ac65e3deee84932184be4fa000de2d441ba55fd53ef51033d164",
+      "eventCount": 62,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_yachiyo_4.json",
+      "manifestSourcePath": "3_Character/character_yachiyo_4/character_yachiyo_4.json",
+      "twPath": "3_Character/character_yachiyo_4/character_yachiyo_4.json",
+      "twSha256": "40c60765225b3f88a709c5dcebf862401fd9918de8ca53667791a1eac69c3c34",
+      "jpSha256": "91dca2df4623c3a11f82f90dcbe6ce810fd88124663ac9f6458f22d706844cf2",
+      "cnSha256": "cb6970c9a6a82e52ad3ae9c3658eae8e9866c76d1b87472a0471edb106bb7cd6",
+      "simplifiedJsonSha256": "cb6970c9a6a82e52ad3ae9c3658eae8e9866c76d1b87472a0471edb106bb7cd6",
+      "eventCount": 65,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_yachiyo_5.json",
+      "manifestSourcePath": "3_Character/character_yachiyo_5/character_yachiyo_5.json",
+      "twPath": "3_Character/character_yachiyo_5/character_yachiyo_5.json",
+      "twSha256": "4991601c8b06013192accdd3416b749305dfe011dafcc35d4fbf02f2ea5c6791",
+      "jpSha256": "f01d0c9f7c0835ccd09dd69cd223f66095b593f2e6c4cdf99346057313f17607",
+      "cnSha256": "590bba777ec1b1372197a0b89519bb9be876e04dd9fbfd774269985d1b552eb0",
+      "simplifiedJsonSha256": "590bba777ec1b1372197a0b89519bb9be876e04dd9fbfd774269985d1b552eb0",
+      "eventCount": 35,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_yachiyo_6.json",
+      "manifestSourcePath": "3_Character/character_yachiyo_6/character_yachiyo_6.json",
+      "twPath": "3_Character/character_yachiyo_6/character_yachiyo_6.json",
+      "twSha256": "6dc601923f2ec622d73918bf3069ecf57d9a46cd5e6c55963e0505436823b213",
+      "jpSha256": "1c1fd113670f2f77d227496762646271031a80a71295b44176f33e777b095549",
+      "cnSha256": "bb863e27a607b33e04c04c5a23ab1693781cf3efed44009516176af0eac27f44",
+      "simplifiedJsonSha256": "bb863e27a607b33e04c04c5a23ab1693781cf3efed44009516176af0eac27f44",
+      "eventCount": 50,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_yachiyo_7.json",
+      "manifestSourcePath": "3_Character/character_yachiyo_7/character_yachiyo_7.json",
+      "twPath": "3_Character/character_yachiyo_7/character_yachiyo_7.json",
+      "twSha256": "33c2ee282e6d44c89f6b6d717977b109df5e125b8acb41d6ce7c1d0fbcdba675",
+      "jpSha256": "5fa07e5cb3d9510b69efc7b8fbc19acd9396e1ce62f017c59e12bf09e293524e",
+      "cnSha256": "3633a58a1861912f89f92305d95c71f0363d33702a2fe292e442c784103f6112",
+      "simplifiedJsonSha256": "3633a58a1861912f89f92305d95c71f0363d33702a2fe292e442c784103f6112",
+      "eventCount": 44,
+      "provenance": "official_tw_human"
+    }
+  ],
+  "sourceTreeSha256": "6fc3fb7f07ab8294dfb5145092ffbb3967f1acf0e1f8229bd921af3e5e6a99f3",
+  "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
+  "officialTitles": [
+    {
+      "section": 1,
+      "source": "character_yachiyo_0.json",
+      "resource": "3_character/character_yachiyo_0",
+      "advMstId": 30100900,
+      "advTitleMstId": 20,
+      "duplicateAdvMstIds": [
+        30100900
+      ],
+      "nameAliases": [
+        "Episode0"
+      ],
+      "subNameAliases": [
+        "Episode0"
+      ],
+      "name": "Episode0",
+      "subName": "Episode0",
+      "sectionTitle": "Episode0",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 2,
+      "source": "character_yachiyo_1.json",
+      "resource": "3_character/character_yachiyo_1",
+      "advMstId": 30100901,
+      "advTitleMstId": 20,
+      "duplicateAdvMstIds": [
+        30100901
+      ],
+      "nameAliases": [
+        "Episode1"
+      ],
+      "subNameAliases": [
+        "Episode1"
+      ],
+      "name": "Episode1",
+      "subName": "Episode1",
+      "sectionTitle": "Episode1",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 3,
+      "source": "character_yachiyo_2.json",
+      "resource": "3_character/character_yachiyo_2",
+      "advMstId": 30100902,
+      "advTitleMstId": 20,
+      "duplicateAdvMstIds": [
+        30100902
+      ],
+      "nameAliases": [
+        "Episode2"
+      ],
+      "subNameAliases": [
+        "Episode2"
+      ],
+      "name": "Episode2",
+      "subName": "Episode2",
+      "sectionTitle": "Episode2",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 4,
+      "source": "character_yachiyo_3.json",
+      "resource": "3_character/character_yachiyo_3",
+      "advMstId": 30100903,
+      "advTitleMstId": 20,
+      "duplicateAdvMstIds": [
+        30100903
+      ],
+      "nameAliases": [
+        "Episode3"
+      ],
+      "subNameAliases": [
+        "Episode3"
+      ],
+      "name": "Episode3",
+      "subName": "Episode3",
+      "sectionTitle": "Episode3",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 5,
+      "source": "character_yachiyo_4.json",
+      "resource": "3_character/character_yachiyo_4",
+      "advMstId": 30100904,
+      "advTitleMstId": 20,
+      "duplicateAdvMstIds": [
+        30100904
+      ],
+      "nameAliases": [
+        "Episode4"
+      ],
+      "subNameAliases": [
+        "Episode4"
+      ],
+      "name": "Episode4",
+      "subName": "Episode4",
+      "sectionTitle": "Episode4",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 6,
+      "source": "character_yachiyo_5.json",
+      "resource": "3_character/character_yachiyo_5",
+      "advMstId": 30100905,
+      "advTitleMstId": 20,
+      "duplicateAdvMstIds": [
+        30100905
+      ],
+      "nameAliases": [
+        "Episode5"
+      ],
+      "subNameAliases": [
+        "Episode5"
+      ],
+      "name": "Episode5",
+      "subName": "Episode5",
+      "sectionTitle": "Episode5",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 7,
+      "source": "character_yachiyo_6.json",
+      "resource": "3_character/character_yachiyo_6",
+      "advMstId": 30100906,
+      "advTitleMstId": 20,
+      "duplicateAdvMstIds": [
+        30100906
+      ],
+      "nameAliases": [
+        "Episode6"
+      ],
+      "subNameAliases": [
+        "Episode6"
+      ],
+      "name": "Episode6",
+      "subName": "Episode6",
+      "sectionTitle": "Episode6",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 8,
+      "source": "character_yachiyo_7.json",
+      "resource": "3_character/character_yachiyo_7",
+      "advMstId": 30100907,
+      "advTitleMstId": 20,
+      "duplicateAdvMstIds": [
+        30100907
+      ],
+      "nameAliases": [
+        "Episode7"
+      ],
+      "subNameAliases": [
+        "Episode7"
+      ],
+      "name": "Episode7",
+      "subName": "Episode7",
+      "sectionTitle": "Episode7",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    }
+  ],
+  "sourceContract": {
+    "schemaVersion": 1,
+    "contractName": "exedra-tw-sp-handoff",
+    "provenance": {
+      "provider": "exedra-wiki-sp",
+      "locale": "zh-Hant-TW",
+      "authority": "official-tw-client",
+      "originalTextUnmodified": true,
+      "textTransformation": "reader-tw2sp"
+    },
+    "sourceRevisions": {
+      "sp": "80f8436079eeb63720e80b4b3dab396526f66c97",
+      "scenarios": "8c50b9cfa3ed416b590475d6b6caca6c",
+      "manifests": "a18e6ffd3e6fb84b8544509ee12191df"
+    },
+    "scenarioCatalogSha256": "34b7e5bee2bbbe2994ee63959161121d98b2da27d13b8d0b04e560ee9b0a31a9",
+    "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
+    "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
+    "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  }
 }

@@ -4,6 +4,17 @@ on:
   push:
     branches: [EXEDRA-TEST]
   workflow_dispatch:
+    inputs:
+      source_url:
+        description: Immutable TW SP Release ZIP URL
+        required: false
+        type: string
+        default: https://github.com/HiiragiNemu/MagiaExedraTWData/releases/download/tw-wiki-source-v1-20260806/exedra-tw-wiki-source-v1.zip
+      source_sha256:
+        description: Required SHA-256 for the complete Release ZIP
+        required: false
+        type: string
+        default: 503c4c9a518d0a992abe800fccde4a97b35b2e4ddaeb2359e63eaa8d572cd1ac
 
 permissions:
   contents: write
@@ -40,147 +51,24 @@ jobs:
         id: materialize
         continue-on-error: true
         shell: bash
+        env:
+          TW_SOURCE_URL: ${{ inputs.source_url || 'https://github.com/HiiragiNemu/MagiaExedraTWData/releases/download/tw-wiki-source-v1-20260806/exedra-tw-wiki-source-v1.zip' }}
+          TW_SOURCE_SHA256: ${{ inputs.source_sha256 || '503c4c9a518d0a992abe800fccde4a97b35b2e4ddaeb2359e63eaa8d572cd1ac' }}
         run: |
           set +e
           set -o pipefail
           bash -euo pipefail <<'BUILD' 2>&1 | tee "$RUNNER_TEMP/tw-materialization.log"
-          mkdir -p \
-            .tw-official-source/scenarios \
-            .tw-official-source/manifests \
-            .tw-official-source/normalized
+          rm -rf "$RUNNER_TEMP/tw-sp-bundle"
 
-          python - <<'PY'
-          import base64
-          import json
-          import lzma
-          import re
-          from collections import defaultdict
-          from pathlib import Path
-
-          roots = [
-              Path('sources/tw-official-zh-cn'),
-              Path('sources/tw-official-zh-cn-v3'),
-              Path('sources/tw-official-zh-cn-valid'),
-          ]
-          target = Path('.tw-official-source/normalized')
-          pattern = re.compile(r'^(?P<prefix>.+\.xz\.b64)\.part(?P<number>\d+)$')
-          scenario = None
-          names = None
-          diagnostics = []
-
-          def canonical_decode(text):
-              value = ''.join(text.split()).rstrip('=')
-              value += '=' * ((-len(value)) % 4)
-              return base64.b64decode(value, validate=True)
-
-          for root in roots:
-              if not root.is_dir():
-                  continue
-              groups = defaultdict(list)
-              for path in root.glob('*.part*'):
-                  match = pattern.fullmatch(path.name)
-                  if match:
-                      groups[match.group('prefix')].append(
-                          (int(match.group('number')), path)
-                      )
-              for prefix, parts in sorted(groups.items()):
-                  ordered = [path for _number, path in sorted(parts)]
-                  numbers = [number for number, _path in sorted(parts)]
-                  if numbers != list(range(1, len(numbers) + 1)):
-                      diagnostics.append(
-                          f'SKIP non-contiguous {root}/{prefix}: {numbers}'
-                      )
-                      continue
-                  texts = [path.read_text(encoding='ascii') for path in ordered]
-                  binary_candidates = []
-                  try:
-                      binary_candidates.append((
-                          'joined-unpadded',
-                          canonical_decode(''.join(text.rstrip().rstrip('=') for text in texts)),
-                      ))
-                  except Exception as exc:
-                      diagnostics.append(f'{root}/{prefix} joined-unpadded base64: {exc}')
-                  try:
-                      binary_candidates.append((
-                          'independent-parts',
-                          b''.join(canonical_decode(text) for text in texts),
-                      ))
-                  except Exception as exc:
-                      diagnostics.append(f'{root}/{prefix} independent base64: {exc}')
-                  if len(texts) == 1:
-                      try:
-                          binary_candidates.append((
-                              'single-part',
-                              canonical_decode(texts[0]),
-                          ))
-                      except Exception as exc:
-                          diagnostics.append(f'{root}/{prefix} single base64: {exc}')
-
-                  seen = set()
-                  for strategy, compressed in binary_candidates:
-                      marker = (len(compressed), compressed[:32], compressed[-32:])
-                      if marker in seen:
-                          continue
-                      seen.add(marker)
-                      try:
-                          raw = lzma.decompress(compressed)
-                          value = json.loads(raw.decode('utf-8'))
-                      except Exception as exc:
-                          diagnostics.append(
-                              f'{root}/{prefix} {strategy}: invalid xz/json: {exc}'
-                          )
-                          continue
-                      if not isinstance(value, dict):
-                          diagnostics.append(
-                              f'{root}/{prefix} {strategy}: top-level is not object'
-                          )
-                          continue
-                      files = value.get('files')
-                      titles = value.get('titles')
-                      diagnostics.append(
-                          f'VALID {root}/{prefix} {strategy} '
-                          f'keys={sorted(value)[:8]} '
-                          f'files={len(files) if isinstance(files, dict) else 0} '
-                          f'titles={len(titles) if isinstance(titles, dict) else 0}'
-                      )
-                      if (
-                          scenario is None
-                          and isinstance(files, dict)
-                          and len(files) == 2780
-                      ):
-                          scenario = compressed
-                      if names is None and isinstance(titles, dict) and len(titles) == 1608:
-                          names = compressed
-
-          print('\n'.join(diagnostics))
-          if scenario is None:
-              raise SystemExit('No valid 2780-file TW Scenario payload found')
-          if names is None:
-              raise SystemExit('No valid 1608-title TW naming payload found')
-
-          for filename, compressed in (
-              ('Selected-Scenarios.xz.b64.part001', scenario),
-              ('Selected-Names.xz.b64.part001', names),
-          ):
-              (target / filename).write_text(
-                  base64.b64encode(compressed).decode('ascii') + '\n',
-                  encoding='ascii',
-              )
-              print(f'TW_PAYLOAD_SELECTED file={filename} bytes={len(compressed)}')
-          PY
-
-          python tools/extract_tw_compact_sources.py \
-            --source-dir .tw-official-source/normalized \
-            --scenario-output .tw-official-source/scenarios \
-            --manifest-output .tw-official-source/manifests
-          test -f .tw-official-source/manifests/getFieldStageMstList.json
-          test -f .tw-official-source/manifests/getAdvMstList.json
-          test -f .tw-official-source/manifests/getCollectionConditionMstList.json
-          test "$(find .tw-official-source/scenarios -name '*.json' | wc -l)" -eq 2780
+          python tools/fetch_tw_sp_source_bundle.py \
+            --source-url "$TW_SOURCE_URL" \
+            --source-sha256 "$TW_SOURCE_SHA256" \
+            --output-root "$RUNNER_TEMP/tw-sp-bundle"
 
           python tools/materialize_tw_official_cn.py \
-            --scenario-root .tw-official-source/scenarios \
-            --manifest-root .tw-official-source/manifests
+            --source-bundle-root "$RUNNER_TEMP/tw-sp-bundle" \
+            --source-provider exedra-wiki-sp \
+            --expected-source-count 2780
 
           npm --prefix website ci
           python -m unittest discover -s tests -p 'test_*.py'
@@ -284,3 +172,4 @@ jobs:
           git push origin HEAD:EXEDRA-TEST
           if [ "$MATERIALIZE_EXIT_CODE" != 0 ]; then
             exit "$MATERIALIZE_EXIT_CODE"
+          fi

@@ -39,7 +39,7 @@ SOURCE_LABEL = "official-tw-scenario-json"
 TEXT_ACTIONS = {"talk", "narration", "charactertalk", "onlytext"}
 SECTION_RE = re.compile(
     r"^---\s*\[Section\s+(\d+)\]\s*"
-    r"\(Source:\s*([^()\r\n]+\.json)\s*\)\s*---$",
+    r"\(Source:\s*(.+?\.json)\s*\)\s*---$",
     re.I,
 )
 EPISODE_RE = re.compile(r"_(\d+)\.json$", re.I)
@@ -250,11 +250,12 @@ def validate_row_alignment(
                     f"行位置不同：{source_name} 第 {index} 条 {field}："
                     f"JP={jp_row.get(field)!r} TW={tw_row.get(field)!r}"
                 )
-        kind = "narration" if jp_action == "narration" else "dialogue"
-        if kind != jp_line.kind:
-            raise RuntimeError(
-                f"聚合 TXT 事件类型不同：{source_name} 第 {index} 条"
-            )
+        # The organized JP corpus intentionally preserves several legacy
+        # speaker labels even when ActionType is Narration/OnlyText.  Speaker
+        # identity is proved again after rendering by the schema-v1 report;
+        # treating those legacy labels as an event-kind mismatch rejects valid
+        # playable rows.  Here the authoritative invariant is the exact
+        # JP/TW ActionType plus sheet/row position and event count.
 
 
 def mutable_text_sheets(document: dict[str, Any]):
@@ -360,7 +361,16 @@ def render_cn(sections: tuple[Section, ...], translated: list[list[str]]) -> str
         for jp_line, text in zip(section.lines, texts):
             if not text.strip():
                 raise RuntimeError(f"Section {section.number} 含空台服正文")
-            lines.append(f"{jp_line.speaker}：{text.strip()}")
+            # A reader TXT event must occupy exactly one physical line.  Game
+            # JSON keeps real newlines, while the established TXT convention
+            # represents them as the two visible characters ``\\n``.
+            normalized_text = (
+                text.strip()
+                .replace("\r\n", "\n")
+                .replace("\r", "\n")
+                .replace("\n", r"\n")
+            )
+            lines.append(f"{jp_line.speaker}：{normalized_text}")
         lines.append("")
     return "\n".join(lines).strip() + "\n"
 
@@ -572,7 +582,10 @@ def main() -> int:
                         "manifestSourcePath": source_path,
                         "twPath": tw_index.relative_name(tw_path),
                         "twSha256": pipeline._sha256_file(tw_path),
+                        "jpSha256": pipeline._sha256_file(jp_json),
+                        "cnSha256": digest,
                         "simplifiedJsonSha256": digest,
+                        "eventCount": len(texts),
                     })
 
                 staged_cn = stage / f"{group_key}_cn.txt"

@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/HiiragiNemu/magi-reader/blob/main/docs/exedra_tw_sp_handoff_contract.schema.json",
+  "title": "Exedra TW Wiki SP handoff contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "contractName",
+    "complete",
+    "provenance",
+    "sourceRevisions",
+    "diagnostics",
+    "requiredManifests",
+    "catalogs"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "contractName": { "const": "exedra-tw-sp-handoff" },
+    "complete": { "const": true },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "locale",
+        "authority",
+        "originalTextUnmodified",
+        "textTransformation"
+      ],
+      "properties": {
+        "provider": { "const": "exedra-wiki-sp" },
+        "locale": { "const": "zh-Hant-TW" },
+        "authority": { "const": "official-tw-client" },
+        "originalTextUnmodified": { "const": true },
+        "textTransformation": { "const": "reader-tw2sp" }
+      }
+    },
+    "sourceRevisions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sp", "scenarios", "manifests"],
+      "properties": {
+        "sp": { "$ref": "#/$defs/revision" },
+        "scenarios": { "$ref": "#/$defs/revision" },
+        "manifests": { "$ref": "#/$defs/revision" }
+      }
+    },
+    "diagnostics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["missing", "failure", "parseFailure"],
+      "properties": {
+        "missing": { "const": 0 },
+        "failure": { "const": 0 },
+        "parseFailure": { "const": 0 }
+      }
+    },
+    "requiredManifests": {
+      "const": [
+        "getAdvMstList.json",
+        "getCollectionConditionMstList.json",
+        "getFieldStageMstList.json"
+      ]
+    },
+    "catalogs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scenarios", "manifests"],
+      "properties": {
+        "scenarios": {
+          "$ref": "#/$defs/catalog",
+          "properties": {
+            "root": { "const": "bundle/Resources/Scenarios" },
+            "pattern": { "const": "**/*.json" }
+          }
+        },
+        "manifests": {
+          "$ref": "#/$defs/catalog",
+          "properties": {
+            "root": { "const": "bundle/Manifests" },
+            "pattern": { "const": "*.json" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": ".*\\S.*"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^bundle/"
+        },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root",
+        "pattern",
+        "treeHashAlgorithm",
+        "treeSha256",
+        "catalogHashAlgorithm",
+        "catalogSha256",
+        "fileCount",
+        "byteCount",
+        "files"
+      ],
+      "properties": {
+        "root": { "type": "string" },
+        "pattern": { "type": "string" },
+        "treeHashAlgorithm": {
+          "const": "sha256-path-nul-size-nul-content-v1"
+        },
+        "treeSha256": { "$ref": "#/$defs/sha256" },
+        "catalogHashAlgorithm": {
+          "const": "sha256-canonical-json-files-v1"
+        },
+        "catalogSha256": { "$ref": "#/$defs/sha256" },
+        "fileCount": { "type": "integer", "minimum": 1 },
+        "byteCount": { "type": "integer", "minimum": 1 },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/file" }
+        }
+      }
+    }
+  }
+}

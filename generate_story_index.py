@@ -2563,7 +2563,11 @@ def _validate_exedra_cn_import_report(
     return report
 
 
-def _strict_exedra_json_rows(path: Path) -> list[dict[str, Any]]:
+def _strict_exedra_json_rows(
+    path: Path,
+    *,
+    allow_empty: bool = False,
+) -> list[dict[str, Any]]:
     rows, diagnostics = load_exedra_dialogue_rows(path)
     serious = [
         diagnostic
@@ -2575,7 +2579,7 @@ def _strict_exedra_json_rows(path: Path) -> list[dict[str, Any]]:
             "Exedra JSON sheetList/表头/文本事件不可读: "
             f"{path}: {serious[:3]}"
         )
-    if not rows:
+    if not rows and not allow_empty:
         raise PipelineError(f"Exedra JSON 没有可读文本事件: {path}")
     return rows
 
@@ -2638,8 +2642,13 @@ def _validate_exedra_cn_json_sources(
                 f"JSON 不一致: {group.manifest_id} #{index}"
             )
 
-        jp_rows = _strict_exedra_json_rows(jp_path)
-        cn_rows = _strict_exedra_json_rows(cn_path)
+        # A playable logical group can contain a structural/cutscene-only
+        # section next to ordinary dialogue sections.  Such a JSON is valid
+        # only when the paired JP/CN file and the signed import report all
+        # agree on eventCount=0; the aggregate TXT alignment is validated
+        # separately below.
+        jp_rows = _strict_exedra_json_rows(jp_path, allow_empty=True)
+        cn_rows = _strict_exedra_json_rows(cn_path, allow_empty=True)
         event_count = report_source.get("eventCount")
         if (
             len(jp_rows) != len(cn_rows)
@@ -4257,7 +4266,7 @@ def validate_catalog(
                         f"{story_id}: JSON 顶层必须是对象: {source_path}"
                     )
                 if story.get("game") == "exedra":
-                    _strict_exedra_json_rows(source_path)
+                    _strict_exedra_json_rows(source_path, allow_empty=True)
                 json_owners[owner_key] = story_id
 
         for lang in ("jp", "cn"):

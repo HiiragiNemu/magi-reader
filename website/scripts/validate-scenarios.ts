@@ -3,6 +3,10 @@ import path from 'node:path';
 import process from 'node:process';
 
 import { parseStoryContent } from '../lib/story-parser.ts';
+import {
+  isScenarioDataFile,
+  isScenarioMetadataFile,
+} from '../lib/scenario-file-policy.ts';
 
 const sourceRoot = process.argv[2];
 if (!sourceRoot) {
@@ -14,6 +18,7 @@ if (!sourceRoot) {
 } else {
   const pending = [path.resolve(sourceRoot)];
   const files: string[] = [];
+  let skippedMetadataFiles = 0;
 
   while (pending.length > 0) {
     const current = pending.pop();
@@ -21,7 +26,8 @@ if (!sourceRoot) {
     for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
       const fullPath = path.join(current, entry.name);
       if (entry.isDirectory()) pending.push(fullPath);
-      else if (/\.(?:json|txt)$/i.test(entry.name)) files.push(fullPath);
+      else if (isScenarioDataFile(entry.name)) files.push(fullPath);
+      else if (isScenarioMetadataFile(entry.name)) skippedMetadataFiles++;
     }
   }
 
@@ -34,6 +40,7 @@ if (!sourceRoot) {
     lines: 0,
     emptyFiles: 0,
     warnings: 0,
+    skippedMetadataFiles,
     failures: [] as Array<{ file: string; error: string }>,
   };
 

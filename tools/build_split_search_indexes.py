@@ -41,6 +41,10 @@ def main() -> int:
     stories = json.loads(story_index_bytes.decode("utf-8-sig"))
     if not isinstance(stories, list) or not stories:
         raise base.PipelineError("story_index 顶层必须是非空数组")
+    # The catalogue validator intentionally checks the complete story_ids.json
+    # sequence.  Validate once before splitting; a per-scope subset can never
+    # equal that global membership list.
+    base.validate_catalog(stories, public_dir)
 
     titles = base.load_titles(base.DEFAULT_TITLES_PATH)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -55,7 +59,6 @@ def main() -> int:
         ]
         if not selected:
             raise base.PipelineError(f"搜索范围为空：{scope}")
-        base.validate_catalog(selected, public_dir)
         stats: Counter[str] = Counter()
         entries = base.build_search_entries(
             stories=selected,

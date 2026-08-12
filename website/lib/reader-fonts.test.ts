@@ -53,9 +53,9 @@ test('reader font preferences are opt-in and reject non-boolean values', () => {
 });
 
 test('full WOFF2 assets match the pinned manifest and runtime definitions', () => {
-  assert.equal(manifest.version, 1);
+  assert.equal(manifest.version, 2);
   assert.match(manifest.conversion, /full glyph set, no subsetting/u);
-  assert.equal(manifest.fonts.length, 4);
+  assert.equal(manifest.fonts.length, 7);
 
   for (const record of manifest.fonts) {
     const bytes = readFileSync(`public/fonts/${record.woff2File}`);

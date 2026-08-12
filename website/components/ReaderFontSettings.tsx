@@ -24,6 +24,7 @@ import {
   type ReaderFontBundleId,
   type ReaderFontBundleRuntime,
 } from '@/lib/reader-fonts';
+import ExedraFontSettings from '@/components/ExedraFontSettings';
 
 const BUSY_STATUSES = new Set(['checking', 'downloading', 'loading']);
 
@@ -66,7 +67,13 @@ const actionLabel = (
   return runtime.cached ? `启用已下载的${label}` : `下载并启用${label}`;
 };
 
-export default function ReaderFontSettings({ theme }: { theme: string }) {
+export default function ReaderFontSettings({
+  theme,
+  isExedra = false,
+}: {
+  theme: string;
+  isExedra?: boolean;
+}) {
   const snapshot = useSyncExternalStore(
     subscribeReaderFontRuntime,
     getReaderFontRuntimeSnapshot,
@@ -81,6 +88,7 @@ export default function ReaderFontSettings({ theme }: { theme: string }) {
   );
 
   return (
+    <div className="space-y-3">
     <details
       data-reader-font-settings="true"
       className={`rounded-lg border p-3 ${
@@ -197,5 +205,7 @@ export default function ReaderFontSettings({ theme }: { theme: string }) {
         全部恢复系统字体
       </button>
     </details>
+    {isExedra && <ExedraFontSettings theme={theme} />}
+    </div>
   );
 }

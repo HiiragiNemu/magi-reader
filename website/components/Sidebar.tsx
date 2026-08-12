@@ -1,6 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ComponentType } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentType,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
 import Link from 'next/link';
 import {
   Book,
@@ -18,6 +27,19 @@ import { characterFolderColorFor } from '@/app/config/dictionary';
 import { useGlobal } from '@/app/providers';
 import { categoryOrder } from '@/lib/category-order';
 import { makeSectionAnchorId } from '@/lib/story-parser';
+import {
+  resolveOfficialChapterTitle,
+  resolveOfficialSectionTitle,
+} from '@/lib/official-tw-titles';
+import {
+  SIDEBAR_WIDTH_DEFAULT,
+  SIDEBAR_WIDTH_MAX,
+  SIDEBAR_WIDTH_MIN,
+  SIDEBAR_WIDTH_STEP,
+  SIDEBAR_WIDTH_STORAGE_KEY,
+  clampSidebarWidth,
+  parseStoredSidebarWidth,
+} from '@/lib/sidebar-width';
 import { useDialog } from '@/lib/use-dialog';
 
 export type Story = {
@@ -37,6 +59,10 @@ export type Story = {
   source_identity?: string;
   machine_translation?: boolean;
   human_verified?: boolean;
+  official_tw?: boolean;
+  official_tw_label?: string;
+  official_tw_chapter_title?: string;
+  official_tw_section_titles?: string[];
   legacy_ids?: string[];
 };
 
@@ -132,7 +158,58 @@ export default function Sidebar({
   const { theme, lastCategory, setLastCategory } = useGlobal();
   const [categoryOverrides, setCategoryOverrides] = useState<Record<string, boolean>>({});
   const [folderOverrides, setFolderOverrides] = useState<Record<string, boolean>>({});
+  const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_WIDTH_DEFAULT);
+  const resizeCleanupRef = useRef<(() => void) | null>(null);
   const sidebarRef = useDialog<HTMLElement>(isOpen, onClose);
+
+  useEffect(() => {
+    try {
+      setSidebarWidth(parseStoredSidebarWidth(
+        window.localStorage.getItem(SIDEBAR_WIDTH_STORAGE_KEY),
+      ));
+    } catch {
+      setSidebarWidth(SIDEBAR_WIDTH_DEFAULT);
+    }
+    return () => resizeCleanupRef.current?.();
+  }, []);
+
+  const commitSidebarWidth = useCallback((value: number) => {
+    const bounded = clampSidebarWidth(value);
+    setSidebarWidth(bounded);
+    try {
+      window.localStorage.setItem(SIDEBAR_WIDTH_STORAGE_KEY, String(bounded));
+    } catch {
+      // Storage may be unavailable in private browsing; resizing still works.
+    }
+  }, []);
+
+  const beginResize = useCallback((event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    event.preventDefault();
+    resizeCleanupRef.current?.();
+    const startX = event.clientX;
+    const startWidth = sidebarWidth;
+    const onMove = (moveEvent: PointerEvent) => {
+      setSidebarWidth(clampSidebarWidth(startWidth + moveEvent.clientX - startX));
+    };
+    const onEnd = (endEvent: PointerEvent) => {
+      const finalWidth = clampSidebarWidth(startWidth + endEvent.clientX - startX);
+      commitSidebarWidth(finalWidth);
+      resizeCleanupRef.current?.();
+      resizeCleanupRef.current = null;
+    };
+    const cleanup = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onEnd);
+      window.removeEventListener('pointercancel', onEnd);
+      document.body.classList.remove('magi-sidebar-resizing');
+    };
+    resizeCleanupRef.current = cleanup;
+    document.body.classList.add('magi-sidebar-resizing');
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onEnd, { once: true });
+    window.addEventListener('pointercancel', onEnd, { once: true });
+  }, [commitSidebarWidth, sidebarWidth]);
 
   const currentStory = useMemo(
     () => stories.find(story => story.id === currentId),
@@ -175,13 +252,15 @@ export default function Sidebar({
         ? 'bg-[#f0e6d2]/60 glass-morphism border-[#dcd6b6] text-[#5c4b37]'
         : theme === 'green'
           ? 'bg-[#d8e6d1]/60 glass-morphism border-[#b8cbb0] text-[#1b4d1b]'
-          : 'bg-white/70 glass-morphism border-gray-200 text-gray-600';
+          : 'bg-[#ded6c3]/65 glass-morphism border-[#9d927e]/35 text-[#5d564b] shadow-[10px_0_28px_rgba(77,68,52,0.08)]';
   const hoverClass =
     theme === 'green'
       ? 'hover:bg-[#b0e2bd]'
       : theme === 'dark'
         ? 'hover:bg-gray-800'
-        : 'hover:bg-black/5';
+        : theme === 'paper'
+          ? 'hover:bg-black/5'
+          : 'hover:bg-[#81745e]/10';
 
   return (
     <>
@@ -199,7 +278,8 @@ export default function Sidebar({
         aria-modal={isOpen || undefined}
         aria-label="剧情目录"
         tabIndex={-1}
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col overflow-hidden border-r transition-transform duration-300 md:relative md:translate-x-0 ${
+        style={{ '--magi-sidebar-width': `${sidebarWidth}px` } as CSSProperties}
+        className={`magi-reader-sidebar fixed inset-y-0 left-0 z-50 flex flex-col overflow-hidden border-r transition-transform duration-300 md:relative md:translate-x-0 ${
           isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
         } ${themeClass} ${className}`}
       >
@@ -278,7 +358,10 @@ export default function Sidebar({
                               ) / items.length,
                             )
                           : 0;
-                        const folderLabel = displayFolder(category, folder);
+                        const folderLabel = resolveOfficialChapterTitle(
+                          items,
+                          displayFolder(category, folder),
+                        );
                         const folderClass =
                           average === 100
                             ? theme === 'dark'
@@ -325,16 +408,22 @@ export default function Sidebar({
                                   percent > 0
                                     ? theme === 'dark'
                                       ? 'border-emerald-500/50 bg-emerald-900/30 text-emerald-400 hover:bg-emerald-900/40'
-                                      : 'border-emerald-500/50 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                                      : theme === 'light'
+                                        ? 'border-[#93866f]/40 bg-[#d8cfbd]/60 text-[#514a3f] hover:bg-[#cec3ae]/75'
+                                        : 'border-emerald-500/50 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                                     : theme === 'dark'
                                       ? 'border-gray-700 bg-gray-800 text-gray-500 hover:bg-gray-700'
-                                      : 'border-gray-200 bg-white text-gray-400 hover:bg-gray-50';
+                                      : theme === 'light'
+                                        ? 'border-[#a79b84]/30 bg-[#ece6d9]/45 text-[#756d60] hover:bg-[#ddd4c3]/65'
+                                        : 'border-gray-200 bg-white text-gray-400 hover:bg-gray-50';
                                 const activeClass =
                                   theme === 'green'
                                     ? 'border-[#1B5E20] bg-[#2E7D32] text-white'
                                     : theme === 'dark'
                                       ? 'border-blue-500 bg-blue-900/30 text-blue-300'
-                                      : 'border-blue-500 bg-blue-50 text-blue-700';
+                                      : theme === 'light'
+                                        ? 'border-[#81745e] bg-[#c9bea9]/75 text-[#403a32]'
+                                        : 'border-blue-500 bg-blue-50 text-blue-700';
 
                                 return (
                                   <div key={story.id} className="mb-1">
@@ -349,6 +438,11 @@ export default function Sidebar({
                                       }`}
                                     >
                                       <span className="mr-2">{label}</span>
+                                      {story.official_tw && (
+                                        <span className="mr-1 inline-flex rounded-full border border-[#81745e]/35 bg-[#f0eadf]/60 px-1.5 py-0.5 font-sans text-[9px] font-bold text-[#655d50]">
+                                          {story.official_tw_label || '台服'}
+                                        </span>
+                                      )}
                                       {percent < 100 && !active && (
                                         <span className="inline-block text-[9px] opacity-60">{percent}%</span>
                                       )}
@@ -356,13 +450,18 @@ export default function Sidebar({
 
                                     {active && story.sections && story.sections.length > 0 && (
                                       <div className="ml-3 mt-1 space-y-0.5 border-l border-current border-opacity-10">
-                                        {story.sections.map(section => {
+                                        {story.sections.map((section, sectionIndex) => {
                                           const details = sectionDetails(section);
+                                          const sectionLabel = resolveOfficialSectionTitle(
+                                            story.official_tw_section_titles,
+                                            sectionIndex + 1,
+                                            details.label,
+                                          );
                                           return (
                                             <button
                                               type="button"
                                               key={section}
-                                              title={section}
+                                              title={sectionLabel}
                                               onClick={() => {
                                                 onClose();
                                                 const element = document.getElementById(details.anchorId);
@@ -379,7 +478,7 @@ export default function Sidebar({
                                                   : 'text-gray-600 hover:bg-black/5 hover:text-black'
                                               }`}
                                             >
-                                              └ {details.label}
+                                              └ {sectionLabel}
                                             </button>
                                           );
                                         })}
@@ -399,6 +498,34 @@ export default function Sidebar({
             );
           })}
         </div>
+        <button
+          type="button"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label={`调整剧情目录宽度，当前 ${sidebarWidth} 像素`}
+          aria-valuemin={240}
+          aria-valuemax={560}
+          aria-valuenow={sidebarWidth}
+          title="拖动调整目录宽度；双击恢复默认"
+          onPointerDown={beginResize}
+          onDoubleClick={() => commitSidebarWidth(SIDEBAR_WIDTH_DEFAULT)}
+          onKeyDown={event => {
+            if (event.key === 'ArrowLeft') {
+              event.preventDefault();
+              commitSidebarWidth(sidebarWidth - SIDEBAR_WIDTH_STEP);
+            } else if (event.key === 'ArrowRight') {
+              event.preventDefault();
+              commitSidebarWidth(sidebarWidth + SIDEBAR_WIDTH_STEP);
+            } else if (event.key === 'Home') {
+              event.preventDefault();
+              commitSidebarWidth(SIDEBAR_WIDTH_MIN);
+            } else if (event.key === 'End') {
+              event.preventDefault();
+              commitSidebarWidth(SIDEBAR_WIDTH_MAX);
+            }
+          }}
+          className="magi-sidebar-resize-handle absolute inset-y-0 right-0 hidden w-2 cursor-col-resize touch-none md:block"
+        />
       </aside>
     </>
   );

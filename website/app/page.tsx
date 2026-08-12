@@ -36,6 +36,11 @@ import { normalizeSearchText } from '@/lib/search';
 import { loadStoryIndex } from '@/lib/story-index';
 import { categoryOrder } from '@/lib/category-order';
 import {
+  getSearchIndexSources,
+  SEARCH_INDEX_SCOPE_CONFIG,
+  type SearchIndexScope,
+} from '@/lib/search-index-scope';
+import {
   getMachineReviewPanelServerSnapshot,
   getMachineReviewPanelSnapshot,
   setMachineReviewPanelCollapsedPreference,
@@ -43,7 +48,7 @@ import {
 } from '@/lib/machine-review-panel';
 
 type SearchMode = 'all' | 'title' | 'content';
-type StorySystem = 'magireco' | 'exedra';
+type StorySystem = SearchIndexScope;
 
 type StoryGroup = {
   key: string;
@@ -63,38 +68,6 @@ type SearchWorkerMessage =
   | { type: 'status'; status: 'loading' | 'ready' }
   | { type: 'results'; sequence: number; matches: Array<[string, string]>; truncated: boolean }
   | { type: 'error'; sequence: number; message: string };
-
-type SearchIndexChunk = {
-  bytes: number;
-  sha256: string;
-};
-
-type SearchIndexManifestV1 = {
-  version: 1;
-  sha256: string;
-  bytes: number;
-  entries: number;
-  object_key: string;
-  story_index_sha256: string;
-};
-
-type SearchIndexManifestV2 = Omit<SearchIndexManifestV1, 'version'> & {
-  version: 2;
-  chunk_bytes: number;
-  chunks: SearchIndexChunk[];
-};
-
-type SearchIndexManifest = SearchIndexManifestV1 | SearchIndexManifestV2;
-
-type SearchIndexSource = Pick<
-  SearchIndexManifestV1,
-  'sha256' | 'bytes' | 'entries'
-> & {
-  url: string;
-  version: 1 | 2;
-  chunk_bytes?: number;
-  chunks?: SearchIndexChunk[];
-};
 
 type ProofreadingStatus = {
   total: number;
@@ -147,114 +120,6 @@ const NATURAL_COLLATOR = new Intl.Collator(['zh-CN', 'ja-JP'], {
 const isExedraCategory = (category: string): boolean =>
   EXEDRA_CATEGORY_SET.has(category);
 
-const SEARCH_INDEX_MANIFEST_URL = '/search_index_manifest.json';
-const SEARCH_INDEX_LOCAL_FALLBACK_URL = '/search_content.json';
-const SEARCH_INDEX_CLOUDFLARE_BASE_URL =
-  'https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev/';
-
-const isSearchIndexManifest = (value: unknown): value is SearchIndexManifest => {
-  if (!value || typeof value !== 'object') return false;
-  const manifest = value as Record<string, unknown>;
-  const sha256 =
-    typeof manifest.sha256 === 'string' ? manifest.sha256.toLowerCase() : '';
-  const commonValid =
-    (manifest.version === 1 || manifest.version === 2) &&
-    /^[a-f0-9]{64}$/.test(sha256) &&
-    Number.isSafeInteger(manifest.bytes) &&
-    Number(manifest.bytes) > 0 &&
-    Number(manifest.bytes) <= 256 * 1024 * 1024 &&
-    Number.isSafeInteger(manifest.entries) &&
-    Number(manifest.entries) > 0 &&
-    Number(manifest.entries) <= 1_000_000 &&
-    typeof manifest.object_key === 'string' &&
-    manifest.object_key === `search/${sha256}.json` &&
-    typeof manifest.story_index_sha256 === 'string' &&
-    /^[a-f0-9]{64}$/.test(manifest.story_index_sha256);
-  if (!commonValid) return false;
-  if (manifest.version === 1) return true;
-
-  const chunkBytes = Number(manifest.chunk_bytes);
-  const chunks = manifest.chunks;
-  if (
-    chunkBytes !== 1024 * 1024 ||
-    !Array.isArray(chunks) ||
-    chunks.length === 0 ||
-    chunks.length > 4096 ||
-    chunks.length !== Math.ceil(Number(manifest.bytes) / chunkBytes)
-  ) {
-    return false;
-  }
-  let total = 0;
-  for (let index = 0; index < chunks.length; index += 1) {
-    const chunk = chunks[index];
-    if (!chunk || typeof chunk !== 'object') return false;
-    const item = chunk as Record<string, unknown>;
-    const itemBytes = Number(item.bytes);
-    const finalChunk = index === chunks.length - 1;
-    if (
-      !Number.isSafeInteger(itemBytes) ||
-      itemBytes <= 0 ||
-      itemBytes > chunkBytes ||
-      (!finalChunk && itemBytes !== chunkBytes) ||
-      typeof item.sha256 !== 'string' ||
-      !/^[a-f0-9]{64}$/.test(item.sha256)
-    ) {
-      return false;
-    }
-    total += itemBytes;
-    if (!Number.isSafeInteger(total) || total > Number(manifest.bytes)) {
-      return false;
-    }
-  }
-  return total === Number(manifest.bytes);
-};
-
-const getSearchIndexSources = async (
-  signal: AbortSignal,
-  storyIndexSha256: string,
-): Promise<SearchIndexSource[]> => {
-  const localDevelopment =
-    process.env.NODE_ENV === 'development' ||
-    ['localhost', '127.0.0.1'].includes(window.location.hostname);
-
-  const response = await fetch(SEARCH_INDEX_MANIFEST_URL, {
-    cache: 'no-store',
-    credentials: 'same-origin',
-    signal,
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const manifest: unknown = await response.json();
-  if (!isSearchIndexManifest(manifest)) {
-    throw new Error('搜索索引清单格式不正确');
-  }
-  if (manifest.story_index_sha256 !== storyIndexSha256) {
-    throw new Error('搜索索引与当前剧情目录不匹配');
-  }
-
-  const sourceMetadata = {
-    version: manifest.version,
-    sha256: manifest.sha256,
-    bytes: manifest.bytes,
-    entries: manifest.entries,
-    ...(manifest.version === 2
-      ? {
-          chunk_bytes: manifest.chunk_bytes,
-          chunks: manifest.chunks,
-        }
-      : {}),
-  };
-  const addressedSource: SearchIndexSource = {
-    url: `${SEARCH_INDEX_CLOUDFLARE_BASE_URL}${manifest.object_key}`,
-    ...sourceMetadata,
-  };
-  return localDevelopment
-    ? [
-        addressedSource,
-        { url: SEARCH_INDEX_LOCAL_FALLBACK_URL, ...sourceMetadata },
-      ]
-    : [addressedSource];
-};
-
 const getDisplayLabel = (story: Story): string => {
   const label = story.title || story.filename_cn || story.filename_jp || story.id;
   return label.replace(/(_cn|_jp)?\.txt$/i, '');
@@ -275,6 +140,12 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   const machineVerified = group.items.filter(
     story => story.machine_translation && story.human_verified,
   ).length;
+  const officialTwStories = group.items.filter(
+    story => isExedraCategory(story.category) && story.official_tw,
+  );
+  const officialTwLabel =
+    officialTwStories[0]?.official_tw_label?.trim() || '台服';
+  const isOfficialTwGroup = officialTwStories.length > 0;
   const isOpen = hasSearchMatches || manuallyOpen;
   const avgPercent = Math.round(
     group.items.reduce((sum, story) => sum + storyProgress(story), 0) /
@@ -282,6 +153,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   );
 
   const isDark = theme === 'dark';
+  const isLight = theme === 'light';
   let headerClass = '';
   let progressClass = '';
 
@@ -296,6 +168,15 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
         ? 'bg-gray-800 border-gray-700 text-gray-400'
         : 'bg-emerald-900/40 border-emerald-800 text-emerald-100';
     progressClass = 'text-emerald-400';
+  } else if (isLight) {
+    if (avgPercent === 0) {
+      headerClass = 'magi-home-light-folder-header magi-home-light-folder-header-empty';
+    } else if (avgPercent === 100) {
+      headerClass = 'magi-home-light-folder-header magi-home-light-folder-header-complete';
+    } else {
+      headerClass = 'magi-home-light-folder-header magi-home-light-folder-header-partial';
+    }
+    progressClass = 'magi-home-light-progress';
   } else {
     if (avgPercent === 0) {
       headerClass = 'bg-black/5 border-black/10 text-black/50';
@@ -317,7 +198,11 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
       className={`break-inside-avoid mb-3 rounded-lg border shadow-sm transition-all ${
         machinePending > 0
           ? isDark ? 'border-amber-700 ring-1 ring-amber-700/40' : 'border-amber-400 ring-1 ring-amber-300'
-          : isDark ? 'border-gray-700' : 'border-black/10'
+          : isDark
+            ? 'border-gray-700'
+            : isLight
+              ? 'magi-home-light-folder-card'
+              : 'border-black/10'
       } ${isOpen ? '' : 'magi-folder-card-collapsed'}`}
     >
       <button
@@ -354,6 +239,15 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
               已校 {machineVerified}
             </span>
           )}
+          {isOfficialTwGroup && (
+            <span
+              className="magi-official-tw-badge"
+              title="台服官方中文"
+              aria-label="台服官方中文"
+            >
+              {officialTwLabel}
+            </span>
+          )}
         </div>
         <span className={`text-[10px] font-mono mt-0.5 flex-shrink-0 ${progressClass}`}>
           {avgPercent}%
@@ -361,7 +255,16 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
       </button>
 
       {isOpen && (
-        <div id={contentId} className={`p-2 ${isDark ? 'bg-gray-900' : 'bg-white/50'}`}>
+        <div
+          id={contentId}
+          className={`p-2 ${
+            isDark
+              ? 'bg-gray-900'
+              : isLight
+                ? 'magi-home-light-folder-body'
+                : 'bg-white/50'
+          }`}
+        >
           <div className="flex flex-wrap gap-2">
             {[...group.items]
               .sort((a, b) => NATURAL_COLLATOR.compare(a.id, b.id))
@@ -383,9 +286,13 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                       ? progress > 0
                         ? 'bg-emerald-900/30 border-emerald-700 text-emerald-400'
                         : 'bg-gray-800 border-gray-700 text-gray-500'
-                      : progress > 0
-                        ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                        : 'bg-white border-gray-200 text-gray-400';
+                      : isLight
+                        ? progress > 0
+                          ? 'magi-home-light-story-link'
+                          : 'magi-home-light-story-link magi-home-light-story-link-empty'
+                        : progress > 0
+                          ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                          : 'bg-white border-gray-200 text-gray-400';
 
                 return (
                   <Link
@@ -408,6 +315,15 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                       {story.machine_translation && story.human_verified && (
                         <span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">
                           人工已校
+                        </span>
+                      )}
+                      {isExedraCategory(story.category) && story.official_tw && (
+                        <span
+                          className="magi-official-tw-badge"
+                          title="台服官方中文"
+                          aria-label="台服官方中文"
+                        >
+                          {story.official_tw_label?.trim() || '台服'}
                         </span>
                       )}
                       {progress < 100 && progress > 0 && (
@@ -467,7 +383,9 @@ function CategoryNav({
         const activeClass =
           theme === 'dark'
             ? 'bg-emerald-900/50 text-emerald-400 border-emerald-500'
-            : 'bg-emerald-50 text-emerald-700 border-emerald-500';
+            : theme === 'light'
+              ? 'magi-home-light-nav-active'
+              : 'bg-emerald-50 text-emerald-700 border-emerald-500';
 
         return (
           <button
@@ -479,7 +397,9 @@ function CategoryNav({
             } ${
               isActive
                 ? activeClass
-                : 'text-gray-500 hover:bg-black/5 border-transparent'
+                : theme === 'light'
+                  ? 'magi-home-light-nav-item border-transparent'
+                  : 'text-gray-500 hover:bg-black/5 border-transparent'
             }`}
           >
             <Icon size={16} />
@@ -597,8 +517,10 @@ export default function Home() {
     if (!storyIndexSha256) return;
     const controller = new AbortController();
     const worker = new Worker('/search-worker.js?v=2');
+    searchSequenceRef.current += 1;
     workerRef.current = worker;
     worker.onmessage = (event: MessageEvent<SearchWorkerMessage>) => {
+      if (workerRef.current !== worker) return;
       const message = event.data;
       if (message.type === 'results') {
         if (message.sequence !== searchSequenceRef.current) return;
@@ -614,26 +536,30 @@ export default function Home() {
       }
     };
     worker.onerror = () => {
+      if (workerRef.current !== worker) return;
       setSearchLoading(false);
       setSearchError('正文搜索组件未能启动；标题搜索仍然可以使用。');
     };
 
-    void getSearchIndexSources(controller.signal, storyIndexSha256)
+    void getSearchIndexSources(controller.signal, storyIndexSha256, storySystem)
       .then((sources) => {
+        if (controller.signal.aborted || workerRef.current !== worker) return;
         setSearchIndexBytes(sources[0]?.bytes ?? 0);
         worker.postMessage({ type: 'init', sources });
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === 'AbortError') return;
+        if (workerRef.current !== worker) return;
         worker.postMessage({ type: 'init', sources: [] });
       });
 
     return () => {
+      searchSequenceRef.current += 1;
       controller.abort();
       worker.terminate();
-      workerRef.current = null;
+      if (workerRef.current === worker) workerRef.current = null;
     };
-  }, [storyIndexSha256]);
+  }, [storyIndexSha256, storySystem]);
 
   const requestContentSearch = useCallback(
     (term: string, mode: SearchMode, includeJapanese: boolean) => {
@@ -763,12 +689,16 @@ export default function Home() {
     updateSearchTerm('');
   };
 
-  const switchStorySystem = () => {
-    const nextSystem: StorySystem =
-      storySystem === 'magireco' ? 'exedra' : 'magireco';
+  const switchToStorySystem = (nextSystem: StorySystem) => {
+    if (nextSystem === storySystem) return;
     setLastCategory(DEFAULT_CATEGORY[nextSystem]);
+    setSearchIndexBytes(0);
     if (nextSystem === 'exedra') setOnlyNeedsReview(false);
     updateSearchTerm('');
+  };
+
+  const switchStorySystem = () => {
+    switchToStorySystem(storySystem === 'magireco' ? 'exedra' : 'magireco');
   };
 
   if (loading) {
@@ -785,7 +715,9 @@ export default function Home() {
         className={`hidden md:flex w-64 border-r flex-col z-20 flex-shrink-0 ${
           theme === 'dark'
             ? 'border-gray-800 bg-gray-900'
-            : 'border-black/5 bg-inherit'
+            : theme === 'light'
+              ? 'magi-home-light-sidebar'
+              : 'border-black/5 bg-inherit'
         }`}
       >
         <div className="p-5 border-b border-inherit">
@@ -808,7 +740,9 @@ export default function Home() {
           className={`border-b p-3 backdrop-blur z-10 flex flex-col gap-3 ${
             theme === 'dark'
               ? 'border-gray-800 bg-gray-900/90'
-              : 'border-black/5 bg-white/60'
+              : theme === 'light'
+                ? 'magi-home-light-toolbar'
+                : 'border-black/5 bg-white/60'
           }`}
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
@@ -851,6 +785,28 @@ export default function Home() {
                     }`}
                   >
                     {option.label}
+                  </button>
+                ))}
+              </div>
+
+              <div
+                role="group"
+                aria-label="搜索对象覆盖范围"
+                className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5 border border-gray-200 dark:border-gray-700 shrink-0"
+              >
+                {(['magireco', 'exedra'] as const).map((scope) => (
+                  <button
+                    type="button"
+                    key={scope}
+                    aria-pressed={storySystem === scope}
+                    onClick={() => switchToStorySystem(scope)}
+                    className={`px-2 py-1.5 text-xs font-bold rounded-md whitespace-nowrap transition-all ${
+                      storySystem === scope
+                        ? 'bg-white dark:bg-gray-600 text-emerald-700 dark:text-emerald-300 shadow-sm'
+                        : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    {SEARCH_INDEX_SCOPE_CONFIG[scope].label}
                   </button>
                 ))}
               </div>
@@ -941,9 +897,9 @@ export default function Home() {
 
           {searchMode !== 'title' && searchIndexBytes > 0 && (
             <p className="text-[11px] opacity-65">
-              正文搜索会在首次使用时按需加载约{' '}
+              当前范围：{SEARCH_INDEX_SCOPE_CONFIG[storySystem].label}。正文搜索会在首次使用时按需加载约{' '}
               {(searchIndexBytes / (1024 * 1024)).toFixed(1)} MiB 索引。
-              内存较小的设备请使用“标题”模式。
+              不会加载另一范围的正文对象；内存较小的设备请使用“标题”模式。
             </p>
           )}
 

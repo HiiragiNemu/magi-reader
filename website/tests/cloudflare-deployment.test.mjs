@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -100,19 +101,27 @@ test('Cloudflare output requires a valid manifest and excludes the large payload
     mkdirSync(assets, { recursive: true });
     mkdirSync(publicDirectory, { recursive: true });
     writeFileSync(path.join(directory, '.open-next', 'worker.js'), 'export {};');
-    const manifest = JSON.stringify({
+    const storyIndex = '[{"id":"fixture"}]\n';
+    writeFileSync(path.join(publicDirectory, 'story_index.json'), storyIndex);
+    const storyIndexSha256 = createHash('sha256')
+      .update(storyIndex)
+      .digest('hex');
+    const writeManifest = (scope, manifest) => {
+      const name = `search_index_manifest.${scope}.json`;
+      const source = JSON.stringify(manifest);
+      writeFileSync(path.join(assets, name), source);
+      writeFileSync(path.join(publicDirectory, name), source);
+    };
+    const manifestFor = (scope, sha256) => ({
       version: 1,
-      sha256: 'a'.repeat(64),
+      sha256,
       bytes: 123,
       entries: 1,
-      object_key: `search/${'a'.repeat(64)}.json`,
-      story_index_sha256: 'b'.repeat(64),
+      object_key: `search/${scope}/${sha256}.json`,
+      story_index_sha256: storyIndexSha256,
     });
-    writeFileSync(path.join(assets, 'search_index_manifest.json'), manifest);
-    writeFileSync(
-      path.join(publicDirectory, 'search_index_manifest.json'),
-      manifest,
-    );
+    writeManifest('magireco', manifestFor('magireco', 'a'.repeat(64)));
+    writeManifest('exedra', manifestFor('exedra', 'c'.repeat(64)));
 
     const valid = spawnSync(process.execPath, [outputVerifier], {
       cwd: directory,
@@ -120,42 +129,34 @@ test('Cloudflare output requires a valid manifest and excludes the large payload
     });
     assert.equal(valid.status, 0, valid.stderr);
 
-    const v2Manifest = JSON.stringify({
+    const v2Manifest = {
       version: 2,
-      sha256: 'c'.repeat(64),
+      sha256: 'd'.repeat(64),
       bytes: 1024 * 1024 + 17,
       entries: 2,
-      object_key: `search/${'c'.repeat(64)}.json`,
-      story_index_sha256: 'd'.repeat(64),
+      object_key: `search/magireco/${'d'.repeat(64)}.json`,
+      story_index_sha256: storyIndexSha256,
       chunk_bytes: 1024 * 1024,
       chunks: [
         { bytes: 1024 * 1024, sha256: 'e'.repeat(64) },
         { bytes: 17, sha256: 'f'.repeat(64) },
       ],
-    });
-    writeFileSync(path.join(assets, 'search_index_manifest.json'), v2Manifest);
-    writeFileSync(
-      path.join(publicDirectory, 'search_index_manifest.json'),
-      v2Manifest,
-    );
+    };
+    writeManifest('magireco', v2Manifest);
     const validV2 = spawnSync(process.execPath, [outputVerifier], {
       cwd: directory,
       encoding: 'utf8',
     });
     assert.equal(validV2.status, 0, validV2.stderr);
 
-    const malformedV2 = JSON.stringify({
-      ...JSON.parse(v2Manifest),
+    const malformedV2 = {
+      ...v2Manifest,
       chunks: [
         { bytes: 1024 * 1024, sha256: 'not-a-hash' },
         { bytes: 17, sha256: 'f'.repeat(64) },
       ],
-    });
-    writeFileSync(path.join(assets, 'search_index_manifest.json'), malformedV2);
-    writeFileSync(
-      path.join(publicDirectory, 'search_index_manifest.json'),
-      malformedV2,
-    );
+    };
+    writeManifest('magireco', malformedV2);
     const invalidManifest = spawnSync(process.execPath, [outputVerifier], {
       cwd: directory,
       encoding: 'utf8',
@@ -163,12 +164,8 @@ test('Cloudflare output requires a valid manifest and excludes the large payload
     assert.notEqual(invalidManifest.status, 0);
     assert.match(invalidManifest.stderr, /内容寻址键无效/u);
 
-    writeFileSync(path.join(assets, 'search_index_manifest.json'), v2Manifest);
-    writeFileSync(
-      path.join(publicDirectory, 'search_index_manifest.json'),
-      v2Manifest,
-    );
-    writeFileSync(path.join(assets, 'search_content.json'), '[]');
+    writeManifest('magireco', v2Manifest);
+    writeFileSync(path.join(assets, 'search_content.exedra.json'), '[]');
     const invalid = spawnSync(process.execPath, [outputVerifier], {
       cwd: directory,
       encoding: 'utf8',

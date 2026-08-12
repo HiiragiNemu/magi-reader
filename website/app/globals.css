@@ -214,3 +214,231 @@ html[data-reader-font-japanese='ready'] .reader-font-jp-title {
     serif;
   font-synthesis: none;
 }
+
+.magi-reader-sidebar {
+  width: min(18rem, calc(100vw - 2rem));
+}
+
+.magi-sidebar-resize-handle::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  content: '';
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.magi-sidebar-resize-handle:hover::after,
+.magi-sidebar-resize-handle:focus-visible::after {
+  opacity: 0.35;
+}
+
+body.magi-sidebar-resizing,
+body.magi-sidebar-resizing * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
+@media (min-width: 768px) {
+  .magi-reader-sidebar {
+    width: var(--magi-sidebar-width, 18rem);
+    min-width: var(--magi-sidebar-width, 18rem);
+    max-width: var(--magi-sidebar-width, 18rem);
+  }
+}
+
+/* Magia Exedra fonts are a separate, explicit opt-in. These selectors are
+   intentionally language-scoped so neither Magia Record nor the other half
+   of a bilingual Exedra row inherits the selected face. */
+html[data-exedra-font-tang-yuan='ready'] .exedra-page:lang(zh-Hans),
+html[data-exedra-font-tang-yuan='ready'] .exedra-page:lang(zh-Hans) .reader-font-cn-body,
+html[data-exedra-font-tang-yuan='ready'] .exedra-page:lang(zh-Hans) .reader-font-cn-title,
+html[data-exedra-font-tang-yuan='ready'] .exedra-page:lang(zh-Hans) .font-sans {
+  font-family:
+    "MagiReaderExedraTangYuan",
+    "Resource Han Rounded CN",
+    "Noto Sans SC",
+    "Source Han Sans SC",
+    "Microsoft YaHei",
+    sans-serif;
+}
+
+html[data-exedra-font-tsuku='ready'] .exedra-page:lang(ja).reader-font-jp-title,
+html[data-exedra-font-tsuku='ready'] .exedra-page:lang(ja) .reader-font-jp-title,
+html[data-exedra-font-tsuku='ready'] .exedra-page:lang(ja) .exedra-jp-ui-text {
+  font-family:
+    "MagiReaderExedraTsukuOldGothic",
+    "Hiragino Kaku Gothic ProN",
+    "Yu Gothic",
+    Meiryo,
+    "Noto Sans JP",
+    sans-serif;
+  font-synthesis: none;
+}
+
+html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja).exedra-jp-story-text,
+html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story-text {
+  font-family:
+    "MagiReaderExedraNewCinemaA",
+    "Hiragino Mincho ProN",
+    "Yu Mincho",
+    "Noto Serif JP",
+    serif;
+  font-synthesis: none;
+}
+
+/* Homepage light theme: a quiet, warm archival treatment inspired by the
+   gray-yellow floating panels in the reference UI. These classes are attached
+   only while the explicit `light` theme is selected, so paper, green and dark
+   keep their existing palette. */
+.magi-home-light-sidebar {
+  border-color: rgba(113, 102, 80, 0.22);
+  background:
+    linear-gradient(158deg, rgba(235, 229, 214, 0.86), rgba(220, 212, 193, 0.66));
+  box-shadow: 8px 0 24px rgba(77, 67, 48, 0.1);
+  backdrop-filter: blur(12px) saturate(0.72);
+  -webkit-backdrop-filter: blur(12px) saturate(0.72);
+}
+
+.magi-home-light-toolbar {
+  border-color: rgba(113, 102, 80, 0.2);
+  background: rgba(239, 234, 221, 0.72);
+  box-shadow: 0 5px 18px rgba(77, 67, 48, 0.08);
+  backdrop-filter: blur(14px) saturate(0.76);
+  -webkit-backdrop-filter: blur(14px) saturate(0.76);
+}
+
+.magi-home-light-nav-active {
+  border-color: rgba(119, 105, 75, 0.62);
+  border-radius: 0.72rem 0.45rem 0.72rem 0.4rem;
+  color: #5f5849;
+  background: linear-gradient(
+    135deg,
+    rgba(214, 205, 182, 0.88),
+    rgba(237, 232, 217, 0.7)
+  );
+  box-shadow:
+    0 5px 13px rgba(77, 67, 48, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.56);
+}
+
+.magi-home-light-nav-item {
+  color: #716b5e;
+}
+
+.magi-home-light-nav-item:hover,
+.magi-home-light-nav-item:focus-visible {
+  border-radius: 0.72rem 0.45rem 0.72rem 0.4rem;
+  color: #514b3f;
+  background: rgba(222, 214, 195, 0.54);
+}
+
+.magi-home-light-folder-card {
+  border-color: rgba(113, 102, 80, 0.28);
+  background: rgba(238, 233, 220, 0.46);
+  box-shadow:
+    0 7px 18px rgba(77, 67, 48, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.66) inset;
+  transform: translateY(-1px);
+}
+
+.magi-home-light-folder-card:hover,
+.magi-home-light-folder-card:focus-within {
+  border-color: rgba(105, 92, 65, 0.42);
+  box-shadow:
+    0 10px 23px rgba(77, 67, 48, 0.15),
+    0 1px 0 rgba(255, 255, 255, 0.7) inset;
+  transform: translateY(-2px);
+}
+
+.magi-home-light-folder-header {
+  border-color: rgba(113, 102, 80, 0.28);
+  border-radius: 0.7rem 0.42rem 0.74rem 0.38rem;
+  color: #554f43;
+  background: linear-gradient(
+    132deg,
+    rgba(208, 199, 175, 0.88),
+    rgba(235, 229, 211, 0.72)
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(9px) saturate(0.7);
+  -webkit-backdrop-filter: blur(9px) saturate(0.7);
+}
+
+.magi-home-light-folder-header-empty {
+  color: rgba(77, 72, 62, 0.58);
+  background: linear-gradient(
+    132deg,
+    rgba(214, 209, 196, 0.66),
+    rgba(236, 232, 221, 0.54)
+  );
+}
+
+.magi-home-light-folder-header-partial {
+  background: linear-gradient(
+    132deg,
+    rgba(214, 205, 181, 0.82),
+    rgba(238, 232, 214, 0.66)
+  );
+}
+
+.magi-home-light-progress {
+  color: #6b624f;
+}
+
+.magi-home-light-folder-body {
+  border-radius: 0.32rem 0.65rem 0.58rem 0.48rem;
+  background: rgba(247, 243, 232, 0.64);
+  backdrop-filter: blur(8px) saturate(0.78);
+  -webkit-backdrop-filter: blur(8px) saturate(0.78);
+}
+
+.magi-home-light-story-link {
+  border-color: rgba(119, 105, 75, 0.3);
+  border-radius: 0.52rem 0.34rem 0.56rem 0.32rem;
+  color: #5e5749;
+  background: rgba(229, 222, 204, 0.66);
+  box-shadow: 0 3px 9px rgba(77, 67, 48, 0.08);
+}
+
+.magi-home-light-story-link:hover,
+.magi-home-light-story-link:focus-visible {
+  border-color: rgba(105, 92, 65, 0.5);
+  color: #423d34;
+  background: rgba(239, 234, 219, 0.86);
+}
+
+.magi-home-light-story-link-empty {
+  color: rgba(77, 72, 62, 0.5);
+  background: rgba(222, 218, 207, 0.48);
+}
+
+.magi-official-tw-badge {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  min-height: 1.1rem;
+  padding: 0.08rem 0.38rem;
+  border: 1px solid rgba(111, 99, 75, 0.32);
+  border-radius: 999px;
+  color: #655d50;
+  background: rgba(240, 234, 223, 0.78);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .magi-home-light-folder-card,
+  .magi-home-light-folder-card:hover,
+  .magi-home-light-folder-card:focus-within {
+    transform: none;
+  }
+}

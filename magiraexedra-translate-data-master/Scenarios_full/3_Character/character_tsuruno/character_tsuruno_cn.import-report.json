@@ -1,261 +1,432 @@
 {
   "schemaVersion": 1,
   "status": "validated",
-  "generatedAt": "2026-07-26T18:17:19+00:00",
+  "provenance": "official_tw_human",
+  "sourceRoot": "official-tw-exedra-wiki-sp#6fc3fb7f07ab8294dfb5145092ffbb3967f1acf0e1f8229bd921af3e5e6a99f3",
   "group": {
     "category": "3_Character",
     "groupKey": "character_tsuruno"
   },
-  "wiki": {
-    "page": "Tsuruno Yui/Story/Chinese",
-    "revisionId": 59696,
-    "timestamp": "2025-07-29T11:45:17Z",
-    "author": "Chie",
-    "sha1": "5095ad49a50146b670fa2617d4556846f49a6f9c",
-    "contentSha256": "ef49f445cf545ab372ffd5c2bc8ee04b1d54badd33a515df9faa010f57f6f585",
-    "source": "https://exedra.wiki/w/api.php"
+  "validation": {
+    "passed": true,
+    "mismatchCount": 0,
+    "usesLcs": false,
+    "usesFuzzyMatching": false,
+    "allowsReordering": false
   },
+  "mismatches": [],
   "jp": {
-    "path": "D:\\magia\\MyProducts\\magi-reader\\magiraexedra-source-master\\Scenarios_full\\3_Character\\character_tsuruno\\character_tsuruno_jp.txt",
     "contentSha256": "148c05afdcf5877ebeb87d7ebaf507976e03ce6672e4dc6e361092f419b306d3",
     "sectionCount": 8,
-    "rawEventCount": 459,
     "readerNormalizedBlockCount": 272
   },
   "cn": {
-    "target": "D:\\magia\\MyProducts\\magi-reader\\magiraexedra-translate-data-master\\Scenarios_full\\3_Character\\character_tsuruno\\character_tsuruno_cn.txt",
+    "renderedSha256": "01f5b16f86e2cb64e44cd988958413e38c702a06d414bba1549e5f1548acad34",
     "sectionCount": 8,
-    "rawEventCount": 459,
-    "readerNormalizedBlockCount": 272,
-    "renderedSha256": "d77d2fe28dbad967a82b9d13f09979dcf45bc18a3c195a7fb0028f9c8288279d"
-  },
-  "speakerMapping": {
-    "dictionaryPath": "D:\\magia\\MyProducts\\magi-reader\\website\\app\\config\\dictionary.ts",
-    "dictionarySha256": "3420af436a261955e4d20b12589aeca1483aba80909bde9cf8f1204e55531452",
-    "builtInAliasGroup": null,
-    "builtInAliases": {},
-    "extraMapPath": null,
-    "extraMapSha256": null,
-    "unmappedJapaneseSpeakers": []
-  },
-  "validation": {
-    "passed": true,
-    "policy": "same Section index, same reader-normalized block count, same exact mapped speaker and narration/dialogue kind at every block index",
-    "preservesWikiRawEvents": true,
-    "usesLcs": false,
-    "usesFuzzyMatching": false,
-    "allowsReordering": false,
-    "mismatchCount": 0
+    "readerNormalizedBlockCount": 272
   },
   "sections": [
     {
       "section": 1,
-      "wikiEpisode": 0,
       "source": "character_tsuruno_0.json",
-      "rawEvents": {
-        "jp": 3,
-        "cn": 3,
-        "difference": 0
-      },
+      "wikiEpisode": 0,
       "readerNormalizedBlocks": {
         "jp": 1,
         "cn": 1,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 2,
-        "cn": 2,
-        "jpMergeRuns": 1,
-        "cnMergeRuns": 1
-      },
       "speakerSequenceSha256": {
-        "jp": "e2211e0dbc0483a00e7b422739547127b03b4e0662a28d20a161eb5498c3edf8",
-        "cn": "e2211e0dbc0483a00e7b422739547127b03b4e0662a28d20a161eb5498c3edf8"
+        "jp": "c4e49526c2c36dcda5dcc4b7360c52e84804d598cb58f6c6171977c485bf75cc",
+        "cn": "c4e49526c2c36dcda5dcc4b7360c52e84804d598cb58f6c6171977c485bf75cc"
       }
     },
     {
       "section": 2,
-      "wikiEpisode": 1,
       "source": "character_tsuruno_1.json",
-      "rawEvents": {
-        "jp": 70,
-        "cn": 70,
-        "difference": 0
-      },
+      "wikiEpisode": 1,
       "readerNormalizedBlocks": {
         "jp": 44,
         "cn": 44,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 26,
-        "cn": 26,
-        "jpMergeRuns": 14,
-        "cnMergeRuns": 14
-      },
       "speakerSequenceSha256": {
-        "jp": "6f30e5c3e0e1f3242f148a5dbb45b683337519e78bd2975b8fad049d4dbb15a0",
-        "cn": "6f30e5c3e0e1f3242f148a5dbb45b683337519e78bd2975b8fad049d4dbb15a0"
+        "jp": "f0a57ca6737ebfd80f827cbc10058d66f84ecc68ceffe7285ad1329b38169ff7",
+        "cn": "f0a57ca6737ebfd80f827cbc10058d66f84ecc68ceffe7285ad1329b38169ff7"
       }
     },
     {
       "section": 3,
-      "wikiEpisode": 2,
       "source": "character_tsuruno_2.json",
-      "rawEvents": {
-        "jp": 66,
-        "cn": 66,
-        "difference": 0
-      },
+      "wikiEpisode": 2,
       "readerNormalizedBlocks": {
         "jp": 43,
         "cn": 43,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 23,
-        "cn": 23,
-        "jpMergeRuns": 12,
-        "cnMergeRuns": 12
-      },
       "speakerSequenceSha256": {
-        "jp": "1efc448002e54f48326f7a22a9a869c1f74d6b8e417cb45e8fdde834747e1e51",
-        "cn": "1efc448002e54f48326f7a22a9a869c1f74d6b8e417cb45e8fdde834747e1e51"
+        "jp": "ad119042465ca65d9a9a7c2445797475b4a7751efce1658939bbf04c066ffdd8",
+        "cn": "ad119042465ca65d9a9a7c2445797475b4a7751efce1658939bbf04c066ffdd8"
       }
     },
     {
       "section": 4,
-      "wikiEpisode": 3,
       "source": "character_tsuruno_3.json",
-      "rawEvents": {
-        "jp": 62,
-        "cn": 62,
-        "difference": 0
-      },
+      "wikiEpisode": 3,
       "readerNormalizedBlocks": {
         "jp": 43,
         "cn": 43,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 19,
-        "cn": 19,
-        "jpMergeRuns": 14,
-        "cnMergeRuns": 14
-      },
       "speakerSequenceSha256": {
-        "jp": "49cb1a0e0ac2abd66146fa06df87a4e40a36ad13fc6a26742447cade2052e77f",
-        "cn": "49cb1a0e0ac2abd66146fa06df87a4e40a36ad13fc6a26742447cade2052e77f"
+        "jp": "6a6c4f8c6f8cc4c6c887196fd1634170a2fee8b38f04be052b48bbadf00ccf6e",
+        "cn": "6a6c4f8c6f8cc4c6c887196fd1634170a2fee8b38f04be052b48bbadf00ccf6e"
       }
     },
     {
       "section": 5,
-      "wikiEpisode": 4,
       "source": "character_tsuruno_4.json",
-      "rawEvents": {
-        "jp": 66,
-        "cn": 66,
-        "difference": 0
-      },
+      "wikiEpisode": 4,
       "readerNormalizedBlocks": {
         "jp": 49,
         "cn": 49,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 17,
-        "cn": 17,
-        "jpMergeRuns": 12,
-        "cnMergeRuns": 12
-      },
       "speakerSequenceSha256": {
-        "jp": "3aa4ba9f3f9a2214acbaa0d2bf1bf4283521856d151f75d0c2f56391f3302021",
-        "cn": "3aa4ba9f3f9a2214acbaa0d2bf1bf4283521856d151f75d0c2f56391f3302021"
+        "jp": "ac5864631d3be4087544b0cb6ca538cee6722a8967076eb34cee7823610b6216",
+        "cn": "ac5864631d3be4087544b0cb6ca538cee6722a8967076eb34cee7823610b6216"
       }
     },
     {
       "section": 6,
-      "wikiEpisode": 5,
       "source": "character_tsuruno_5.json",
-      "rawEvents": {
-        "jp": 65,
-        "cn": 65,
-        "difference": 0
-      },
+      "wikiEpisode": 5,
       "readerNormalizedBlocks": {
         "jp": 46,
         "cn": 46,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 19,
-        "cn": 19,
-        "jpMergeRuns": 13,
-        "cnMergeRuns": 13
-      },
       "speakerSequenceSha256": {
-        "jp": "2ded0aac04b22804a959a2caff1231aefbf5c96c3e23d627b0cc2d1843877f09",
-        "cn": "2ded0aac04b22804a959a2caff1231aefbf5c96c3e23d627b0cc2d1843877f09"
+        "jp": "25e8df3c34e72b0867543cddfbd2b628d980fb3a1395430cf01789c501f0aff6",
+        "cn": "25e8df3c34e72b0867543cddfbd2b628d980fb3a1395430cf01789c501f0aff6"
       }
     },
     {
       "section": 7,
-      "wikiEpisode": 6,
       "source": "character_tsuruno_6.json",
-      "rawEvents": {
-        "jp": 68,
-        "cn": 68,
-        "difference": 0
-      },
+      "wikiEpisode": 6,
       "readerNormalizedBlocks": {
         "jp": 21,
         "cn": 21,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 47,
-        "cn": 47,
-        "jpMergeRuns": 11,
-        "cnMergeRuns": 11
-      },
       "speakerSequenceSha256": {
-        "jp": "ca90b73b295e4d593e04fae541ff66e94dad33acdecf14fb0bf8c7a05ae6de86",
-        "cn": "ca90b73b295e4d593e04fae541ff66e94dad33acdecf14fb0bf8c7a05ae6de86"
+        "jp": "8279db5f653f51b6b71f2c0efaf6a38dfa2cd2ac681f11a4aa754daf55c999f9",
+        "cn": "8279db5f653f51b6b71f2c0efaf6a38dfa2cd2ac681f11a4aa754daf55c999f9"
       }
     },
     {
       "section": 8,
-      "wikiEpisode": 7,
       "source": "character_tsuruno_7.json",
-      "rawEvents": {
-        "jp": 59,
-        "cn": 59,
-        "difference": 0
-      },
+      "wikiEpisode": 7,
       "readerNormalizedBlocks": {
         "jp": 25,
         "cn": 25,
         "matches": true
       },
-      "adjacentEventsMerged": {
-        "reason": "reader merges adjacent events with the exact same whitespace-normalized speaker inside one Section",
-        "jp": 34,
-        "cn": 34,
-        "jpMergeRuns": 10,
-        "cnMergeRuns": 10
-      },
       "speakerSequenceSha256": {
-        "jp": "e5da28ed93f538bef236bf5ece47378db3e2992e50edd83ecf4de325344413b1",
-        "cn": "e5da28ed93f538bef236bf5ece47378db3e2992e50edd83ecf4de325344413b1"
+        "jp": "df7caa652cdd0fd1cdada8943ae271ad3bbe99e03151db78f32ee4b57519657c",
+        "cn": "df7caa652cdd0fd1cdada8943ae271ad3bbe99e03151db78f32ee4b57519657c"
       }
     }
   ],
-  "mismatches": []
+  "sourceJson": [
+    {
+      "source": "character_tsuruno_0.json",
+      "manifestSourcePath": "3_Character/character_tsuruno_0/character_tsuruno_0.json",
+      "twPath": "3_Character/character_tsuruno_0/character_tsuruno_0.json",
+      "twSha256": "d9238268d97abc6877665e8d04d447b5de0272111f3368d6f7d849c2bed76157",
+      "jpSha256": "752a07187cbd98dd5718c6a849d8615b065b12cfd38bf6340fbfa686f09c4dbb",
+      "cnSha256": "ce749b49e54a7315d4427448bfaba1e8f68e9f733bd29f95a39151cd95b9af79",
+      "simplifiedJsonSha256": "ce749b49e54a7315d4427448bfaba1e8f68e9f733bd29f95a39151cd95b9af79",
+      "eventCount": 3,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_tsuruno_1.json",
+      "manifestSourcePath": "3_Character/character_tsuruno_1/character_tsuruno_1.json",
+      "twPath": "3_Character/character_tsuruno_1/character_tsuruno_1.json",
+      "twSha256": "85964ac70b7b99aa914b7766a9b563d31f8f70d4702eaa23a996f0bb5ff7aac3",
+      "jpSha256": "3ddd6467cca989d42416c411ba27be93a35820dc377fc00d652e4624ae825ab1",
+      "cnSha256": "5f22225b6c64b75d017ed17888ff1c29f0448a041a6977d662a9a8ec25f11f7c",
+      "simplifiedJsonSha256": "5f22225b6c64b75d017ed17888ff1c29f0448a041a6977d662a9a8ec25f11f7c",
+      "eventCount": 70,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_tsuruno_2.json",
+      "manifestSourcePath": "3_Character/character_tsuruno_2/character_tsuruno_2.json",
+      "twPath": "3_Character/character_tsuruno_2/character_tsuruno_2.json",
+      "twSha256": "e7cd39151b99971e442d72ac14c0110398a5a14bd5b8963275804d50e90bbd5b",
+      "jpSha256": "11720a65f5c4c433e061ccc4bb20fb9a4bd554474778de7aaaa2fe478309b8c4",
+      "cnSha256": "dd322a909f2994d38838e22694bbc972220be26563fafb14a843c361911e862b",
+      "simplifiedJsonSha256": "dd322a909f2994d38838e22694bbc972220be26563fafb14a843c361911e862b",
+      "eventCount": 66,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_tsuruno_3.json",
+      "manifestSourcePath": "3_Character/character_tsuruno_3/character_tsuruno_3.json",
+      "twPath": "3_Character/character_tsuruno_3/character_tsuruno_3.json",
+      "twSha256": "68d17e3a648d4861ae27d18821f2328c5fcf9dbbdeedc4139ca8bcca9e11a5c1",
+      "jpSha256": "2f66c0e03578163101c38f18a0f07c2eb93256eb2f10b32ef484b0e56b478c4a",
+      "cnSha256": "ba29f0613966fab6cdfe5fd6b9a7e7c78c729d8b80195eee523efc773c928ee8",
+      "simplifiedJsonSha256": "ba29f0613966fab6cdfe5fd6b9a7e7c78c729d8b80195eee523efc773c928ee8",
+      "eventCount": 62,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_tsuruno_4.json",
+      "manifestSourcePath": "3_Character/character_tsuruno_4/character_tsuruno_4.json",
+      "twPath": "3_Character/character_tsuruno_4/character_tsuruno_4.json",
+      "twSha256": "98275f2c600fbc8d579e43729d742897bf405f715b138f001e8ea98d13de4ee2",
+      "jpSha256": "ef394208b978624b7403cea95530485f7c52bd9a9440060cc8b0588d724c4a4a",
+      "cnSha256": "04b77c488a74c4acbc8cbefce54bb8d4d6a0424caeec418e79d7f216c2549bcf",
+      "simplifiedJsonSha256": "04b77c488a74c4acbc8cbefce54bb8d4d6a0424caeec418e79d7f216c2549bcf",
+      "eventCount": 66,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_tsuruno_5.json",
+      "manifestSourcePath": "3_Character/character_tsuruno_5/character_tsuruno_5.json",
+      "twPath": "3_Character/character_tsuruno_5/character_tsuruno_5.json",
+      "twSha256": "908a704000dfe19ad49217613f3daf76d08646b4e8c2be4d1d9504d6d22b479c",
+      "jpSha256": "2b19d9d41ae06d2d542cd3e8f4a347f93742909da4462dc506f00ea88658262f",
+      "cnSha256": "8e39df20883bddae9c0b572fcc2f0579ca0b5b498ae0439efeffeff46e7cb97b",
+      "simplifiedJsonSha256": "8e39df20883bddae9c0b572fcc2f0579ca0b5b498ae0439efeffeff46e7cb97b",
+      "eventCount": 65,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_tsuruno_6.json",
+      "manifestSourcePath": "3_Character/character_tsuruno_6/character_tsuruno_6.json",
+      "twPath": "3_Character/character_tsuruno_6/character_tsuruno_6.json",
+      "twSha256": "090808d7846356fec7cdf72ac9013c74042c787317caf352f5a2c2f07eee5ff4",
+      "jpSha256": "58b016d0b0b65beb323e465728d03f22779448e424b8f4f0d6022c8eb4d379fd",
+      "cnSha256": "6e53f6901fed29f1520eabd39dd34abf96c58db010a874c0ef8107ed61c1ebab",
+      "simplifiedJsonSha256": "6e53f6901fed29f1520eabd39dd34abf96c58db010a874c0ef8107ed61c1ebab",
+      "eventCount": 68,
+      "provenance": "official_tw_human"
+    },
+    {
+      "source": "character_tsuruno_7.json",
+      "manifestSourcePath": "3_Character/character_tsuruno_7/character_tsuruno_7.json",
+      "twPath": "3_Character/character_tsuruno_7/character_tsuruno_7.json",
+      "twSha256": "caad351f1a64dfe3790c3d05bcca453ef451b2af00b283a12021594a235ddef6",
+      "jpSha256": "8d685882c78a2cf2a1bfee82c0f20676c7a4f67cbf522da72fd1940d26fe791a",
+      "cnSha256": "2bf8467ff30cb927708350fd23e53141c6985259293d7d0637cd08bc286e0281",
+      "simplifiedJsonSha256": "2bf8467ff30cb927708350fd23e53141c6985259293d7d0637cd08bc286e0281",
+      "eventCount": 59,
+      "provenance": "official_tw_human"
+    }
+  ],
+  "sourceTreeSha256": "6fc3fb7f07ab8294dfb5145092ffbb3967f1acf0e1f8229bd921af3e5e6a99f3",
+  "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
+  "officialTitles": [
+    {
+      "section": 1,
+      "source": "character_tsuruno_0.json",
+      "resource": "3_character/character_tsuruno_0",
+      "advMstId": 30101000,
+      "advTitleMstId": 21,
+      "duplicateAdvMstIds": [
+        30101000
+      ],
+      "nameAliases": [
+        "Episode0"
+      ],
+      "subNameAliases": [
+        "Episode0"
+      ],
+      "name": "Episode0",
+      "subName": "Episode0",
+      "sectionTitle": "Episode0",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 2,
+      "source": "character_tsuruno_1.json",
+      "resource": "3_character/character_tsuruno_1",
+      "advMstId": 30101001,
+      "advTitleMstId": 21,
+      "duplicateAdvMstIds": [
+        30101001
+      ],
+      "nameAliases": [
+        "Episode1"
+      ],
+      "subNameAliases": [
+        "Episode1"
+      ],
+      "name": "Episode1",
+      "subName": "Episode1",
+      "sectionTitle": "Episode1",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 3,
+      "source": "character_tsuruno_2.json",
+      "resource": "3_character/character_tsuruno_2",
+      "advMstId": 30101002,
+      "advTitleMstId": 21,
+      "duplicateAdvMstIds": [
+        30101002
+      ],
+      "nameAliases": [
+        "Episode2"
+      ],
+      "subNameAliases": [
+        "Episode2"
+      ],
+      "name": "Episode2",
+      "subName": "Episode2",
+      "sectionTitle": "Episode2",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 4,
+      "source": "character_tsuruno_3.json",
+      "resource": "3_character/character_tsuruno_3",
+      "advMstId": 30101003,
+      "advTitleMstId": 21,
+      "duplicateAdvMstIds": [
+        30101003
+      ],
+      "nameAliases": [
+        "Episode3"
+      ],
+      "subNameAliases": [
+        "Episode3"
+      ],
+      "name": "Episode3",
+      "subName": "Episode3",
+      "sectionTitle": "Episode3",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 5,
+      "source": "character_tsuruno_4.json",
+      "resource": "3_character/character_tsuruno_4",
+      "advMstId": 30101004,
+      "advTitleMstId": 21,
+      "duplicateAdvMstIds": [
+        30101004
+      ],
+      "nameAliases": [
+        "Episode4"
+      ],
+      "subNameAliases": [
+        "Episode4"
+      ],
+      "name": "Episode4",
+      "subName": "Episode4",
+      "sectionTitle": "Episode4",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 6,
+      "source": "character_tsuruno_5.json",
+      "resource": "3_character/character_tsuruno_5",
+      "advMstId": 30101005,
+      "advTitleMstId": 21,
+      "duplicateAdvMstIds": [
+        30101005
+      ],
+      "nameAliases": [
+        "Episode5"
+      ],
+      "subNameAliases": [
+        "Episode5"
+      ],
+      "name": "Episode5",
+      "subName": "Episode5",
+      "sectionTitle": "Episode5",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 7,
+      "source": "character_tsuruno_6.json",
+      "resource": "3_character/character_tsuruno_6",
+      "advMstId": 30101006,
+      "advTitleMstId": 21,
+      "duplicateAdvMstIds": [
+        30101006
+      ],
+      "nameAliases": [
+        "Episode6"
+      ],
+      "subNameAliases": [
+        "Episode6"
+      ],
+      "name": "Episode6",
+      "subName": "Episode6",
+      "sectionTitle": "Episode6",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    },
+    {
+      "section": 8,
+      "source": "character_tsuruno_7.json",
+      "resource": "3_character/character_tsuruno_7",
+      "advMstId": 30101007,
+      "advTitleMstId": 21,
+      "duplicateAdvMstIds": [
+        30101007
+      ],
+      "nameAliases": [
+        "Episode7"
+      ],
+      "subNameAliases": [
+        "Episode7"
+      ],
+      "name": "Episode7",
+      "subName": "Episode7",
+      "sectionTitle": "Episode7",
+      "chapterTitle": "",
+      "fieldStageMstId": 0,
+      "fieldSeriesMstId": 0
+    }
+  ],
+  "sourceContract": {
+    "schemaVersion": 1,
+    "contractName": "exedra-tw-sp-handoff",
+    "provenance": {
+      "provider": "exedra-wiki-sp",
+      "locale": "zh-Hant-TW",
+      "authority": "official-tw-client",
+      "originalTextUnmodified": true,
+      "textTransformation": "reader-tw2sp"
+    },
+    "sourceRevisions": {
+      "sp": "80f8436079eeb63720e80b4b3dab396526f66c97",
+      "scenarios": "8c50b9cfa3ed416b590475d6b6caca6c",
+      "manifests": "a18e6ffd3e6fb84b8544509ee12191df"
+    },
+    "scenarioCatalogSha256": "34b7e5bee2bbbe2994ee63959161121d98b2da27d13b8d0b04e560ee9b0a31a9",
+    "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
+    "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
+    "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  }
 }

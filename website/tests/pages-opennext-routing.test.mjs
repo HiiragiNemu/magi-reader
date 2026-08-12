@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import test from 'node:test';
+
+const preparePages = readFileSync('scripts/prepare-pages.js', 'utf8');
+const wrapperSource = preparePages.match(
+  /const wrapper = String\.raw`([\s\S]*?)`;/u,
+)?.[1] ?? '';
+
+test('Pages wrapper serves explicit public assets without routing them through OpenNext', () => {
+  assert.match(wrapperSource, /env\.ASSETS\.fetch\(request\)/u);
+  assert.match(wrapperSource, /pathname\.startsWith\("\/data\/"\)/u);
+  assert.match(wrapperSource, /pathname\.startsWith\("\/_next\/"\)/u);
+  assert.ok(wrapperSource.includes('/\\/[^/]+\\.[A-Za-z0-9]{1,16}$/'));
+});
+
+test('Pages wrapper sends reader, API and RSC requests to OpenNext', () => {
+  assert.match(wrapperSource, /url\.searchParams\.has\("_rsc"\)/u);
+  assert.match(wrapperSource, /request\.headers\.get\("rsc"\) === "1"/u);
+  assert.match(wrapperSource, /next-router-state-tree/u);
+  assert.match(wrapperSource, /pathname\.startsWith\("\/reader\/"\)/u);
+  assert.match(wrapperSource, /pathname\.startsWith\("\/api\/"\)/u);
+  assert.match(
+    wrapperSource,
+    /return appWorker\.fetch\(request, env, ctx\);/u,
+  );
+});
+
+test('Pages wrapper never treats a reader route as a static extension path', () => {
+  const readerGuard = wrapperSource.indexOf('pathname.startsWith("/reader/")');
+  const extensionFallback = wrapperSource.indexOf('/\\/[^/]+\\.[A-Za-z0-9]{1,16}$/');
+  assert.ok(readerGuard >= 0);
+  assert.ok(extensionFallback > readerGuard);
+});
