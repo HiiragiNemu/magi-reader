@@ -216,22 +216,7 @@ html[data-reader-font-japanese='ready'] .reader-font-jp-title {
 }
 
 /* Exedra packs are independent opt-ins and never affect Magia Record pages.
-   Language pseudo-classes keep mixed CN/JP rows deterministic. TangYuan covers
-   every GB2312 Hanzi; the following local/system fallbacks cover GBK. */
-html[data-reader-font-exedra-chinese-fallback='ready']
-  .exedra-reader
-  .reader-font-cn-body:lang(zh-Hans),
-html[data-reader-font-exedra-chinese-fallback='ready']
-  .exedra-reader
-  .reader-font-cn-title:lang(zh-Hans) {
-  font-family:
-    "MagiReaderExedraChineseGbKFallback",
-    "Noto Sans SC",
-    "Microsoft YaHei",
-    sans-serif;
-  font-synthesis: none;
-}
-
+   Language pseudo-classes keep mixed CN/JP rows deterministic. */
 html[data-reader-font-exedra-chinese='ready']
   .exedra-reader
   .reader-font-cn-body:lang(zh-Hans),
@@ -240,7 +225,6 @@ html[data-reader-font-exedra-chinese='ready']
   .reader-font-cn-title:lang(zh-Hans) {
   font-family:
     "MagiReaderExedraTangYuan",
-    "MagiReaderExedraChineseGbKFallback",
     "Resource Han Rounded CN",
     "Noto Sans SC",
     "Microsoft YaHei",
@@ -250,19 +234,18 @@ html[data-reader-font-exedra-chinese='ready']
 
 html[data-reader-font-exedra-japanese='ready']
   .exedra-reader
-  .reader-font-jp-body:lang(ja) {
+  .reader-font-jp-title:lang(ja) {
   font-family:
     "MagiReaderExedraTsukuOldGothic",
     "Yu Gothic",
     Meiryo,
     sans-serif;
   font-synthesis: none;
-  font-weight: 700;
 }
 
 html[data-reader-font-exedra-japanese='ready']
   .exedra-reader
-  .reader-font-jp-title:lang(ja) {
+  .exedra-jp-story-text:lang(ja) {
   font-family:
     "MagiReaderExedraNewCinemaA",
     "Yu Mincho",

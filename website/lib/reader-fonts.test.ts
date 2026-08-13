@@ -20,6 +20,10 @@ import {
 type ReaderFontManifest = {
   version: number;
   conversion: string;
+  converterVersions: {
+    fontTools: string;
+    brotli: string;
+  };
   fonts: Array<{
     id: string;
     woff2File: string;
@@ -42,7 +46,6 @@ test('reader font preferences are opt-in and reject non-boolean values', () => {
     chineseEnabled: false,
     japaneseEnabled: false,
     exedraChineseEnabled: false,
-    exedraChineseFallbackEnabled: false,
     exedraJapaneseEnabled: false,
   });
   assert.deepEqual(
@@ -53,7 +56,6 @@ test('reader font preferences are opt-in and reject non-boolean values', () => {
       chineseEnabled: false,
       japaneseEnabled: true,
       exedraChineseEnabled: false,
-      exedraChineseFallbackEnabled: false,
       exedraJapaneseEnabled: false,
     },
   );
@@ -61,15 +63,16 @@ test('reader font preferences are opt-in and reject non-boolean values', () => {
     chineseEnabled: false,
     japaneseEnabled: false,
     exedraChineseEnabled: false,
-    exedraChineseFallbackEnabled: false,
     exedraJapaneseEnabled: false,
   });
 });
 
 test('full WOFF2 assets match the pinned manifest and runtime definitions', () => {
-  assert.equal(manifest.version, 1);
+  assert.equal(manifest.version, 2);
   assert.match(manifest.conversion, /full glyph set, no subsetting/u);
-  assert.equal(manifest.fonts.length, 4);
+  assert.ok(manifest.converterVersions.fontTools.length > 0);
+  assert.ok(manifest.converterVersions.brotli.length > 0);
+  assert.equal(manifest.fonts.length, 7);
 
   for (const record of manifest.fonts) {
     const bytes = readFileSync(`public/fonts/${record.woff2File}`);
@@ -84,7 +87,12 @@ test('full WOFF2 assets match the pinned manifest and runtime definitions', () =
     assert.ok(record.unicodeCodePoints > 7_000);
   }
 
-  for (const bundleId of ['chinese', 'japanese'] as const) {
+  for (const bundleId of [
+    'chinese',
+    'japanese',
+    'exedraChinese',
+    'exedraJapanese',
+  ] as const) {
     const bundle = READER_FONT_BUNDLES[bundleId];
     assert.equal(
       bundle.totalBytes,
@@ -99,47 +107,44 @@ test('full WOFF2 assets match the pinned manifest and runtime definitions', () =
   }
 });
 
-test('Exedra font definitions pin open downloads and local-only commercial files', () => {
+test('Exedra font definitions use the audited TangYuan and JP client WOFF2 files', () => {
   assert.deepEqual(READER_FONT_BUNDLE_IDS, [
     'chinese',
     'japanese',
     'exedraChinese',
-    'exedraChineseFallback',
     'exedraJapanese',
   ]);
   const chinese = READER_FONT_BUNDLES.exedraChinese;
   assert.equal(chinese.scope, 'exedra-only');
   assert.equal(chinese.activation, 'download');
-  assert.equal(chinese.totalBytes, 2_881_764);
+  assert.equal(chinese.totalBytes, 1_386_160);
+  assert.equal(
+    chinese.faces[0].url,
+    '/fonts/exedra-zh-tangyuan.0901bb62ccd1.full.woff2',
+  );
   assert.equal(
     chinese.faces[0].sha256,
-    'ea4e2e85cc49ed7a0ea9f2347a9c5e6e9c3ea1a1c9130280796cceb77e0dc800',
+    '0901bb62ccd113f214201a8760146875bec0769664765a66172a5fe79e19b411',
   );
   assert.match(chinese.licenseUrl ?? '', /LICENSE\.txt/u);
 
-  const fallback = READER_FONT_BUNDLES.exedraChineseFallback;
-  assert.equal(fallback.activation, 'local-import');
-  assert.equal(fallback.totalBytes, 14_663_464);
-  assert.equal(
-    fallback.faces[0].sha256,
-    '1c5c623f008eabef10c45135a48b01b46311f9369c28857355872cfe05f48dc0',
-  );
-
   const japanese = READER_FONT_BUNDLES.exedraJapanese;
   assert.equal(japanese.scope, 'exedra-only');
-  assert.equal(japanese.activation, 'local-import');
+  assert.equal(japanese.activation, 'download');
+  assert.equal(japanese.totalBytes, 6_120_892);
   assert.equal(japanese.faces.length, 2);
-  assert.ok(japanese.faces.every(face => face.delivery === 'local-import'));
   assert.deepEqual(
-    japanese.faces.map(face => [face.bytes, face.sha256]),
+    japanese.faces.map(face => [face.url, face.bytes, face.sha256]),
     [
       [
-        5_710_884,
-        '3e13805dacb081d44d06c16213319b45f044b777989afde7985fa2afaaf9684a',
+        '/fonts/exedra-jp-ui-tsuku.431afe7080dc.full.woff2',
+        2_750_668,
+        '431afe7080dcb5c6337bf2ab6ec1d04449123aa4841a1f85a9bdfd3c5bd8b7b3',
       ],
       [
-        4_697_304,
-        'e40f4d90a8010404511b6f113e95c54d5a56a39619076bcd8da4d42fafb3aee5',
+        '/fonts/exedra-jp-story-newcinema.687768deeccd.full.woff2',
+        3_370_224,
+        '687768deeccd50f66a4aefc7f30bc7d8095be462628507715f26be7f8eea7762',
       ],
     ],
   );
@@ -359,18 +364,37 @@ test('reader page assigns distinct body/title roles without static font preloads
   assert.match(page, /initializeReaderFonts/u);
   assert.match(page, /data-reader-game=\{isExedraStory/u);
   assert.match(page, /isExedraStory=\{isExedraStory\}/u);
+  assert.match(
+    page,
+    /directSourceResolution\.sources\?\.kind === 'exedra-trusted-runtime'\s*\|\|\s*currentStory\?\.game === 'exedra'/u,
+  );
+  assert.match(page, /exedra-jp-story-text/u);
   assert.match(page, /lang="zh-Hans"/u);
   assert.match(page, /lang="ja"/u);
-  assert.match(settings, /游戏字体（按需下载）/u);
+  assert.match(settings, /Magia Exedra 原生字体/u);
+  assert.match(settings, /猫啃网糖圆体/u);
+  assert.match(settings, /FOT-TsukuOldGothic Std B/u);
+  assert.match(settings, /FOT-NewCinemaA Std D/u);
+  assert.match(settings, /三份均为完整未裁字 WOFF2，无需本地导入/u);
+  assert.doesNotMatch(
+    settings,
+    /\['exedraChinese', 'exedraChineseFallback', 'exedraJapanese'\]/u,
+  );
   assert.match(settings, /下载并启用/u);
-  assert.match(settings, /JP 原生字体是/u);
-  assert.match(settings, /importReaderFontBundleFiles/u);
   assert.match(settings, /全部恢复系统字体/u);
   assert.match(css, /data-reader-font-exedra-chinese/u);
-  assert.match(css, /data-reader-font-exedra-chinese-fallback/u);
+  assert.doesNotMatch(css, /data-reader-font-exedra-chinese-fallback/u);
   assert.match(css, /\.exedra-reader/u);
   assert.match(css, /:lang\(zh-Hans\)/u);
   assert.match(css, /:lang\(ja\)/u);
+  assert.match(
+    css,
+    /data-reader-font-exedra-japanese[^}]+reader-font-jp-title:lang\(ja\)[^}]+MagiReaderExedraTsukuOldGothic/su,
+  );
+  assert.match(
+    css,
+    /data-reader-font-exedra-japanese[^}]+exedra-jp-story-text:lang\(ja\)[^}]+MagiReaderExedraNewCinemaA/su,
+  );
   assert.match(css, /Resource Han Rounded CN/u);
   assert.match(css, /Noto Sans SC/u);
   assert.doesNotMatch(css, /@font-face\s*\{/u);

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.metadata
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -36,7 +37,30 @@ FONT_SPECS = (
         "source": "MTF4a5kp.ttf",
         "sha256": "36dbe7b91d30d9d95713ba4b46bfa9b70f5d16bf759e45d3a043eae97da948a1",
     },
+    {
+        "id": "exedra-zh-tangyuan",
+        "source": "MaoKenTangYuan-beta0.12-20210702.ttf",
+        "sha256": "ea4e2e85cc49ed7a0ea9f2347a9c5e6e9c3ea1a1c9130280796cceb77e0dc800",
+    },
+    {
+        "id": "exedra-jp-ui-tsuku",
+        "source": "FOT-TsukuOldGothicStd-B.otf",
+        "sha256": "3e13805dacb081d44d06c16213319b45f044b777989afde7985fa2afaaf9684a",
+    },
+    {
+        "id": "exedra-jp-story-newcinema",
+        "source": "FOT-NewCinemaAStd-D.otf",
+        "sha256": "e40f4d90a8010404511b6f113e95c54d5a56a39619076bcd8da4d42fafb3aee5",
+    },
 )
+
+# WOFF2 is a compressed container.  Its bytes can change across fontTools or
+# Brotli releases even when the decompressed SFNT is identical, so record the
+# converter versions alongside every reproducible build.
+CONVERTER_VERSIONS = {
+    "fontTools": importlib.metadata.version("fonttools"),
+    "brotli": importlib.metadata.version("brotli"),
+}
 
 
 def sha256(data: bytes) -> str:
@@ -107,17 +131,19 @@ def build(source_dir: Path, output_dir: Path) -> dict[str, object]:
             )
 
         expected_files = {filename for _, filename in staged}
-        for existing in output_dir.glob("magi-*.full.woff2"):
-            if existing.name not in expected_files:
-                existing.unlink()
+        for pattern in ("magi-*.full.woff2", "exedra-*.full.woff2"):
+            for existing in output_dir.glob(pattern):
+                if existing.name not in expected_files:
+                    existing.unlink()
         for temporary_woff2, filename in staged:
             (output_dir / filename).write_bytes(temporary_woff2.read_bytes())
 
     manifest: dict[str, object] = {
-        "version": 1,
+        "version": 2,
         "conversion": (
             "fontTools TTFont flavor=woff2; full glyph set, no subsetting"
         ),
+        "converterVersions": CONVERTER_VERSIONS,
         "fonts": records,
     }
     (output_dir / "reader-font-manifest.json").write_text(
@@ -136,14 +162,46 @@ def main() -> int:
         type=Path,
         default=Path(__file__).resolve().parents[1] / "public" / "fonts",
     )
-    args = parser.parse_args()
-    print(
-        json.dumps(
-            build(args.source_dir.resolve(), args.output_dir.resolve()),
-            ensure_ascii=False,
-            indent=2,
-        )
+    parser.add_argument(
+        "--verify-manifest",
+        type=Path,
+        help=(
+            "Verify source identity and decompressed font semantics against "
+            "an existing manifest; compressed WOFF2 bytes may differ when "
+            "converter versions differ."
+        ),
     )
+    args = parser.parse_args()
+    manifest = build(args.source_dir.resolve(), args.output_dir.resolve())
+    if args.verify_manifest:
+        expected = json.loads(
+            args.verify_manifest.resolve().read_text(encoding="utf-8")
+        )
+        expected_by_id = {record["id"]: record for record in expected["fonts"]}
+        actual_by_id = {record["id"]: record for record in manifest["fonts"]}
+        if expected_by_id.keys() != actual_by_id.keys():
+            raise RuntimeError("font manifest IDs changed")
+        semantic_fields = (
+            "sourceBytes",
+            "sourceSha256",
+            "glyphs",
+            "unicodeCodePoints",
+            "fsType",
+            "fullConversion",
+        )
+        for font_id, expected_record in expected_by_id.items():
+            actual_record = actual_by_id[font_id]
+            for field in semantic_fields:
+                if expected_record[field] != actual_record[field]:
+                    raise RuntimeError(
+                        f"{font_id}: semantic field {field} changed"
+                    )
+        print(
+            f"READER_FONT_SEMANTIC_OK fonts={len(expected_by_id)} "
+            f"fontTools={CONVERTER_VERSIONS['fontTools']} "
+            f"brotli={CONVERTER_VERSIONS['brotli']}"
+        )
+    print(json.dumps(manifest, ensure_ascii=False, indent=2))
     return 0
 
 

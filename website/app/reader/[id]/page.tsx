@@ -384,6 +384,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     [allStories, id],
   );
   const isExedraStory =
+    directSourceResolution.sources?.kind === 'exedra-trusted-runtime' ||
     currentStory?.game === 'exedra' ||
     cnSource?.format === 'exedra-json' ||
     jpSource?.format === 'exedra-json';
@@ -2186,7 +2187,7 @@ function StoryRow({
           {row.jp ? (
             <>
               <SpeakerLabel line={row.jp} highlighted={jpSpeakerMatches} faded language="jp" />
-              <div className={`min-w-0 flex-1 break-words whitespace-pre-wrap font-sans text-sm opacity-70 ${lineTextAlignClass(row.jp)} ${lineKindClass(row.jp)}`}>
+              <div className={`exedra-jp-story-text min-w-0 flex-1 break-words whitespace-pre-wrap font-sans text-sm opacity-70 ${lineTextAlignClass(row.jp)} ${lineKindClass(row.jp)}`}>
                 <StoryText
                   text={row.jp.text}
                   query={query}

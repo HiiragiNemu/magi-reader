@@ -2,7 +2,6 @@ export type ReaderFontBundleId =
   | 'chinese'
   | 'japanese'
   | 'exedraChinese'
-  | 'exedraChineseFallback'
   | 'exedraJapanese';
 
 export type ReaderFontBundleStatus =
@@ -18,7 +17,6 @@ export type ReaderFontPreferences = {
   chineseEnabled: boolean;
   japaneseEnabled: boolean;
   exedraChineseEnabled: boolean;
-  exedraChineseFallbackEnabled: boolean;
   exedraJapaneseEnabled: boolean;
 };
 
@@ -58,15 +56,14 @@ export type ReaderFontBundleDefinition = {
 };
 
 export const READER_FONT_PREFERENCES_STORAGE_KEY =
-  'magi-reader-font-preferences-v2';
+  'magi-reader-font-preferences-v3';
 export const READER_FONT_CACHE_NAME =
-  'magi-reader-fonts-v2-exedra-ea4e2e85-3e13805d-e40f4d90';
+  'magi-reader-fonts-v3-exedra-0901bb62-431afe70-687768de';
 
 export const READER_FONT_BUNDLE_IDS = [
   'chinese',
   'japanese',
   'exedraChinese',
-  'exedraChineseFallback',
   'exedraJapanese',
 ] as const satisfies readonly ReaderFontBundleId[];
 
@@ -126,10 +123,10 @@ export const READER_FONT_BUNDLES: Record<
   },
   exedraChinese: {
     id: 'exedraChinese',
-    label: 'Exedra 简体中文字体',
+    label: '猫啃网糖圆体',
     description:
-      '猫啃网糖圆体 v0.12beta（粉圆直系简中衍生，GB2312 6763/6763）；生僻字回退到 Resource Han Rounded CN、Noto Sans SC。',
-    totalBytes: 2_881_764,
+      'Exedra 简体中文正文；完整 WOFF2，不裁字，缺字继续使用系统 CJK 回退字体。',
+    totalBytes: 1_386_160,
     activation: 'download',
     scope: 'exedra-only',
     licenseUrl:
@@ -139,81 +136,38 @@ export const READER_FONT_BUNDLES: Record<
     faces: [
       {
         family: 'MagiReaderExedraTangYuan',
-        url: '/api/fonts/exedra-tangyuan/v0.12beta',
-        bytes: 2_881_764,
+        url: '/fonts/exedra-zh-tangyuan.0901bb62ccd1.full.woff2',
+        bytes: 1_386_160,
         sha256:
-          'ea4e2e85cc49ed7a0ea9f2347a9c5e6e9c3ea1a1c9130280796cceb77e0dc800',
+          '0901bb62ccd113f214201a8760146875bec0769664765a66172a5fe79e19b411',
         weight: '400',
       },
     ],
   },
   exedraJapanese: {
     id: 'exedraJapanese',
-    label: 'Exedra 日文原生字体',
+    label: 'Exedra 日服原生字体',
     description:
-      '本地导入 JP 客户端的 FOT-TsukuOldGothic Std B 与 FOT-NewCinemaA Std D；文件不会上传。',
-    totalBytes: 10_408_188,
-    activation: 'local-import',
+      'FOT-TsukuOldGothic Std B 用于 UI、标题与角色名；FOT-NewCinemaA Std D 用于剧情、语音与旁白正文。',
+    totalBytes: 6_120_892,
+    activation: 'download',
     scope: 'exedra-only',
-    licenseUrl: 'https://fontworks.co.jp/products/font-license/',
-    sourceUrl: 'https://lets.fontworks.co.jp/fonts',
     faces: [
       {
         family: 'MagiReaderExedraTsukuOldGothic',
-        url: '/__magi-reader-local-fonts/exedra-tsukuoldgothic-v2.100.otf',
-        bytes: 5_710_884,
+        url: '/fonts/exedra-jp-ui-tsuku.431afe7080dc.full.woff2',
+        bytes: 2_750_668,
         sha256:
-          '3e13805dacb081d44d06c16213319b45f044b777989afde7985fa2afaaf9684a',
-        weight: '700',
-        delivery: 'local-import',
-        acceptedInternalNames: [
-          'FOT-TsukuOldGothic Std B',
-          'FOT-筑紫オールドゴシック Std B',
-          'TsukuOldGothicStd-B',
-        ],
+          '431afe7080dcb5c6337bf2ab6ec1d04449123aa4841a1f85a9bdfd3c5bd8b7b3',
+        weight: '400',
       },
       {
         family: 'MagiReaderExedraNewCinemaA',
-        url: '/__magi-reader-local-fonts/exedra-newcinemaa-v1.300.otf',
-        bytes: 4_697_304,
+        url: '/fonts/exedra-jp-story-newcinema.687768deeccd.full.woff2',
+        bytes: 3_370_224,
         sha256:
-          'e40f4d90a8010404511b6f113e95c54d5a56a39619076bcd8da4d42fafb3aee5',
+          '687768deeccd50f66a4aefc7f30bc7d8095be462628507715f26be7f8eea7762',
         weight: '400',
-        delivery: 'local-import',
-        acceptedInternalNames: [
-          'FOT-NewCinemaA Std D',
-          'FOT-ニューシネマA Std D',
-          'NewCinemaAStd-D',
-        ],
-      },
-    ],
-  },
-  exedraChineseFallback: {
-    id: 'exedraChineseFallback',
-    label: 'Exedra 简中 GBK 回退（可选）',
-    description:
-      '本地导入 Resource Han Rounded CN v0.990；实测覆盖 GBK 汉字 20902/20902，仅在糖圆体缺字时使用。',
-    totalBytes: 14_663_464,
-    activation: 'local-import',
-    scope: 'exedra-only',
-    licenseUrl:
-      'https://github.com/CyanoHao/Resource-Han-Rounded/blob/master/LICENSE.txt',
-    sourceUrl:
-      'https://github.com/CyanoHao/Resource-Han-Rounded/releases/tag/v0.990',
-    faces: [
-      {
-        family: 'MagiReaderExedraChineseGbKFallback',
-        url: '/__magi-reader-local-fonts/resource-han-rounded-cn-v0.990.ttf',
-        bytes: 14_663_464,
-        sha256:
-          '1c5c623f008eabef10c45135a48b01b46311f9369c28857355872cfe05f48dc0',
-        weight: '400',
-        delivery: 'local-import',
-        acceptedInternalNames: [
-          'Resource Han Rounded CN',
-          'Resource Han Rounded CN Regular',
-          'Resource-Han-Rounded-CN-Regular',
-        ],
       },
     ],
   },
@@ -223,7 +177,6 @@ const DEFAULT_PREFERENCES: ReaderFontPreferences = {
   chineseEnabled: false,
   japaneseEnabled: false,
   exedraChineseEnabled: false,
-  exedraChineseFallbackEnabled: false,
   exedraJapaneseEnabled: false,
 };
 
@@ -241,7 +194,6 @@ const defaultRuntimeSnapshot = (): ReaderFontRuntimeSnapshot => ({
     chinese: defaultBundleRuntime(),
     japanese: defaultBundleRuntime(),
     exedraChinese: defaultBundleRuntime(),
-    exedraChineseFallback: defaultBundleRuntime(),
     exedraJapanese: defaultBundleRuntime(),
   },
 });
@@ -266,7 +218,6 @@ const loadedFaces: Record<ReaderFontBundleId, FontFace[]> = {
   chinese: [],
   japanese: [],
   exedraChinese: [],
-  exedraChineseFallback: [],
   exedraJapanese: [],
 };
 const importedFaceData = new Map<string, ArrayBuffer>();
@@ -279,7 +230,6 @@ const PREFERENCE_KEYS: Record<
   chinese: 'chineseEnabled',
   japanese: 'japaneseEnabled',
   exedraChinese: 'exedraChineseEnabled',
-  exedraChineseFallback: 'exedraChineseFallbackEnabled',
   exedraJapanese: 'exedraJapaneseEnabled',
 };
 
@@ -301,8 +251,6 @@ export const parseReaderFontPreferences = (
       chineseEnabled: record.chineseEnabled === true,
       japaneseEnabled: record.japaneseEnabled === true,
       exedraChineseEnabled: record.exedraChineseEnabled === true,
-      exedraChineseFallbackEnabled:
-        record.exedraChineseFallbackEnabled === true,
       exedraJapaneseEnabled: record.exedraJapaneseEnabled === true,
     };
   } catch {
@@ -364,7 +312,6 @@ export const parseReaderFontRuntimeSnapshot = (
         chinese: normalizeBundle('chinese'),
         japanese: normalizeBundle('japanese'),
         exedraChinese: normalizeBundle('exedraChinese'),
-        exedraChineseFallback: normalizeBundle('exedraChineseFallback'),
         exedraJapanese: normalizeBundle('exedraJapanese'),
       },
     };
@@ -458,7 +405,6 @@ const setRootFontState = (
     chinese: 'readerFontChinese',
     japanese: 'readerFontJapanese',
     exedraChinese: 'readerFontExedraChinese',
-    exedraChineseFallback: 'readerFontExedraChineseFallback',
     exedraJapanese: 'readerFontExedraJapanese',
   };
   const key = keys[bundleId];

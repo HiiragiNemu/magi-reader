@@ -277,6 +277,20 @@ test('reader derives deterministic Exedra paths for direct route visits', async 
     ),
     false,
   );
+  assert.deepEqual(
+    resolveDirectStorySources(
+      'exedra_reaction_cv_102101_1acea0f738',
+      '/data/exedra_reaction/cv_102101/cv_102101_cn.txt',
+      '/data/exedra_reaction/cv_102101/cv_102101_jp.txt',
+    ),
+    {
+      pathCn:
+        '/api/exedra/localized/exedra_reaction_cv_102101_1acea0f738',
+      pathJp: '/data/exedra_reaction/cv_102101/cv_102101_jp.txt',
+      optionalCn: true,
+      kind: 'exedra-trusted-runtime',
+    },
+  );
   assert.equal(resolveDirectStorySources('not-an-exedra-route', null, null), null);
   assert.throws(
     () => resolveDirectStorySources(

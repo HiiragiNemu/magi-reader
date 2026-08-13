@@ -97,7 +97,7 @@ export default function ReaderFontSettings({
     [snapshot],
   );
   const bundleIds: readonly ReaderFontBundleId[] = isExedraStory
-    ? ['exedraChinese', 'exedraChineseFallback', 'exedraJapanese']
+    ? ['exedraChinese', 'exedraJapanese']
     : ['chinese', 'japanese'];
   const anyReady = bundleIds.some(
     bundleId => state.bundles[bundleId].status === 'ready',
@@ -113,19 +113,18 @@ export default function ReaderFontSettings({
       }`}
     >
       <summary className="cursor-pointer select-none font-bold">
-        游戏字体（按需下载）
+        {isExedraStory ? 'Magia Exedra 原生字体' : '游戏字体（按需下载）'}
       </summary>
       <p className="mt-2 text-[11px] leading-relaxed opacity-65">
-        默认不请求或读取字体文件，只有明确选择后才启用。字体只作用于当前游戏的
-        对应语言；遇到缺字会继续使用声明的 CJK 回退字体。
+        字体文件由本站直接提供并在首次启用时完成大小与 SHA-256 校验；浏览器缓存
+        可用时，后续访问无需重复下载。字体只作用于当前游戏的对应语言。
       </p>
 
       {isExedraStory && (
         <p className="mt-2 rounded border border-amber-300/60 bg-amber-50/60 p-2 text-[10px] leading-relaxed text-amber-900">
-          简中主包从作者的固定 OFL Release 下载并校验 SHA-256；可选 GBK
-          回退包同样只在本机导入。JP 原生字体是 Fontworks 商业字体，本站不分发；
-          只接受你从合法副本选择的两份文件，在浏览器本机校验、缓存和使用，
-          文件不会上传。
+          中文使用猫啃网糖圆体；日文 UI、标题与角色名使用
+          FOT-TsukuOldGothic Std B，剧情、语音与旁白正文使用
+          FOT-NewCinemaA Std D。三份均为完整未裁字 WOFF2，无需本地导入。
         </p>
       )}
 
