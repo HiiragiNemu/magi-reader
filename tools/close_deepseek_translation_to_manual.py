@@ -17,7 +17,6 @@ import os
 import re
 import tempfile
 from collections import Counter
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -187,6 +186,7 @@ def inspect_ds_jobs(job_root: Path) -> list[dict[str, Any]]:
                 "session_id": state_document.get("session_id")
                 or spec_document.get("session_id"),
                 "previous_status": state_document.get("status", "unknown"),
+                "updated_at": state_document.get("updated_at"),
                 "closeout_status": "closed_due_to_quota",
                 "model": spec_document.get("model"),
                 "formal_tree_write_allowed": False,
@@ -339,13 +339,23 @@ def build_handoff(
     protected_verification = verify_protected_files(protected_document)
     expected_protected_hash = sha256_file(protected_baseline_path)
     jobs = inspect_ds_jobs(job_root)
+    closeout_at = max(
+        (
+            str(job["updated_at"])
+            for job in jobs
+            if isinstance(job.get("updated_at"), str) and job["updated_at"]
+        ),
+        default="1970-01-01T00:00:00Z",
+    )
 
     counts = Counter(entry["manual_status"] for entry in entries)
     handoff = {
         "schema_version": 1,
         "closeout_reason": "deepseek_quota_exhausted_key_revoked",
         "ds_lane_status": "closed_due_to_quota",
-        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        # Derive the audit time from immutable job state rather than wall-clock
+        # time so rerunning the closeout produces byte-identical artifacts.
+        "generated_at": closeout_at,
         "policy": {
             "formal_tree_write_allowed": False,
             "model_invocation_allowed": False,

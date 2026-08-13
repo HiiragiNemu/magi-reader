@@ -57,15 +57,20 @@ class CloseDeepSeekTranslationToManualTests(unittest.TestCase):
         staging = ROOT / MODULE.DEFAULT_STAGING
         exedra = ROOT / MODULE.DEFAULT_EXEDRA
         protected = ROOT / MODULE.DEFAULT_PROTECTED
-        handoff = MODULE.build_handoff(staging, exedra, protected, MODULE.DS_JOB_ROOT)
-        first = MODULE.stable_json_bytes(handoff)
-        second = MODULE.stable_json_bytes(handoff)
+        first_handoff = MODULE.build_handoff(
+            staging, exedra, protected, MODULE.DS_JOB_ROOT
+        )
+        second_handoff = MODULE.build_handoff(
+            staging, exedra, protected, MODULE.DS_JOB_ROOT
+        )
+        first = MODULE.stable_json_bytes(first_handoff)
+        second = MODULE.stable_json_bytes(second_handoff)
         self.assertEqual(first, second)
         json.loads(first.decode("utf-8"))
 
         with tempfile.TemporaryDirectory() as temporary:
             csv_path = Path(temporary) / "manual-review.csv"
-            MODULE.write_csv(csv_path, handoff["entries"])
+            MODULE.write_csv(csv_path, first_handoff["entries"])
             data = csv_path.read_bytes()
             self.assertTrue(data.startswith(b"\xef\xbb\xbf"))
             self.assertIn("pending_human_translation".encode(), data)
