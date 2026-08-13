@@ -57,6 +57,8 @@ export type Story = {
   sections?: string[];
   game?: string;
   source_identity?: string;
+  source_unverified?: boolean;
+  /** Deprecated compatibility field; use source_unverified for new code. */
   machine_translation?: boolean;
   human_verified?: boolean;
   official_tw?: boolean;

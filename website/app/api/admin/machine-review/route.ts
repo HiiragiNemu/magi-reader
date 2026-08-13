@@ -3,10 +3,10 @@ import { getCloudflareContext } from '@opennextjs/cloudflare';
 
 import { authenticateProofreadingAdmin } from '@/lib/admin-auth';
 import {
-  MACHINE_TRANSLATION_ID_SET,
-  MACHINE_TRANSLATION_MANIFEST,
+  SOURCE_UNVERIFIED_ID_SET,
+  SOURCE_UNVERIFIED_MANIFEST,
   listMachineTranslationReviewStates,
-  setMachineTranslationReviewState,
+  setSourceUnverifiedReviewState,
 } from '@/lib/machine-translation-review';
 import { sanitizeMultiline } from '@/lib/proofreading';
 
@@ -23,19 +23,20 @@ export async function GET(request: NextRequest) {
   if (!env.SUBMISSIONS_KV) return errorResponse('投稿数据库尚未配置', 503);
 
   const states = await listMachineTranslationReviewStates(env.SUBMISSIONS_KV);
-  const verified = MACHINE_TRANSLATION_MANIFEST.entries.filter(
+  const verified = SOURCE_UNVERIFIED_MANIFEST.entries.filter(
     entry => states[entry.story_id]?.verified === true,
   ).length;
   return NextResponse.json(
     {
       reviewer: authentication.identity.label,
       system: 'magireco',
-      definition: MACHINE_TRANSLATION_MANIFEST.definition,
-      total: MACHINE_TRANSLATION_MANIFEST.total,
+      definition: SOURCE_UNVERIFIED_MANIFEST.definition,
+      classification: SOURCE_UNVERIFIED_MANIFEST.classification,
+      total: SOURCE_UNVERIFIED_MANIFEST.total,
       verified,
-      remaining: Math.max(0, MACHINE_TRANSLATION_MANIFEST.total - verified),
+      remaining: Math.max(0, SOURCE_UNVERIFIED_MANIFEST.total - verified),
       states,
-      entries: MACHINE_TRANSLATION_MANIFEST.entries,
+      entries: SOURCE_UNVERIFIED_MANIFEST.entries,
     },
     { headers: NO_STORE_HEADERS },
   );
@@ -62,8 +63,8 @@ export async function PATCH(request: NextRequest) {
   const storyId = typeof record.story_id === 'string'
     ? record.story_id.trim()
     : '';
-  if (!MACHINE_TRANSLATION_ID_SET.has(storyId)) {
-    return errorResponse('该剧情不在魔法纪录机器翻译人工校验清单中', 400);
+  if (!SOURCE_UNVERIFIED_ID_SET.has(storyId)) {
+    return errorResponse('该剧情不在魔法纪录来源待核验清单中', 400);
   }
   if (typeof record.verified !== 'boolean') {
     return errorResponse('verified 必须是布尔值', 400);
@@ -71,14 +72,14 @@ export async function PATCH(request: NextRequest) {
   const note = sanitizeMultiline(record.note, 1000) ||
     (record.verified
       ? '管理员确认已完成魔法纪录人工校验'
-      : '管理员恢复魔法纪录机器翻译待校标记');
+      : '管理员恢复魔法纪录来源待核验标记');
   const state = {
     verified: record.verified,
     reviewer: authentication.identity.label,
     reviewed_at: new Date().toISOString(),
     note,
   };
-  await setMachineTranslationReviewState(
+  await setSourceUnverifiedReviewState(
     env.SUBMISSIONS_KV,
     storyId,
     state,

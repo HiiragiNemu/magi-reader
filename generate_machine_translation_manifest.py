@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Generate the machine-translation review baseline from a trusted main diff.
+"""Generate the fail-closed source-review baseline from a trusted main diff.
 
 Trust rule:
 - Every Magia Record source file that exists in the trusted baseline must remain byte-for-byte
   identical in the current working tree.
 - Every trusted-baseline file must still exist.
-- Only Chinese TXT files that are present now but absent from the trusted baseline are machine
-  translation candidates.
+- Chinese TXT files that are present now but absent from the trusted baseline are source-unverified
+  review candidates. Snapshot absence does not prove whether their translation was produced by a
+  person or a machine.
 
-This deliberately rejects branch-history and release-archive provenance as a classifier. Runtime
-human-review state remains stored separately in Cloudflare KV.
+This deliberately rejects branch-history, release archives, and text-style heuristics as provenance
+classifiers. Runtime human-review state remains stored separately in Cloudflare KV.
 """
 
 from __future__ import annotations
@@ -321,7 +322,7 @@ def build_outputs(
     }
 
     source_map: dict[str, dict[str, Any]] = {}
-    machine_entries: list[dict[str, Any]] = []
+    source_unverified_entries: list[dict[str, Any]] = []
     matched_added_json: set[str] = set()
     matched_added_txt_paths: set[str] = set()
     missing_repository_txt_paths: list[str] = []
@@ -355,27 +356,33 @@ def build_outputs(
             continue
 
         references = referenced_json_sources(identity, absolute_txt)
-        machine_json = sorted(references & added_json)
-        machine_entries.append(
+        added_source_json = sorted(references & added_json)
+        source_unverified_entries.append(
             {
                 **entry,
-                "provenance": "added_after_trusted_main",
-                "machine_source_json_count": len(machine_json),
+                "classification": "SOURCE_UNVERIFIED",
+                "provenance": "source_unverified_added_after_trusted_main",
+                "review_reason": "cn_txt_absent_from_trusted_main",
+                "added_source_json_count": len(added_source_json),
+                # Compatibility alias for existing consumers. It is a count of
+                # added JSON sources, not evidence that those sources were machine translated.
+                "machine_source_json_count": len(added_source_json),
                 "direct_txt_changed": True,
             }
         )
-        matched_added_json.update(machine_json)
+        matched_added_json.update(added_source_json)
         matched_added_txt_paths.add(repository_path)
 
-    machine_entries.sort(
+    source_unverified_entries.sort(
         key=lambda item: (item["category"], item["folder"], item["story_id"])
     )
     unreferenced_json = sorted(added_json - matched_added_json)
     unmatched_txt = sorted(added_txt_paths - matched_added_txt_paths)
 
     manifest: dict[str, Any] = {
-        "version": 3,
-        "definition": "magireco_cn_txt_absent_from_trusted_main",
+        "version": 4,
+        "definition": "magireco_cn_txt_absent_from_trusted_main_source_unverified",
+        "classification": "SOURCE_UNVERIFIED",
         "trusted_baseline": trusted_baseline,
         "source_commit": source_commit,
         "translation_base": trusted_baseline,
@@ -388,8 +395,8 @@ def build_outputs(
         "referenced_changed_json_total": len(matched_added_json),
         "protected_human_overwrite_count": 0,
         "protected_human_deletion_count": 0,
-        "total": len(machine_entries),
-        "entries": machine_entries,
+        "total": len(source_unverified_entries),
+        "entries": source_unverified_entries,
         "unreferenced_changed_json_count": len(unreferenced_json),
         "unreferenced_changed_json_paths": unreferenced_json,
         "unmatched_changed_txt_identities": [
@@ -408,6 +415,14 @@ def build_outputs(
         "stories": source_map,
     }
     return manifest, story_map
+
+
+def write_utf8_lf(path: Path, content: str) -> None:
+    """Write a generated text artifact with platform-independent LF bytes."""
+
+    if "\r" in content:
+        raise ManifestError(f"generated content contains a carriage return: {path}")
+    path.write_bytes(content.encode("utf-8"))
 
 
 def main() -> int:
@@ -445,7 +460,7 @@ def main() -> int:
         except FileNotFoundError as exc:
             raise ManifestError(f"generated manifest is missing: {exc.filename}") from exc
         if current_manifest != encoded_manifest:
-            raise ManifestError("machine translation manifest is stale")
+            raise ManifestError("source-review manifest is stale")
         if current_map != encoded_map:
             raise ManifestError("proofreading story map is stale")
         print(
@@ -461,9 +476,10 @@ def main() -> int:
         (args.story_map_output, encoded_map),
     ]:
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(content, encoding="utf-8")
+        # Generated bytes must be reproducible across Windows worktrees and CI.
+        write_utf8_lf(path, content)
     print(
-        "generated trusted-main machine manifest: "
+        "generated trusted-main source-review manifest: "
         f"stories={manifest['total']}, "
         f"added_files={manifest['added_file_total']}, "
         f"added_json={manifest['changed_json_total']}, "

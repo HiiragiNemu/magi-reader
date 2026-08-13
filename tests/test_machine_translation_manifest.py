@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import json
 import subprocess
 import tempfile
 import unittest
@@ -38,6 +39,47 @@ def raw_blob_hash(path: Path) -> str:
 
 
 class MachineTranslationManifestTests(unittest.TestCase):
+    def test_generated_manifest_uses_fail_closed_source_classification(self) -> None:
+        manifest_path = (
+            ROOT
+            / "website"
+            / "public"
+            / "data"
+            / "machine_translation_manifest.generated.json"
+        )
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(manifest["version"], 4)
+        self.assertEqual(manifest["classification"], "SOURCE_UNVERIFIED")
+        self.assertIn("source_unverified", manifest["definition"])
+        self.assertEqual(manifest["total"], len(manifest["entries"]))
+        self.assertTrue(manifest["entries"])
+        for entry in manifest["entries"]:
+            self.assertEqual(entry["classification"], "SOURCE_UNVERIFIED")
+            self.assertEqual(
+                entry["provenance"],
+                "source_unverified_added_after_trusted_main",
+            )
+            self.assertEqual(
+                entry["review_reason"],
+                "cn_txt_absent_from_trusted_main",
+            )
+            self.assertEqual(
+                entry["added_source_json_count"],
+                entry["machine_source_json_count"],
+            )
+
+    def test_generated_artifacts_are_written_as_utf8_lf_on_windows(self) -> None:
+        with tempfile.TemporaryDirectory() as raw_directory:
+            path = Path(raw_directory) / "generated.json"
+            MODULE.write_utf8_lf(path, "{\n  \"ok\": true\n}\n")
+            self.assertEqual(path.read_bytes(), b'{\n  "ok": true\n}\n')
+            with self.assertRaisesRegex(
+                MODULE.ManifestError,
+                "contains a carriage return",
+            ):
+                MODULE.write_utf8_lf(path, "bad\r\n")
+
     def test_canonicalize_known_renamed_directories(self) -> None:
         self.assertEqual(
             MODULE.canonicalize_identity(

@@ -73,7 +73,9 @@ type ProofreadingStatus = {
   total: number;
   verified: number;
   remaining: number;
-  machine_translation_ids: string[];
+  source_unverified_ids?: string[];
+  /** Deprecated API compatibility alias. */
+  machine_translation_ids?: string[];
   verified_ids: string[];
 };
 
@@ -134,11 +136,11 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   );
   const [manuallyOpen, setManuallyOpen] = useState(hasSearchMatches);
   const contentId = useId();
-  const machinePending = group.items.filter(
-    story => story.machine_translation && !story.human_verified,
+  const sourceUnverifiedPending = group.items.filter(
+    story => story.source_unverified && !story.human_verified,
   ).length;
-  const machineVerified = group.items.filter(
-    story => story.machine_translation && story.human_verified,
+  const sourceUnverifiedVerified = group.items.filter(
+    story => story.source_unverified && story.human_verified,
   ).length;
   const officialTwStories = group.items.filter(
     story => isExedraCategory(story.category) && story.official_tw,
@@ -157,7 +159,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   let headerClass = '';
   let progressClass = '';
 
-  if (machinePending > 0) {
+  if (sourceUnverifiedPending > 0) {
     headerClass = isDark
       ? 'bg-amber-950/70 border-amber-700 text-amber-100'
       : 'bg-amber-100 border-amber-400 text-amber-950';
@@ -196,7 +198,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   return (
     <div
       className={`break-inside-avoid mb-3 rounded-lg border shadow-sm transition-all ${
-        machinePending > 0
+        sourceUnverifiedPending > 0
           ? isDark ? 'border-amber-700 ring-1 ring-amber-700/40' : 'border-amber-400 ring-1 ring-amber-300'
           : isDark
             ? 'border-gray-700'
@@ -229,14 +231,14 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
           >
             {displayTitle}
           </span>
-          {machinePending > 0 && (
+          {sourceUnverifiedPending > 0 && (
             <span className="shrink-0 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black text-white">
-              待校 {machinePending}
+              待核验 {sourceUnverifiedPending}
             </span>
           )}
-          {machinePending === 0 && machineVerified > 0 && (
+          {sourceUnverifiedPending === 0 && sourceUnverifiedVerified > 0 && (
             <span className="shrink-0 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-black text-white">
-              已校 {machineVerified}
+              已校 {sourceUnverifiedVerified}
             </span>
           )}
           {isOfficialTwGroup && (
@@ -272,13 +274,13 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                 const label = getDisplayLabel(story);
                 const progress = storyProgress(story);
                 const snippet = group.matchSnippets?.[story.id];
-                const machinePendingStory =
-                  story.machine_translation && !story.human_verified;
-                const buttonClass = machinePendingStory
+                const sourceUnverifiedPendingStory =
+                  story.source_unverified && !story.human_verified;
+                const buttonClass = sourceUnverifiedPendingStory
                   ? isDark
                     ? 'bg-amber-950/60 border-amber-600 text-amber-200'
                     : 'bg-amber-50 border-amber-400 text-amber-950'
-                  : story.machine_translation && story.human_verified
+                  : story.source_unverified && story.human_verified
                     ? isDark
                       ? 'bg-emerald-950/50 border-emerald-600 text-emerald-300'
                       : 'bg-emerald-50 border-emerald-400 text-emerald-900'
@@ -307,12 +309,12 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                   >
                     <div className="px-2 py-1.5 flex justify-between items-center gap-2">
                       <span className="font-mono text-xs font-bold break-all">#{label}</span>
-                      {machinePendingStory && (
+                      {sourceUnverifiedPendingStory && (
                         <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[9px] font-black text-white">
-                          机翻待校
+                          来源待核验
                         </span>
                       )}
-                      {story.machine_translation && story.human_verified && (
+                      {story.source_unverified && story.human_verified && (
                         <span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">
                           人工已校
                         </span>
@@ -476,11 +478,15 @@ export default function Home() {
   }, []);
 
   const enrichedStories = useMemo(() => {
-    const machine = new Set(proofreadingStatus?.machine_translation_ids ?? []);
+    const sourceUnverified = new Set(
+      proofreadingStatus?.source_unverified_ids ??
+        proofreadingStatus?.machine_translation_ids ??
+        [],
+    );
     const verified = new Set(proofreadingStatus?.verified_ids ?? []);
     return stories.map(story => ({
       ...story,
-      machine_translation: machine.has(story.id),
+      source_unverified: sourceUnverified.has(story.id),
       human_verified: verified.has(story.id),
     }));
   }, [proofreadingStatus, stories]);
@@ -624,7 +630,7 @@ export default function Home() {
         continue;
       }
       foundCategories.add(category);
-      if (onlyNeedsReview && (!story.machine_translation || story.human_verified)) {
+      if (onlyNeedsReview && (!story.source_unverified || story.human_verified)) {
         continue;
       }
 
@@ -930,7 +936,7 @@ export default function Home() {
                     type="button"
                     aria-controls={machineReviewPanelContentId}
                     aria-expanded={!machineReviewPanelCollapsed}
-                    aria-label={`展开机器翻译人工校验清单，仍需 ${proofreadingStatus.remaining} 部`}
+                    aria-label={`展开来源待核验人工校验清单，仍需 ${proofreadingStatus.remaining} 部`}
                     onClick={() => setMachineReviewPanelCollapsedPreference(false)}
                     className={`flex min-h-11 w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm font-black transition ${
                       theme === 'dark'
@@ -939,7 +945,7 @@ export default function Home() {
                     } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500`}
                   >
                     <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-                      <span>机器翻译人工校验清单</span>
+                      <span>来源待核验人工校验清单</span>
                       <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] text-white">
                         仍需 {proofreadingStatus.remaining} 部
                       </span>
@@ -957,7 +963,7 @@ export default function Home() {
                   <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="text-base font-black">机器翻译人工校验清单</h2>
+                        <h2 className="text-base font-black">来源待核验人工校验清单</h2>
                         <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black text-white">
                           动态
                         </span>
@@ -1000,13 +1006,13 @@ export default function Home() {
                               : 'border-amber-300 bg-white text-amber-800'
                         }`}
                       >
-                        {onlyNeedsReview ? '显示当前分类全部剧情' : '只看机器翻译待校剧情'}
+                        {onlyNeedsReview ? '显示当前分类全部剧情' : '只看来源待核验剧情'}
                       </button>
                       <Link
                         href="/review/machine-translations"
                         className="rounded-lg bg-amber-600 px-3 py-2 text-xs font-black text-white hover:bg-amber-700"
                       >
-                        管理机器校验标记
+                        管理待核验标记
                       </Link>
                       <Link
                         href="/review/submissions"
@@ -1018,7 +1024,7 @@ export default function Home() {
                         type="button"
                         aria-controls={machineReviewPanelContentId}
                         aria-expanded={!machineReviewPanelCollapsed}
-                        aria-label="收起机器翻译人工校验清单"
+                        aria-label="收起来源待核验人工校验清单"
                         title="收起校验清单"
                         onClick={() => setMachineReviewPanelCollapsedPreference(true)}
                         className={`flex min-h-9 items-center gap-1 rounded-lg border px-3 py-2 text-xs font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${

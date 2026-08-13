@@ -16,8 +16,8 @@ import {
   readProofreadingPullRequestState,
 } from '@/lib/github-proofreading';
 import {
-  MACHINE_TRANSLATION_ID_SET,
-  setMachineTranslationReviewState,
+  SOURCE_UNVERIFIED_ID_SET,
+  setSourceUnverifiedReviewState,
 } from '@/lib/machine-translation-review';
 import {
   getProofreadingSubmission,
@@ -238,8 +238,8 @@ export async function PATCH(
           processing_error: '',
         },
       );
-      if (MACHINE_TRANSLATION_ID_SET.has(completed.story_id)) {
-        await setMachineTranslationReviewState(
+      if (SOURCE_UNVERIFIED_ID_SET.has(completed.story_id)) {
+        await setSourceUnverifiedReviewState(
           context.kv,
           completed.story_id,
           {

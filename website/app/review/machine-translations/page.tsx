@@ -85,7 +85,7 @@ export default function MachineTranslationReviewPage() {
           verified,
           note: verified
             ? '管理员确认已完成魔法纪录人工校验'
-            : '管理员恢复魔法纪录机器翻译待校标记',
+            : '管理员恢复魔法纪录来源待核验标记',
         }),
       });
       setMessage(
@@ -125,9 +125,9 @@ export default function MachineTranslationReviewPage() {
                 <Link href="/review/submissions" className="text-purple-700">投稿审核台</Link>
                 <Link href="/review/exedra-localization" className="text-violet-700">Exedra 可信中文</Link>
               </div>
-              <h1 className="mt-3 text-2xl font-black">魔法纪录机器翻译人工校验清单</h1>
+              <h1 className="mt-3 text-2xl font-black">魔法纪录来源待核验清单</h1>
               <p className="mt-1 text-sm text-gray-500">
-                Exedra 自动机翻计划已经取消；本页只管理魔法纪录既有机翻基线。
+                这里仅表示中文 TXT 在可信 main 中不存在；最终快照不足以证明其来自人工或机器，审核前统一按来源待核验处理。
               </p>
             </div>
             <div className="flex min-w-0 flex-1 gap-2 lg:max-w-xl">
@@ -156,7 +156,7 @@ export default function MachineTranslationReviewPage() {
         {status && (
           <section className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-xl border border-amber-300 bg-amber-50 p-4">
-              <p className="text-xs font-bold text-amber-700">机器翻译总数</p>
+              <p className="text-xs font-bold text-amber-700">来源待核验总数</p>
               <p className="text-3xl font-black">{status.total}</p>
             </div>
             <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-4">
@@ -224,7 +224,7 @@ export default function MachineTranslationReviewPage() {
               );
             })}
             {!entries.length && (
-              <p className="p-8 text-center text-gray-400">没有符合筛选条件的魔法纪录机翻剧情。</p>
+              <p className="p-8 text-center text-gray-400">没有符合筛选条件的来源待核验剧情。</p>
             )}
           </div>
         </section>

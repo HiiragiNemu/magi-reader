@@ -11,7 +11,11 @@ export type MachineTranslationEntry = {
   repository_path_cn: string;
   path_cn: string;
   path_jp: string;
-  provenance?: 'added_after_trusted_main' | string;
+  classification?: 'SOURCE_UNVERIFIED' | string;
+  provenance?: 'source_unverified_added_after_trusted_main' | string;
+  review_reason?: 'cn_txt_absent_from_trusted_main' | string;
+  added_source_json_count?: number;
+  /** Deprecated compatibility alias for added_source_json_count. */
   machine_source_json_count?: number;
   direct_txt_changed?: boolean;
 };
@@ -19,6 +23,7 @@ export type MachineTranslationEntry = {
 export type MachineTranslationManifest = {
   version: number;
   definition: string;
+  classification?: 'SOURCE_UNVERIFIED' | string;
   system?: MachineTranslationSystem;
   trusted_baseline?: string;
   source_commit?: string;
@@ -56,7 +61,7 @@ const STATE_PREFIX = 'proofreading:machine-review:magireco:';
 
 const normalizeManifest = (value: unknown): MachineTranslationManifest => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    throw new Error('Magia Record machine translation manifest is invalid');
+    throw new Error('Magia Record source-review manifest is invalid');
   }
   const record = value as Partial<MachineTranslationManifest>;
   if (
@@ -64,7 +69,21 @@ const normalizeManifest = (value: unknown): MachineTranslationManifest => {
     !Number.isSafeInteger(record.total) ||
     record.total !== record.entries.length
   ) {
-    throw new Error('Magia Record machine translation manifest is inconsistent');
+    throw new Error('Magia Record source-review manifest is inconsistent');
+  }
+  if (typeof record.version === 'number' && record.version >= 4) {
+    if (
+      record.classification !== 'SOURCE_UNVERIFIED' ||
+      !record.definition?.includes('source_unverified') ||
+      record.entries.some(
+        entry =>
+          entry.classification !== 'SOURCE_UNVERIFIED' ||
+          entry.provenance !== 'source_unverified_added_after_trusted_main' ||
+          entry.review_reason !== 'cn_txt_absent_from_trusted_main',
+      )
+    ) {
+      throw new Error('Magia Record source-review manifest is not fail-closed');
+    }
   }
   return { ...record, system: 'magireco' } as MachineTranslationManifest;
 };
@@ -73,6 +92,11 @@ export const MACHINE_TRANSLATION_MANIFEST = normalizeManifest(manifestJson);
 export const MACHINE_TRANSLATION_ID_SET = new Set(
   MACHINE_TRANSLATION_MANIFEST.entries.map(entry => entry.story_id),
 );
+
+// Canonical fail-closed names. Legacy exports remain below because KV keys,
+// routes, and older callers must continue to work during the schema transition.
+export const SOURCE_UNVERIFIED_MANIFEST = MACHINE_TRANSLATION_MANIFEST;
+export const SOURCE_UNVERIFIED_ID_SET = MACHINE_TRANSLATION_ID_SET;
 
 // Compatibility aliases retained for existing Magia Record-only callers.
 export const MACHINE_TRANSLATION_MANIFESTS = {
@@ -86,6 +110,8 @@ export const machineTranslationSystemForStory = (
   storyId: string,
 ): MachineTranslationSystem | null =>
   MACHINE_TRANSLATION_ID_SET.has(storyId) ? 'magireco' : null;
+
+export const sourceUnverifiedSystemForStory = machineTranslationSystemForStory;
 
 export const machineTranslationStateKey = (
   storyId: string,
@@ -156,6 +182,8 @@ export const setMachineTranslationReviewState = async (
   await kv.put(machineTranslationStateKey(storyId), JSON.stringify(state));
 };
 
+export const setSourceUnverifiedReviewState = setMachineTranslationReviewState;
+
 export const listMachineTranslationReviewStates = async (
   kv: SubmissionKvNamespace,
   _system: MachineTranslationSystem = 'magireco',
@@ -203,15 +231,19 @@ export const machineTranslationSystemSummary = async (
   const verifiedIds = MACHINE_TRANSLATION_MANIFEST.entries
     .filter(entry => states[entry.story_id]?.verified === true)
     .map(entry => entry.story_id);
+  const sourceUnverifiedIds = MACHINE_TRANSLATION_MANIFEST.entries.map(
+    entry => entry.story_id,
+  );
   return {
     system: 'magireco' as const,
     definition: MACHINE_TRANSLATION_MANIFEST.definition,
     total: MACHINE_TRANSLATION_MANIFEST.total,
     verified: verifiedIds.length,
     remaining: Math.max(0, MACHINE_TRANSLATION_MANIFEST.total - verifiedIds.length),
-    machine_translation_ids: MACHINE_TRANSLATION_MANIFEST.entries.map(
-      entry => entry.story_id,
-    ),
+    source_unverified_ids: sourceUnverifiedIds,
+    // Deprecated response alias retained for deployed clients.
+    machine_translation_ids: sourceUnverifiedIds,
     verified_ids: verifiedIds,
   };
 };
+export const sourceUnverifiedSystemSummary = machineTranslationSystemSummary;

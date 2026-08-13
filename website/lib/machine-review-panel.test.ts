@@ -49,9 +49,9 @@ test('home keeps a keyboard-accessible compact reopen entry without replacing ex
   assert.match(source, /hidden=\{machineReviewPanelCollapsed\}/u);
   assert.match(source, /aria-controls=\{machineReviewPanelContentId\}/u);
   assert.match(source, /aria-expanded=\{!machineReviewPanelCollapsed\}/u);
-  assert.match(source, /展开机器翻译人工校验清单/u);
-  assert.match(source, /收起机器翻译人工校验清单/u);
-  assert.match(source, /只看机器翻译待校剧情/u);
+  assert.match(source, /展开来源待核验人工校验清单/u);
+  assert.match(source, /收起来源待核验人工校验清单/u);
+  assert.match(source, /只看来源待核验剧情/u);
   assert.match(source, /href="\/review\/machine-translations"/u);
   assert.match(source, /href="\/review\/submissions"/u);
 });
