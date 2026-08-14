@@ -275,6 +275,35 @@ def title_catalog(
     return result
 
 
+def optional_adv_title_catalog(
+    root: Path,
+    convert: Callable[[str], str] | None = None,
+) -> dict[int, str]:
+    """Return official gallery titles when the provider supplies that table.
+
+    The v1 TW handoff deliberately requires only the three structural manifests,
+    so this table is optional and its absence never permits a guessed title.
+    A future SP bundle can add getAdvTitleMstList.json without changing the
+    importer; values then flow through the same auditable Traditional-to-
+    Simplified conversion as chapter and subsection names.
+    """
+    convert = convert or (lambda value: value)
+    path = root / "getAdvTitleMstList.json"
+    if not path.is_file():
+        return {}
+    result: dict[int, str] = {}
+    for row in load_mst(root, path.name):
+        key = row.get("advTitleMstId")
+        title = convert(str(row.get("title") or "").strip())
+        if not isinstance(key, int) or not title:
+            continue
+        previous = result.get(key)
+        if previous and previous != title:
+            raise RuntimeError(f"advTitleMstId 标题冲突：{key}: {previous!r} != {title!r}")
+        result[key] = title
+    return result
+
+
 def replace_directory(staged: Path, target: Path) -> None:
     """Install a complete tree with recoverable same-volume rename semantics.
 
@@ -407,6 +436,7 @@ def import_corpus(
     convert = simplified_converter()
     index = tw.TwSourceIndex(scenario_root)
     titles = title_catalog(manifest_root, convert)
+    adv_titles = optional_adv_title_catalog(manifest_root, convert)
     metadata: dict[str, dict[str, Any]] = {}
     stats: Counter[str] = Counter()
     failures: list[dict[str, str]] = []
@@ -622,6 +652,13 @@ def import_corpus(
                     "category": category,
                     "groupKey": key,
                     "officialTw": True,
+                    "officialStoryTitles": sorted(
+                        {
+                            adv_titles[int(item.get("advTitleMstId") or 0)]
+                            for item in official_sections
+                            if int(item.get("advTitleMstId") or 0) in adv_titles
+                        }
+                    ),
                     "chapterTitle": chapter_title,
                     "chapterTitles": sorted(chapters),
                     "sectionTitles": [

@@ -1,6 +1,6 @@
 "use client";
-import { X } from 'lucide-react';
-import { useDialog } from '@/lib/use-dialog';
+
+import FloatingWindow from '@/components/FloatingWindow';
 
 const LINKS =[
   {
@@ -26,47 +26,41 @@ const LINKS =[
   {
     href: "https://exedra.wiki/wiki/Characters/zh",
     icon: "WIKI", iconClass: "from-[#8b5cf6] to-[#7c3aed]",
-    title: "MAGIA EXEDRA WIKI中文化中...", subtitle: "角色剧情与活动剧情和语音",
+    title: "MAGIA EXEDRA WIKI中文化中...", subtitle: "角色剧情、活动剧情与语音",
   },
 ];
 
 export default function AboutModal({ isOpen, onClose, theme }: { isOpen: boolean; onClose: () => void; theme: string }) {
   const isDark = theme === 'dark';
-  const dialogRef = useDialog<HTMLDivElement>(isOpen, onClose);
-
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4" onMouseDown={onClose}>
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="about-dialog-title"
-        tabIndex={-1}
-        className={`w-full md:max-w-md md:rounded-2xl rounded-t-2xl overflow-hidden max-h-[85vh] flex flex-col shadow-2xl border transition-all animate-in slide-in-from-bottom-8 duration-300
-          ${isDark ? 'bg-gray-900 border-gray-700 text-gray-100' : 'bg-white border-gray-200 text-gray-900'}`}
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        <div className="md:hidden flex justify-center pt-3 pb-1"><div className={`w-10 h-1.5 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-300'}`} /></div>
-        <div className={`flex items-center justify-between px-6 py-4 border-b flex-shrink-0 ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>
-          <h2 id="about-dialog-title" className="text-lg font-black bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent">我的其他工具和动态</h2>
-          <button type="button" aria-label="关闭关于窗口" onClick={onClose} className="p-1.5 rounded-lg opacity-50 hover:opacity-100 transition-colors"><X size={20} /></button>
-        </div>
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-2.5">
-          {LINKS.map((link) => (
-            <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-3.5 px-4 py-3.5 rounded-xl transition-all active:scale-[0.98] border group ${isDark ? 'bg-white/[0.03] border-white/[0.05] hover:bg-white/[0.08]' : 'bg-gray-50 border-gray-100 hover:bg-white hover:shadow-md hover:border-gray-200'}`}>
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-black flex-shrink-0 bg-gradient-to-br ${link.iconClass} shadow-lg shadow-current/20`}>{link.icon}</div>
-              <div className="flex-1 min-w-0">
-                <div className="font-bold text-sm truncate">{link.title}</div>
-                <div className="text-xs opacity-50 mt-0.5 truncate">{link.subtitle}</div>
-              </div>
-              <span className="text-sm opacity-20 group-hover:opacity-50 group-hover:translate-x-1 transition-all flex-shrink-0">→</span>
-            </a>
-          ))}
-        </div>
-        <div className={`px-6 py-3 text-center text-[11px] opacity-30 border-t flex-shrink-0 ${isDark ? 'border-gray-800' : 'border-gray-100'}`}>Made with ❤️ by MadeInMagius</div>
-      </div>
-    </div>
+    <FloatingWindow
+      isOpen={isOpen}
+      onClose={onClose}
+      theme={theme}
+      title="我的其他工具和动态"
+      titleId="about-dialog-title"
+      systemLabel="SYS://MAGIREADER.LINKS"
+      initialOffset={{ x: 84, y: 62 }}
+      className="magi-about-window"
+      bodyClassName="space-y-2.5 p-4"
+      footer="Made with ♥ by MadeInMagius"
+    >
+      {LINKS.map((link) => (
+        <a
+          key={link.href}
+          href={link.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`magi-floating-link group flex items-center gap-3.5 border px-4 py-3.5 transition-all active:scale-[0.99] ${isDark ? 'border-white/[0.08] bg-white/[0.04]' : ''}`}
+        >
+          <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center bg-gradient-to-br text-xs font-black text-white ${link.iconClass}`}>{link.icon}</div>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-sm font-bold">{link.title}</div>
+            <div className="mt-0.5 truncate text-xs opacity-55">{link.subtitle}</div>
+          </div>
+          <span className="flex-shrink-0 text-sm opacity-30 transition-all group-hover:translate-x-1 group-hover:opacity-60">→</span>
+        </a>
+      ))}
+    </FloatingWindow>
   );
 }

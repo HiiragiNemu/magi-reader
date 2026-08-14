@@ -21,6 +21,7 @@ TW_FIELDS = (
     "official_tw_chapter_title",
     "official_tw_chapter_titles",
     "official_tw_section_titles",
+    "official_tw_story_titles",
 )
 CHAPTER_FOLDER_CATEGORIES = frozenset({"exedra_main", "exedra_sub"})
 
@@ -51,6 +52,16 @@ def apply_metadata(
         story["official_tw_chapter_title"] = chapter_title
         story["official_tw_chapter_titles"] = info.get("chapterTitles") or []
         story["official_tw_section_titles"] = info.get("sectionTitles") or []
+        official_story_titles = [
+            str(value).strip()
+            for value in (info.get("officialStoryTitles") or [])
+            if str(value).strip()
+        ]
+        story["official_tw_story_titles"] = official_story_titles
+        if len(official_story_titles) == 1:
+            story["title"] = official_story_titles[0]
+        elif len(official_story_titles) > 1:
+            story["title"] = " / ".join(official_story_titles)
         if chapter_title and story.get("category") in CHAPTER_FOLDER_CATEGORIES:
             current_folder = story.get("folder")
             if isinstance(current_folder, str) and current_folder != chapter_title:

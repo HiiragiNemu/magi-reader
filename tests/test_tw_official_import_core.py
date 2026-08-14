@@ -5,7 +5,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.tw_official_import_core import resource_key, title_catalog
+from tools.tw_official_import_core import (
+    optional_adv_title_catalog,
+    resource_key,
+    title_catalog,
+)
 
 
 class TwOfficialTitleCatalogTests(unittest.TestCase):
@@ -72,6 +76,22 @@ class TwOfficialTitleCatalogTests(unittest.TestCase):
             self.assertEqual(
                 title["chapterTitle"],
                 "第一章 · 蔷薇园的魔女 前篇 鹿目圆的记忆",
+            )
+
+    def test_optional_gallery_titles_are_exact_and_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.assertEqual(optional_adv_title_catalog(root), {})
+            (root / "getAdvTitleMstList.json").write_text(
+                json.dumps({"payload": {"mstList": [{
+                    "advTitleMstId": 94,
+                    "title": "调整师事件簿3",
+                }]}}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                optional_adv_title_catalog(root),
+                {94: "调整师事件簿3"},
             )
 
 

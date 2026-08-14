@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const source = readFileSync('app/reader/[id]/page.tsx', 'utf8');
+const styles = readFileSync('app/globals.css', 'utf8');
 const preferences = readFileSync(
   'lib/reader-display-preferences.ts',
   'utf8',
@@ -19,7 +20,8 @@ test('reader exposes persistent side-by-side and stacked bilingual layouts', () 
 
 test('the selected layout is passed into normal and proofreading rows', () => {
   assert.match(source, /bilingualLayout=\{bilingualLayout\}/u);
-  assert.match(source, /bilingualLayout === 'stacked'/u);
+  assert.match(source, /bilingualStoryPairClass\(\s*mode,\s*bilingualLayout,?\s*\)/u);
+  assert.match(source, /bilingualLanguagePaneClass\(\s*mode,\s*bilingualLayout,\s*'jp',?\s*\)/u);
   assert.match(source, /适用于汉化输入框/u);
 });
 
@@ -51,7 +53,9 @@ test('line-break markers reach both languages and never replace the editable val
 });
 
 test('reader settings remain usable in a short mobile viewport', () => {
-  assert.match(source, /max-h-\[calc\(100dvh-2rem\)\]/u);
+  assert.match(source, /<FloatingWindow/u);
+  assert.match(source, /className="magi-settings-window"/u);
+  assert.match(styles, /max-height:\s*min\(48rem, calc\(100dvh - 16px\)\)/u);
   assert.match(source, /overflow-y-auto/u);
   assert.match(source, /min-h-11/u);
 });

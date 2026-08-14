@@ -21,10 +21,10 @@ import {
   Search,
   Settings,
   Sun,
-  X,
 } from 'lucide-react';
 
 import AboutModal from '@/components/AboutModal';
+import FloatingWindow from '@/components/FloatingWindow';
 import ReaderFontSettings from '@/components/ReaderFontSettings';
 import TurnstileWidget from '@/components/TurnstileWidget';
 import Sidebar, { type Story } from '@/components/Sidebar';
@@ -51,9 +51,12 @@ import {
   resolveDirectStorySources,
   verifyExedraStoryId,
 } from '@/lib/story-index';
-import { useDialog } from '@/lib/use-dialog';
 import { triggerUtf8Download } from '@/lib/browser-download';
 import { initializeExedraFonts } from '@/lib/exedra-fonts';
+import {
+  bilingualLanguagePaneClass,
+  bilingualStoryPairClass,
+} from '@/lib/bilingual-layout';
 import { resolveOfficialSectionTitle } from '@/lib/official-tw-titles';
 import { initializeReaderFonts } from '@/lib/reader-fonts';
 import {
@@ -297,10 +300,6 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   } | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [editMessage, setEditMessage] = useState('');
-  const settingsDialogRef = useDialog<HTMLElement>(
-    showSettings,
-    () => setShowSettings(false),
-  );
 
   useEffect(() => {
     const stored = window.localStorage.getItem(BILINGUAL_LAYOUT_STORAGE_KEY);
@@ -1705,29 +1704,17 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
           </div>
         </main>
 
-        {showSettings && (
-          <div
-            role="presentation"
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-            onMouseDown={() => setShowSettings(false)}
-          >
-            <section
-              ref={settingsDialogRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="reader-settings-title"
-              tabIndex={-1}
-              className={`max-h-[calc(100dvh-2rem)] w-full max-w-3xl overflow-y-auto rounded-xl p-5 shadow-2xl ${
-                theme === 'dark' ? 'border border-gray-700 bg-gray-800' : 'bg-white'
-              }`}
-              onMouseDown={event => event.stopPropagation()}
-            >
-              <div className="mb-4 flex items-center justify-between">
-                <h2 id="reader-settings-title" className="font-bold">阅读设置</h2>
-                <button type="button" aria-label="关闭阅读设置" onClick={() => setShowSettings(false)}>
-                  <X size={18} />
-                </button>
-              </div>
+        <FloatingWindow
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          theme={theme}
+          title="阅读设置"
+          titleId="reader-settings-title"
+          systemLabel="SYS://READER.CONFIG"
+          initialOffset={{ x: 38, y: 28 }}
+          className="magi-settings-window"
+          bodyClassName="p-5"
+        >
               <div className="space-y-4 text-sm">
                 <div>
                   <p className="mb-2 opacity-70">主题</p>
@@ -1838,9 +1825,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   />
                 </label>
               </div>
-            </section>
-          </div>
-        )}
+        </FloatingWindow>
       </div>
 
       <AboutModal isOpen={aboutOpen} onClose={() => setAboutOpen(false)} theme={theme} />
@@ -2060,11 +2045,10 @@ function StoryRow({
   return (
     <div
       id={`line-${index}`}
-      className={`group flex border-b border-transparent py-1 transition-colors ${
-        bilingualLayout === 'stacked'
-          ? 'flex-col gap-2'
-          : 'flex-col md:flex-row md:gap-4'
-      } ${
+      className={`group flex transition-colors ${bilingualStoryPairClass(
+        mode,
+        bilingualLayout,
+      )} ${
         focused
           ? theme === 'dark'
             ? 'bg-blue-900/30 ring-1 ring-blue-500/50'
@@ -2189,13 +2173,11 @@ function StoryRow({
       {mode !== 'cn' && (
         <div
           lang={isExedra ? 'ja' : undefined}
-          className={`reader-font-jp-body ${isExedra ? 'exedra-page ' : ''}flex min-w-0 gap-2 ${
-            mode === 'split'
-              ? bilingualLayout === 'stacked'
-                ? 'w-full border-t border-current border-opacity-10 pt-2'
-                : 'mt-1 border-current border-opacity-10 md:mt-0 md:w-1/2 md:border-l md:pl-4'
-              : 'w-full'
-          }`}
+          className={`reader-font-jp-body ${isExedra ? 'exedra-page ' : ''}flex min-w-0 gap-2 ${bilingualLanguagePaneClass(
+            mode,
+            bilingualLayout,
+            'jp',
+          )}`}
         >
           {mode === 'jp' && audioCueId && (
             <VoicePlayButton

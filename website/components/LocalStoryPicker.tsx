@@ -52,7 +52,9 @@ export default function LocalStoryPicker({ theme }: LocalStoryPickerProps) {
         className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-bold whitespace-nowrap transition-all disabled:cursor-wait disabled:opacity-60 ${
           theme === 'dark'
             ? 'bg-blue-900/30 border-blue-800 text-blue-300 hover:bg-blue-900/50'
-            : 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
+            : theme === 'light' || theme === 'paper'
+              ? 'magi-home-light-button'
+              : 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
         }`}
         title="可选择一个剧情文件，或同时选择一对中日文文件"
       >
@@ -65,7 +67,9 @@ export default function LocalStoryPicker({ theme }: LocalStoryPickerProps) {
           className={`absolute top-full right-0 mt-2 z-30 w-72 rounded-lg border px-3 py-2 text-xs shadow-lg ${
             theme === 'dark'
               ? 'bg-gray-900 border-red-800 text-red-300'
-              : 'bg-white border-red-200 text-red-700'
+              : theme === 'light' || theme === 'paper'
+                ? 'border-[#a99b80] bg-[#e9e2d2] text-[#6c493c]'
+                : 'bg-white border-red-200 text-red-700'
           }`}
         >
           {error}

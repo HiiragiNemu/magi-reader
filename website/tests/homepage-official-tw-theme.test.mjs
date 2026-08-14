@@ -22,26 +22,54 @@ test('official TW badges are limited to Exedra stories and their folder bubbles'
     'folder and story title bubbles should each expose the badge accessibly',
   );
   assert.match(css, /\.magi-official-tw-badge\s*\{/u);
+  assert.equal(
+    page.match(/className="magi-card-meta"/gu)?.length,
+    2,
+    'folder and story metadata each use a non-overlapping status column',
+  );
+  assert.match(page, /magi-card-title-flow[^"]*break-words/u);
+  assert.match(css, /\.magi-card-heading-grid\s*\{[\s\S]*grid-template-columns:\s*minmax\(0, 1fr\) auto/u);
+  assert.match(css, /\.magi-card-title-flow\s*\{[\s\S]*overflow-wrap:\s*anywhere/u);
 });
 
-test('warm archival bubbles are selected only by the default light theme', () => {
-  assert.match(page, /const isLight = theme === 'light';/u);
+test('warm archival bubbles cover light and paper while excluding green and dark', () => {
   assert.match(
     page,
-    /theme === 'light'\s*\? 'magi-home-light-nav-active'/u,
+    /const isDayArchiveTheme = \(theme: string\): boolean =>\s*theme === 'light' \|\| theme === 'paper';/u,
   );
   assert.match(
     page,
-    /theme === 'light'\s*\? 'magi-home-light-sidebar'/u,
+    /isDayArchiveTheme\(theme\)\s*\? 'magi-home-light-nav-active'/u,
   );
   assert.match(
     page,
-    /theme === 'light'\s*\? 'magi-home-light-toolbar'/u,
+    /isDayArchiveTheme\(theme\)\s*\? 'magi-home-light-sidebar'/u,
+  );
+  assert.match(
+    page,
+    /isDayArchiveTheme\(theme\)\s*\? 'magi-home-light-toolbar'/u,
   );
   assert.match(page, /theme === 'dark'[\s\S]*bg-emerald-900\/50/u);
   assert.match(page, /\{ key: 'green', icon: Leaf, label: '护眼' \}/u);
   assert.match(css, /\.magi-home-light-folder-header\s*\{/u);
   assert.match(css, /\.magi-home-light-nav-active\s*\{/u);
   assert.match(css, /\.magi-home-light-sidebar\s*\{/u);
+  assert.match(css, /\.magi-home-light-root\s*\{[\s\S]*linear-gradient/u);
+  assert.match(css, /\.magi-home-paper-root\s*\{[\s\S]*background-size:\s*22px 22px/u);
+  assert.match(css, /\.magi-home-light-control\s*,/u);
+  assert.match(css, /\.magi-home-light-button-active\s*\{/u);
+  assert.match(css, /\[data-bg-theme='green'\]\s*\{\s*background-color:\s*#dcedc8;\s*\}/u);
+  assert.match(css, /\[data-bg-theme='dark'\]\s*\{[\s\S]*background-color:\s*#0f172a;/u);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*magi-home-light-folder-card/u);
+});
+
+test('home catalogue desktop sidebar resizes independently without changing mobile flow', () => {
+  assert.match(page, /HOME_SIDEBAR_WIDTH_STORAGE_KEY/u);
+  assert.match(page, /localStorage\.setItem\(HOME_SIDEBAR_WIDTH_STORAGE_KEY/u);
+  assert.match(page, /--magi-home-sidebar-width/u);
+  assert.match(page, /role="separator"[\s\S]*aria-label=\{`调整主目录宽度/u);
+  assert.match(page, /magi-home-sidebar[^`]*hidden[^`]*md:flex/u);
+  assert.match(page, /magi-sidebar-resize-handle[^"\n]*hidden[^"\n]*md:block/u);
+  assert.match(page, /<main className="flex-1 flex flex-col min-w-0 bg-transparent">/u);
+  assert.match(css, /@media \(min-width: 768px\)[\s\S]*\.magi-home-sidebar\s*\{[\s\S]*flex-basis:\s*var\(--magi-home-sidebar-width/u);
 });

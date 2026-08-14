@@ -65,7 +65,13 @@
 /* =========================================
    3. 主题状态机 (仅控制底色，不干扰气球)
    ========================================= */
-[data-bg-theme='light'] { background-color: #fcfcfc; }
+[data-bg-theme='light'] {
+  background-color: #d8d4c6;
+  background-image:
+    radial-gradient(circle at 14% 22%, rgba(177, 164, 126, 0.16) 0%, transparent 30%),
+    radial-gradient(circle at 84% 16%, rgba(139, 143, 126, 0.13) 0%, transparent 28%),
+    radial-gradient(circle at 56% 84%, rgba(168, 157, 121, 0.12) 0%, transparent 34%);
+}
 [data-bg-theme='paper'] { background-color: #f3eacb; }
 [data-bg-theme='green'] { background-color: #dcedc8; }
 [data-bg-theme='dark'] { 
@@ -219,6 +225,10 @@ html[data-reader-font-japanese='ready'] .reader-font-jp-title {
   width: min(18rem, calc(100vw - 2rem));
 }
 
+.magi-home-sidebar {
+  width: var(--magi-home-sidebar-width, 16rem);
+}
+
 .magi-sidebar-resize-handle::after {
   position: absolute;
   top: 0;
@@ -247,6 +257,13 @@ body.magi-sidebar-resizing * {
     width: var(--magi-sidebar-width, 18rem);
     min-width: var(--magi-sidebar-width, 18rem);
     max-width: var(--magi-sidebar-width, 18rem);
+  }
+
+  .magi-home-sidebar {
+    width: var(--magi-home-sidebar-width, 16rem);
+    min-width: var(--magi-home-sidebar-width, 16rem);
+    max-width: var(--magi-home-sidebar-width, 16rem);
+    flex-basis: var(--magi-home-sidebar-width, 16rem);
   }
 }
 
@@ -290,25 +307,181 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
   font-synthesis: none;
 }
 
-/* Homepage light theme: a quiet, warm archival treatment inspired by the
-   gray-yellow floating panels in the reference UI. These classes are attached
-   only while the explicit `light` theme is selected, so paper, green and dark
-   keep their existing palette. */
+/* Long catalogue headings keep their status metadata in a dedicated column.
+   The minmax track is what lets every title length wrap instead of pushing the
+   TW badge under the completion percentage. */
+.magi-card-heading-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 0.5rem;
+  row-gap: 0.25rem;
+}
+
+/* One rule belongs to one complete bilingual record.  The pseudo-element is
+   deliberately outside both language panes, so stacked CN/JP never looks like
+   two unrelated rows and the last record never grows a trailing line. */
+.magi-bilingual-pair {
+  position: relative;
+  margin-bottom: 0.55rem;
+  padding-bottom: 0.85rem;
+}
+
+.magi-bilingual-pair::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  content: '';
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, currentColor 34%, transparent) 8%,
+    color-mix(in srgb, currentColor 34%, transparent) 92%,
+    transparent
+  );
+}
+
+.magi-bilingual-pair:last-child::after {
+  display: none;
+}
+
+.magi-card-title-flow {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.magi-card-meta {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.2rem;
+  max-width: min(44vw, 9.5rem);
+}
+
+/* Homepage daytime themes: a quiet, warm archival treatment inspired by the
+   gray-yellow floating panels in the reference UI. Light and paper share the
+   panel language while keeping distinct grid washes. Green and dark never
+   receive these classes. */
+.magi-home-light-root {
+  color: #575145;
+  background-color: rgba(213, 209, 195, 0.78);
+  background-image:
+    linear-gradient(rgba(101, 92, 73, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(101, 92, 73, 0.055) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    radial-gradient(circle at 77% 12%, rgba(171, 158, 118, 0.15), transparent 32%);
+  background-position: 0 0, 0 0, 3px 3px, 3px 3px, 0 0;
+  background-size: 24px 24px, 24px 24px, 6px 6px, 6px 6px, auto;
+}
+
+.magi-home-paper-root {
+  color: #5c503c;
+  background-color: rgba(226, 216, 187, 0.76);
+  background-image:
+    linear-gradient(rgba(111, 92, 57, 0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(111, 92, 57, 0.075) 1px, transparent 1px),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 252, 235, 0.08) 0 2px,
+      transparent 2px 5px
+    ),
+    radial-gradient(circle at 75% 14%, rgba(176, 150, 89, 0.14), transparent 34%);
+  background-position: 0 0, 0 0, 0 0, 0 0;
+  background-size: 22px 22px, 22px 22px, auto, auto;
+}
+
 .magi-home-light-sidebar {
-  border-color: rgba(113, 102, 80, 0.22);
+  border-color: rgba(104, 94, 75, 0.35);
   background:
-    linear-gradient(158deg, rgba(235, 229, 214, 0.86), rgba(220, 212, 193, 0.66));
-  box-shadow: 8px 0 24px rgba(77, 67, 48, 0.1);
-  backdrop-filter: blur(12px) saturate(0.72);
-  -webkit-backdrop-filter: blur(12px) saturate(0.72);
+    linear-gradient(158deg, rgba(231, 225, 209, 0.82), rgba(204, 198, 180, 0.62));
+  box-shadow:
+    10px 0 30px rgba(70, 62, 48, 0.13),
+    inset -1px 0 0 rgba(255, 255, 255, 0.46);
+  backdrop-filter: blur(3px) saturate(0.72);
+  -webkit-backdrop-filter: blur(3px) saturate(0.72);
 }
 
 .magi-home-light-toolbar {
-  border-color: rgba(113, 102, 80, 0.2);
-  background: rgba(239, 234, 221, 0.72);
-  box-shadow: 0 5px 18px rgba(77, 67, 48, 0.08);
-  backdrop-filter: blur(14px) saturate(0.76);
-  -webkit-backdrop-filter: blur(14px) saturate(0.76);
+  border-color: rgba(104, 94, 75, 0.3);
+  background: rgba(230, 225, 211, 0.7);
+  box-shadow:
+    0 7px 22px rgba(70, 62, 48, 0.1),
+    inset 0 -1px 0 rgba(108, 96, 72, 0.08);
+  backdrop-filter: blur(3px) saturate(0.74);
+  -webkit-backdrop-filter: blur(3px) saturate(0.74);
+}
+
+.magi-home-light-control,
+.magi-home-light-button,
+.magi-home-light-button-active {
+  border-color: rgba(107, 96, 74, 0.34);
+  color: #5c5547;
+  background: rgba(229, 223, 207, 0.66);
+  box-shadow:
+    0 3px 9px rgba(71, 63, 48, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.52);
+  backdrop-filter: blur(2px) saturate(0.74);
+  -webkit-backdrop-filter: blur(2px) saturate(0.74);
+}
+
+.magi-home-light-control:focus,
+.magi-home-light-button:focus-visible,
+.magi-home-light-button-active:focus-visible {
+  border-color: rgba(104, 88, 58, 0.66);
+  outline: 1px solid rgba(255, 251, 236, 0.8);
+  outline-offset: 1px;
+}
+
+.magi-home-light-button,
+.magi-home-light-button-active {
+  border-radius: 0.5rem 0.28rem 0.54rem 0.3rem;
+}
+
+.magi-home-light-button:hover,
+.magi-home-light-button:focus-visible,
+.magi-home-light-segment:hover,
+.magi-home-light-segment:focus-visible {
+  color: #443f35;
+  background: rgba(241, 236, 220, 0.82);
+}
+
+.magi-home-light-button-active,
+.magi-home-light-theme-active {
+  color: #494338;
+  background: linear-gradient(
+    137deg,
+    rgba(197, 187, 158, 0.88),
+    rgba(239, 233, 216, 0.8)
+  );
+  box-shadow:
+    0 4px 11px rgba(71, 63, 48, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.magi-home-light-segment {
+  color: rgba(81, 75, 64, 0.63);
+}
+
+.magi-home-light-section-title {
+  color: #575043;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.48);
+}
+
+.magi-home-light-section-title::after {
+  display: inline-block;
+  width: min(12rem, 30vw);
+  height: 1px;
+  margin-left: 0.75rem;
+  vertical-align: middle;
+  content: '';
+  background: linear-gradient(90deg, rgba(98, 88, 68, 0.5), transparent);
 }
 
 .magi-home-light-nav-active {
@@ -341,8 +514,11 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
   background: rgba(238, 233, 220, 0.46);
   box-shadow:
     0 7px 18px rgba(77, 67, 48, 0.12),
-    0 1px 0 rgba(255, 255, 255, 0.66) inset;
+    0 1px 0 rgba(255, 255, 255, 0.66) inset,
+    0 0 0 1px rgba(255, 255, 255, 0.16);
   transform: translateY(-1px);
+  backdrop-filter: blur(2px) saturate(0.76);
+  -webkit-backdrop-filter: blur(2px) saturate(0.76);
 }
 
 .magi-home-light-folder-card:hover,
@@ -364,8 +540,8 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
     rgba(235, 229, 211, 0.72)
   );
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
-  backdrop-filter: blur(9px) saturate(0.7);
-  -webkit-backdrop-filter: blur(9px) saturate(0.7);
+  backdrop-filter: blur(2px) saturate(0.76);
+  -webkit-backdrop-filter: blur(2px) saturate(0.76);
 }
 
 .magi-home-light-folder-header-empty {
@@ -392,8 +568,8 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
 .magi-home-light-folder-body {
   border-radius: 0.32rem 0.65rem 0.58rem 0.48rem;
   background: rgba(247, 243, 232, 0.64);
-  backdrop-filter: blur(8px) saturate(0.78);
-  -webkit-backdrop-filter: blur(8px) saturate(0.78);
+  backdrop-filter: blur(2px) saturate(0.82);
+  -webkit-backdrop-filter: blur(2px) saturate(0.82);
 }
 
 .magi-home-light-story-link {
@@ -401,7 +577,9 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
   border-radius: 0.52rem 0.34rem 0.56rem 0.32rem;
   color: #5e5749;
   background: rgba(229, 222, 204, 0.66);
-  box-shadow: 0 3px 9px rgba(77, 67, 48, 0.08);
+  box-shadow:
+    0 3px 9px rgba(77, 67, 48, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42);
 }
 
 .magi-home-light-story-link:hover,
@@ -418,8 +596,13 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
 
 .magi-official-tw-badge {
   display: inline-flex;
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
   flex: none;
   align-items: center;
+  justify-content: center;
+  align-self: center;
   min-height: 1.1rem;
   padding: 0.08rem 0.38rem;
   border: 1px solid rgba(111, 99, 75, 0.32);
@@ -433,6 +616,192 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
   line-height: 1;
   letter-spacing: 0.04em;
   white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Light is a restrained translucent workstation: pale neutral glass, thin
+   terminal rules and hard-edged controls.  Paper is intentionally different:
+   dark ink on warm stock, almost no blur, and book-like shallow shadows. */
+.magi-home-light-root:not(.magi-home-paper-root) {
+  color: #34373a;
+  background-color: rgba(231, 232, 226, 0.86);
+  background-image:
+    linear-gradient(rgba(64, 69, 72, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(64, 69, 72, 0.07) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.28) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.28) 1px, transparent 1px);
+  background-position: 0 0, 0 0, 3px 3px, 3px 3px;
+  background-size: 24px 24px, 24px 24px, 6px 6px, 6px 6px;
+}
+
+.magi-home-paper-root,
+[data-bg-theme='paper'] {
+  color: #29251e;
+}
+
+.magi-home-paper-root .magi-home-light-sidebar,
+.magi-home-paper-root .magi-home-light-toolbar {
+  border-color: rgba(69, 57, 38, 0.35);
+  color: #29251e;
+  background: rgba(235, 224, 188, 0.9);
+  box-shadow: 8px 8px 18px rgba(51, 41, 24, 0.13), inset 0 0 0 1px rgba(255, 252, 228, 0.4);
+  backdrop-filter: blur(1px) saturate(0.72);
+  -webkit-backdrop-filter: blur(1px) saturate(0.72);
+}
+
+.magi-home-paper-root .magi-home-light-folder-card {
+  border: 1px solid rgba(64, 52, 33, 0.34);
+  border-radius: 0.18rem;
+  background: rgba(238, 225, 185, 0.83);
+  box-shadow: 5px 6px 0 rgba(52, 41, 25, 0.08), 0 9px 18px rgba(52, 41, 25, 0.1);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.magi-home-paper-root .magi-home-light-folder-header,
+.magi-home-paper-root .magi-home-light-folder-header-empty,
+.magi-home-paper-root .magi-home-light-folder-header-partial {
+  border-radius: 0;
+  border-color: rgba(58, 48, 32, 0.38);
+  color: #29251e;
+  background: linear-gradient(105deg, rgba(225, 210, 168, 0.96), rgba(243, 233, 202, 0.92));
+  box-shadow: inset 0 -1px 0 rgba(61, 49, 30, 0.18), inset 0 1px 0 rgba(255, 250, 225, 0.7);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.magi-home-paper-root .magi-home-light-folder-body {
+  border-radius: 0;
+  color: #29251e;
+  background: rgba(245, 235, 204, 0.92);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.magi-home-paper-root .magi-home-light-story-link,
+.magi-home-paper-root .magi-home-light-control,
+.magi-home-paper-root .magi-home-light-button,
+.magi-home-paper-root .magi-home-light-button-active {
+  border-radius: 0.08rem;
+  border-color: rgba(64, 52, 33, 0.38);
+  color: #29251e;
+  background: rgba(242, 231, 198, 0.9);
+  box-shadow: 2px 2px 0 rgba(56, 43, 25, 0.12), inset 1px 1px 0 rgba(255, 252, 232, 0.66);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Modeless child windows.  No viewport backdrop is created; multiple windows
+   can stay open while every other Reader control remains interactive. */
+.magi-floating-window {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: min(52rem, calc(100vw - 16px));
+  max-height: min(48rem, calc(100dvh - 16px));
+  overflow: hidden;
+  flex-direction: column;
+  color: #292a29;
+  transform: translate(var(--magi-window-x), var(--magi-window-y));
+  border: 1px solid rgba(54, 56, 55, 0.58);
+  border-radius: 0.22rem;
+  background: rgba(245, 245, 239, 0.94);
+  box-shadow: 12px 14px 34px rgba(25, 27, 27, 0.25), 2px 3px 0 rgba(25, 27, 27, 0.1);
+  backdrop-filter: blur(2px) saturate(0.88);
+  -webkit-backdrop-filter: blur(2px) saturate(0.88);
+}
+
+.magi-settings-window { width: min(48rem, calc(100vw - 16px)); }
+.magi-about-window { width: min(42rem, calc(100vw - 16px)); }
+
+.magi-floating-window-light {
+  background-color: rgba(242, 243, 238, 0.95);
+  background-image:
+    linear-gradient(rgba(71, 78, 79, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(71, 78, 79, 0.055) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+.magi-floating-window-paper {
+  color: #29251e;
+  border-color: rgba(58, 46, 28, 0.7);
+  background-color: rgba(239, 226, 187, 0.97);
+  background-image:
+    linear-gradient(rgba(82, 65, 39, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(82, 65, 39, 0.06) 1px, transparent 1px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 5px);
+  background-size: 10px 10px, 10px 10px, auto;
+  box-shadow: 12px 14px 28px rgba(48, 36, 20, 0.24), 3px 4px 0 rgba(48, 36, 20, 0.12);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+}
+
+.magi-floating-window-dark { color: #e8e8e8; background: rgba(27, 29, 31, 0.96); border-color: #65686b; }
+.magi-floating-window-green { color: #17382d; background: rgba(228, 241, 232, 0.96); border-color: #587366; }
+
+.magi-floating-window-titlebar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.4rem;
+  padding: 0.5rem 0.55rem 0.5rem 0.9rem;
+  cursor: move;
+  user-select: none;
+  border-bottom: 3px double currentColor;
+  background: linear-gradient(90deg, rgba(255,255,255,0.34), rgba(93,102,101,0.08));
+}
+
+.magi-floating-window-paper .magi-floating-window-titlebar {
+  background: linear-gradient(90deg, rgba(247,236,201,0.88), rgba(203,186,139,0.46));
+}
+
+.magi-floating-window-system-label {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.58rem;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  opacity: 0.52;
+}
+
+.magi-floating-window-title {
+  overflow: hidden;
+  margin-top: 0.18rem;
+  font-family: ui-monospace, SFMono-Regular, Consolas, 'Microsoft YaHei', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.magi-retro-window-close {
+  display: grid;
+  width: 2rem;
+  height: 1.75rem;
+  flex: none;
+  place-items: center;
+  border: 1px solid #565b5a;
+  border-radius: 0;
+  color: #252827;
+  background: #d8dad4;
+  box-shadow: inset 1px 1px #ffffff, inset -1px -1px #747a78, 1px 1px 0 rgba(0,0,0,0.22);
+}
+
+.magi-retro-window-close:hover,
+.magi-retro-window-close:focus-visible { color: #fff; background: #a64135; outline: 1px dotted #fff; outline-offset: -4px; }
+.magi-floating-window-dark .magi-retro-window-close { color: #eee; background: #555a5b; border-color: #bbb; }
+
+.magi-floating-window-body { min-height: 0; flex: 1; overflow: auto; overscroll-behavior: contain; }
+.magi-floating-window-footer { flex: none; border-top: 1px solid currentColor; padding: 0.45rem 0.8rem; font-family: ui-monospace, monospace; font-size: 0.64rem; opacity: 0.5; text-align: right; }
+.magi-floating-link { border-radius: 0.12rem; background: rgba(255,255,255,0.2); box-shadow: 2px 2px 0 rgba(38,39,38,0.08); }
+.magi-floating-link:hover, .magi-floating-link:focus-visible { background: rgba(255,255,255,0.42); box-shadow: 4px 5px 12px rgba(38,39,38,0.12); }
+.magi-floating-link > div:first-child { border-radius: 0.1rem; box-shadow: inset 1px 1px rgba(255,255,255,0.45), 2px 2px 0 rgba(0,0,0,0.14); }
+
+@media (max-width: 640px) {
+  .magi-floating-window { width: calc(100vw - 12px); max-height: calc(100dvh - 12px); transform: translate(6px, 6px) !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -9,6 +9,8 @@ import {
   useState,
   useSyncExternalStore,
   type ComponentType,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
 } from 'react';
 import Link from 'next/link';
 import {
@@ -46,6 +48,15 @@ import {
   setMachineReviewPanelCollapsedPreference,
   subscribeMachineReviewPanel,
 } from '@/lib/machine-review-panel';
+import {
+  HOME_SIDEBAR_WIDTH_DEFAULT,
+  HOME_SIDEBAR_WIDTH_MAX,
+  HOME_SIDEBAR_WIDTH_MIN,
+  HOME_SIDEBAR_WIDTH_STEP,
+  HOME_SIDEBAR_WIDTH_STORAGE_KEY,
+  clampHomeSidebarWidth,
+  parseStoredHomeSidebarWidth,
+} from '@/lib/sidebar-width';
 
 type SearchMode = 'all' | 'title' | 'content';
 type StorySystem = SearchIndexScope;
@@ -122,6 +133,9 @@ const NATURAL_COLLATOR = new Intl.Collator(['zh-CN', 'ja-JP'], {
 const isExedraCategory = (category: string): boolean =>
   EXEDRA_CATEGORY_SET.has(category);
 
+const isDayArchiveTheme = (theme: string): boolean =>
+  theme === 'light' || theme === 'paper';
+
 const getDisplayLabel = (story: Story): string => {
   const label = story.title || story.filename_cn || story.filename_jp || story.id;
   return label.replace(/(_cn|_jp)?\.txt$/i, '');
@@ -155,7 +169,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   );
 
   const isDark = theme === 'dark';
-  const isLight = theme === 'light';
+  const isDayArchive = isDayArchiveTheme(theme);
   let headerClass = '';
   let progressClass = '';
 
@@ -170,7 +184,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
         ? 'bg-gray-800 border-gray-700 text-gray-400'
         : 'bg-emerald-900/40 border-emerald-800 text-emerald-100';
     progressClass = 'text-emerald-400';
-  } else if (isLight) {
+  } else if (isDayArchive) {
     if (avgPercent === 0) {
       headerClass = 'magi-home-light-folder-header magi-home-light-folder-header-empty';
     } else if (avgPercent === 100) {
@@ -202,7 +216,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
           ? isDark ? 'border-amber-700 ring-1 ring-amber-700/40' : 'border-amber-400 ring-1 ring-amber-300'
           : isDark
             ? 'border-gray-700'
-            : isLight
+            : isDayArchive
               ? 'magi-home-light-folder-card'
               : 'border-black/10'
       } ${isOpen ? '' : 'magi-folder-card-collapsed'}`}
@@ -212,25 +226,27 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
         aria-controls={contentId}
         aria-expanded={isOpen}
         onClick={() => setManuallyOpen(open => !open)}
-        className={`w-full flex items-start justify-between px-3 py-3 text-left transition-colors border-b ${
+        className={`magi-card-heading-grid w-full px-3 py-3 text-left transition-colors border-b ${
           isOpen ? 'border-inherit' : 'border-transparent'
         } ${headerClass}`}
       >
-        <div className="flex items-start gap-2 overflow-hidden w-full">
-          <div className="mt-0.5 flex-shrink-0">
+        <span className="magi-card-title-flow flex items-start gap-2">
+          <span className="mt-0.5 flex-shrink-0">
             {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-          </div>
+          </span>
           {folderId && (
             <span className="font-mono text-xs opacity-70 bg-black/10 px-1 rounded flex-shrink-0 mt-0.5">
               {folderId}
             </span>
           )}
           <span
-            className="font-bold text-sm whitespace-normal break-words leading-tight flex-1 mr-2"
+            className="min-w-0 flex-1 break-words text-sm font-bold leading-tight"
             style={{ color: characterFolderColorFor(group.category, displayTitle) }}
           >
             {displayTitle}
           </span>
+        </span>
+        <span className="magi-card-meta">
           {sourceUnverifiedPending > 0 && (
             <span className="shrink-0 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black text-white">
               待核验 {sourceUnverifiedPending}
@@ -250,9 +266,9 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
               {officialTwLabel}
             </span>
           )}
-        </div>
-        <span className={`text-[10px] font-mono mt-0.5 flex-shrink-0 ${progressClass}`}>
-          {avgPercent}%
+          <span className={`shrink-0 font-mono text-[10px] ${progressClass}`}>
+            {avgPercent}%
+          </span>
         </span>
       </button>
 
@@ -262,7 +278,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
           className={`p-2 ${
             isDark
               ? 'bg-gray-900'
-              : isLight
+              : isDayArchive
                 ? 'magi-home-light-folder-body'
                 : 'bg-white/50'
           }`}
@@ -288,7 +304,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                       ? progress > 0
                         ? 'bg-emerald-900/30 border-emerald-700 text-emerald-400'
                         : 'bg-gray-800 border-gray-700 text-gray-500'
-                      : isLight
+                      : isDayArchive
                         ? progress > 0
                           ? 'magi-home-light-story-link'
                           : 'magi-home-light-story-link magi-home-light-story-link-empty'
@@ -303,34 +319,38 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                       story.path_cn || '',
                     )}&jp=${encodeURIComponent(story.path_jp || '')}`}
                     prefetch={false}
-                    className={`rounded border transition-all hover:scale-[1.01] ${buttonClass} overflow-hidden ${
+                    className={`max-w-full min-w-0 overflow-hidden rounded border transition-all hover:scale-[1.01] ${buttonClass} ${
                       snippet ? 'w-full' : ''
                     }`}
                   >
-                    <div className="px-2 py-1.5 flex justify-between items-center gap-2">
-                      <span className="font-mono text-xs font-bold break-all">#{label}</span>
-                      {sourceUnverifiedPendingStory && (
-                        <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[9px] font-black text-white">
-                          来源待核验
-                        </span>
-                      )}
-                      {story.source_unverified && story.human_verified && (
-                        <span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">
-                          人工已校
-                        </span>
-                      )}
-                      {isExedraCategory(story.category) && story.official_tw && (
-                        <span
-                          className="magi-official-tw-badge"
-                          title="台服官方中文"
-                          aria-label="台服官方中文"
-                        >
-                          {story.official_tw_label?.trim() || '台服'}
-                        </span>
-                      )}
-                      {progress < 100 && progress > 0 && (
-                        <span className="text-[10px] opacity-60">{progress}%</span>
-                      )}
+                    <div className="magi-card-heading-grid min-w-0 px-2 py-1.5">
+                      <span className="magi-card-title-flow break-words font-mono text-xs font-bold">
+                        #{label}
+                      </span>
+                      <span className="magi-card-meta">
+                        {sourceUnverifiedPendingStory && (
+                          <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[9px] font-black text-white">
+                            来源待核验
+                          </span>
+                        )}
+                        {story.source_unverified && story.human_verified && (
+                          <span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">
+                            人工已校
+                          </span>
+                        )}
+                        {isExedraCategory(story.category) && story.official_tw && (
+                          <span
+                            className="magi-official-tw-badge"
+                            title="台服官方中文"
+                            aria-label="台服官方中文"
+                          >
+                            {story.official_tw_label?.trim() || '台服'}
+                          </span>
+                        )}
+                        {progress < 100 && progress > 0 && (
+                          <span className="text-[10px] opacity-60">{progress}%</span>
+                        )}
+                      </span>
                     </div>
                     {snippet && (
                       <div
@@ -385,7 +405,7 @@ function CategoryNav({
         const activeClass =
           theme === 'dark'
             ? 'bg-emerald-900/50 text-emerald-400 border-emerald-500'
-            : theme === 'light'
+            : isDayArchiveTheme(theme)
               ? 'magi-home-light-nav-active'
               : 'bg-emerald-50 text-emerald-700 border-emerald-500';
 
@@ -399,7 +419,7 @@ function CategoryNav({
             } ${
               isActive
                 ? activeClass
-                : theme === 'light'
+                : isDayArchiveTheme(theme)
                   ? 'magi-home-light-nav-item border-transparent'
                   : 'text-gray-500 hover:bg-black/5 border-transparent'
             }`}
@@ -437,10 +457,80 @@ export default function Home() {
   const machineReviewPanelContentId = useId();
   const workerRef = useRef<Worker | null>(null);
   const searchSequenceRef = useRef(0);
+  const [homeSidebarWidth, setHomeSidebarWidth] = useState(
+    HOME_SIDEBAR_WIDTH_DEFAULT,
+  );
+  const homeSidebarWidthRef = useRef(HOME_SIDEBAR_WIDTH_DEFAULT);
+  const homeSidebarResizeCleanupRef = useRef<(() => void) | null>(null);
 
   const { theme, setTheme, lastCategory, setLastCategory } = useGlobal();
   const storySystem: StorySystem =
     lastCategory.startsWith('exedra_') ? 'exedra' : 'magireco';
+
+  useEffect(() => {
+    const restoreFrame = window.requestAnimationFrame(() => {
+      let restoredWidth = HOME_SIDEBAR_WIDTH_DEFAULT;
+      try {
+        restoredWidth = parseStoredHomeSidebarWidth(
+          window.localStorage.getItem(HOME_SIDEBAR_WIDTH_STORAGE_KEY),
+        );
+      } catch {
+        // The default remains usable if storage is unavailable.
+      }
+      homeSidebarWidthRef.current = restoredWidth;
+      setHomeSidebarWidth(restoredWidth);
+    });
+    return () => {
+      window.cancelAnimationFrame(restoreFrame);
+      homeSidebarResizeCleanupRef.current?.();
+    };
+  }, []);
+
+  const commitHomeSidebarWidth = useCallback((value: number) => {
+    const bounded = clampHomeSidebarWidth(value);
+    homeSidebarWidthRef.current = bounded;
+    setHomeSidebarWidth(bounded);
+    try {
+      window.localStorage.setItem(HOME_SIDEBAR_WIDTH_STORAGE_KEY, String(bounded));
+    } catch {
+      // Resizing remains available even when persistence is blocked.
+    }
+  }, []);
+
+  const beginHomeSidebarResize = useCallback((
+    event: ReactPointerEvent<HTMLButtonElement>,
+  ) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    event.preventDefault();
+    homeSidebarResizeCleanupRef.current?.();
+
+    const startX = event.clientX;
+    const startWidth = homeSidebarWidthRef.current;
+    const onMove = (moveEvent: PointerEvent) => {
+      const nextWidth = clampHomeSidebarWidth(
+        startWidth + moveEvent.clientX - startX,
+      );
+      homeSidebarWidthRef.current = nextWidth;
+      setHomeSidebarWidth(nextWidth);
+    };
+    const onEnd = () => {
+      commitHomeSidebarWidth(homeSidebarWidthRef.current);
+      homeSidebarResizeCleanupRef.current?.();
+      homeSidebarResizeCleanupRef.current = null;
+    };
+    const cleanup = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onEnd);
+      window.removeEventListener('pointercancel', onEnd);
+      document.body.classList.remove('magi-sidebar-resizing');
+    };
+
+    homeSidebarResizeCleanupRef.current = cleanup;
+    document.body.classList.add('magi-sidebar-resizing');
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onEnd, { once: true });
+    window.addEventListener('pointercancel', onEnd, { once: true });
+  }, [commitHomeSidebarWidth]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -716,12 +806,21 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-screen h-[100dvh] overflow-hidden">
+    <div className={`magi-home-shell flex h-screen h-[100dvh] overflow-hidden ${
+      theme === 'light'
+        ? 'magi-home-light-root'
+        : theme === 'paper'
+          ? 'magi-home-paper-root'
+          : ''
+    }`}>
       <aside
-        className={`hidden md:flex w-64 border-r flex-col z-20 flex-shrink-0 ${
+        style={{
+          '--magi-home-sidebar-width': `${homeSidebarWidth}px`,
+        } as CSSProperties}
+        className={`magi-home-sidebar relative z-20 hidden flex-shrink-0 flex-col border-r md:flex ${
           theme === 'dark'
             ? 'border-gray-800 bg-gray-900'
-            : theme === 'light'
+            : isDayArchiveTheme(theme)
               ? 'magi-home-light-sidebar'
               : 'border-black/5 bg-inherit'
         }`}
@@ -739,6 +838,34 @@ export default function Home() {
           theme={theme}
           onSelect={selectCategory}
         />
+        <button
+          type="button"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label={`调整主目录宽度，当前 ${homeSidebarWidth} 像素`}
+          aria-valuemin={HOME_SIDEBAR_WIDTH_MIN}
+          aria-valuemax={HOME_SIDEBAR_WIDTH_MAX}
+          aria-valuenow={homeSidebarWidth}
+          title="拖动调整主目录宽度；双击恢复默认"
+          onPointerDown={beginHomeSidebarResize}
+          onDoubleClick={() => commitHomeSidebarWidth(HOME_SIDEBAR_WIDTH_DEFAULT)}
+          onKeyDown={event => {
+            if (event.key === 'ArrowLeft') {
+              event.preventDefault();
+              commitHomeSidebarWidth(homeSidebarWidth - HOME_SIDEBAR_WIDTH_STEP);
+            } else if (event.key === 'ArrowRight') {
+              event.preventDefault();
+              commitHomeSidebarWidth(homeSidebarWidth + HOME_SIDEBAR_WIDTH_STEP);
+            } else if (event.key === 'Home') {
+              event.preventDefault();
+              commitHomeSidebarWidth(HOME_SIDEBAR_WIDTH_MIN);
+            } else if (event.key === 'End') {
+              event.preventDefault();
+              commitHomeSidebarWidth(HOME_SIDEBAR_WIDTH_MAX);
+            }
+          }}
+          className="magi-sidebar-resize-handle absolute inset-y-0 -right-1 z-30 hidden w-2 cursor-col-resize touch-none md:block"
+        />
       </aside>
 
       <main className="flex-1 flex flex-col min-w-0 bg-transparent">
@@ -746,7 +873,7 @@ export default function Home() {
           className={`border-b p-3 backdrop-blur z-10 flex flex-col gap-3 ${
             theme === 'dark'
               ? 'border-gray-800 bg-gray-900/90'
-              : theme === 'light'
+              : isDayArchiveTheme(theme)
                 ? 'magi-home-light-toolbar'
                 : 'border-black/5 bg-white/60'
           }`}
@@ -764,14 +891,20 @@ export default function Home() {
                   className={`block w-full pl-9 pr-3 py-2 border rounded-lg text-sm outline-none transition-all ${
                     theme === 'dark'
                       ? 'bg-gray-800 border-gray-700'
-                      : 'bg-white/50 border-black/10'
+                      : isDayArchiveTheme(theme)
+                        ? 'magi-home-light-control'
+                        : 'bg-white/50 border-black/10'
                   }`}
                   value={searchTerm}
                   onChange={(event) => updateSearchTerm(event.target.value)}
                 />
               </div>
 
-              <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5 border border-gray-200 dark:border-gray-700 shrink-0">
+              <div className={`flex shrink-0 items-center rounded-lg border p-0.5 ${
+                isDayArchiveTheme(theme)
+                  ? 'magi-home-light-control'
+                  : 'border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800'
+              }`}>
                 {(
                   [
                     { id: 'all', label: '全部' },
@@ -786,8 +919,12 @@ export default function Home() {
                     onClick={() => updateSearchMode(option.id)}
                     className={`px-2 py-1.5 text-xs font-bold rounded-md transition-all ${
                       searchMode === option.id
-                        ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-300 shadow-sm'
-                        : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                        ? isDayArchiveTheme(theme)
+                          ? 'magi-home-light-button-active'
+                          : 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-300 shadow-sm'
+                        : isDayArchiveTheme(theme)
+                          ? 'magi-home-light-segment'
+                          : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                     }`}
                   >
                     {option.label}
@@ -798,7 +935,11 @@ export default function Home() {
               <div
                 role="group"
                 aria-label="搜索对象覆盖范围"
-                className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5 border border-gray-200 dark:border-gray-700 shrink-0"
+                className={`flex shrink-0 items-center rounded-lg border p-0.5 ${
+                  isDayArchiveTheme(theme)
+                    ? 'magi-home-light-control'
+                    : 'border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800'
+                }`}
               >
                 {(['magireco', 'exedra'] as const).map((scope) => (
                   <button
@@ -808,8 +949,12 @@ export default function Home() {
                     onClick={() => switchToStorySystem(scope)}
                     className={`px-2 py-1.5 text-xs font-bold rounded-md whitespace-nowrap transition-all ${
                       storySystem === scope
-                        ? 'bg-white dark:bg-gray-600 text-emerald-700 dark:text-emerald-300 shadow-sm'
-                        : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                        ? isDayArchiveTheme(theme)
+                          ? 'magi-home-light-button-active'
+                          : 'bg-white dark:bg-gray-600 text-emerald-700 dark:text-emerald-300 shadow-sm'
+                        : isDayArchiveTheme(theme)
+                          ? 'magi-home-light-segment'
+                          : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                     }`}
                   >
                     {SEARCH_INDEX_SCOPE_CONFIG[scope].label}
@@ -819,11 +964,15 @@ export default function Home() {
 
               <label
                 className={`flex items-center gap-1 px-2 rounded cursor-pointer border ${
-                  searchJp
-                    ? theme === 'dark'
-                      ? 'bg-blue-900/30 border-blue-800 text-blue-400'
-                      : 'bg-blue-50 border-blue-200 text-blue-700'
-                    : 'border-transparent opacity-60'
+                  isDayArchiveTheme(theme)
+                    ? searchJp
+                      ? 'magi-home-light-button-active'
+                      : 'magi-home-light-button opacity-70'
+                    : searchJp
+                      ? theme === 'dark'
+                        ? 'bg-blue-900/30 border-blue-800 text-blue-400'
+                        : 'bg-blue-50 border-blue-200 text-blue-700'
+                      : 'border-transparent opacity-60'
                 }`}
               >
                 <input
@@ -842,7 +991,9 @@ export default function Home() {
                 className={`px-2.5 py-1 rounded cursor-pointer border text-xs font-bold whitespace-nowrap transition-all ${
                   theme === 'dark'
                     ? 'bg-emerald-900/30 border-emerald-800 text-emerald-400 hover:bg-emerald-800'
-                    : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'
+                    : isDayArchiveTheme(theme)
+                      ? 'magi-home-light-button'
+                      : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'
                 }`}
               >
                 关于我们
@@ -860,10 +1011,14 @@ export default function Home() {
                   storySystem === 'exedra'
                     ? theme === 'dark'
                       ? 'border-violet-700 bg-violet-900/40 text-violet-300 hover:bg-violet-800/60'
-                      : 'border-violet-300 bg-violet-100 text-violet-800 hover:bg-violet-200'
+                      : isDayArchiveTheme(theme)
+                        ? 'magi-home-light-button-active'
+                        : 'border-violet-300 bg-violet-100 text-violet-800 hover:bg-violet-200'
                     : theme === 'dark'
                       ? 'border-blue-800 bg-blue-900/30 text-blue-300 hover:bg-blue-800'
-                      : 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+                      : isDayArchiveTheme(theme)
+                        ? 'magi-home-light-button'
+                        : 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
                 }`}
               >
                 <Book size={14} />
@@ -873,7 +1028,11 @@ export default function Home() {
 
             <div
               className={`flex gap-1 p-1 rounded-full self-end md:self-auto ${
-                theme === 'dark' ? 'bg-black/20' : 'bg-black/5'
+                theme === 'dark'
+                  ? 'bg-black/20'
+                  : isDayArchiveTheme(theme)
+                    ? 'magi-home-light-control'
+                    : 'bg-black/5'
               }`}
             >
               {(
@@ -892,7 +1051,13 @@ export default function Home() {
                   aria-pressed={theme === option.key}
                   onClick={() => setTheme(option.key)}
                   className={`p-2 rounded-full ${
-                    theme === option.key ? 'bg-white shadow text-black' : 'opacity-40'
+                    theme === option.key
+                      ? isDayArchiveTheme(theme)
+                        ? 'magi-home-light-theme-active'
+                        : 'bg-white shadow text-black'
+                      : isDayArchiveTheme(theme)
+                        ? 'magi-home-light-segment opacity-55'
+                        : 'opacity-40'
                   }`}
                 >
                   <option.icon size={14} />
@@ -1070,12 +1235,16 @@ export default function Home() {
             )}
 
             {!normalizedQuery && (
-              <h2 className="text-xl font-bold mb-4 opacity-80 px-1">
+              <h2 className={`mb-4 px-1 text-xl font-bold opacity-80 ${
+                isDayArchiveTheme(theme) ? 'magi-home-light-section-title' : ''
+              }`}>
                 {CATEGORY_CONFIG[lastCategory]?.label ?? lastCategory}
               </h2>
             )}
             {normalizedQuery && (
-              <h2 className="text-xl font-bold mb-4 opacity-80 px-1">
+              <h2 className={`mb-4 px-1 text-xl font-bold opacity-80 ${
+                isDayArchiveTheme(theme) ? 'magi-home-light-section-title' : ''
+              }`}>
                 搜索结果：“{searchTerm}” {searchJp ? '（含日文）' : ''}
               </h2>
             )}
