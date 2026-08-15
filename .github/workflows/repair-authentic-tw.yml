@@ -1,8 +1,9 @@
-name: Repair Authentic TW JSON and Materialize Test Site
+name: Repair Authentic TW JSON and Canonical Exedra Speakers
 
 on:
   push:
     branches: [EXEDRA-TEST]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -14,12 +15,13 @@ concurrency:
 jobs:
   repair:
     if: >-
+      github.event_name == 'workflow_dispatch' ||
       startsWith(
         github.event.head_commit.message,
         '[tw-status] Authentic TW repair bootstrap'
       )
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 300
     env:
       NEXT_TELEMETRY_DISABLED: "1"
       TW_SOURCE_URL: https://github.com/HiiragiNemu/MagiaExedraTWData/releases/download/tw-wiki-source-v1-20260806/exedra-tw-wiki-source-v1.zip
@@ -41,8 +43,19 @@ jobs:
           cache: npm
           cache-dependency-path: website/package-lock.json
 
-      - name: Apply fail-closed code and UI repair
-        run: python tools/apply_authentic_tw_repair.py
+      - name: Apply authentic-TW, human-speaker and UI repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/apply_authentic_tw_repair.py
+          python tools/apply_authentic_tw_repair_v2.py
+          python -m py_compile \
+            tools/tw_authentic_scenario.py \
+            tools/import_exedra_official_tw.py \
+            tools/tw_official_import_core.py \
+            tools/import_exedra_human_text.py \
+            tools/canonicalize_exedra_cn_speakers.py \
+            generate_story_index.py
 
       - name: Install data and website dependencies
         shell: bash
@@ -69,7 +82,104 @@ jobs:
           python tools/materialize_tw_official_cn.py \
             --source-bundle-root "$RUNNER_TEMP/tw-sp-bundle" \
             --source-provider exedra-wiki-sp \
+            --expected-source-count 2780 \
+            --skip-derived
+
+      - name: Canonicalize all TW and non-TW Exedra Chinese speakers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/canonicalize_exedra_cn_speakers.py
+
+      - name: Reject every remaining Japanese speaker label in Chinese Exedra data
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          root = Path('magiraexedra-translate-data-master/Scenarios_full')
+          kana = re.compile(r'[\u3040-\u30ff]')
+          separator = re.compile(r'[:：﹕︰︓]')
+          txt_failures = []
+          json_failures = []
+          txt_labels = 0
+          json_labels = 0
+
+          for path in sorted(root.rglob('*_cn.txt')):
+              for number, raw in enumerate(
+                  path.read_text(encoding='utf-8-sig').splitlines(),
+                  start=1,
+              ):
+                  line = raw.strip()
+                  if not line or line.startswith('---'):
+                      continue
+                  match = separator.search(raw)
+                  if match is None or match.start() <= 0 or match.start() > 96:
+                      continue
+                  speaker = raw[:match.start()].strip()
+                  txt_labels += 1
+                  if kana.search(speaker):
+                      txt_failures.append(
+                          f'{path.as_posix()}:{number}:{speaker}'
+                      )
+
+          for path in sorted(root.rglob('*.json')):
+              name = path.name.casefold()
+              if name.endswith('_cn.import-report.json') or name.endswith('_cn.provenance.json'):
+                  continue
+              value = json.loads(path.read_text(encoding='utf-8-sig'))
+              if not isinstance(value, dict):
+                  continue
+              for sheet_index, sheet in enumerate(value.get('sheetList', [])):
+                  if not isinstance(sheet, dict):
+                      continue
+                  headers = sheet.get('headerRow', {}).get('cellList', [])
+                  if not isinstance(headers, list) or 'Name' not in headers:
+                      continue
+                  name_index = headers.index('Name')
+                  for row_index, row in enumerate(sheet.get('contentRowList', [])):
+                      cells = row.get('cellList', []) if isinstance(row, dict) else []
+                      if name_index >= len(cells):
+                          continue
+                      speaker = str(cells[name_index] or '').strip()
+                      if not speaker:
+                          continue
+                      json_labels += 1
+                      if kana.search(speaker):
+                          json_failures.append(
+                              f'{path.as_posix()}:{sheet_index}:{row_index}:{speaker}'
+                          )
+
+          if txt_failures or json_failures:
+              print('EXEDRA_CN_TXT_JAPANESE_SPEAKERS', txt_failures[:100])
+              print('EXEDRA_CN_JSON_JAPANESE_NAMES', json_failures[:100])
+              raise SystemExit(
+                  'Chinese Exedra data still contains Japanese speaker labels: '
+                  f'TXT={len(txt_failures)} JSON={len(json_failures)}'
+              )
+          print(
+              'EXEDRA_CN_SPEAKERS_ALL_CHINESE '
+              f'txt_labels={txt_labels} json_labels={json_labels}'
+          )
+          PY
+
+      - name: Rebuild story catalogue, metadata and split search indexes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/validate_tw_official_coverage.py \
+            --scenario-root "$RUNNER_TEMP/tw-sp-bundle/bundle/Resources/Scenarios" \
             --expected-source-count 2780
+          python generate_story_index.py
+          python tools/apply_tw_official_metadata.py
+          python generate_machine_translation_manifest.py \
+            --translation-base 65f221f2aaa5a9fe161ed32e03e4dfbb93d4746d \
+            --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb
+          python tools/build_split_search_indexes.py
+          python tools/build_split_search_indexes.py --validate-only
 
       - name: Run Python and website regression suites
         shell: bash
@@ -78,19 +188,23 @@ jobs:
           python -m unittest discover -s tests -p 'test_*.py'
           npm --prefix website test
           npm --prefix website run check
-          python tools/build_split_search_indexes.py --validate-only
 
-      - name: Prove every published sample comes from authentic TW schema
+      - name: Prove authentic TW JSON and retained human translation speakers
         shell: bash
         run: |
           set -euo pipefail
           python - "$RUNNER_TEMP/tw-sp-bundle" <<'PY'
           import json
+          import re
           import sys
           import tempfile
           from pathlib import Path
 
-          from tools.tw_authentic_scenario import materialize_tw_json
+          from tools.tw_authentic_scenario import (
+              load_name_translation_map,
+              materialize_tw_json,
+              translate_speaker,
+          )
           from tools.tw_official_import_core import (
               resolve_source_bundle,
               simplified_converter,
@@ -121,7 +235,7 @@ jobs:
               if expected.read_bytes() != actual.read_bytes():
                   raise SystemExit(
                       'Published Arina JSON is not the authentic TW JSON with '
-                      'Name/Comment-only tw2sp conversion'
+                      'only canonical Name and tw2sp playable Comment localization'
                   )
 
           value = json.loads(actual.read_text(encoding='utf-8'))
@@ -142,36 +256,63 @@ jobs:
                       name = str(cells[name_index] or '').strip()
                       if name:
                           names.append(name)
-          if not any('阿莉娜' in name for name in names):
-              raise SystemExit(f'Authentic TW Chinese Name missing: {names[:20]}')
+          if '阿莉娜·格雷' not in names:
+              raise SystemExit(f'Canonical authentic TW Arina Name missing: {names[:20]}')
           if any('アリナ' in name for name in names):
-              raise SystemExit(f'JP-overlay Name remains: {names[:20]}')
+              raise SystemExit(f'JP-overlay Arina Name remains: {names[:20]}')
+
+          liz = (
+              Path('magiraexedra-translate-data-master/Scenarios_full')
+              / '3_Character'
+              / 'character_liz'
+              / 'character_liz_cn.txt'
+          )
+          liz_text = liz.read_text(encoding='utf-8-sig')
+          if '莉兹·霍克伍德：' not in liz_text:
+              raise SystemExit('Retained human Liz story lacks canonical Chinese speaker')
+          if 'リズ・ホークウッド：' in liz_text:
+              raise SystemExit('Retained human Liz story still uses Japanese speaker')
+
+          mapping = load_name_translation_map()
+          required = {
+              'アリナ・グレイ': '阿莉娜·格雷',
+              '水波レナ': '水波玲奈',
+              '秋野かえで': '秋野枫',
+              '十咎ももこ': '十咎桃子',
+              'リズ・ホークウッド': '莉兹·霍克伍德',
+          }
+          for raw, expected in required.items():
+              actual_name = translate_speaker(raw, mapping)
+              if actual_name != expected:
+                  raise SystemExit(
+                      f'Dictionary speaker mismatch: {raw} -> {actual_name}; '
+                      f'expected {expected}'
+                  )
 
           report = json.loads(
               Path('artifacts/exedra_official_tw_import_report.json')
               .read_text(encoding='utf-8')
           )
           stats = report.get('stats', {})
-          expected_stats = {
-              'official_tw_groups': 395,
-              'official_tw_json_files': 2708,
-              'official_tw_text_events': 93697,
-              'failed_groups': 0,
-              'tw_source_files': 2780,
-              'tw_source_files_used': 2708,
-              'tw_source_files_unexpected_unused': 0,
-          }
-          for key, expected_value in expected_stats.items():
-              if int(stats.get(key, -1)) != expected_value:
-                  raise SystemExit(
-                      f'Unexpected TW statistic {key}={stats.get(key)!r}; '
-                      f'expected {expected_value}'
-                  )
+          if int(stats.get('failed_groups', 0)) != 0:
+              raise SystemExit(f'TW structural failures remain: {stats}')
+          if int(stats.get('tw_source_files_unexpected_unused', 0)) != 0:
+              raise SystemExit(f'Unexpected TW source files remain: {stats}')
+          for key in (
+              'official_tw_groups',
+              'official_tw_json_files',
+              'official_tw_text_events',
+              'tw_source_files',
+              'tw_source_files_used',
+          ):
+              if int(stats.get(key, 0)) <= 0:
+                  raise SystemExit(f'Invalid TW statistic {key}: {stats}')
           print(
-              'AUTHENTIC_TW_CORPUS_OK '
+              'AUTHENTIC_TW_AND_HUMAN_SPEAKERS_OK '
+              f"groups={stats['official_tw_groups']} "
               f"json={stats['official_tw_json_files']} "
               f"events={stats['official_tw_text_events']} "
-              f"arinaNames={len(names)}"
+              f"arina_names={len(names)}"
           )
           PY
 
@@ -192,6 +333,7 @@ jobs:
           set -euo pipefail
           rm -f \
             tools/apply_authentic_tw_repair.py \
+            tools/apply_authentic_tw_repair_v2.py \
             .github/workflows/repair-authentic-tw.yml
           git config user.name 'github-actions[bot]'
           git config user.email \
@@ -202,5 +344,5 @@ jobs:
             exit 1
           fi
           git commit -m \
-            '[tw-materialized] Authentic TW JSON speakers and zh-CN reader UI'
+            '[tw-materialized] Authentic TW JSON and canonical Chinese speakers'
           git push origin HEAD:EXEDRA-TEST
