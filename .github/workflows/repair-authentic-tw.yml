@@ -1,0 +1,206 @@
+name: Repair Authentic TW JSON and Materialize Test Site
+
+on:
+  push:
+    branches: [EXEDRA-TEST]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-authentic-tw-exedra-test
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    if: >-
+      startsWith(
+        github.event.head_commit.message,
+        '[tw-status] Authentic TW repair bootstrap'
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      TW_SOURCE_URL: https://github.com/HiiragiNemu/MagiaExedraTWData/releases/download/tw-wiki-source-v1-20260806/exedra-tw-wiki-source-v1.zip
+      TW_SOURCE_SHA256: 503c4c9a518d0a992abe800fccde4a97b35b2e4ddaeb2359e63eaa8d572cd1ac
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: EXEDRA-TEST
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Apply fail-closed code and UI repair
+        run: python tools/apply_authentic_tw_repair.py
+
+      - name: Install data and website dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-compile \
+            -r requirements-data-tools.txt
+          npm --prefix website ci
+
+      - name: Fetch immutable official TW source bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$RUNNER_TEMP/tw-sp-bundle"
+          python tools/fetch_tw_sp_source_bundle.py \
+            --source-url "$TW_SOURCE_URL" \
+            --source-sha256 "$TW_SOURCE_SHA256" \
+            --output-root "$RUNNER_TEMP/tw-sp-bundle"
+
+      - name: Replace JP-overlay data with authentic TW JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/materialize_tw_official_cn.py \
+            --source-bundle-root "$RUNNER_TEMP/tw-sp-bundle" \
+            --source-provider exedra-wiki-sp \
+            --expected-source-count 2780
+
+      - name: Run Python and website regression suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tests -p 'test_*.py'
+          npm --prefix website test
+          npm --prefix website run check
+          python tools/build_split_search_indexes.py --validate-only
+
+      - name: Prove every published sample comes from authentic TW schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "$RUNNER_TEMP/tw-sp-bundle" <<'PY'
+          import json
+          import sys
+          import tempfile
+          from pathlib import Path
+
+          from tools.tw_authentic_scenario import materialize_tw_json
+          from tools.tw_official_import_core import (
+              resolve_source_bundle,
+              simplified_converter,
+          )
+
+          bundle = resolve_source_bundle(
+              Path(sys.argv[1]),
+              provider='exedra-wiki-sp',
+          )
+          source = (
+              bundle.scenario_root
+              / '3_Character'
+              / 'character_arina_3'
+              / 'character_arina_3.json'
+          )
+          actual = (
+              Path('magiraexedra-translate-data-master/Scenarios_full')
+              / '3_Character'
+              / 'character_arina'
+              / 'character_arina_3.json'
+          )
+          if not source.is_file() or not actual.is_file():
+              raise SystemExit(f'Arina source/output missing: {source}, {actual}')
+
+          with tempfile.TemporaryDirectory() as temporary:
+              expected = Path(temporary) / 'expected.json'
+              materialize_tw_json(source, expected, simplified_converter())
+              if expected.read_bytes() != actual.read_bytes():
+                  raise SystemExit(
+                      'Published Arina JSON is not the authentic TW JSON with '
+                      'Name/Comment-only tw2sp conversion'
+                  )
+
+          value = json.loads(actual.read_text(encoding='utf-8'))
+          names = []
+          for sheet in value.get('sheetList', []):
+              headers = sheet.get('headerRow', {}).get('cellList', [])
+              if 'ActionType' not in headers or 'Name' not in headers:
+                  continue
+              action_index = headers.index('ActionType')
+              name_index = headers.index('Name')
+              for row in sheet.get('contentRowList', []):
+                  cells = row.get('cellList', [])
+                  if max(action_index, name_index) >= len(cells):
+                      continue
+                  if str(cells[action_index]).casefold() in {
+                      'talk', 'narration', 'charactertalk', 'onlytext'
+                  }:
+                      name = str(cells[name_index] or '').strip()
+                      if name:
+                          names.append(name)
+          if not any('阿莉娜' in name for name in names):
+              raise SystemExit(f'Authentic TW Chinese Name missing: {names[:20]}')
+          if any('アリナ' in name for name in names):
+              raise SystemExit(f'JP-overlay Name remains: {names[:20]}')
+
+          report = json.loads(
+              Path('artifacts/exedra_official_tw_import_report.json')
+              .read_text(encoding='utf-8')
+          )
+          stats = report.get('stats', {})
+          expected_stats = {
+              'official_tw_groups': 395,
+              'official_tw_json_files': 2708,
+              'official_tw_text_events': 93697,
+              'failed_groups': 0,
+              'tw_source_files': 2780,
+              'tw_source_files_used': 2708,
+              'tw_source_files_unexpected_unused': 0,
+          }
+          for key, expected_value in expected_stats.items():
+              if int(stats.get(key, -1)) != expected_value:
+                  raise SystemExit(
+                      f'Unexpected TW statistic {key}={stats.get(key)!r}; '
+                      f'expected {expected_value}'
+                  )
+          print(
+              'AUTHENTIC_TW_CORPUS_OK '
+              f"json={stats['official_tw_json_files']} "
+              f"events={stats['official_tw_text_events']} "
+              f"arinaNames={len(names)}"
+          )
+          PY
+
+      - name: Verify split search and Cloudflare build
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/search_chunk_delivery.py materialize
+          python tools/search_chunk_delivery.py verify-tree --root website/public
+          npm --prefix website run build:worker
+          npm --prefix website run verify:cloudflare-output
+          python tools/search_chunk_delivery.py \
+            verify-tree --root website/.open-next/assets
+
+      - name: Commit certified repair to EXEDRA-TEST
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f \
+            tools/apply_authentic_tw_repair.py \
+            .github/workflows/repair-authentic-tw.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email \
+            '4189824+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Repair produced no repository changes.' >&2
+            exit 1
+          fi
+          git commit -m \
+            '[tw-materialized] Authentic TW JSON speakers and zh-CN reader UI'
+          git push origin HEAD:EXEDRA-TEST
