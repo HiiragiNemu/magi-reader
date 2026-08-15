@@ -18,10 +18,23 @@ SPEC.loader.exec_module(MODULE)
 
 
 class CloseDeepSeekTranslationToManualTests(unittest.TestCase):
-    def test_real_handoff_partition_and_protection(self) -> None:
+    def require_real_handoff_inputs(self) -> tuple[Path, Path, Path]:
         staging = ROOT / MODULE.DEFAULT_STAGING
         exedra = ROOT / MODULE.DEFAULT_EXEDRA
         protected = ROOT / MODULE.DEFAULT_PROTECTED
+        required = (staging, exedra, protected)
+        missing = [path for path in required if not path.exists()]
+        if missing:
+            relative = ", ".join(
+                path.relative_to(ROOT).as_posix() for path in missing
+            )
+            self.skipTest(
+                "local DeepSeek handoff artifacts are not available: " + relative
+            )
+        return staging, exedra, protected
+
+    def test_real_handoff_partition_and_protection(self) -> None:
+        staging, exedra, protected = self.require_real_handoff_inputs()
         before = MODULE.sha256_file(protected)
         handoff = MODULE.build_handoff(staging, exedra, protected, MODULE.DS_JOB_ROOT)
         after = MODULE.sha256_file(protected)
@@ -54,9 +67,7 @@ class CloseDeepSeekTranslationToManualTests(unittest.TestCase):
         )
 
     def test_generator_outputs_are_reopenable_and_idempotent(self) -> None:
-        staging = ROOT / MODULE.DEFAULT_STAGING
-        exedra = ROOT / MODULE.DEFAULT_EXEDRA
-        protected = ROOT / MODULE.DEFAULT_PROTECTED
+        staging, exedra, protected = self.require_real_handoff_inputs()
         first_handoff = MODULE.build_handoff(
             staging, exedra, protected, MODULE.DS_JOB_ROOT
         )

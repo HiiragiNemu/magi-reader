@@ -27,6 +27,17 @@ from tools.build_exedra_missing_translation_allowlist import (
 class ExedraMissingTranslationAllowlistTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        required = (DEFAULT_AUDIT, DEFAULT_MANIFEST, DEFAULT_GLOSSARY)
+        missing = [path for path in required if not path.is_file()]
+        if missing:
+            relative = ", ".join(
+                path.relative_to(ROOT).as_posix() for path in missing
+            )
+            raise unittest.SkipTest(
+                "local DeepSeek retranslation artifacts are not available: "
+                + relative
+            )
+
         cls.allowlist, cls.sealed, cls.verification = build_outputs(
             root=ROOT,
             audit_path=DEFAULT_AUDIT,
