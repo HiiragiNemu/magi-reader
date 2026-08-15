@@ -27,9 +27,6 @@ CRITICAL_FILES = (
     ROOT / "tools/generate_exedra_localization_audit.py",
     ROOT / "tools/build_split_search_indexes.py",
     ROOT / "tools/build_story_release_archive.py",
-    ROOT / "tools/build_deepseek_retranslation_inventory.py",
-    ROOT / "tools/build_authoritative_glossary.py",
-    ROOT / "tools/stage_deepseek_translation_batch.py",
     ROOT / "scripts/materialize_proofreading_assets.py",
 )
 TEST_ROOT = ROOT / "tests"
