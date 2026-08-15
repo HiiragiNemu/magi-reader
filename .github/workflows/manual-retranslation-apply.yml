@@ -1,0 +1,47 @@
+name: Apply reviewed manual scenario translations
+
+on:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - manual_retranslation/apply_batches.py
+      - manual_retranslation/batches/**
+      - manual_retranslation/bundles/**
+      - .github/workflows/manual-retranslation-apply.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manual-retranslation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out translation branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Apply reviewed translation maps and validate JSON
+        run: |
+          python manual_retranslation/apply_batches.py \
+            --report "$RUNNER_TEMP/manual-retranslation-report.json"
+          cat "$RUNNER_TEMP/manual-retranslation-report.json"
+
+      - name: Commit translated scenario JSON files
+        shell: bash
+        run: |
+          if git diff --quiet -- magireco-translate-data-master/Scenarios_full; then
+            echo "No scenario JSON changes are required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- magireco-translate-data-master/Scenarios_full
+          git commit -m "Translate reviewed scenario JSON batches from Japanese"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
