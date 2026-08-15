@@ -9,6 +9,7 @@ const workerSource = await readFile(
   'utf8',
 );
 
+const CHUNK_BYTES = 1024 * 1024;
 const sha256 = payload => createHash('sha256').update(payload).digest('hex');
 const split = (payload, bytes) => {
   const result = [];
@@ -94,11 +95,19 @@ const waitForResult = async (worker, sequence) => {
 
 test('same-origin physical v2 chunks reassemble one verified JSON stream', async () => {
   assert.match(workerSource, /SEARCH_CHUNK_DELIVERY_RUNTIME_V1/u);
+  // Production v2 is fixed at 1 MiB. Make the first searchable row slightly
+  // larger than one chunk so this fixture proves real cross-file reassembly
+  // instead of weakening the protocol to tiny synthetic chunk sizes.
   const payload = new TextEncoder().encode(JSON.stringify([
-    { id: 'chunked-1', c: '鹿目圆：简体中文全文搜索', l: 'cn' },
+    {
+      id: 'chunked-1',
+      c: `鹿目圆：简体中文全文搜索${'x'.repeat(CHUNK_BYTES + 256)}`,
+      l: 'cn',
+    },
     { id: 'chunked-2', c: '暁美ほむら：約束', l: 'jp' },
   ]));
-  const parts = split(payload, 23);
+  const parts = split(payload, CHUNK_BYTES);
+  assert.equal(parts.length, 2);
   const globalSha = sha256(payload);
   const base = `/search-chunks/exedra/${globalSha}/`;
   const fetched = [];
@@ -116,7 +125,7 @@ test('same-origin physical v2 chunks reassemble one verified JSON stream', async
       sha256: globalSha,
       bytes: payload.byteLength,
       entries: 2,
-      chunk_bytes: 23,
+      chunk_bytes: CHUNK_BYTES,
       chunks: parts.map(part => ({
         bytes: part.byteLength,
         sha256: sha256(part),
@@ -143,7 +152,8 @@ test('a broken physical chunk falls through to the existing R2 single-object sou
   const payload = new TextEncoder().encode(JSON.stringify([
     { id: 'fallback-1', c: '环彩羽：回退搜索', l: 'cn' },
   ]));
-  const parts = split(payload, 17);
+  const parts = split(payload, CHUNK_BYTES);
+  assert.equal(parts.length, 1);
   const globalSha = sha256(payload);
   const base = `/search-chunks/magireco/${globalSha}/`;
   const r2 = `https://example.invalid/search/${globalSha}.json`;
@@ -161,7 +171,7 @@ test('a broken physical chunk falls through to the existing R2 single-object sou
     sha256: globalSha,
     bytes: payload.byteLength,
     entries: 1,
-    chunk_bytes: 17,
+    chunk_bytes: CHUNK_BYTES,
     chunks: parts.map(part => ({ bytes: part.byteLength, sha256: sha256(part) })),
   };
   worker.post({
