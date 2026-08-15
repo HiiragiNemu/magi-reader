@@ -59,14 +59,16 @@ jobs:
               apply_marker,
               apply_marker
               + 'python tools/apply_authentic_tw_repair_v4.py\n'
-              + 'python tools/apply_authentic_tw_repair_v5.py\n',
+              + 'python tools/apply_authentic_tw_repair_v5.py\n'
+              + 'python tools/apply_authentic_tw_repair_v6.py\n',
               1,
           )
           source = source.replace(
               cleanup_marker,
               cleanup_marker
               + '  tools/apply_authentic_tw_repair_v4.py \\\n'
-              + '  tools/apply_authentic_tw_repair_v5.py \\\n',
+              + '  tools/apply_authentic_tw_repair_v5.py \\\n'
+              + '  tools/apply_authentic_tw_repair_v6.py \\\n',
               1,
           )
           path.write_text(source, encoding='utf-8', newline='\n')
