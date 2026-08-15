@@ -214,62 +214,29 @@ test('Pages binding configuration uses the runtime GitHub repository variable', 
   assert.doesNotMatch(script, /PROOFREADING_GITHUB_REPOSITORY:/u);
 });
 
-test('isolated Exedra deployment smoke-tests both voice systems and the decoder', () => {
+test('isolated Exedra V4 deployment verifies search chunks, revision, voice systems and decoder', () => {
   const workflow = readFileSync(testDeploymentWorkflow, 'utf8');
-  assert.match(
-    workflow,
-    /\?__revision=\$\{GITHUB_SHA\}-\$\{attempt\}/u,
-  );
-  assert.match(
-    workflow,
-    /request_url="\$\{url\}\$\{separator\}__revision=\$\{GITHUB_SHA\}-\$\{attempt\}"/u,
-  );
-  assert.match(
-    workflow,
-    /pub-70a248f1a6fe4ca597e7a10f8b95dfd8\.r2\.dev/u,
-  );
-  assert.match(
-    workflow,
-    /discover-cloudflare-r2-bucket\.mjs/u,
-  );
-  assert.match(
-    workflow,
-    /"binding": "MAGIRECO_VOICE_R2"/u,
-  );
-  assert.match(
-    workflow,
-    /"bucket_name": "\$VOICE_R2_BUCKET_NAME"/u,
-  );
+  assert.match(workflow, /TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V4/u);
+  assert.match(workflow, /startsWith\(github\.event\.head_commit\.message, '\[tw-materialized\]'\)/u);
+  assert.match(workflow, /\?__revision=\$\{GITHUB_SHA\}-\$\{attempt\}/u);
+  assert.match(workflow, /search_chunk_delivery\.py verify-http --base-url/u);
+  assert.match(workflow, /TW_DEPLOY_BYTES_OK/u);
+  assert.match(workflow, /pub-70a248f1a6fe4ca597e7a10f8b95dfd8\.r2\.dev/u);
+  assert.match(workflow, /discover-cloudflare-r2-bucket\.mjs/u);
+  assert.match(workflow, /"binding": "MAGIRECO_VOICE_R2"/u);
+  assert.match(workflow, /"bucket_name": "\$VOICE_R2_BUCKET_NAME"/u);
   assert.match(
     workflow,
     /VOICE_R2_BUCKET_NAME: \$\{\{ steps\.voice_r2\.outputs\.bucket_name \}\}/u,
   );
-  assert.doesNotMatch(
-    workflow,
-    /steps\.voice_r2\.outputs\.bucket_name \|\|/u,
-  );
-  assert.match(
-    workflow,
-    /HTTP fallback/u,
-  );
+  assert.doesNotMatch(workflow, /steps\.voice_r2\.outputs\.bucket_name \|\|/u);
+  assert.match(workflow, /HTTP fallback/u);
   assert.doesNotMatch(workflow, /wrangler r2 object put/u);
   assert.match(workflow, /Smoke-test bounded voice playback assets/u);
-  assert.match(
-    workflow,
-    /api\/audio\/magireco-voice\/vo_char_3031_00_01/u,
-  );
-  assert.match(
-    workflow,
-    /Origin: \$site_url/u,
-  );
-  assert.match(
-    workflow,
-    /access-control-allow-origin/u,
-  );
-  assert.match(
-    workflow,
-    /audio\/exedra-local\/cv_namae_call_01\.ogg/u,
-  );
+  assert.match(workflow, /api\/audio\/magireco-voice\/vo_char_3031_00_01/u);
+  assert.match(workflow, /Origin: \$site_url/u);
+  assert.match(workflow, /access-control-allow-origin/u);
+  assert.match(workflow, /audio\/exedra-local\/cv_namae_call_01\.ogg/u);
   assert.match(workflow, /audio\/hca_wasm_bg\.wasm/u);
   assert.match(workflow, /VOICE_ASSETS_OK/u);
 });
