@@ -30,8 +30,8 @@ def main() -> int:
     )
     replace_once(
         HUMAN_IMPORTER,
-        "                        common.translate_speaker(jp_name, mapping)\n",
-        "                        canonicalize_speaker(jp_name, mapping)\n",
+        "common.translate_speaker(jp_name, mapping)",
+        "canonicalize_speaker(jp_name, mapping)",
     )
     replace_once(
         TW_TEST,
