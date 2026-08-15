@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify TW provenance, generated JSON hashes, and classified source coverage."""
+"""Verify TW provenance, exact tw2sp text output, hashes, and source coverage."""
 from __future__ import annotations
 
 import argparse
@@ -11,7 +11,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "tools"), str(ROOT)]
 import generate_story_index as pipeline  # noqa: E402
-from tw_official_import_core import tree_sha256  # noqa: E402
+import import_exedra_official_tw as tw  # noqa: E402
+from tw_official_import_core import simplified_converter, tree_sha256  # noqa: E402
 
 CN_ROOT = ROOT / "magiraexedra-translate-data-master/Scenarios_full"
 DEFAULT_REPORT = ROOT / "artifacts/exedra_official_tw_import_report.json"
@@ -56,17 +57,32 @@ def main() -> int:
     if report.get("scenarioTreeSha256") != scenario_hash:
         raise RuntimeError("导入报告 Scenario tree hash 已过期")
     stats = report.get("stats")
-    if not isinstance(stats, dict) or stats.get("failed_groups"):
+    if not isinstance(stats, dict) or int(stats.get("failed_groups", 0) or 0) != 0:
         raise RuntimeError("导入报告含结构失败或缺少 stats")
 
+    # This is the same pinned converter used by materialization.  Every
+    # generated event below is compared against tw2sp(the exact TW source
+    # event), so hashes alone can never certify an accidentally Traditional
+    # Chinese output.
+    convert = simplified_converter()
     used: set[str] = set()
     provenance_files = 0
     generated_json_files = 0
+    verified_text_events = 0
+    changed_by_tw2sp = 0
+
     for path in sorted(CN_ROOT.rglob("*_cn.provenance.json")):
         value = load_object(path)
         if value.get("provenance") != "official_tw_human":
             continue
         provenance_files += 1
+        if value.get("machineTranslation") is not False or value.get("officialTw") is not True:
+            raise RuntimeError(f"台服 provenance 权威标记无效：{path}")
+        contract = value.get("sourceContract")
+        provenance = contract.get("provenance") if isinstance(contract, dict) else None
+        if not isinstance(provenance, dict) or provenance.get("textTransformation") != "reader-tw2sp":
+            raise RuntimeError(f"台服 provenance 缺少 reader-tw2sp 合同：{path}")
+
         group_dir = path.parent
         group_key = path.name.removesuffix("_cn.provenance.json")
         cn_txt = group_dir / f"{group_key}_cn.txt"
@@ -77,6 +93,7 @@ def main() -> int:
         rows = value.get("sourceJson")
         if not isinstance(rows, list):
             raise RuntimeError(f"台服 provenance 缺少 sourceJson：{path}")
+
         for row in rows:
             if not isinstance(row, dict) or not isinstance(row.get("twPath"), str):
                 raise RuntimeError(f"台服 provenance 来源记录无效：{path}")
@@ -89,12 +106,48 @@ def main() -> int:
             used.add(key)
             if row.get("twSha256") != pipeline._sha256_file(source):
                 raise RuntimeError(f"台服来源哈希已变化：{row['twPath']}")
+
             output_json = group_dir / str(row.get("source") or "")
             if not output_json.is_file():
                 raise RuntimeError(f"台服 provenance 缺少生成 JSON：{output_json}")
             if row.get("simplifiedJsonSha256") != pipeline._sha256_file(output_json):
                 raise RuntimeError(f"台服简体 JSON 哈希失效：{output_json}")
+
+            source_rows = tw.extract_rows(source)
+            output_rows = tw.extract_rows(output_json)
+            if len(source_rows) != len(output_rows):
+                raise RuntimeError(
+                    f"台服原文/简体输出事件数不同：{row['twPath']} "
+                    f"source={len(source_rows)} output={len(output_rows)}"
+                )
+            event_count = row.get("eventCount")
+            if event_count != len(source_rows):
+                raise RuntimeError(
+                    f"台服 provenance eventCount 失效：{row['twPath']} "
+                    f"{event_count!r} != {len(source_rows)}"
+                )
+
+            for index, (source_row, output_row) in enumerate(
+                zip(source_rows, output_rows),
+                1,
+            ):
+                original = str(source_row.get("text") or "").strip()
+                expected = convert(original)
+                actual = str(output_row.get("text") or "").strip()
+                if actual != expected:
+                    raise RuntimeError(
+                        f"台服文本未按 OpenCC tw2sp 精确物化：{row['twPath']} "
+                        f"event={index} expected={expected!r} actual={actual!r}"
+                    )
+                verified_text_events += 1
+                if expected != original:
+                    changed_by_tw2sp += 1
             generated_json_files += 1
+
+    if provenance_files == 0 or generated_json_files == 0 or verified_text_events == 0:
+        raise RuntimeError("没有找到可验证的台服官方简体剧情")
+    if changed_by_tw2sp == 0:
+        raise RuntimeError("OpenCC tw2sp 未改变任何台服文本，拒绝接受可疑物化结果")
 
     deferred = {
         normalized(value)
@@ -114,6 +167,7 @@ def main() -> int:
     unexpected = report.get("unexpectedUnusedTwSourceFiles")
     if unexpected != []:
         raise RuntimeError(f"仍有无法归类的台服 Scenario：{unexpected!r}")
+
     classified_sets = {
         "used": used,
         "deferred": deferred,
@@ -133,9 +187,12 @@ def main() -> int:
         missing = sorted(set(source_paths) - classified)
         extra = sorted(classified - set(source_paths))
         raise RuntimeError(f"台服来源分类不完整：missing={missing[:5]} extra={extra[:5]}")
+
+    unused = deferred | tw_only | no_text
     expected = {
         "tw_source_files": scenario_count,
         "tw_source_files_used": len(used),
+        "tw_source_files_unused": len(unused),
         "tw_source_files_deferred_partial": len(deferred),
         "tw_source_files_tw_only_without_jp": len(tw_only),
         "tw_source_files_no_text": len(no_text),
@@ -143,16 +200,19 @@ def main() -> int:
         "tw_source_files_unexpected_unused": 0,
         "official_tw_json_files": generated_json_files,
         "official_tw_groups": provenance_files,
+        "official_tw_text_events": verified_text_events,
     }
     for field, actual in expected.items():
         if stats.get(field) != actual:
             raise RuntimeError(f"导入报告统计失效：{field}={stats.get(field)} != {actual}")
+
     print(
         "TW_OFFICIAL_COVERAGE_OK "
         f"source_files={scenario_count} used_files={len(used)} "
         f"deferred_partial={len(deferred)} tw_only_without_jp={len(tw_only)} "
-        f"no_text={len(no_text)} "
-        f"provenance_groups={provenance_files} generated_json={generated_json_files}"
+        f"no_text={len(no_text)} provenance_groups={provenance_files} "
+        f"generated_json={generated_json_files} verified_text_events={verified_text_events} "
+        f"tw2sp_changed_events={changed_by_tw2sp}"
     )
     return 0
 

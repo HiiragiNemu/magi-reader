@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Patch the existing EXEDRA-TEST deployment for TW data and split search."""
+"""Patch EXEDRA-TEST deployment to require the committed split-search R2 release."""
 from __future__ import annotations
 
 import re
@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PATH = ROOT / ".github/workflows/deploy-exedra-proofreading-test.yml"
-MARKER = "# TW_OFFICIAL_EXEDRA_TEST_DEPLOY_V1"
+MARKER = "# TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V2"
 
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
@@ -20,70 +20,61 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
 def main() -> int:
     text = PATH.read_text(encoding="utf-8")
     if MARKER in text:
-        print("TW_DEPLOY_WORKFLOW_ALREADY_PATCHED")
+        print("TW_SIMPLIFIED_SEARCH_DEPLOY_ALREADY_PATCHED")
         return 0
     if "branches: [EXEDRA-TEST]" not in text:
         raise RuntimeError("部署工作流不再监听 EXEDRA-TEST，拒绝继续")
-
-    text = replace_once(
-        text,
-        "          python generate_story_index.py\n"
-        "          python generate_machine_translation_manifest.py",
-        "          python generate_story_index.py\n"
-        "          python tools/apply_tw_official_features.py\n"
-        "          python generate_machine_translation_manifest.py",
-        "数据生成",
-    )
+    if "python tools/apply_tw_official_metadata.py" not in text:
+        raise RuntimeError("部署工作流缺少台服官方 metadata 生成步骤")
 
     search_pattern = (
-        r"      - name: Generate matching search manifest\n"
+        r"      - name: Generate matching split search manifests\n"
         r".*?(?=      - name: Build Cloudflare Worker output)"
     )
-    search_replacement = """      - name: Generate split Magia Record and Exedra search objects
+    search_replacement = """      - name: Rebuild and certify committed split search release
         shell: bash
         run: |
           set -euo pipefail
+          search_public_base='https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev'
+
+          for scope in magireco exedra; do
+            git show "$GITHUB_SHA:website/public/search_index_manifest.$scope.json" \
+              > "$RUNNER_TEMP/committed-search-index-manifest.$scope.json"
+          done
+
           python tools/build_split_search_indexes.py
           python tools/build_split_search_indexes.py --validate-only
 
-      - name: Discover split-search R2 bucket
-        id: search_r2
-        timeout-minutes: 3
-        working-directory: website
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-        run: >-
-          node scripts/discover-cloudflare-r2-bucket.mjs
-          --target-domain "pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev"
-
-      - name: Upload split search objects to R2
-        working-directory: website
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          SEARCH_BUCKET: ${{ steps.search_r2.outputs.bucket_name }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -n "$SEARCH_BUCKET"
           for scope in magireco exedra; do
-            object_key="$(python3 - "$scope" <<'PY2'
+            cmp \
+              "$RUNNER_TEMP/committed-search-index-manifest.$scope.json" \
+              "website/public/search_index_manifest.$scope.json"
+
+            read -r object_key expected_sha expected_bytes <<< "$(
+              python3 - "$scope" <<'PY'
           import json, sys
           from pathlib import Path
           scope = sys.argv[1]
           value = json.loads(
-              Path(f'public/search_index_manifest.{scope}.json').read_text(
-                  encoding='utf-8'
-              )
+              Path(f'website/public/search_index_manifest.{scope}.json')
+              .read_text(encoding='utf-8')
           )
-          print(value['object_key'])
-          PY2
+          print(value['object_key'], value['sha256'], value['bytes'])
+          PY
             )"
-            npx wrangler r2 object put \
-              "$SEARCH_BUCKET/$object_key" \
-              --file "../artifacts/search-split/search_content.$scope.json" \
-              --remote
+
+            remote="$RUNNER_TEMP/search-r2-$scope.json"
+            curl --fail --location --silent --show-error \
+              --retry 4 --retry-all-errors --connect-timeout 15 --max-time 300 \
+              -o "$remote" \
+              "$search_public_base/$object_key?deploy_verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$scope"
+            actual_bytes="$(wc -c < "$remote" | tr -d ' ')"
+            actual_sha="$(sha256sum "$remote" | awk '{print $1}')"
+            if [ "$actual_bytes" != "$expected_bytes" ] || [ "$actual_sha" != "$expected_sha" ]; then
+              echo "::error::Published R2 search object mismatch for $scope: bytes=$actual_bytes/$expected_bytes sha=$actual_sha/$expected_sha"
+              exit 1
+            fi
+            echo "SEARCH_R2_DEPLOY_INPUT_OK scope=$scope bytes=$actual_bytes sha256=$actual_sha object=$object_key"
           done
 
 """
@@ -95,16 +86,26 @@ def main() -> int:
         flags=re.S,
     )
     if count != 1:
-        raise RuntimeError("无法替换全文搜索部署步骤")
+        raise RuntimeError("无法替换 split-search 部署步骤")
 
     smoke_old = "if min(map(len, (home, submissions, machine_review))) < 500:"
     smoke_new = "if len(home) < 500 or len(submissions) < 160 or len(machine_review) < 160:"
     if smoke_old in text:
         text = replace_once(text, smoke_old, smoke_new, "烟雾测试长度")
+    elif smoke_new not in text:
+        raise RuntimeError("找不到烟雾测试长度门禁")
+
+    provenance_old = "              'exedra_wiki_human',\n"
+    provenance_new = (
+        "              'exedra_wiki_human',\n"
+        "              'exedra_wiki_voice_human',\n"
+    )
+    if provenance_new not in text:
+        text = replace_once(text, provenance_old, provenance_new, "可信 Wiki voice provenance")
 
     text = text.rstrip() + "\n\n" + MARKER + "\n"
     PATH.write_text(text, encoding="utf-8")
-    print("TW_DEPLOY_WORKFLOW_PATCHED branch=EXEDRA-TEST")
+    print("TW_SIMPLIFIED_SEARCH_DEPLOY_PATCHED branch=EXEDRA-TEST")
     return 0
 
 

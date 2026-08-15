@@ -47,13 +47,32 @@ jobs:
           cache: npm
           cache-dependency-path: website/package-lock.json
 
-      - name: Materialize, validate and build
+      - name: Install pinned TW data-tool dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-compile -r requirements-data-tools.txt
+          python - <<'PY'
+          from tools.tw_official_import_core import simplified_converter
+          convert = simplified_converter()
+          probe = '繁體中文與臺灣檔案'
+          result = convert(probe)
+          if result == probe or any(char in result for char in ('體', '臺', '檔')):
+              raise SystemExit(f'OpenCC tw2sp self-check failed: {probe!r} -> {result!r}')
+          print(f'OPENCC_TW2SP_READY {probe!r} -> {result!r}')
+          PY
+
+      - name: Materialize, certify, publish search and build
         id: materialize
         continue-on-error: true
         shell: bash
         env:
           TW_SOURCE_URL: ${{ inputs.source_url || 'https://github.com/HiiragiNemu/MagiaExedraTWData/releases/download/tw-wiki-source-v1-20260806/exedra-tw-wiki-source-v1.zip' }}
           TW_SOURCE_SHA256: ${{ inputs.source_sha256 || '503c4c9a518d0a992abe800fccde4a97b35b2e4ddaeb2359e63eaa8d572cd1ac' }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          SEARCH_R2_BUCKET: magi-assets
+          SEARCH_R2_PUBLIC_BASE: https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev
         run: |
           set +e
           set -o pipefail
@@ -80,23 +99,70 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
+
           report = json.loads(
               Path('artifacts/exedra_official_tw_import_report.json').read_text(
                   encoding='utf-8'
               )
           )
           stats = report.get('stats', {})
-          required = {
-              'official_tw_groups': lambda value: value > 0,
-              'failed_groups': lambda value: value == 0,
-              'tw_source_files': lambda value: value == 2780,
-              'tw_source_files_used': lambda value: value == 2780,
-              'tw_source_files_unused': lambda value: value == 0,
+          expected_exact = {
+              'official_tw_groups': 395,
+              'official_tw_json_files': 2708,
+              'official_tw_text_events': 93697,
+              'official_tw_no_text_groups': 4,
+              'official_tw_no_text_files': 7,
+              'missing_tw_groups': 44,
+              'tw_source_files': 2780,
+              'tw_source_files_used': 2708,
+              'tw_source_files_unused': 72,
+              'tw_source_files_deferred_partial': 37,
+              'tw_source_files_tw_only_without_jp': 28,
+              'tw_source_files_no_text': 7,
+              'tw_source_files_unexpected_unused': 0,
+              'retained_non_tw_groups': 48,
           }
-          for key, predicate in required.items():
+          for key, expected in expected_exact.items():
               value = stats.get(key)
-              if not isinstance(value, int) or not predicate(value):
-                  raise SystemExit(f'Invalid TW import statistic {key}={value}: {stats}')
+              if value != expected:
+                  raise SystemExit(
+                      f'Invalid certified TW import statistic {key}={value!r}; '
+                      f'expected {expected}: {stats}'
+                  )
+          if int(stats.get('failed_groups', 0) or 0) != 0:
+              raise SystemExit(f'TW structural failures remain: {stats}')
+
+          if (
+              stats['tw_source_files_used']
+              + stats['tw_source_files_deferred_partial']
+              + stats['tw_source_files_tw_only_without_jp']
+              + stats['tw_source_files_no_text']
+              != stats['tw_source_files']
+          ):
+              raise SystemExit(f'TW source partition does not cover all files: {stats}')
+          if (
+              stats['tw_source_files_deferred_partial']
+              + stats['tw_source_files_tw_only_without_jp']
+              + stats['tw_source_files_no_text']
+              != stats['tw_source_files_unused']
+          ):
+              raise SystemExit(f'TW unused source partition is inconsistent: {stats}')
+
+          failures = report.get('failures')
+          if not isinstance(failures, list):
+              raise SystemExit('TW import report failures is not a list')
+          structural = [
+              item for item in failures
+              if not isinstance(item, dict) or item.get('kind') != 'missing_source'
+          ]
+          if structural:
+              raise SystemExit(f'Unexpected TW structural failures: {structural[:5]}')
+          if len(failures) != stats['missing_tw_groups']:
+              raise SystemExit(
+                  f"TW missing-source report mismatch: {len(failures)} != "
+                  f"{stats['missing_tw_groups']}"
+              )
+
           stories = json.loads(
               Path('website/public/story_index.json').read_text(encoding='utf-8')
           )
@@ -116,11 +182,93 @@ jobs:
           print(
               'TW_OFFICIAL_CERTIFIED '
               f"groups={stats['official_tw_groups']} "
-              f"json={stats.get('official_tw_json_files', 0)} "
-              f"events={stats.get('official_tw_text_events', 0)} "
-              f"sources={stats.get('tw_source_files_used', 0)}/2780"
+              f"json={stats['official_tw_json_files']} "
+              f"events={stats['official_tw_text_events']} "
+              f"classified={stats['tw_source_files']}/2780"
           )
           PY
+
+          verify_public_search_object() {
+            local scope="$1"
+            local object_key="$2"
+            local expected_sha="$3"
+            local expected_bytes="$4"
+            local output="$RUNNER_TEMP/search-r2-$scope.json"
+            local request_url="${SEARCH_R2_PUBLIC_BASE}/${object_key}?verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scope}"
+            rm -f "$output"
+            if ! curl --fail --location --silent --show-error \
+              --retry 3 --retry-all-errors --connect-timeout 15 --max-time 300 \
+              -o "$output" "$request_url"; then
+              return 1
+            fi
+            local actual_bytes actual_sha
+            actual_bytes="$(wc -c < "$output" | tr -d ' ')"
+            actual_sha="$(sha256sum "$output" | awk '{print $1}')"
+            if [ "$actual_bytes" != "$expected_bytes" ] || [ "$actual_sha" != "$expected_sha" ]; then
+              return 1
+            fi
+            return 0
+          }
+
+          for scope in magireco exedra; do
+            read -r object_key expected_sha expected_bytes <<< "$(
+              python3 - "$scope" <<'PY'
+          import json, sys
+          from pathlib import Path
+          scope = sys.argv[1]
+          manifest = json.loads(
+              Path(f'website/public/search_index_manifest.{scope}.json')
+              .read_text(encoding='utf-8')
+          )
+          print(manifest['object_key'], manifest['sha256'], manifest['bytes'])
+          PY
+            )"
+            local_file="artifacts/search-split/search_content.$scope.json"
+            local_bytes="$(wc -c < "$local_file" | tr -d ' ')"
+            local_sha="$(sha256sum "$local_file" | awk '{print $1}')"
+            if [ "$local_bytes" != "$expected_bytes" ] || [ "$local_sha" != "$expected_sha" ]; then
+              echo "::error::Local split search payload mismatch for $scope"
+              exit 1
+            fi
+
+            if verify_public_search_object "$scope" "$object_key" "$expected_sha" "$expected_bytes"; then
+              echo "SEARCH_R2_ALREADY_VALID scope=$scope bytes=$expected_bytes sha256=$expected_sha object=$object_key"
+              continue
+            fi
+
+            if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+              echo "::error::R2 object is missing/stale and Cloudflare upload credentials are unavailable."
+              exit 1
+            fi
+            echo "Uploading certified $scope search object to R2 bucket $SEARCH_R2_BUCKET"
+            (
+              cd website
+              npx wrangler r2 object put \
+                "$SEARCH_R2_BUCKET/$object_key" \
+                --file "../$local_file" \
+                --content-type 'application/json; charset=utf-8' \
+                --cache-control 'public, max-age=31536000, immutable' \
+                --remote
+            )
+
+            published=false
+            for attempt in $(seq 1 8); do
+              if verify_public_search_object "$scope" "$object_key" "$expected_sha" "$expected_bytes"; then
+                published=true
+                break
+              fi
+              sleep 5
+            done
+            if [ "$published" != true ]; then
+              echo "::error::R2 upload completed but public object failed full SHA-256 verification: $scope"
+              exit 1
+            fi
+            echo "SEARCH_R2_PUBLISH_OK scope=$scope bytes=$expected_bytes sha256=$expected_sha object=$object_key"
+          done
+
+          # Patch the isolated test deployment so it refuses to deploy a
+          # manifest whose content-addressed R2 object is unavailable or stale.
+          python tools/patch_tw_deploy_workflow.py
           BUILD
           code="${PIPESTATUS[0]}"
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
@@ -159,7 +307,7 @@ jobs:
           git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
           if [ "$MATERIALIZE_EXIT_CODE" = 0 ]; then
             git add -A
-            message='[tw-materialized] Official TW zh-CN data, UI and split search'
+            message='[tw-materialized] Certified official TW zh-CN data and R2 search release'
           else
             git add -f artifacts/tw-materialization-status.json
             message="[tw-status] Materialization failed with code $MATERIALIZE_EXIT_CODE"
