@@ -34,6 +34,26 @@ NARRATION = {
     "旁白（无角色）",
 }
 
+# Exact project-canonical names for the small set of JP-only speakers that
+# cannot be learned from a paired CN event. These are established character,
+# relationship, place/title and historical-person names; no dialogue text is
+# translated or inferred here.
+EXACT_OVERRIDES: dict[str, str] = {
+    "みふゆ＆メル": "美冬＆梅露",
+    "アランソン": "阿朗松",
+    "キリカの母": "纪里香的母亲",
+    "クレルモン伯": "克莱蒙伯爵",
+    "コーション": "科雄",
+    "シャルル七世": "查理七世",
+    "チアリーディング部長": "啦啦队部长",
+    "マリ・ダンジュー": "玛丽·当茹",
+    "メルの父": "梅露的父亲",
+    "ルイ・ド・ヴァロワ": "路易·德·瓦卢瓦",
+    "ルネ": "勒内",
+    "ルネ・ダンジュー": "勒内·当茹",
+    "悪魔ほむらちゃん": "恶魔小焰",
+}
+
 
 def decode_ts(value: str) -> str:
     return json.loads(f'"{value}"')
@@ -279,6 +299,17 @@ def main() -> int:
                 updates[raw] = candidate
             continue
         additions[raw] = candidate
+
+    # Complete the JP-only boundary with explicit, reviewed exact aliases.
+    for raw, candidate in EXACT_OVERRIDES.items():
+        raw = normalize(raw)
+        candidate = display_normalize(candidate)
+        existing = exact.get(raw)
+        if existing is None:
+            additions[raw] = candidate
+        elif display_normalize(existing) != candidate:
+            updates[raw] = candidate
+        conflicts.pop(raw, None)
 
     # Update any pre-existing exact mapping that still contains Japanese.
     matches = list(PAIR_RE.finditer(block))
