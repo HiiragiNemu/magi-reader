@@ -68,13 +68,15 @@ jobs:
               + 'python tools/apply_authentic_tw_repair_v4.py\n'
               + 'python tools/apply_authentic_tw_repair_v5.py\n'
               + 'python tools/apply_authentic_tw_repair_v6.py\n'
-              + 'python tools/apply_authentic_tw_repair_v8.py\n',
+              + 'python tools/apply_authentic_tw_repair_v8.py\n'
+              + 'python tools/apply_authentic_tw_repair_v9.py\n',
               1,
           )
           source = source.replace(
               canonicalizer_marker,
               canonicalizer_marker
-              + 'python tools/finalize_exedra_cn_json_names.py\n',
+              + 'python tools/finalize_exedra_cn_json_names.py\n'
+              + 'python tools/certify_authentic_tw_reports.py\n',
               1,
           )
           source = source.replace(
@@ -84,6 +86,7 @@ jobs:
               + '  tools/apply_authentic_tw_repair_v5.py \\\n'
               + '  tools/apply_authentic_tw_repair_v6.py \\\n'
               + '  tools/apply_authentic_tw_repair_v8.py \\\n'
+              + '  tools/apply_authentic_tw_repair_v9.py \\\n'
               + '  tools/finalize_exedra_cn_json_names.py \\\n',
               1,
           )
