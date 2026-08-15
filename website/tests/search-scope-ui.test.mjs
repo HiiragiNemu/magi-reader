@@ -5,10 +5,12 @@ import test from 'node:test';
 
 const page = readFileSync(path.resolve('app', 'page.tsx'), 'utf8');
 
-test('catalog exposes an explicit two-game search scope selector', () => {
-  assert.match(page, /aria-label="搜索对象覆盖范围"/u);
-  assert.match(page, /\(\['magireco', 'exedra'\] as const\)\.map/u);
-  assert.match(page, /SEARCH_INDEX_SCOPE_CONFIG\[scope\]\.label/u);
+test('catalog uses only the existing game switch and omits a duplicate search scope selector', () => {
+  assert.doesNotMatch(page, /aria-label="搜索对象覆盖范围"/u);
+  assert.doesNotMatch(page, /\(\['magireco', 'exedra'\] as const\)\.map/u);
+  assert.match(page, /onClick=\{switchStorySystem\}/u);
+  assert.match(page, /切换到 Magia Exedra 剧情/u);
+  assert.match(page, /切换到 Magia Record 剧情/u);
 });
 
 test('changing game scope rebuilds the worker and never uses the legacy combined object', () => {

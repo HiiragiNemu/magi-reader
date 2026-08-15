@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,8 +23,13 @@ TW_FIELDS = (
     "official_tw_chapter_titles",
     "official_tw_section_titles",
     "official_tw_story_titles",
+    "official_tw_story_title_source",
 )
 CHAPTER_FOLDER_CATEGORIES = frozenset({"exedra_main", "exedra_sub"})
+TECHNICAL_TITLE = re.compile(
+    r"^(?:sub|main|portrait|character|reaction|act|contents|map|pp|play|flashback)[ _-]",
+    re.IGNORECASE,
+)
 
 
 def apply_metadata(
@@ -58,10 +64,22 @@ def apply_metadata(
             if str(value).strip()
         ]
         story["official_tw_story_titles"] = official_story_titles
-        if len(official_story_titles) == 1:
-            story["title"] = official_story_titles[0]
-        elif len(official_story_titles) > 1:
-            story["title"] = " / ".join(official_story_titles)
+        story_title_source = str(info.get("officialStoryTitleSource") or "").strip()
+        story["official_tw_story_title_source"] = story_title_source
+        title_candidate = (
+            official_story_titles[0]
+            if len(official_story_titles) == 1
+            else " / ".join(official_story_titles)
+        )
+        current_title = str(story.get("title") or "").strip()
+        scenario_title_may_replace = (
+            not current_title
+            or bool(TECHNICAL_TITLE.match(current_title.replace("_", " ")))
+        )
+        if title_candidate and (
+            story_title_source != "scenario_title_card" or scenario_title_may_replace
+        ):
+            story["title"] = title_candidate
         if chapter_title and story.get("category") in CHAPTER_FOLDER_CATEGORIES:
             current_folder = story.get("folder")
             if isinstance(current_folder, str) and current_folder != chapter_title:

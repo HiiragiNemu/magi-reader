@@ -60,6 +60,8 @@ import {
 import { resolveOfficialSectionTitle } from '@/lib/official-tw-titles';
 import { initializeReaderFonts } from '@/lib/reader-fonts';
 import {
+  READER_FONT_SIZE_MAX,
+  READER_FONT_SIZE_MIN,
   READER_TEXT_WIDTH_MAX,
   READER_TEXT_WIDTH_MIN,
   READER_TEXT_WIDTH_STEP,
@@ -112,6 +114,20 @@ type ProofreadingConfig = {
 const MAX_STORY_SOURCE_BYTES = 8 * 1024 * 1024;
 const BILINGUAL_LAYOUT_STORAGE_KEY = 'magi-reader-bilingual-layout-v1';
 const STORY_ROWS_PER_PAGE = 200;
+const PAGE_SWIPE_MIN_DISTANCE_PX = 64;
+
+const isReaderPagingInteractionTarget = (
+  target: EventTarget | null,
+): boolean => {
+  if (typeof Element === 'undefined' || !(target instanceof Element)) {
+    return false;
+  }
+  return Boolean(
+    target.closest(
+      'input, textarea, select, button, a, [contenteditable="true"], [role="textbox"], [role="slider"]',
+    ),
+  );
+};
 
 const countLineBreaks = (text: string): number => {
   let count = 0;
@@ -257,7 +273,6 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const [mode, setMode] = useState<ReaderMode>('cn');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [fontSize, setFontSize] = useState(15);
   const [lineHeight, setLineHeight] = useState(1.1);
   const [bilingualLayout, setBilingualLayout] =
     useState<BilingualLayout>('side-by-side');
@@ -271,6 +286,8 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       parseReaderDisplayPreferences(readerDisplayPreferencesSnapshot),
     [readerDisplayPreferencesSnapshot],
   );
+  const fontSize = readerDisplayPreferences.fontSizePx;
+  const fontControlOpen = readerDisplayPreferences.fontControlOpen;
   const [allStories, setAllStories] = useState<Story[]>([]);
   const [storyIndexReady, setStoryIndexReady] = useState(false);
   const [storyIndexError, setStoryIndexError] = useState('');
@@ -294,6 +311,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const [searchQuery, setSearchQuery] = useState('');
   const [currentMatchIndex, setCurrentMatchIndex] = useState(-1);
   const [visiblePage, setVisiblePage] = useState(0);
+  const pageTouchStartRef = useRef<{ x: number; y: number } | null>(null);
   const [pendingRowScroll, setPendingRowScroll] = useState<{
     rowIndex: number;
     highlight: boolean;
@@ -666,14 +684,88 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   }, [id]);
 
   const changeVisiblePage = useCallback((page: number) => {
-    const nextPage = Math.max(0, page);
+    const nextPage = Math.min(pageCount - 1, Math.max(0, page));
     voicePlaybackController.stop();
     setVisiblePage(nextPage);
     setPendingRowScroll({
       rowIndex: nextPage * STORY_ROWS_PER_PAGE,
       highlight: false,
     });
-  }, []);
+  }, [pageCount]);
+
+  useEffect(() => {
+    if (pageCount <= 1) return;
+
+    const handlePageTurnKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        isReaderPagingInteractionTarget(event.target)
+      ) {
+        return;
+      }
+      if (event.key === 'ArrowLeft' && visiblePage > 0) {
+        event.preventDefault();
+        changeVisiblePage(visiblePage - 1);
+      } else if (
+        event.key === 'ArrowRight' &&
+        visiblePage + 1 < pageCount
+      ) {
+        event.preventDefault();
+        changeVisiblePage(visiblePage + 1);
+      }
+    };
+
+    window.addEventListener('keydown', handlePageTurnKeyDown);
+    return () => window.removeEventListener('keydown', handlePageTurnKeyDown);
+  }, [changeVisiblePage, pageCount, visiblePage]);
+
+  const handlePageTouchStart = useCallback(
+    (event: React.TouchEvent<HTMLElement>) => {
+      if (
+        event.touches.length !== 1 ||
+        isReaderPagingInteractionTarget(event.target)
+      ) {
+        pageTouchStartRef.current = null;
+        return;
+      }
+      const touch = event.touches.item(0);
+      pageTouchStartRef.current = touch
+        ? { x: touch.clientX, y: touch.clientY }
+        : null;
+    },
+    [],
+  );
+
+  const handlePageTouchEnd = useCallback(
+    (event: React.TouchEvent<HTMLElement>) => {
+      const start = pageTouchStartRef.current;
+      pageTouchStartRef.current = null;
+      const touch = event.changedTouches.item(0);
+      if (!start || event.changedTouches.length !== 1 || !touch) return;
+
+      const horizontalDistance = touch.clientX - start.x;
+      const verticalDistance = touch.clientY - start.y;
+      if (
+        Math.abs(horizontalDistance) < PAGE_SWIPE_MIN_DISTANCE_PX ||
+        Math.abs(horizontalDistance) <= Math.abs(verticalDistance) * 1.25
+      ) {
+        return;
+      }
+      if (horizontalDistance > 0 && visiblePage > 0) {
+        changeVisiblePage(visiblePage - 1);
+      } else if (
+        horizontalDistance < 0 &&
+        visiblePage + 1 < pageCount
+      ) {
+        changeVisiblePage(visiblePage + 1);
+      }
+    },
+    [changeVisiblePage, pageCount, visiblePage],
+  );
 
   useEffect(() => {
     if (!pendingRowScroll) return;
@@ -1208,7 +1300,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     !loadError;
 
   return (
-    <div className={`flex h-screen h-[100dvh] overflow-hidden ${THEME_STYLES[theme]}`}>
+    <div className={`magi-reader-root magi-reader-theme-${theme} flex h-screen h-[100dvh] overflow-hidden ${THEME_STYLES[theme]}`}>
       <Sidebar
         stories={allStories}
         currentId={currentStory?.id ?? id}
@@ -1218,7 +1310,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       />
 
       <div className="relative flex min-w-0 flex-1 flex-col">
-        <header className={`z-20 flex shrink-0 items-center justify-between border-b px-4 py-2 ${HEADER_STYLES[theme]}`}>
+        <header className={`magi-reader-header z-20 flex shrink-0 items-center justify-between border-b px-4 py-2 ${HEADER_STYLES[theme]}`}>
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
@@ -1241,10 +1333,10 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                 {storyTitle ? ` · ${storyTitle}` : ''}
               </span>
               <div className="flex min-w-0 flex-wrap items-center gap-2 text-sm font-bold">
-                <span className="truncate font-mono text-emerald-600">{id}</span>
+                <span className="magi-reader-story-id truncate font-mono text-emerald-600">{id}</span>
                 {currentStory?.official_tw && (
                   <span
-                    className="rounded-full border border-stone-400/35 bg-stone-200/35 px-2 py-0.5 text-[10px] font-medium tracking-wide text-stone-600 dark:border-stone-500/40 dark:bg-stone-700/35 dark:text-stone-300"
+                    className="magi-reader-source-badge rounded-full border border-stone-400/35 bg-stone-200/35 px-2 py-0.5 text-[10px] font-medium tracking-wide text-stone-600 dark:border-stone-500/40 dark:bg-stone-700/35 dark:text-stone-300"
                     title="中文正文来自 Magia Exedra 台服官方文本，并已转换为简体中文"
                   >
                     {currentStory.official_tw_label || '台服'}
@@ -1280,18 +1372,19 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
             </div>
           </div>
 
-          <div className="group relative mx-4 hidden max-w-md flex-1 md:flex">
+          <div className="magi-reader-search-shell group relative mx-4 hidden min-w-64 max-w-md flex-1 lg:flex">
             <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="search"
               aria-label="在当前剧情中搜索"
-              placeholder="页内搜索（Enter 跳转）"
+              placeholder="页内搜索"
+              title="输入关键词后按 Enter 跳到下一处"
               value={searchQuery}
               onChange={event => changeSearch(event.target.value)}
               onKeyDown={event => {
                 if (event.key === 'Enter') jumpToNextMatch();
               }}
-              className={`w-full rounded-full border py-1.5 pl-9 pr-14 text-sm outline-none transition ${
+              className={`magi-reader-search-input h-9 w-full rounded-full border py-1.5 pl-9 pr-14 text-sm leading-5 outline-none transition ${
                 theme === 'dark'
                   ? 'border-gray-700 bg-gray-800 text-gray-200 focus:border-blue-500'
                   : 'border-transparent bg-gray-100 focus:border-blue-400 focus:bg-white'
@@ -1370,11 +1463,25 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
         </header>
 
         <main
-          className="z-10 flex-1 overflow-y-auto scroll-smooth p-2 md:p-6"
-          style={{ fontSize: `${fontSize}px`, lineHeight }}
+          className={`magi-reader-main z-10 flex-1 overflow-y-auto scroll-smooth p-2 md:p-6 ${
+            pageCount > 1 ? 'magi-reader-main-paginated' : ''
+          }`}
+          onTouchStart={handlePageTouchStart}
+          onTouchEnd={handlePageTouchEnd}
+          onTouchCancel={() => {
+            pageTouchStartRef.current = null;
+          }}
+          style={{
+            fontSize: `${fontSize}px`,
+            lineHeight,
+            ...(pageCount > 1
+              ? { paddingInline: 'clamp(3.25rem, 6vw, 4rem)' }
+              : {}),
+          }}
         >
           <div
-            className={`mx-auto min-h-screen w-full min-w-0 rounded-lg pb-32 transition-all duration-500 ease-in-out ${
+            id="reader-document"
+            className={`magi-reader-document mx-auto min-h-screen w-full min-w-0 rounded-lg pb-32 transition-all duration-500 ease-in-out ${
             theme === 'paper' || theme === 'green'
               ? 'md:bg-white/40 md:px-12 md:py-8 md:shadow-sm md:backdrop-blur-[2px]'
               : ''
@@ -1610,18 +1717,19 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
               </section>
             )}
 
-            <div className="relative mb-4 px-1 md:hidden">
+            <div className="magi-reader-mobile-search relative mb-4 px-1 lg:hidden">
               <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="search"
                 aria-label="在当前剧情中搜索"
-                placeholder="搜索角色或对话…"
+                placeholder="页内搜索"
+                title="输入关键词后按 Enter 跳到下一处"
                 value={searchQuery}
                 onChange={event => changeSearch(event.target.value)}
                 onKeyDown={event => {
                   if (event.key === 'Enter') jumpToNextMatch();
                 }}
-                className={`w-full rounded-lg border py-2.5 pl-10 pr-16 text-sm shadow-sm outline-none ${
+                className={`magi-reader-search-input h-11 w-full rounded-lg border py-2.5 pl-10 pr-16 text-sm leading-5 shadow-sm outline-none ${
                   theme === 'dark'
                     ? 'border-gray-700 bg-gray-800 text-gray-100'
                     : 'border-gray-200 bg-white text-gray-900'
@@ -1704,6 +1812,88 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
           </div>
         </main>
 
+        {pageCount > 1 && (
+          <nav className="magi-reader-edge-pagination" aria-label="剧情快速翻页">
+            {visiblePage > 0 && (
+              <button
+                type="button"
+                aria-label="上一页"
+                aria-controls="reader-document"
+                aria-keyshortcuts="ArrowLeft"
+                title={`上一页（${visiblePage} / ${pageCount}）`}
+                className="magi-reader-page-turn magi-reader-page-turn-prev"
+                onClick={() => changeVisiblePage(visiblePage - 1)}
+              >
+                <span aria-hidden="true" className="magi-reader-page-turn-triangle" />
+              </button>
+            )}
+            {visiblePage + 1 < pageCount && (
+              <button
+                type="button"
+                aria-label="下一页"
+                aria-controls="reader-document"
+                aria-keyshortcuts="ArrowRight"
+                title={`下一页（${visiblePage + 2} / ${pageCount}）`}
+                className="magi-reader-page-turn magi-reader-page-turn-next"
+                onClick={() => changeVisiblePage(visiblePage + 1)}
+              >
+                <span aria-hidden="true" className="magi-reader-page-turn-triangle" />
+              </button>
+            )}
+          </nav>
+        )}
+
+        <div
+          className={`magi-reader-font-control magi-reader-font-control-${theme} ${
+            fontControlOpen ? 'magi-reader-font-control-open' : 'magi-reader-font-control-closed'
+          }`}
+          role="group"
+          aria-label="快速字号调节"
+        >
+          {fontControlOpen ? (
+            <>
+              <span className="magi-reader-font-control-small" aria-hidden="true">A</span>
+              <input
+                type="range"
+                min={READER_FONT_SIZE_MIN}
+                max={READER_FONT_SIZE_MAX}
+                step="1"
+                value={fontSize}
+                aria-label="调整阅读字号"
+                aria-valuetext={`${fontSize} 像素`}
+                onChange={event =>
+                  updateReaderDisplayPreferences({
+                    fontSizePx: Number(event.target.value),
+                  })
+                }
+              />
+              <span className="magi-reader-font-control-large" aria-hidden="true">A</span>
+              <output aria-live="polite">{fontSize}px</output>
+              <button
+                type="button"
+                aria-label="收起字号调节"
+                title="收起字号调节"
+                onClick={() =>
+                  updateReaderDisplayPreferences({ fontControlOpen: false })
+                }
+              >
+                ×
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              aria-label="展开字号调节"
+              title="展开字号调节"
+              onClick={() =>
+                updateReaderDisplayPreferences({ fontControlOpen: true })
+              }
+            >
+              Aa
+            </button>
+          )}
+        </div>
+
         <FloatingWindow
           isOpen={showSettings}
           onClose={() => setShowSettings(false)}
@@ -1744,7 +1934,19 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                 </div>
                 <label className="block">
                   <span className="mb-1 block opacity-70">字号（{fontSize}px）</span>
-                  <input type="range" min="12" max="22" value={fontSize} onChange={event => setFontSize(Number(event.target.value))} className="w-full" />
+                  <input
+                    type="range"
+                    min={READER_FONT_SIZE_MIN}
+                    max={READER_FONT_SIZE_MAX}
+                    step="1"
+                    value={fontSize}
+                    onChange={event =>
+                      updateReaderDisplayPreferences({
+                        fontSizePx: Number(event.target.value),
+                      })
+                    }
+                    className="w-full"
+                  />
                 </label>
                 <label className="block">
                   <span className="mb-1 block opacity-70">

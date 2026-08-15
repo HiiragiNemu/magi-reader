@@ -9,7 +9,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from 'react';
-import { X } from 'lucide-react';
+import { Minus, Square, X } from 'lucide-react';
 
 type FloatingWindowProps = {
   isOpen: boolean;
@@ -52,6 +52,7 @@ export default function FloatingWindow({
   const cleanupRef = useRef<(() => void) | null>(null);
   const [offset, setOffset] = useState(initialOffset);
   const [zIndex, setZIndex] = useState(70);
+  const [isMinimized, setIsMinimized] = useState(false);
 
   useEffect(() => () => cleanupRef.current?.(), []);
 
@@ -103,6 +104,12 @@ export default function FloatingWindow({
     : theme === 'light'
       ? 'magi-floating-window-light'
       : `magi-floating-window-${theme}`;
+  const bodyId = `${titleId}-body`;
+
+  const closeWindow = () => {
+    setIsMinimized(false);
+    onClose();
+  };
 
   return (
     <section
@@ -112,6 +119,7 @@ export default function FloatingWindow({
       tabIndex={-1}
       data-modeless="true"
       data-theme={theme}
+      data-window-state={isMinimized ? 'minimized' : 'open'}
       className={`magi-floating-window ${palette} ${className}`}
       style={style}
       onPointerDown={raise}
@@ -121,18 +129,33 @@ export default function FloatingWindow({
           <div className="magi-floating-window-system-label">{systemLabel}</div>
           <h2 id={titleId} className="magi-floating-window-title">{title}</h2>
         </div>
-        <button
-          type="button"
-          aria-label={`关闭${title}`}
-          title="关闭"
-          onClick={onClose}
-          className="magi-retro-window-close"
-        >
-          <X aria-hidden="true" size={18} strokeWidth={2.4} />
-        </button>
+        <div className="magi-retro-window-controls">
+          <button
+            type="button"
+            aria-label={`${isMinimized ? '还原' : '最小化'}${title}`}
+            aria-controls={bodyId}
+            aria-expanded={!isMinimized}
+            title={isMinimized ? '还原' : '最小化'}
+            onClick={() => setIsMinimized((current) => !current)}
+            className="magi-retro-window-minimize"
+          >
+            {isMinimized
+              ? <Square aria-hidden="true" size={12} strokeWidth={2.2} />
+              : <Minus aria-hidden="true" size={17} strokeWidth={2.6} />}
+          </button>
+          <button
+            type="button"
+            aria-label={`关闭${title}`}
+            title="关闭"
+            onClick={closeWindow}
+            className="magi-retro-window-close"
+          >
+            <X aria-hidden="true" size={18} strokeWidth={2.4} />
+          </button>
+        </div>
       </div>
-      <div className={`magi-floating-window-body ${bodyClassName}`}>{children}</div>
-      {footer && <div className="magi-floating-window-footer">{footer}</div>}
+      <div id={bodyId} hidden={isMinimized} className={`magi-floating-window-body ${bodyClassName}`}>{children}</div>
+      {footer && <div hidden={isMinimized} className="magi-floating-window-footer">{footer}</div>}
     </section>
   );
 }

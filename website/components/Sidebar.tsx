@@ -286,7 +286,14 @@ export default function Sidebar({
         } ${themeClass} ${className}`}
       >
         <div className="flex shrink-0 items-center justify-between border-b bg-inherit p-4">
-          <Link href="/" className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-xl font-black text-transparent">
+          <Link
+            href="/"
+            className={`text-xl font-black ${
+              theme === 'light' || theme === 'paper'
+                ? 'magi-reader-brand-day-archive'
+                : 'bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent'
+            }`}
+          >
             MagiReader
           </Link>
           <button
@@ -385,7 +392,7 @@ export default function Sidebar({
                               ...previous,
                               [folderKey]: !(previous[folderKey] ?? defaultFolderOpen),
                             }))}
-                            className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-xs transition-colors ${hoverClass}`}
+                            className={`magi-reader-sidebar-folder-button flex w-full items-center justify-between rounded px-2 py-2 text-left text-xs transition-colors ${hoverClass}`}
                           >
                             <span
                               className={`mr-1 break-words leading-tight ${folderClass}`}
@@ -435,13 +442,14 @@ export default function Sidebar({
                                       prefetch={false}
                                       onClick={onClose}
                                       title={label}
+                                      aria-current={active ? 'page' : undefined}
                                       className={`block truncate rounded-sm border-l-2 px-2 py-1.5 font-mono text-xs transition-all ${
                                         active ? activeClass : inactiveClass
                                       }`}
                                     >
                                       <span className="mr-2">{label}</span>
                                       {story.official_tw && (
-                                        <span className="mr-1 inline-flex rounded-full border border-[#81745e]/35 bg-[#f0eadf]/60 px-1.5 py-0.5 font-sans text-[9px] font-bold text-[#655d50]">
+                                        <span className="magi-reader-source-badge mr-1 inline-flex rounded-full border border-[#81745e]/35 bg-[#f0eadf]/60 px-1.5 py-0.5 font-sans text-[9px] font-bold text-[#655d50]">
                                           {story.official_tw_label || '台服'}
                                         </span>
                                       )}

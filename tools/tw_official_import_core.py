@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -24,6 +25,16 @@ REQUIRED_MANIFEST_FILES = (
     "getAdvMstList.json",
     "getCollectionConditionMstList.json",
 )
+
+OFFICIAL_TITLE_CARD_RE = re.compile(
+    r"^\s*<size\s*=\s*150%>\s*(.*?)\s*</size>\s*$",
+    re.IGNORECASE | re.DOTALL,
+)
+OFFICIAL_TITLE_COLOR_WRAPPER_RE = re.compile(
+    r"^\s*<color\s*=\s*(?:black|#000000)>\s*(.*?)\s*</color>\s*$",
+    re.IGNORECASE | re.DOTALL,
+)
+OFFICIAL_TITLE_TERMINATORS = frozenset({"\u5f85\u7e8c", "\u5f85\u7eed", "\u5b8c\u7d50", "\u5b8c\u7ed3", "\u5b8c"})
 
 
 @dataclass(frozen=True)
@@ -304,6 +315,31 @@ def optional_adv_title_catalog(
     return result
 
 
+def official_scenario_title_card(value: str) -> str:
+    """Return a conservative official story title embedded in one TW script.
+
+    Some TW releases do not expose ``getAdvTitleMstList`` but put the event
+    title in a dedicated 150% narration card.  Only that exact title-card
+    contract is accepted.  Ordinary enlarged dialogue, unknown markup and
+    ambiguous multi-line content remain unclassified rather than becoming a
+    guessed catalogue title.
+    """
+
+    match = OFFICIAL_TITLE_CARD_RE.fullmatch(value)
+    if not match:
+        return ""
+    body = match.group(1)
+    color_match = OFFICIAL_TITLE_COLOR_WRAPPER_RE.fullmatch(body)
+    if color_match:
+        body = color_match.group(1)
+    if "<" in body or ">" in body:
+        return ""
+    lines = [line.strip() for line in body.splitlines() if line.strip()]
+    if not lines or lines[-1] in OFFICIAL_TITLE_TERMINATORS:
+        return ""
+    return " ".join(lines)
+
+
 def replace_directory(staged: Path, target: Path) -> None:
     """Install a complete tree with recoverable same-volume rename semantics.
 
@@ -500,6 +536,8 @@ def import_corpus(
                 official_sections: list[dict[str, Any]] = []
                 group_used_paths: set[str] = set()
                 chapters: Counter[str] = Counter()
+                scenario_story_titles: list[str] = []
+                scenario_story_title_seen: set[str] = set()
 
                 for section, source_value in zip(sections, sources):
                     source = str(source_value)
@@ -518,6 +556,19 @@ def import_corpus(
                         raise RuntimeError(f"台服正文为空：{section.source}")
                     translated.append(texts)
                     resolved.append((section, source, jp_json, tw_json))
+                    for row, text in zip(tw_rows, texts):
+                        if (
+                            category == "2_Sub"
+                            and str(row.get("action") or "").casefold() == "narration"
+                            and not str(row.get("speaker") or "").strip()
+                        ):
+                            scenario_title = official_scenario_title_card(text)
+                            if (
+                                scenario_title
+                                and scenario_title not in scenario_story_title_seen
+                            ):
+                                scenario_story_title_seen.add(scenario_title)
+                                scenario_story_titles.append(scenario_title)
                     title = titles.get(resource_key(source), {})
                     chapter = str(title.get("chapterTitle") or "")
                     if chapter:
@@ -647,18 +698,28 @@ def import_corpus(
                 staged_target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copytree(group_stage, staged_target)
                 used_tw_paths.update(group_used_paths)
+                manifest_story_titles = list(
+                    dict.fromkeys(
+                        adv_titles[int(item.get("advTitleMstId") or 0)]
+                        for item in official_sections
+                        if int(item.get("advTitleMstId") or 0) in adv_titles
+                    )
+                )
+                official_story_titles = manifest_story_titles or scenario_story_titles
                 metadata[identity] = {
                     "sourceIdentity": identity,
                     "category": category,
                     "groupKey": key,
                     "officialTw": True,
-                    "officialStoryTitles": sorted(
-                        {
-                            adv_titles[int(item.get("advTitleMstId") or 0)]
-                            for item in official_sections
-                            if int(item.get("advTitleMstId") or 0) in adv_titles
-                        }
+                    "officialStoryTitles": official_story_titles,
+                    "officialStoryTitleSource": (
+                        "manifest"
+                        if manifest_story_titles
+                        else "scenario_title_card"
+                        if scenario_story_titles
+                        else ""
                     ),
+                    "officialScenarioStoryTitles": scenario_story_titles,
                     "chapterTitle": chapter_title,
                     "chapterTitles": sorted(chapters),
                     "sectionTitles": [

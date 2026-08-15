@@ -384,6 +384,7 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
   color: #5c503c;
   background-color: rgba(226, 216, 187, 0.76);
   background-image:
+    radial-gradient(circle at 1px 1px, rgba(88, 68, 36, 0.18) 0 1px, transparent 1.35px),
     linear-gradient(rgba(111, 92, 57, 0.075) 1px, transparent 1px),
     linear-gradient(90deg, rgba(111, 92, 57, 0.075) 1px, transparent 1px),
     repeating-linear-gradient(
@@ -392,8 +393,8 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
       transparent 2px 5px
     ),
     radial-gradient(circle at 75% 14%, rgba(176, 150, 89, 0.14), transparent 34%);
-  background-position: 0 0, 0 0, 0 0, 0 0;
-  background-size: 22px 22px, 22px 22px, auto, auto;
+  background-position: 0 0, 0 0, 0 0, 0 0, 0 0;
+  background-size: 22px 22px, 22px 22px, 22px 22px, auto, auto;
 }
 
 .magi-home-light-sidebar {
@@ -624,14 +625,234 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
    dark ink on warm stock, almost no blur, and book-like shallow shadows. */
 .magi-home-light-root:not(.magi-home-paper-root) {
   color: #34373a;
-  background-color: rgba(231, 232, 226, 0.86);
+  background-color: #f7f7f5;
+  background-image: none;
+}
+
+/* The gray-white catalogue is mostly clear paper.  Its controls remain
+   deliberately square and the quiet grid belongs only to the catalogue body,
+   never to the navigation or toolbar. */
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-sidebar {
+  border-color: rgba(72, 76, 78, 0.24);
+  background: rgba(224, 226, 224, 0.97);
+  background-image: none;
+  box-shadow: 4px 0 10px rgba(30, 33, 34, 0.19), inset -1px 0 0 rgba(255, 255, 255, 0.72);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-toolbar {
+  border-color: rgba(72, 76, 78, 0.2);
+  background: rgba(241, 242, 240, 0.92);
+  background-image: none;
+  box-shadow: 0 3px 8px rgba(30, 33, 34, 0.17), inset 0 -1px 0 rgba(74, 78, 80, 0.08);
+  backdrop-filter: blur(2px) saturate(0.82);
+  -webkit-backdrop-filter: blur(2px) saturate(0.82);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-catalog {
+  background-color: rgba(255, 255, 255, 0.97);
   background-image:
-    linear-gradient(rgba(64, 69, 72, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(64, 69, 72, 0.07) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.28) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.28) 1px, transparent 1px);
-  background-position: 0 0, 0 0, 3px 3px, 3px 3px;
-  background-size: 24px 24px, 24px 24px, 6px 6px, 6px 6px;
+    linear-gradient(rgba(72, 78, 80, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(72, 78, 80, 0.035) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-control,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-button,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-button-active,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-nav-active,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-card,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-header,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-body,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-story-link {
+  border-radius: 0.16rem;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-card {
+  border-color: rgba(64, 69, 72, 0.2);
+  background: rgba(250, 250, 248, 0.86);
+  box-shadow: 2px 3px 7px rgba(30, 33, 34, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(1px) saturate(0.9);
+  -webkit-backdrop-filter: blur(1px) saturate(0.9);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-card:hover,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-card:focus-within {
+  border-color: rgba(48, 53, 55, 0.34);
+  box-shadow: 3px 4px 8px rgba(26, 29, 30, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.84);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-header {
+  color: #35393a;
+  background: rgba(232, 234, 232, 0.88);
+}
+
+/* Day archive branding follows the archive surface instead of the green theme.
+   Character-name colours remain data-driven and are intentionally untouched. */
+.magi-home-light-root:not(.magi-home-paper-root) .magi-reader-brand-day-archive {
+  color: #353a3b;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.82), 1px 2px 3px rgba(27, 30, 31, 0.2);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-body {
+  background: rgba(255, 255, 253, 0.9);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-control,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-button,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-button-active,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-nav-active {
+  border-color: rgba(63, 68, 70, 0.28);
+  color: #393e40;
+  background: rgba(235, 237, 235, 0.94);
+  box-shadow: 1px 2px 5px rgba(28, 31, 32, 0.17), inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-button-active,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-nav-active {
+  background: linear-gradient(135deg, rgba(209, 212, 210, 0.98), rgba(242, 243, 241, 0.94));
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-nav-item,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-section-title,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-progress {
+  color: #4a4f51;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-section-title::after {
+  background: linear-gradient(90deg, rgba(67, 72, 74, 0.48), transparent);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-nav-item:hover,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-nav-item:focus-visible,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-button:hover,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-button:focus-visible {
+  color: #292d2e;
+  background: rgba(222, 224, 222, 0.96);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-story-link {
+  border-color: rgba(63, 68, 70, 0.25);
+  color: #3b4042;
+  background: rgba(246, 247, 245, 0.94);
+  box-shadow: 1px 2px 5px rgba(28, 31, 32, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-story-link:hover,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-story-link:focus-visible {
+  color: #222627;
+  background: rgba(231, 233, 231, 0.98);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-story-link-empty {
+  color: rgba(52, 57, 59, 0.54);
+  background: rgba(219, 222, 220, 0.82);
+}
+
+.magi-home-light-status-progress { color: inherit; }
+
+.magi-home-light-folder-card-unverified {
+  border-color: rgba(40, 43, 44, 0.48) !important;
+}
+
+/* Translation completion is encoded by value depth within one neutral hue:
+   light = 0%, middle = partial, dark = 100%.  Source uncertainty is an
+   independent diagonal footer mark, so it never changes the completion value. */
+.magi-home-light-root:not(.magi-home-paper-root)
+  [data-translation-status='none'] > .magi-home-light-folder-header,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-home-light-story-link[data-translation-status='none'] {
+  border-color: rgba(75, 80, 82, 0.18);
+  color: #565b5c;
+  background: rgba(240, 242, 240, 0.94);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root)
+  [data-translation-status='partial'] > .magi-home-light-folder-header,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-home-light-story-link[data-translation-status='partial'] {
+  border-color: rgba(62, 68, 70, 0.34);
+  color: #303536;
+  background: rgba(199, 203, 201, 0.96);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root)
+  [data-translation-status='complete'] > .magi-home-light-folder-header,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-home-light-story-link[data-translation-status='complete'] {
+  border-color: rgba(40, 45, 46, 0.62);
+  color: #fafbf9;
+  background: linear-gradient(105deg, rgba(93, 100, 101, 0.98), rgba(119, 126, 126, 0.96));
+  text-shadow: 0 1px 1px rgba(22, 25, 26, 0.34);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root)
+  [data-translation-status='complete'] > .magi-home-light-folder-header .magi-home-light-progress {
+  color: #f7f8f6;
+}
+
+.magi-home-light-status-unverified,
+.magi-home-light-story-unverified {
+  position: relative;
+  overflow: hidden;
+}
+
+.magi-home-light-status-unverified::after,
+.magi-home-light-story-unverified::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  height: 0.32rem;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(37, 40, 41, 0.8) 0 0.24rem,
+    rgba(255, 255, 255, 0.18) 0.24rem 0.46rem
+  );
+  pointer-events: none;
+  content: '';
+}
+
+.magi-home-light-story-verified {
+  box-shadow: inset 0 -3px 0 rgba(65, 70, 71, 0.52), 1px 2px 5px rgba(28, 31, 32, 0.16);
+}
+
+.magi-home-status-badge {
+  border: 1px solid rgba(34, 37, 38, 0.42);
+  border-radius: 0.18rem;
+  color: #f4f4f1;
+  background: rgba(49, 52, 53, 0.94);
+  box-shadow: 1px 2px 4px rgba(28, 31, 32, 0.18);
+}
+
+.magi-home-status-badge-verified {
+  color: #2f3435;
+  background: rgba(210, 213, 211, 0.96);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-review-panel {
+  border-color: rgba(45, 49, 51, 0.42);
+  border-radius: 0.16rem;
+  color: #303536;
+  background: rgba(237, 239, 237, 0.94);
+  box-shadow: 3px 4px 9px rgba(27, 30, 31, 0.2);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-review-progress {
+  background: #4b5052;
+}
+
+.magi-home-search-input {
+  min-height: 2.5rem;
+  line-height: 1.5rem;
+  text-overflow: ellipsis;
+}
+
+.magi-home-search-input::placeholder {
+  line-height: 1.5rem;
+  opacity: 0.72;
 }
 
 .magi-home-paper-root,
@@ -639,29 +860,105 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
   color: #29251e;
 }
 
+.magi-home-paper-root .magi-reader-brand-day-archive {
+  color: #463a29;
+  text-shadow: 0 1px 0 rgba(255, 249, 221, 0.78), 2px 3px 5px rgba(55, 42, 24, 0.22);
+}
+
 .magi-home-paper-root .magi-home-light-sidebar,
 .magi-home-paper-root .magi-home-light-toolbar {
   border-color: rgba(69, 57, 38, 0.35);
   color: #29251e;
   background: rgba(235, 224, 188, 0.9);
-  box-shadow: 8px 8px 18px rgba(51, 41, 24, 0.13), inset 0 0 0 1px rgba(255, 252, 228, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(255, 252, 228, 0.4);
   backdrop-filter: blur(1px) saturate(0.72);
   -webkit-backdrop-filter: blur(1px) saturate(0.72);
 }
 
+.magi-home-paper-root .magi-home-light-sidebar {
+  box-shadow: 14px 0 34px rgba(51, 41, 24, 0.2), inset -1px 0 0 rgba(255, 252, 228, 0.5);
+}
+
+.magi-home-paper-root .magi-home-light-toolbar {
+  box-shadow: 0 12px 32px rgba(51, 41, 24, 0.18), inset 0 -1px 0 rgba(70, 54, 31, 0.13);
+}
+
 .magi-home-paper-root .magi-home-light-folder-card {
+  position: relative;
   border: 1px solid rgba(64, 52, 33, 0.34);
-  border-radius: 0.18rem;
+  border-radius: 1rem;
   background: rgba(238, 225, 185, 0.83);
-  box-shadow: 5px 6px 0 rgba(52, 41, 25, 0.08), 0 9px 18px rgba(52, 41, 25, 0.1);
+  box-shadow: 6px 8px 0 rgba(52, 41, 25, 0.08), 0 15px 34px rgba(52, 41, 25, 0.16);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
 
+.magi-home-paper-root .magi-home-light-folder-card::before,
+.magi-home-paper-root .magi-home-light-folder-card::after {
+  position: absolute;
+  z-index: 1;
+  width: 0.9rem;
+  height: 0.9rem;
+  pointer-events: none;
+  content: '';
+  opacity: 0.58;
+}
+
+.magi-home-paper-root .magi-home-light-folder-card::before {
+  top: 0.38rem;
+  left: 0.38rem;
+  border-top: 1px solid rgba(73, 56, 30, 0.46);
+  border-left: 1px solid rgba(73, 56, 30, 0.46);
+  border-top-left-radius: 0.38rem;
+}
+
+.magi-home-paper-root .magi-home-light-folder-card::after {
+  right: 0.38rem;
+  bottom: 0.38rem;
+  border-right: 1px solid rgba(73, 56, 30, 0.46);
+  border-bottom: 1px solid rgba(73, 56, 30, 0.46);
+  border-bottom-right-radius: 0.38rem;
+}
+
+/* Homepage windows follow the same two shadow languages without altering the
+   separately-scoped Reader window rules below. */
+.magi-home-light-root:not(.magi-home-paper-root) .magi-floating-window-light {
+  background-color: rgba(238, 240, 238, 0.66);
+  background-image: none;
+  box-shadow: 4px 5px 11px rgba(25, 28, 29, 0.28), 1px 2px 0 rgba(25, 28, 29, 0.12);
+}
+
+.magi-home-paper-root .magi-floating-window-paper {
+  background-color: rgba(239, 226, 187, 0.64);
+  background-image: none;
+  box-shadow: 15px 18px 42px rgba(48, 36, 20, 0.27), 4px 5px 0 rgba(48, 36, 20, 0.12);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-floating-window-light .magi-floating-window-titlebar,
+.magi-home-paper-root .magi-floating-window-paper .magi-floating-window-titlebar {
+  background-image: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-floating-window-light .magi-floating-window-titlebar {
+  background-color: rgba(214, 217, 215, 0.96);
+}
+
+.magi-home-paper-root .magi-floating-window-paper .magi-floating-window-titlebar {
+  background-color: rgba(225, 208, 163, 0.96);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-floating-window-light .magi-floating-window-body,
+.magi-home-paper-root .magi-floating-window-paper .magi-floating-window-body {
+  background: transparent;
+}
+
 .magi-home-paper-root .magi-home-light-folder-header,
 .magi-home-paper-root .magi-home-light-folder-header-empty,
-.magi-home-paper-root .magi-home-light-folder-header-partial {
-  border-radius: 0;
+.magi-home-paper-root .magi-home-light-folder-header-partial,
+.magi-home-paper-root .magi-home-light-folder-header-complete {
+  border-radius: 0.85rem;
   border-color: rgba(58, 48, 32, 0.38);
   color: #29251e;
   background: linear-gradient(105deg, rgba(225, 210, 168, 0.96), rgba(243, 233, 202, 0.92));
@@ -671,7 +968,7 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
 }
 
 .magi-home-paper-root .magi-home-light-folder-body {
-  border-radius: 0;
+  border-radius: 0.75rem;
   color: #29251e;
   background: rgba(245, 235, 204, 0.92);
   backdrop-filter: none;
@@ -682,13 +979,84 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
 .magi-home-paper-root .magi-home-light-control,
 .magi-home-paper-root .magi-home-light-button,
 .magi-home-paper-root .magi-home-light-button-active {
-  border-radius: 0.08rem;
+  border-radius: 0.72rem;
   border-color: rgba(64, 52, 33, 0.38);
   color: #29251e;
   background: rgba(242, 231, 198, 0.9);
-  box-shadow: 2px 2px 0 rgba(56, 43, 25, 0.12), inset 1px 1px 0 rgba(255, 252, 232, 0.66);
+  box-shadow: 4px 6px 16px rgba(56, 43, 25, 0.16), inset 1px 1px 0 rgba(255, 252, 232, 0.66);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+}
+
+.magi-home-paper-root
+  [data-translation-status='none'] > .magi-home-light-folder-header,
+.magi-home-paper-root
+  .magi-home-light-story-link[data-translation-status='none'] {
+  border-color: rgba(75, 61, 38, 0.24);
+  color: #665b49;
+  background: linear-gradient(105deg, rgba(244, 236, 211, 0.97), rgba(236, 225, 194, 0.94));
+}
+
+.magi-home-paper-root
+  [data-translation-status='partial'] > .magi-home-light-folder-header,
+.magi-home-paper-root
+  .magi-home-light-story-link[data-translation-status='partial'] {
+  border-color: rgba(70, 55, 33, 0.4);
+  color: #3d3223;
+  background: linear-gradient(105deg, rgba(211, 191, 143, 0.98), rgba(226, 210, 169, 0.95));
+}
+
+.magi-home-paper-root
+  [data-translation-status='complete'] > .magi-home-light-folder-header,
+.magi-home-paper-root
+  .magi-home-light-story-link[data-translation-status='complete'] {
+  border-color: rgba(51, 39, 23, 0.68);
+  color: #fff6dc;
+  background: linear-gradient(105deg, rgba(103, 82, 49, 0.98), rgba(126, 103, 65, 0.96));
+  text-shadow: 0 1px 1px rgba(42, 31, 18, 0.42);
+}
+
+.magi-home-paper-root
+  [data-translation-status='complete'] > .magi-home-light-folder-header .magi-home-light-progress {
+  color: #fff6dc;
+}
+
+.magi-home-paper-root .magi-home-light-status-unverified::after,
+.magi-home-paper-root .magi-home-light-story-unverified::after {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(54, 41, 24, 0.92) 0 0.24rem,
+    rgba(255, 244, 207, 0.22) 0.24rem 0.46rem
+  );
+}
+
+.magi-home-paper-root .magi-home-light-story-verified {
+  box-shadow: inset 0 -3px 0 rgba(88, 68, 40, 0.58), 4px 6px 16px rgba(56, 43, 25, 0.16);
+}
+
+.magi-home-paper-root .magi-home-status-badge {
+  border-color: rgba(54, 42, 25, 0.56);
+  border-radius: 999px;
+  color: #fbf2d8;
+  background: rgba(69, 54, 32, 0.94);
+  box-shadow: 3px 4px 10px rgba(55, 42, 24, 0.18);
+}
+
+.magi-home-paper-root .magi-home-status-badge-verified {
+  color: #352a1c;
+  background: rgba(224, 208, 165, 0.96);
+}
+
+.magi-home-paper-root .magi-home-review-panel {
+  border-color: rgba(65, 50, 29, 0.46);
+  border-radius: 1rem;
+  color: #302619;
+  background: rgba(241, 229, 194, 0.9);
+  box-shadow: 0 15px 34px rgba(54, 41, 23, 0.18), 5px 7px 0 rgba(54, 41, 23, 0.08);
+}
+
+.magi-home-paper-root .magi-home-review-progress {
+  background: #685234;
 }
 
 /* Modeless child windows.  No viewport backdrop is created; multiple windows
@@ -809,5 +1177,511 @@ html[data-exedra-font-new-cinema='ready'] .exedra-page:lang(ja) .exedra-jp-story
   .magi-home-light-folder-card:hover,
   .magi-home-light-folder-card:focus-within {
     transform: none;
+  }
+}
+
+/* =========================================
+   Reader-only day-theme composition
+
+   The gray-white theme keeps chrome quiet and square while the reading sheet
+   carries the fine technical grid.  Paper keeps the warmer rounded treatment,
+   with a stronger page grid and a deliberately quieter window grid.  Dark and
+   green themes are intentionally outside this block.
+   ========================================= */
+.magi-reader-root.magi-reader-theme-light {
+  color: #282c2d;
+  background: #fff;
+}
+
+.magi-reader-theme-light .magi-reader-header {
+  border-color: rgba(62, 67, 69, 0.2);
+  background: rgba(244, 245, 245, 0.98);
+  box-shadow: 0 4px 9px rgba(28, 31, 32, 0.16);
+  backdrop-filter: blur(1px) saturate(0.86);
+  -webkit-backdrop-filter: blur(1px) saturate(0.86);
+}
+
+.magi-reader-theme-light .magi-reader-sidebar {
+  border-color: rgba(62, 67, 69, 0.25);
+  color: #4c5152;
+  background: rgba(229, 231, 231, 0.99) !important;
+  background-image: none !important;
+  box-shadow: 5px 0 11px rgba(28, 31, 32, 0.2);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.magi-reader-theme-light .magi-reader-main {
+  background: #fff;
+}
+
+.magi-reader-theme-light .magi-reader-document {
+  border: 1px solid rgba(65, 71, 73, 0.14);
+  border-radius: 0.12rem;
+  color: #25292a;
+  background-color: rgba(255, 255, 254, 0.985);
+  background-image:
+    linear-gradient(rgba(69, 76, 78, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(69, 76, 78, 0.045) 1px, transparent 1px);
+  background-size: 12px 12px;
+  box-shadow: 4px 5px 11px rgba(31, 34, 35, 0.18);
+}
+
+.magi-reader-root.magi-reader-theme-paper {
+  color: #29251e;
+  background: #eadfbd;
+}
+
+.magi-reader-theme-paper .magi-reader-header {
+  border-color: rgba(75, 59, 35, 0.3);
+  background: rgba(239, 228, 194, 0.97);
+  box-shadow: 0 8px 24px rgba(55, 42, 24, 0.2);
+  backdrop-filter: blur(1px) saturate(0.9);
+  -webkit-backdrop-filter: blur(1px) saturate(0.9);
+}
+
+.magi-reader-theme-paper .magi-reader-sidebar {
+  border-color: rgba(75, 59, 35, 0.3);
+  color: #40382c;
+  background: rgba(230, 216, 177, 0.98) !important;
+  background-image: none !important;
+  box-shadow: 11px 0 32px rgba(55, 42, 24, 0.2);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.magi-reader-theme-paper .magi-reader-main {
+  color: #29251e;
+  background: rgba(239, 228, 194, 0.72);
+}
+
+.magi-reader-theme-paper .magi-reader-document {
+  position: relative;
+  border: 1px solid rgba(75, 59, 35, 0.23);
+  border-radius: 1.15rem;
+  color: #29251e;
+  background-color: rgba(247, 238, 210, 0.96);
+  background-image:
+    linear-gradient(rgba(79, 62, 37, 0.062) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 62, 37, 0.062) 1px, transparent 1px);
+  background-size: 13px 13px;
+  box-shadow: 12px 16px 36px rgba(55, 42, 24, 0.2);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.magi-reader-theme-light .magi-reader-search-input {
+  border-radius: 0.16rem;
+  color: #303536;
+  background: rgba(255, 255, 255, 0.98);
+}
+
+.magi-reader-theme-paper .magi-reader-search-input {
+  border-color: rgba(77, 61, 37, 0.25);
+  border-radius: 1rem;
+  color: #29251e;
+  background: rgba(250, 243, 218, 0.94);
+}
+
+.magi-reader-search-input::placeholder {
+  overflow: visible;
+  color: #777e81;
+  line-height: 1.25rem;
+  opacity: 0.82;
+  text-overflow: clip;
+}
+
+.magi-reader-search-shell {
+  flex-basis: 20rem;
+}
+
+.magi-reader-theme-light .magi-floating-window-light {
+  border-color: rgba(61, 66, 68, 0.58);
+  border-radius: 0;
+  color: #292d2e;
+  background: rgba(228, 230, 230, 0.92);
+  background-image: none;
+  box-shadow: 5px 7px 13px rgba(29, 32, 33, 0.28), 2px 3px 0 rgba(29, 32, 33, 0.13);
+  backdrop-filter: blur(2px) saturate(0.78);
+  -webkit-backdrop-filter: blur(2px) saturate(0.78);
+}
+
+.magi-reader-theme-light .magi-floating-window-light .magi-floating-window-titlebar {
+  background-color: rgba(211, 214, 213, 0.97);
+  background-image: none;
+}
+
+.magi-reader-theme-paper .magi-floating-window-paper {
+  position: fixed;
+  border-radius: 1.1rem;
+  background-color: rgba(240, 227, 190, 0.91);
+  background-image:
+    linear-gradient(rgba(83, 65, 38, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(83, 65, 38, 0.025) 1px, transparent 1px);
+  background-size: 28px 28px;
+  box-shadow: 16px 20px 44px rgba(48, 36, 20, 0.26), 3px 4px 0 rgba(48, 36, 20, 0.12);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+}
+
+.magi-reader-theme-paper .magi-floating-window-paper .magi-floating-window-titlebar {
+  border-top-left-radius: 1.05rem;
+  border-top-right-radius: 1.05rem;
+  background-color: rgba(224, 207, 160, 0.97);
+  background-image: none;
+}
+
+/* Lightweight registration marks give the paper panels an archival-page
+   edge without adding images, animation, or extra layout work. */
+.magi-reader-theme-paper .magi-reader-document::before,
+.magi-reader-theme-paper .magi-reader-document::after,
+.magi-reader-theme-paper .magi-floating-window-paper::before,
+.magi-reader-theme-paper .magi-floating-window-paper::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+  opacity: 0.46;
+}
+
+.magi-reader-theme-paper .magi-reader-document::before,
+.magi-reader-theme-paper .magi-floating-window-paper::before {
+  top: 0.62rem;
+  left: 0.62rem;
+  border-top: 1px solid rgba(67, 52, 30, 0.62);
+  border-left: 1px solid rgba(67, 52, 30, 0.62);
+}
+
+.magi-reader-theme-paper .magi-reader-document::after,
+.magi-reader-theme-paper .magi-floating-window-paper::after {
+  right: 0.62rem;
+  bottom: 0.62rem;
+  border-right: 1px solid rgba(67, 52, 30, 0.62);
+  border-bottom: 1px solid rgba(67, 52, 30, 0.62);
+}
+
+/* Day themes use neutral chrome; story speaker colors remain inline and are
+   intentionally left untouched. */
+.magi-reader-theme-light .magi-reader-story-id,
+.magi-reader-theme-light .magi-reader-sidebar [class*='text-emerald']:not([style]),
+.magi-reader-theme-paper .magi-reader-story-id,
+.magi-reader-theme-paper .magi-reader-sidebar [class*='text-emerald']:not([style]) {
+  color: #3f4546 !important;
+}
+
+.magi-reader-theme-paper .magi-reader-story-id,
+.magi-reader-theme-paper .magi-reader-sidebar [class*='text-emerald']:not([style]) {
+  color: #40372b !important;
+}
+
+.magi-reader-theme-light [class*='text-emerald']:not([style]),
+.magi-reader-theme-light [class*='hover:text-green']:not([style]),
+.magi-reader-theme-paper [class*='text-emerald']:not([style]),
+.magi-reader-theme-paper [class*='hover:text-green']:not([style]) {
+  color: #414748 !important;
+}
+
+.magi-reader-theme-paper [class*='text-emerald']:not([style]),
+.magi-reader-theme-paper [class*='hover:text-green']:not([style]) {
+  color: #43392c !important;
+}
+
+.magi-reader-theme-light [class*='border-emerald'],
+.magi-reader-theme-paper [class*='border-emerald'] {
+  border-color: rgba(72, 77, 79, 0.42) !important;
+  --tw-ring-color: rgba(72, 77, 79, 0.48) !important;
+}
+
+.magi-reader-theme-paper [class*='border-emerald'] {
+  border-color: rgba(75, 59, 35, 0.44) !important;
+  --tw-ring-color: rgba(75, 59, 35, 0.48) !important;
+}
+
+.magi-reader-theme-light button,
+.magi-reader-theme-light a[class*='rounded'] {
+  border-radius: 0.16rem !important;
+}
+
+.magi-reader-theme-paper button:not(.magi-retro-window-close),
+.magi-reader-theme-paper a[class*='rounded'] {
+  border-radius: 0.72rem !important;
+}
+
+.magi-reader-theme-light button[class*='bg-emerald'],
+.magi-reader-theme-light a[class*='bg-emerald'],
+.magi-reader-theme-light section[class*='bg-emerald'],
+.magi-reader-theme-paper button[class*='bg-emerald'],
+.magi-reader-theme-paper a[class*='bg-emerald'],
+.magi-reader-theme-paper section[class*='bg-emerald'] {
+  border-color: rgba(67, 73, 74, 0.48) !important;
+  color: #303536 !important;
+  background: rgba(214, 217, 217, 0.94) !important;
+}
+
+.magi-reader-theme-paper button[class*='bg-emerald'],
+.magi-reader-theme-paper a[class*='bg-emerald'],
+.magi-reader-theme-paper section[class*='bg-emerald'] {
+  border-color: rgba(74, 58, 35, 0.48) !important;
+  color: #30291f !important;
+  background: rgba(218, 203, 162, 0.94) !important;
+}
+
+.magi-reader-theme-light .magi-reader-sidebar [id^='nav-item-'] {
+  border-color: rgba(67, 73, 74, 0.38) !important;
+  border-radius: 0.1rem;
+  color: #4a5051 !important;
+  background: rgba(244, 245, 245, 0.72) !important;
+  box-shadow: 2px 3px 6px rgba(29, 32, 33, 0.1);
+}
+
+.magi-reader-theme-light .magi-reader-sidebar [id^='nav-item-'][aria-current='page'] {
+  border-color: #4d5455 !important;
+  color: #f5f6f6 !important;
+  background: #4d5455 !important;
+  box-shadow: 3px 4px 8px rgba(29, 32, 33, 0.22);
+}
+
+.magi-reader-theme-paper .magi-reader-sidebar [id^='nav-item-'] {
+  border-color: rgba(75, 59, 35, 0.4) !important;
+  border-radius: 0.72rem;
+  color: #42392b !important;
+  background: rgba(242, 231, 198, 0.74) !important;
+  box-shadow: 3px 4px 10px rgba(55, 42, 24, 0.12);
+}
+
+.magi-reader-theme-paper .magi-reader-sidebar [id^='nav-item-'][aria-current='page'] {
+  border-color: #55452e !important;
+  color: #fff8e5 !important;
+  background: #55452e !important;
+  box-shadow: 5px 7px 16px rgba(55, 42, 24, 0.24);
+}
+
+.magi-reader-theme-light .magi-reader-source-badge,
+.magi-reader-theme-paper .magi-reader-source-badge {
+  overflow: visible;
+  min-width: max-content;
+  border-radius: 0.16rem;
+  border-color: rgba(56, 61, 62, 0.7) !important;
+  color: #f5f6f6 !important;
+  background: #555c5d !important;
+  box-shadow: 2px 2px 0 rgba(29, 32, 33, 0.15);
+}
+
+.magi-reader-theme-paper .magi-reader-source-badge {
+  border-radius: 0.65rem;
+  border-color: rgba(67, 52, 30, 0.72) !important;
+  color: #fff7df !important;
+  background: #665235 !important;
+  box-shadow: 3px 3px 8px rgba(55, 42, 24, 0.2);
+}
+
+@media (min-width: 768px) {
+  .magi-reader-theme-light .magi-reader-document,
+  .magi-reader-theme-paper .magi-reader-document {
+    padding: 2rem 3rem 8rem;
+  }
+}
+
+/* Persistent edge pagination: buttons stay outside the reading sheet on
+   desktop, while mobile reserves a narrow gutter so正文 is never covered. */
+.magi-reader-edge-pagination {
+  position: absolute;
+  inset: 0;
+  z-index: 18;
+  pointer-events: none;
+}
+
+.magi-reader-page-turn {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  width: 2.8rem;
+  min-width: 2.8rem;
+  height: 3.35rem;
+  min-height: 2.8rem;
+  place-items: center;
+  border: 1px solid rgba(62, 68, 69, 0.58);
+  color: #3d4445;
+  background: rgba(211, 214, 214, 0.92);
+  box-shadow: 4px 5px 10px rgba(28, 31, 32, 0.22), inset 1px 1px rgba(255, 255, 255, 0.72);
+  transform: translateY(-50%);
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.magi-reader-page-turn:hover,
+.magi-reader-page-turn:focus-visible {
+  color: #f6f7f7;
+  background: #555c5d;
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.magi-reader-page-turn-prev { left: 0.45rem; }
+.magi-reader-page-turn-next { right: 0.45rem; }
+
+.magi-reader-page-turn-triangle {
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 0.58rem solid transparent;
+  border-bottom: 0.58rem solid transparent;
+}
+
+.magi-reader-page-turn-prev .magi-reader-page-turn-triangle {
+  border-right: 0.82rem solid currentColor;
+}
+
+.magi-reader-page-turn-next .magi-reader-page-turn-triangle {
+  border-left: 0.82rem solid currentColor;
+}
+
+.magi-reader-theme-light .magi-reader-page-turn { border-radius: 0; }
+
+.magi-reader-theme-paper .magi-reader-page-turn {
+  border-color: rgba(74, 58, 35, 0.54);
+  border-radius: 1rem;
+  color: #4b3d2b;
+  background: rgba(225, 211, 171, 0.94);
+  box-shadow: 7px 9px 22px rgba(55, 42, 25, 0.24), inset 1px 1px rgba(255, 250, 227, 0.7);
+}
+
+.magi-reader-theme-paper .magi-reader-page-turn:hover,
+.magi-reader-theme-paper .magi-reader-page-turn:focus-visible {
+  color: #fff7df;
+  background: #665235;
+}
+
+.magi-reader-theme-dark .magi-reader-page-turn {
+  border-color: rgba(210, 216, 219, 0.46);
+  color: #edf1f2;
+  background: rgba(42, 46, 48, 0.94);
+  box-shadow: 5px 7px 18px rgba(0, 0, 0, 0.4);
+}
+
+.magi-reader-theme-green .magi-reader-page-turn {
+  border-color: rgba(36, 86, 68, 0.48);
+  border-radius: 0.75rem;
+  color: #173d30;
+  background: rgba(213, 231, 218, 0.94);
+  box-shadow: 5px 7px 18px rgba(25, 66, 51, 0.22);
+}
+
+/* A modeless, persistent quick ruler for the setting readers change most. */
+.magi-reader-font-control {
+  position: fixed;
+  right: max(0.7rem, env(safe-area-inset-right));
+  bottom: max(0.7rem, env(safe-area-inset-bottom));
+  z-index: 48;
+  display: flex;
+  min-height: 2.35rem;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.32rem 0.42rem;
+  border: 1px solid rgba(64, 69, 70, 0.56);
+  color: #2f3435;
+  background: rgba(199, 202, 201, 0.92);
+  box-shadow: 5px 6px 16px rgba(26, 29, 30, 0.2), inset 1px 1px rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(2px) saturate(0.78);
+  -webkit-backdrop-filter: blur(2px) saturate(0.78);
+}
+
+.magi-reader-font-control-open {
+  width: min(21rem, calc(100vw - 1.4rem));
+}
+
+.magi-reader-font-control-closed {
+  width: auto;
+  padding: 0.18rem;
+}
+
+.magi-reader-font-control input[type='range'] {
+  min-width: 0;
+  flex: 1;
+  accent-color: #626a6c;
+}
+
+.magi-reader-font-control output {
+  min-width: 2.4rem;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.68rem;
+  text-align: center;
+  opacity: 0.75;
+}
+
+.magi-reader-font-control button {
+  display: grid;
+  min-width: 1.9rem;
+  height: 1.72rem;
+  place-items: center;
+  border: 1px solid rgba(61, 66, 67, 0.68);
+  border-radius: 0;
+  color: inherit;
+  background: rgba(224, 226, 223, 0.94);
+  box-shadow: inset 1px 1px rgba(255, 255, 255, 0.85), inset -1px -1px rgba(94, 99, 99, 0.48);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.magi-reader-font-control-small { font-size: 0.72rem; }
+.magi-reader-font-control-large { font-size: 1.02rem; font-weight: 700; }
+
+.magi-reader-font-control-paper {
+  border-color: rgba(74, 58, 35, 0.5);
+  border-radius: 0.95rem;
+  color: #30291f;
+  background: rgba(225, 211, 171, 0.94);
+  box-shadow: 5px 6px 15px rgba(55, 42, 25, 0.18), inset 1px 1px rgba(255, 250, 227, 0.7);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+}
+
+.magi-reader-font-control-paper button {
+  border-color: rgba(74, 58, 35, 0.54);
+  border-radius: 0.55rem;
+  background: rgba(241, 230, 197, 0.94);
+}
+
+.magi-reader-font-control-dark {
+  color: #eef1f2;
+  background: rgba(38, 42, 44, 0.94);
+}
+
+.magi-reader-font-control-green {
+  color: #193c30;
+  background: rgba(213, 231, 218, 0.94);
+}
+
+@media (max-width: 767px) {
+  .magi-reader-main-paginated {
+    padding-right: 2.8rem !important;
+    padding-left: 2.8rem !important;
+  }
+
+  .magi-reader-page-turn {
+    width: 2.55rem;
+    min-width: 2.55rem;
+    height: 3.2rem;
+    min-height: 2.75rem;
+  }
+
+  .magi-reader-page-turn-prev { left: 0.12rem; }
+  .magi-reader-page-turn-next { right: 0.12rem; }
+
+  .magi-reader-font-control-open {
+    width: min(15rem, calc(100vw - 1rem));
+  }
+
+  .magi-reader-font-control {
+    right: max(0.5rem, env(safe-area-inset-right));
+    bottom: max(0.5rem, env(safe-area-inset-bottom));
+    gap: 0.3rem;
+  }
+
+  .magi-reader-font-control output {
+    display: none;
   }
 }

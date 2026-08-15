@@ -56,8 +56,50 @@ test('warm archival bubbles cover light and paper while excluding green and dark
   assert.match(css, /\.magi-home-light-sidebar\s*\{/u);
   assert.match(css, /\.magi-home-light-root\s*\{[\s\S]*linear-gradient/u);
   assert.match(css, /\.magi-home-paper-root\s*\{[\s\S]*background-size:\s*22px 22px/u);
+  assert.match(
+    css,
+    /\.magi-home-paper-root\s*\{[\s\S]*radial-gradient\(circle at 1px 1px,[\s\S]*background-size:\s*22px 22px, 22px 22px, 22px 22px/u,
+  );
   assert.match(css, /\.magi-home-light-control\s*,/u);
   assert.match(css, /\.magi-home-light-button-active\s*\{/u);
+  assert.match(page, /magi-home-search-input[^`]*h-10[^`]*leading-6/u);
+  assert.match(page, /magi-home-catalog flex-1 overflow-y-auto/u);
+  assert.match(
+    css,
+    /\.magi-home-light-root:not\(\.magi-home-paper-root\) \.magi-home-catalog\s*\{[\s\S]*background-color:\s*rgba\(255, 255, 255, 0\.97\)[\s\S]*background-size:\s*40px 40px/u,
+  );
+  assert.match(
+    css,
+    /\.magi-home-light-root:not\(\.magi-home-paper-root\) \.magi-home-light-sidebar\s*\{[\s\S]*background-image:\s*none[\s\S]*backdrop-filter:\s*none/u,
+  );
+  assert.match(
+    css,
+    /\.magi-home-light-root:not\(\.magi-home-paper-root\) \.magi-home-light-folder-card,[\s\S]*?\{\s*border-radius:\s*0\.16rem/u,
+  );
+  assert.match(
+    css,
+    /\.magi-home-paper-root \.magi-home-light-folder-card\s*\{[\s\S]*border-radius:\s*1rem/u,
+  );
+  assert.match(
+    css,
+    /\.magi-home-light-root:not\(\.magi-home-paper-root\) \.magi-home-light-sidebar\s*\{[\s\S]*box-shadow:\s*4px 0 10px rgba\(30, 33, 34, 0\.19\)/u,
+  );
+  assert.match(
+    css,
+    /\.magi-home-paper-root \.magi-home-light-sidebar\s*\{[\s\S]*box-shadow:\s*14px 0 34px/u,
+  );
+  assert.match(
+    css,
+    /\.magi-home-paper-root \.magi-home-light-folder-card::before,[\s\S]*pointer-events:\s*none/u,
+  );
+  assert.match(
+    css,
+    /\.magi-home-light-root:not\(\.magi-home-paper-root\) \.magi-floating-window-light\s*\{[\s\S]*box-shadow:\s*4px 5px 11px/u,
+  );
+  assert.match(
+    css,
+    /\.magi-home-paper-root \.magi-floating-window-paper\s*\{[\s\S]*box-shadow:\s*15px 18px 42px/u,
+  );
   assert.match(css, /\[data-bg-theme='green'\]\s*\{\s*background-color:\s*#dcedc8;\s*\}/u);
   assert.match(css, /\[data-bg-theme='dark'\]\s*\{[\s\S]*background-color:\s*#0f172a;/u);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*magi-home-light-folder-card/u);

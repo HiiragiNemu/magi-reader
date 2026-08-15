@@ -52,10 +52,14 @@ def main() -> int:
             "title": title,
             "folder": folder,
             "officialStoryTitles": story.get("official_tw_story_titles") or [],
+            "officialStoryTitleSource": story.get("official_tw_story_title_source") or "",
             "officialChapterTitle": story.get("official_tw_chapter_title") or "",
             "reason": "",
         }
-        if item["officialStoryTitles"] or item["officialChapterTitle"]:
+        if item["officialStoryTitleSource"] == "scenario_title_card":
+            item["reason"] = "official_tw_scenario_title_card"
+            resolved.append(item)
+        elif item["officialStoryTitles"] or item["officialChapterTitle"]:
             item["reason"] = "official_tw_manifest_title"
             resolved.append(item)
         elif title and not TECHNICAL.match(title.replace("_", " ")):

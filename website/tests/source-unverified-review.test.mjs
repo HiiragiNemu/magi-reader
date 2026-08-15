@@ -25,3 +25,18 @@ test('public summary keeps a canonical source-unverified field and legacy alias'
   assert.match(source, /source_unverified_ids:\s*sourceUnverifiedIds/u);
   assert.match(source, /machine_translation_ids:\s*sourceUnverifiedIds/u);
 });
+
+test('collapsed review checklist lives beside the brand and takes no catalog space', () => {
+  const page = readFileSync('app/page.tsx', 'utf8');
+  assert.match(page, /MagiReader[\s\S]*?校验清单/u);
+  assert.match(
+    page,
+    /hidden=\{machineReviewPanelCollapsed\}/u,
+  );
+  assert.match(
+    page,
+    /onClick=\{\(\) => setMachineReviewPanelCollapsedPreference\(!machineReviewPanelCollapsed\)\}/u,
+  );
+  assert.doesNotMatch(page, /展开来源待核验人工校验清单/u);
+  assert.match(page, /transition md:hidden focus-visible/u);
+});

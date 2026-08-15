@@ -1,5 +1,7 @@
 export type ReaderDisplayPreferences = {
   textWidthPx: number;
+  fontSizePx: number;
+  fontControlOpen: boolean;
   showLineBreaks: boolean;
 };
 
@@ -7,12 +9,17 @@ export const READER_TEXT_WIDTH_MIN = 640;
 export const READER_TEXT_WIDTH_MAX = 1280;
 export const READER_TEXT_WIDTH_STEP = 32;
 export const DEFAULT_READER_TEXT_WIDTH = 768;
+export const READER_FONT_SIZE_MIN = 12;
+export const READER_FONT_SIZE_MAX = 22;
+export const DEFAULT_READER_FONT_SIZE = 15;
 export const READER_DISPLAY_PREFERENCES_STORAGE_KEY =
   'magi-reader-display-preferences-v1';
 
 const CHANGE_EVENT = 'magi-reader-display-preferences-change';
 const DEFAULT_PREFERENCES: ReaderDisplayPreferences = {
   textWidthPx: DEFAULT_READER_TEXT_WIDTH,
+  fontSizePx: DEFAULT_READER_FONT_SIZE,
+  fontControlOpen: true,
   showLineBreaks: false,
 };
 const DEFAULT_SNAPSHOT = JSON.stringify(DEFAULT_PREFERENCES);
@@ -35,6 +42,14 @@ const normalizeTextWidth = (value: unknown): number => {
   );
 };
 
+const normalizeFontSize = (value: unknown): number => {
+  const numeric = typeof value === 'number' ? value : Number.NaN;
+  if (!Number.isFinite(numeric)) return DEFAULT_READER_FONT_SIZE;
+  return Math.round(
+    Math.min(READER_FONT_SIZE_MAX, Math.max(READER_FONT_SIZE_MIN, numeric)),
+  );
+};
+
 export const parseReaderDisplayPreferences = (
   snapshot: string | null,
 ): ReaderDisplayPreferences => {
@@ -47,6 +62,8 @@ export const parseReaderDisplayPreferences = (
     const record = value as Record<string, unknown>;
     return {
       textWidthPx: normalizeTextWidth(record.textWidthPx),
+      fontSizePx: normalizeFontSize(record.fontSizePx),
+      fontControlOpen: record.fontControlOpen !== false,
       showLineBreaks: record.showLineBreaks === true,
     };
   } catch {
@@ -59,6 +76,8 @@ const serializeReaderDisplayPreferences = (
 ): string =>
   JSON.stringify({
     textWidthPx: normalizeTextWidth(preferences.textWidthPx),
+    fontSizePx: normalizeFontSize(preferences.fontSizePx),
+    fontControlOpen: preferences.fontControlOpen !== false,
     showLineBreaks: preferences.showLineBreaks === true,
   } satisfies ReaderDisplayPreferences);
 

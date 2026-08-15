@@ -144,6 +144,11 @@ const getDisplayLabel = (story: Story): string => {
 const storyProgress = (story: Story): number =>
   story.percent ?? (story.has_cn ? 100 : 0);
 
+type TranslationProgressStatus = 'none' | 'partial' | 'complete';
+
+const translationProgressStatus = (percent: number): TranslationProgressStatus =>
+  percent === 0 ? 'none' : percent === 100 ? 'complete' : 'partial';
+
 function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   const hasSearchMatches = Boolean(
     group.matchSnippets && Object.keys(group.matchSnippets).length > 0,
@@ -167,6 +172,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
     group.items.reduce((sum, story) => sum + storyProgress(story), 0) /
       group.items.length,
   );
+  const groupProgressStatus = translationProgressStatus(avgPercent);
 
   const isDark = theme === 'dark';
   const isDayArchive = isDayArchiveTheme(theme);
@@ -176,8 +182,14 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   if (sourceUnverifiedPending > 0) {
     headerClass = isDark
       ? 'bg-amber-950/70 border-amber-700 text-amber-100'
-      : 'bg-amber-100 border-amber-400 text-amber-950';
-    progressClass = isDark ? 'text-amber-300' : 'text-amber-800';
+      : isDayArchive
+        ? 'magi-home-light-folder-header magi-home-light-status-unverified'
+        : 'bg-amber-100 border-amber-400 text-amber-950';
+    progressClass = isDark
+      ? 'text-amber-300'
+      : isDayArchive
+        ? 'magi-home-light-status-progress'
+        : 'text-amber-800';
   } else if (isDark) {
     headerClass =
       avgPercent === 0
@@ -211,9 +223,14 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
 
   return (
     <div
+      data-translation-status={groupProgressStatus}
       className={`break-inside-avoid mb-3 rounded-lg border shadow-sm transition-all ${
         sourceUnverifiedPending > 0
-          ? isDark ? 'border-amber-700 ring-1 ring-amber-700/40' : 'border-amber-400 ring-1 ring-amber-300'
+          ? isDark
+            ? 'border-amber-700 ring-1 ring-amber-700/40'
+            : isDayArchive
+              ? 'magi-home-light-folder-card magi-home-light-folder-card-unverified'
+              : 'border-amber-400 ring-1 ring-amber-300'
           : isDark
             ? 'border-gray-700'
             : isDayArchive
@@ -248,12 +265,20 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
         </span>
         <span className="magi-card-meta">
           {sourceUnverifiedPending > 0 && (
-            <span className="shrink-0 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black text-white">
+            <span className={`shrink-0 px-2 py-0.5 text-[10px] font-black ${
+              isDayArchive
+                ? 'magi-home-status-badge magi-home-status-badge-unverified'
+                : 'rounded-full bg-amber-500 text-white'
+            }`}>
               待核验 {sourceUnverifiedPending}
             </span>
           )}
           {sourceUnverifiedPending === 0 && sourceUnverifiedVerified > 0 && (
-            <span className="shrink-0 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-black text-white">
+            <span className={`shrink-0 px-2 py-0.5 text-[10px] font-black ${
+              isDayArchive
+                ? 'magi-home-status-badge magi-home-status-badge-verified'
+                : 'rounded-full bg-emerald-500 text-white'
+            }`}>
               已校 {sourceUnverifiedVerified}
             </span>
           )}
@@ -289,17 +314,22 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
               .map(story => {
                 const label = getDisplayLabel(story);
                 const progress = storyProgress(story);
+                const itemProgressStatus = translationProgressStatus(progress);
                 const snippet = group.matchSnippets?.[story.id];
                 const sourceUnverifiedPendingStory =
                   story.source_unverified && !story.human_verified;
                 const buttonClass = sourceUnverifiedPendingStory
                   ? isDark
                     ? 'bg-amber-950/60 border-amber-600 text-amber-200'
-                    : 'bg-amber-50 border-amber-400 text-amber-950'
+                    : isDayArchive
+                      ? 'magi-home-light-story-link magi-home-light-story-unverified'
+                      : 'bg-amber-50 border-amber-400 text-amber-950'
                   : story.source_unverified && story.human_verified
                     ? isDark
                       ? 'bg-emerald-950/50 border-emerald-600 text-emerald-300'
-                      : 'bg-emerald-50 border-emerald-400 text-emerald-900'
+                      : isDayArchive
+                        ? 'magi-home-light-story-link magi-home-light-story-verified'
+                        : 'bg-emerald-50 border-emerald-400 text-emerald-900'
                     : isDark
                       ? progress > 0
                         ? 'bg-emerald-900/30 border-emerald-700 text-emerald-400'
@@ -315,6 +345,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                 return (
                   <Link
                     key={`${story.id}:${story.path_cn ?? ''}:${story.path_jp ?? ''}`}
+                    data-translation-status={itemProgressStatus}
                     href={`/reader/${encodeURIComponent(story.id)}?cn=${encodeURIComponent(
                       story.path_cn || '',
                     )}&jp=${encodeURIComponent(story.path_jp || '')}`}
@@ -329,12 +360,20 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                       </span>
                       <span className="magi-card-meta">
                         {sourceUnverifiedPendingStory && (
-                          <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[9px] font-black text-white">
+                          <span className={`px-1.5 py-0.5 text-[9px] font-black ${
+                            isDayArchive
+                              ? 'magi-home-status-badge magi-home-status-badge-unverified'
+                              : 'rounded bg-amber-500 text-white'
+                          }`}>
                             来源待核验
                           </span>
                         )}
                         {story.source_unverified && story.human_verified && (
-                          <span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white">
+                          <span className={`px-1.5 py-0.5 text-[9px] font-black ${
+                            isDayArchive
+                              ? 'magi-home-status-badge magi-home-status-badge-verified'
+                              : 'rounded bg-emerald-600 text-white'
+                          }`}>
                             人工已校
                           </span>
                         )}
@@ -825,11 +864,36 @@ export default function Home() {
               : 'border-black/5 bg-inherit'
         }`}
       >
-        <div className="p-5 border-b border-inherit">
-          <h1 className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500">
-            MagiReader
-          </h1>
-          <p className="text-xs opacity-50 mt-1">Archive v3.0</p>
+        <div className="border-b border-inherit px-3 py-5">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+            <h1 className={`magi-reader-brand min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-xl font-black ${
+              isDayArchiveTheme(theme)
+                ? 'magi-reader-brand-day-archive'
+                : 'bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500'
+            }`}>
+              MagiReader
+            </h1>
+            {storySystem === 'magireco' && proofreadingStatus && (
+              <button
+                type="button"
+                aria-controls={machineReviewPanelContentId}
+                aria-expanded={!machineReviewPanelCollapsed}
+                aria-label={`${machineReviewPanelCollapsed ? '打开' : '收起'}校验清单，仍需 ${proofreadingStatus.remaining} 部`}
+                title={`仍需人工校验 ${proofreadingStatus.remaining} 部`}
+                onClick={() => setMachineReviewPanelCollapsedPreference(!machineReviewPanelCollapsed)}
+                className={`inline-flex min-h-8 shrink-0 items-center rounded-md border px-1.5 py-1 text-[10px] font-black shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+                  machineReviewPanelCollapsed
+                    ? theme === 'dark'
+                      ? 'border-amber-700 bg-amber-950/60 text-amber-200 hover:bg-amber-900/70'
+                      : 'border-amber-300 bg-amber-50/80 text-amber-800 hover:bg-amber-100'
+                    : 'border-amber-600 bg-amber-500 text-white hover:bg-amber-600'
+                }`}
+              >
+                校验清单
+              </button>
+            )}
+          </div>
+          <p className="text-xs opacity-50 mt-1">Archive v3.1</p>
         </div>
         <CategoryNav
           categories={categories}
@@ -888,7 +952,7 @@ export default function Home() {
                   type="search"
                   aria-label="搜索剧情标题或正文"
                   placeholder={searchLoading ? '正在准备正文搜索…' : '搜索标题或正文…'}
-                  className={`block w-full pl-9 pr-3 py-2 border rounded-lg text-sm outline-none transition-all ${
+                  className={`magi-home-search-input block h-10 w-full border rounded-lg py-2 pl-9 pr-3 text-sm leading-6 outline-none transition-all ${
                     theme === 'dark'
                       ? 'bg-gray-800 border-gray-700'
                       : isDayArchiveTheme(theme)
@@ -928,36 +992,6 @@ export default function Home() {
                     }`}
                   >
                     {option.label}
-                  </button>
-                ))}
-              </div>
-
-              <div
-                role="group"
-                aria-label="搜索对象覆盖范围"
-                className={`flex shrink-0 items-center rounded-lg border p-0.5 ${
-                  isDayArchiveTheme(theme)
-                    ? 'magi-home-light-control'
-                    : 'border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800'
-                }`}
-              >
-                {(['magireco', 'exedra'] as const).map((scope) => (
-                  <button
-                    type="button"
-                    key={scope}
-                    aria-pressed={storySystem === scope}
-                    onClick={() => switchToStorySystem(scope)}
-                    className={`px-2 py-1.5 text-xs font-bold rounded-md whitespace-nowrap transition-all ${
-                      storySystem === scope
-                        ? isDayArchiveTheme(theme)
-                          ? 'magi-home-light-button-active'
-                          : 'bg-white dark:bg-gray-600 text-emerald-700 dark:text-emerald-300 shadow-sm'
-                        : isDayArchiveTheme(theme)
-                          ? 'magi-home-light-segment'
-                          : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
-                    }`}
-                  >
-                    {SEARCH_INDEX_SCOPE_CONFIG[scope].label}
                   </button>
                 ))}
               </div>
@@ -1024,6 +1058,25 @@ export default function Home() {
                 <Book size={14} />
                 {storySystem === 'magireco' ? 'Exedra' : 'Magia Record'}
               </button>
+              {storySystem === 'magireco' && proofreadingStatus && (
+                <button
+                  type="button"
+                  aria-controls={machineReviewPanelContentId}
+                  aria-expanded={!machineReviewPanelCollapsed}
+                  aria-label={`${machineReviewPanelCollapsed ? '打开' : '收起'}校验清单，仍需 ${proofreadingStatus.remaining} 部`}
+                  title={`仍需人工校验 ${proofreadingStatus.remaining} 部`}
+                  onClick={() => setMachineReviewPanelCollapsedPreference(!machineReviewPanelCollapsed)}
+                  className={`inline-flex min-h-8 shrink-0 items-center rounded-md border px-2 py-1 text-xs font-black shadow-sm transition md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+                    machineReviewPanelCollapsed
+                      ? theme === 'dark'
+                        ? 'border-amber-700 bg-amber-950/60 text-amber-200 hover:bg-amber-900/70'
+                        : 'border-amber-300 bg-amber-50/80 text-amber-800 hover:bg-amber-100'
+                      : 'border-amber-600 bg-amber-500 text-white hover:bg-amber-600'
+                  }`}
+                >
+                  校验清单
+                </button>
+              )}
             </div>
 
             <div
@@ -1086,45 +1139,21 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-3 md:p-6 scroll-smooth">
+        <div className="magi-home-catalog flex-1 overflow-y-auto p-3 md:p-6 scroll-smooth">
           <div className="max-w-7xl mx-auto">
             {storySystem === 'magireco' && proofreadingStatus && (
-              <section className={`mb-5 rounded-2xl border shadow-sm ${
-                machineReviewPanelCollapsed ? 'p-2' : 'p-4'
-              } ${
-                theme === 'dark'
-                  ? 'border-amber-800 bg-amber-950/40 text-amber-100'
-                  : 'border-amber-300 bg-gradient-to-r from-amber-50 to-emerald-50 text-gray-900'
-              }`}>
-                {machineReviewPanelCollapsed && (
-                  <button
-                    type="button"
-                    aria-controls={machineReviewPanelContentId}
-                    aria-expanded={!machineReviewPanelCollapsed}
-                    aria-label={`展开来源待核验人工校验清单，仍需 ${proofreadingStatus.remaining} 部`}
-                    onClick={() => setMachineReviewPanelCollapsedPreference(false)}
-                    className={`flex min-h-11 w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm font-black transition ${
-                      theme === 'dark'
-                        ? 'hover:bg-amber-900/50 focus-visible:bg-amber-900/50'
-                        : 'hover:bg-white/70 focus-visible:bg-white/70'
-                    } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500`}
-                  >
-                    <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-                      <span>来源待核验人工校验清单</span>
-                      <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] text-white">
-                        仍需 {proofreadingStatus.remaining} 部
-                      </span>
-                    </span>
-                    <span className="flex shrink-0 items-center gap-1 text-xs">
-                      展开
-                      <ChevronDown aria-hidden="true" size={16} />
-                    </span>
-                  </button>
-                )}
-                <div
-                  id={machineReviewPanelContentId}
-                  hidden={machineReviewPanelCollapsed}
-                >
+              <section
+                id={machineReviewPanelContentId}
+                hidden={machineReviewPanelCollapsed}
+                className={`mb-5 rounded-2xl border p-4 shadow-sm ${
+                  theme === 'dark'
+                    ? 'border-amber-800 bg-amber-950/40 text-amber-100'
+                    : isDayArchiveTheme(theme)
+                      ? 'magi-home-review-panel'
+                      : 'border-amber-300 bg-gradient-to-r from-amber-50 to-emerald-50 text-gray-900'
+                }`}
+              >
+                <div>
                   <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
@@ -1150,7 +1179,9 @@ export default function Home() {
                         </div>
                         <div className="h-2 overflow-hidden rounded-full bg-black/10">
                           <div
-                            className="h-full rounded-full bg-emerald-500 transition-all"
+                            className={`h-full rounded-full transition-all ${
+                              isDayArchiveTheme(theme) ? 'magi-home-review-progress' : 'bg-emerald-500'
+                            }`}
                             style={{
                               width: `${proofreadingStatus.total > 0
                                 ? (proofreadingStatus.verified / proofreadingStatus.total) * 100
