@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 IMPORTER = ROOT / "tools/import_exedra_human_text.py"
 TEST = ROOT / "tests/test_import_exedra_human_text.py"
+AUTHENTIC_TEST = ROOT / "tests/test_tw_authentic_scenario.py"
 
 VALIDATOR = r'''
 def validate_only_comment_changed(
@@ -17,15 +18,20 @@ def validate_only_comment_changed(
     """Prove that only Name and playable Comment cells were localized.
 
     Every non-empty Name cell, including Put/Disp rows, must equal the exact
-    dictionary.ts canonical Chinese form of the corresponding JP Name.  Every
+    dictionary.ts canonical Chinese form of the corresponding JP Name. Every
     other playback field remains identical.
     """
+
+    from tw_authentic_scenario import (
+        load_name_translation_map,
+        translate_speaker,
+    )
 
     jp_document = common.load_json(jp_json)
     cn_document = common.load_json(cn_json)
     if not isinstance(jp_document, dict) or not isinstance(cn_document, dict):
         raise RuntimeError(f"Exedra JSON 顶层不是对象：{jp_json.name}")
-    mapping = common.load_name_translation_map()
+    mapping = load_name_translation_map()
 
     jp_sheets = jp_document.get("sheetList")
     cn_sheets = cn_document.get("sheetList")
@@ -98,7 +104,7 @@ def validate_only_comment_changed(
                 cn_name = cn_cells[name_index]
                 if isinstance(jp_name, str):
                     expected_name = (
-                        common.translate_speaker(jp_name, mapping)
+                        translate_speaker(jp_name, mapping)
                         if jp_name.strip()
                         else jp_name
                     )
@@ -149,7 +155,7 @@ def validate_only_comment_changed(
             f"本地化 JSON 的可播放 Comment 顺序错误：{jp_json.name}"
         )
     return {
-        # Compatibility key: means all fields outside the declared localized
+        # Compatibility key: all fields outside the declared localized
         # Name/Comment contract match.
         "nonCommentFieldsMatch": True,
         "nonLocalizedFieldsMatch": True,
@@ -213,6 +219,14 @@ def main() -> int:
         '            self.assertEqual(\n'
         '                localized["sheetList"][0]["contentRowList"][0]["cellList"][1],\n'
         '                "鹿目圆",\n'
+        '            )\n',
+    )
+    replace_once(
+        AUTHENTIC_TEST,
+        '            self.assertNotEqual(hashes["jp"], hashes["cn"])\n',
+        '            self.assertEqual(hashes["jp"], hashes["cn"])\n'
+        '            self.assertTrue(\n'
+        '                report["validation"]["speakerSequencesMayDiffer"]\n'
         '            )\n',
     )
     print("EXEDRA_HUMAN_NAME_COMMENT_VALIDATION_REPAIR_APPLIED")
