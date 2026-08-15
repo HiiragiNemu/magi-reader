@@ -63,7 +63,16 @@ test('test deployment uses a dedicated KV and supports real Turnstile secrets', 
   assert.match(workflow, /EXEDRA-TEST/u);
   assert.match(workflow, /npm run validate:feature/u);
   assert.doesNotMatch(workflow, /wrangler r2 object put/u);
-  assert.match(workflow, /manual R2 upload/u);
+  if (workflow.includes('TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V4')) {
+    assert.match(workflow, /search_chunk_delivery\.py materialize/u);
+    assert.match(workflow, /search_chunk_delivery\.py verify-tree/u);
+    assert.match(workflow, /search_chunk_delivery\.py verify-http --base-url/u);
+  } else {
+    // Transitional source state before the materializer commits the V4
+    // deployment patch. The successful [tw-materialized] commit must move to
+    // the same-origin chunk assertions above.
+    assert.match(workflow, /manual R2 upload/u);
+  }
   assert.match(workflow, /EXPECTED_GENERAL_VOICE_PUBLISHED/u);
   assert.match(workflow, /len\(published\) != 410/u);
   assert.match(workflow, /Component story was not losslessly published/u);
