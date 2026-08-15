@@ -31,7 +31,7 @@ const constrainOffset = (x: number, y: number, width: number, height: number) =>
 });
 
 /**
- * A deliberately modeless child window.  It never renders a full-page backdrop,
+ * A deliberately modeless child window. It never renders a full-page backdrop,
  * never traps focus and therefore leaves the Reader usable while one or more
  * tool windows remain open.
  */
@@ -52,9 +52,22 @@ export default function FloatingWindow({
   const cleanupRef = useRef<(() => void) | null>(null);
   const [offset, setOffset] = useState(initialOffset);
   const [zIndex, setZIndex] = useState(70);
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
 
   useEffect(() => () => cleanupRef.current?.(), []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const frame = window.requestAnimationFrame(() => {
+      const node = windowRef.current;
+      if (!node) return;
+      const rect = node.getBoundingClientRect();
+      setOffset((current) =>
+        constrainOffset(current.x, current.y, rect.width, rect.height),
+      );
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [isCompact, isOpen]);
 
   const raise = useCallback(() => {
     const next = Number(document.documentElement.dataset.magiWindowZ || '70') + 1;
@@ -107,7 +120,7 @@ export default function FloatingWindow({
   const bodyId = `${titleId}-body`;
 
   const closeWindow = () => {
-    setIsMinimized(false);
+    setIsCompact(false);
     onClose();
   };
 
@@ -119,7 +132,7 @@ export default function FloatingWindow({
       tabIndex={-1}
       data-modeless="true"
       data-theme={theme}
-      data-window-state={isMinimized ? 'minimized' : 'open'}
+      data-window-state={isCompact ? 'compact' : 'open'}
       className={`magi-floating-window ${palette} ${className}`}
       style={style}
       onPointerDown={raise}
@@ -132,14 +145,14 @@ export default function FloatingWindow({
         <div className="magi-retro-window-controls">
           <button
             type="button"
-            aria-label={`${isMinimized ? '还原' : '最小化'}${title}`}
+            aria-label={`${isCompact ? '还原' : '缩小'}${title}`}
             aria-controls={bodyId}
-            aria-expanded={!isMinimized}
-            title={isMinimized ? '还原' : '最小化'}
-            onClick={() => setIsMinimized((current) => !current)}
+            aria-pressed={isCompact}
+            title={isCompact ? '还原窗口' : '缩小窗口'}
+            onClick={() => setIsCompact((current) => !current)}
             className="magi-retro-window-minimize"
           >
-            {isMinimized
+            {isCompact
               ? <Square aria-hidden="true" size={12} strokeWidth={2.2} />
               : <Minus aria-hidden="true" size={17} strokeWidth={2.6} />}
           </button>
@@ -154,8 +167,10 @@ export default function FloatingWindow({
           </button>
         </div>
       </div>
-      <div id={bodyId} hidden={isMinimized} className={`magi-floating-window-body ${bodyClassName}`}>{children}</div>
-      {footer && <div hidden={isMinimized} className="magi-floating-window-footer">{footer}</div>}
+      <div id={bodyId} className={`magi-floating-window-body ${bodyClassName}`}>
+        {children}
+      </div>
+      {footer && <div className="magi-floating-window-footer">{footer}</div>}
     </section>
   );
 }
