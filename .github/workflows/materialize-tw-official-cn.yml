@@ -62,20 +62,13 @@ jobs:
           print(f'OPENCC_TW2SP_READY {probe!r} -> {result!r}')
           PY
 
-      - name: Materialize, certify, publish search and build
+      - name: Materialize, certify, chunk and build
         id: materialize
         continue-on-error: true
         shell: bash
         env:
           TW_SOURCE_URL: ${{ inputs.source_url || 'https://github.com/HiiragiNemu/MagiaExedraTWData/releases/download/tw-wiki-source-v1-20260806/exedra-tw-wiki-source-v1.zip' }}
           TW_SOURCE_SHA256: ${{ inputs.source_sha256 || '503c4c9a518d0a992abe800fccde4a97b35b2e4ddaeb2359e63eaa8d572cd1ac' }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          GH_TOKEN: ${{ github.token }}
-          SEARCH_R2_BUCKET: magi-assets
-          SEARCH_R2_PUBLIC_BASE: https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev
-          SEARCH_RELEASE_TAG: magireader-search-assets-v1
-          SEARCH_RELEASE_BASE: https://github.com/HiiragiNemu/magi-reader/releases/download/magireader-search-assets-v1
         run: |
           set +e
           set -o pipefail
@@ -92,12 +85,23 @@ jobs:
             --source-provider exedra-wiki-sp \
             --expected-source-count 2780
 
+          # Apply the permanent runtime/build patches before the regression suite.
+          python tools/patch_search_chunk_runtime.py
+          python tools/patch_tw_deploy_workflow.py
+
           npm --prefix website ci
           python -m unittest discover -s tests -p 'test_*.py'
           npm --prefix website run check
+          python tools/build_split_search_indexes.py --validate-only
+
+          # The large payload stays ignored by Git.  The existing manifest v2
+          # hashes are materialized into 1 MiB same-origin files only for the
+          # Cloudflare build and verified both before and after OpenNext copies them.
+          python tools/search_chunk_delivery.py materialize
+          python tools/search_chunk_delivery.py verify-tree --root website/public
           npm --prefix website run build:worker
           npm --prefix website run verify:cloudflare-output
-          python tools/build_split_search_indexes.py --validate-only
+          python tools/search_chunk_delivery.py verify-tree --root website/.open-next/assets
 
           python - <<'PY'
           import json
@@ -134,7 +138,6 @@ jobs:
                   )
           if int(stats.get('failed_groups', 0) or 0) != 0:
               raise SystemExit(f'TW structural failures remain: {stats}')
-
           if (
               stats['tw_source_files_used']
               + stats['tw_source_files_deferred_partial']
@@ -190,133 +193,6 @@ jobs:
               f"classified={stats['tw_source_files']}/2780"
           )
           PY
-
-          verify_search_url() {
-            local label="$1"
-            local url="$2"
-            local expected_sha="$3"
-            local expected_bytes="$4"
-            local require_cors="$5"
-            local output="$RUNNER_TEMP/search-${label}.json"
-            local headers="$RUNNER_TEMP/search-${label}.headers"
-            rm -f "$output" "$headers"
-            if ! curl --fail --location --silent --show-error \
-              --retry 3 --retry-all-errors --connect-timeout 15 --max-time 300 \
-              --dump-header "$headers" \
-              --header 'Origin: https://magireader-exedra-cn-test.crynetsystemscell.workers.dev' \
-              -o "$output" "$url"; then
-              return 1
-            fi
-            local actual_bytes actual_sha
-            actual_bytes="$(wc -c < "$output" | tr -d ' ')"
-            actual_sha="$(sha256sum "$output" | awk '{print $1}')"
-            if [ "$actual_bytes" != "$expected_bytes" ] || [ "$actual_sha" != "$expected_sha" ]; then
-              return 1
-            fi
-            if [ "$require_cors" = true ] && ! grep -Eiq '^access-control-allow-origin:[[:space:]]*(\\*|https://magireader-exedra-cn-test\\.crynetsystemscell\\.workers\\.dev)[[:space:]]*$' "$headers"; then
-              return 1
-            fi
-            return 0
-          }
-
-          ensure_search_release() {
-            if gh release view "$SEARCH_RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-              return 0
-            fi
-            gh release create "$SEARCH_RELEASE_TAG" \
-              --repo "$GITHUB_REPOSITORY" \
-              --target "$GITHUB_SHA" \
-              --title 'MagiReader content-addressed search assets v1' \
-              --notes 'Immutable full-text search payload storage. Runtime objects are selected and verified by SHA-256 manifests.' \
-              --prerelease
-          }
-
-          for scope in magireco exedra; do
-            read -r object_key expected_sha expected_bytes <<< "$(
-              python3 - "$scope" <<'PY'
-          import json, sys
-          from pathlib import Path
-          scope = sys.argv[1]
-          manifest = json.loads(
-              Path(f'website/public/search_index_manifest.{scope}.json')
-              .read_text(encoding='utf-8')
-          )
-          print(manifest['object_key'], manifest['sha256'], manifest['bytes'])
-          PY
-            )"
-            local_file="artifacts/search-split/search_content.$scope.json"
-            local_bytes="$(wc -c < "$local_file" | tr -d ' ')"
-            local_sha="$(sha256sum "$local_file" | awk '{print $1}')"
-            if [ "$local_bytes" != "$expected_bytes" ] || [ "$local_sha" != "$expected_sha" ]; then
-              echo "::error::Local split search payload mismatch for $scope"
-              exit 1
-            fi
-
-            r2_url="${SEARCH_R2_PUBLIC_BASE}/${object_key}?verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${scope}"
-            if verify_search_url "r2-$scope" "$r2_url" "$expected_sha" "$expected_bytes" false; then
-              echo "SEARCH_R2_ALREADY_VALID scope=$scope bytes=$expected_bytes sha256=$expected_sha object=$object_key"
-              continue
-            fi
-
-            r2_uploaded=false
-            if [ -n "${CLOUDFLARE_API_TOKEN:-}" ] && [ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
-              echo "Attempting certified $scope search upload to R2 bucket $SEARCH_R2_BUCKET"
-              if (
-                cd website &&
-                npx wrangler r2 object put \
-                  "$SEARCH_R2_BUCKET/$object_key" \
-                  --file "../$local_file" \
-                  --content-type 'application/json; charset=utf-8' \
-                  --cache-control 'public, max-age=31536000, immutable' \
-                  --remote
-              ); then
-                for attempt in $(seq 1 8); do
-                  if verify_search_url "r2-$scope" "$r2_url" "$expected_sha" "$expected_bytes" false; then
-                    r2_uploaded=true
-                    break
-                  fi
-                  sleep 5
-                done
-              else
-                echo "::warning::R2 upload unavailable for $scope; falling back to GitHub Release storage."
-              fi
-            fi
-            if [ "$r2_uploaded" = true ]; then
-              echo "SEARCH_R2_PUBLISH_OK scope=$scope bytes=$expected_bytes sha256=$expected_sha object=$object_key"
-              continue
-            fi
-
-            release_asset="search-${scope}-${expected_sha}.json"
-            release_url="${SEARCH_RELEASE_BASE}/${release_asset}"
-            if verify_search_url "release-$scope" "$release_url" "$expected_sha" "$expected_bytes" true; then
-              echo "SEARCH_RELEASE_ALREADY_VALID scope=$scope bytes=$expected_bytes sha256=$expected_sha asset=$release_asset"
-              continue
-            fi
-
-            ensure_search_release
-            upload_path="$RUNNER_TEMP/$release_asset"
-            cp "$local_file" "$upload_path"
-            gh release upload "$SEARCH_RELEASE_TAG" "$upload_path" \
-              --repo "$GITHUB_REPOSITORY" --clobber
-
-            release_ready=false
-            for attempt in $(seq 1 8); do
-              if verify_search_url "release-$scope" "$release_url" "$expected_sha" "$expected_bytes" true; then
-                release_ready=true
-                break
-              fi
-              sleep 5
-            done
-            if [ "$release_ready" != true ]; then
-              echo "::error::GitHub Release search asset failed full SHA-256/CORS verification: $scope"
-              exit 1
-            fi
-            echo "SEARCH_RELEASE_PUBLISH_OK scope=$scope bytes=$expected_bytes sha256=$expected_sha asset=$release_asset"
-          done
-
-          # Patch the isolated test deployment so it refuses to deploy unless
-          # either the canonical R2 object or the verified Release fallback is public.
-          python tools/patch_tw_deploy_workflow.py
           BUILD
           code="${PIPESTATUS[0]}"
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
@@ -355,7 +231,7 @@ jobs:
           git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
           if [ "$MATERIALIZE_EXIT_CODE" = 0 ]; then
             git add -A
-            message='[tw-materialized] Certified official TW zh-CN data and public search release'
+            message='[tw-materialized] Certified TW zh-CN data and same-origin split search'
           else
             git add -f artifacts/tw-materialization-status.json
             message="[tw-status] Materialization failed with code $MATERIALIZE_EXIT_CODE"

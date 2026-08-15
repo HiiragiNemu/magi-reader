@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Patch EXEDRA-TEST deployment to require a certified split-search public source."""
+"""Patch EXEDRA-TEST deployment for deploy-time same-origin search chunks."""
 from __future__ import annotations
 
 import re
@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PATH = ROOT / ".github/workflows/deploy-exedra-proofreading-test.yml"
-MARKER = "# TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V3"
+MARKER = "# TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V4"
 
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
@@ -31,42 +31,11 @@ def main() -> int:
         r"      - name: Generate matching split search manifests\n"
         r".*?(?=      - name: Build Cloudflare Worker output)"
     )
-    search_replacement = """      - name: Rebuild and certify committed split search release
+    search_replacement = """      - name: Rebuild and materialize certified split-search chunks
         shell: bash
         run: |
           set -euo pipefail
-          r2_base='https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev'
-          release_base='https://github.com/HiiragiNemu/magi-reader/releases/download/magireader-search-assets-v1'
-
-          verify_search_url() {
-            local label="$1"
-            local url="$2"
-            local expected_sha="$3"
-            local expected_bytes="$4"
-            local require_cors="$5"
-            local output="$RUNNER_TEMP/deploy-search-${label}.json"
-            local headers="$RUNNER_TEMP/deploy-search-${label}.headers"
-            rm -f "$output" "$headers"
-            if ! curl --fail --location --silent --show-error \
-              --retry 4 --retry-all-errors --connect-timeout 15 --max-time 300 \
-              --dump-header "$headers" \
-              --header 'Origin: https://magireader-exedra-cn-test.crynetsystemscell.workers.dev' \
-              -o "$output" "$url"; then
-              return 1
-            fi
-            local actual_bytes actual_sha
-            actual_bytes="$(wc -c < "$output" | tr -d ' ')"
-            actual_sha="$(sha256sum "$output" | awk '{print $1}')"
-            if [ "$actual_bytes" != "$expected_bytes" ] || [ "$actual_sha" != "$expected_sha" ]; then
-              return 1
-            fi
-            if [ "$require_cors" = true ] && ! grep -Eiq '^access-control-allow-origin:[[:space:]]*(\\*|https://magireader-exedra-cn-test\\.crynetsystemscell\\.workers\\.dev)[[:space:]]*$' "$headers"; then
-              echo "::warning::Public search fallback lacks a usable CORS response: $url"
-              return 1
-            fi
-            return 0
-          }
-
+          python tools/patch_search_chunk_runtime.py
           for scope in magireco exedra; do
             git show "$GITHUB_SHA:website/public/search_index_manifest.$scope.json" \
               > "$RUNNER_TEMP/committed-search-index-manifest.$scope.json"
@@ -74,43 +43,13 @@ def main() -> int:
 
           python tools/build_split_search_indexes.py
           python tools/build_split_search_indexes.py --validate-only
-
           for scope in magireco exedra; do
             cmp \
               "$RUNNER_TEMP/committed-search-index-manifest.$scope.json" \
               "website/public/search_index_manifest.$scope.json"
-
-            read -r object_key expected_sha expected_bytes <<< "$(
-              python3 - "$scope" <<'PY'
-          import json, sys
-          from pathlib import Path
-          scope = sys.argv[1]
-          value = json.loads(
-              Path(f'website/public/search_index_manifest.{scope}.json')
-              .read_text(encoding='utf-8')
-          )
-          print(value['object_key'], value['sha256'], value['bytes'])
-          PY
-            )"
-            release_asset="search-${scope}-${expected_sha}.json"
-
-            if verify_search_url \
-              "r2-$scope" \
-              "$r2_base/$object_key?deploy_verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$scope" \
-              "$expected_sha" "$expected_bytes" false; then
-              echo "SEARCH_PUBLIC_SOURCE_OK scope=$scope source=r2 bytes=$expected_bytes sha256=$expected_sha"
-              continue
-            fi
-            if verify_search_url \
-              "release-$scope" \
-              "$release_base/$release_asset" \
-              "$expected_sha" "$expected_bytes" true; then
-              echo "SEARCH_PUBLIC_SOURCE_OK scope=$scope source=github-release bytes=$expected_bytes sha256=$expected_sha"
-              continue
-            fi
-            echo "::error::No certified public split-search object is available for $scope"
-            exit 1
           done
+          python tools/search_chunk_delivery.py materialize
+          python tools/search_chunk_delivery.py verify-tree --root website/public
 
 """
     text, count = re.subn(
@@ -122,6 +61,18 @@ def main() -> int:
     )
     if count != 1:
         raise RuntimeError("无法替换 split-search 部署步骤")
+
+    smoke_anchor = "      - name: Smoke-test public site and dynamic proofreading state\n"
+    chunk_smoke = """      - name: Smoke-test deployed split-search chunks
+        env:
+          SITE_URL: https://${{ env.TEST_WORKER_HOSTNAME }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/search_chunk_delivery.py verify-http --base-url "$SITE_URL"
+
+"""
+    text = replace_once(text, smoke_anchor, chunk_smoke + smoke_anchor, "远端搜索分块烟雾测试")
 
     smoke_old = "if min(map(len, (home, submissions, machine_review))) < 500:"
     smoke_new = "if len(home) < 500 or len(submissions) < 160 or len(machine_review) < 160:"
@@ -140,7 +91,7 @@ def main() -> int:
 
     text = text.rstrip() + "\n\n" + MARKER + "\n"
     PATH.write_text(text, encoding="utf-8")
-    print("TW_SIMPLIFIED_SEARCH_DEPLOY_PATCHED branch=EXEDRA-TEST")
+    print("TW_SIMPLIFIED_SEARCH_DEPLOY_PATCHED branch=EXEDRA-TEST delivery=same-origin-chunks")
     return 0
 
 

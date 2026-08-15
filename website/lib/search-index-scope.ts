@@ -20,15 +20,14 @@ type SearchIndexManifestV2 = Omit<SearchIndexManifestV1, 'version'> & {
   chunks: SearchIndexChunk[];
 };
 
-export type SearchIndexManifest =
-  | SearchIndexManifestV1
-  | SearchIndexManifestV2;
+export type SearchIndexManifest = SearchIndexManifestV1 | SearchIndexManifestV2;
 
 export type SearchIndexSource = Pick<
   SearchIndexManifestV1,
   'sha256' | 'bytes' | 'entries'
 > & {
-  url: string;
+  url?: string;
+  chunk_base_url?: string;
   version: 1 | 2;
   chunk_bytes?: number;
   chunks?: SearchIndexChunk[];
@@ -52,8 +51,6 @@ export const SEARCH_INDEX_SCOPE_CONFIG: Record<
 
 const SEARCH_INDEX_CLOUDFLARE_BASE_URL =
   'https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev/';
-const SEARCH_INDEX_GITHUB_RELEASE_BASE_URL =
-  'https://github.com/HiiragiNemu/magi-reader/releases/download/magireader-search-assets-v1/';
 
 export const isSearchIndexManifest = (
   value: unknown,
@@ -118,9 +115,9 @@ export const isSearchIndexManifest = (
 
 const sourceFromManifest = (
   manifest: SearchIndexManifest,
-  url: string,
+  location: { url?: string; chunk_base_url?: string },
 ): SearchIndexSource => ({
-  url,
+  ...location,
   version: manifest.version,
   sha256: manifest.sha256,
   bytes: manifest.bytes,
@@ -154,15 +151,18 @@ export const getSearchIndexSources = async (
     throw new Error(`搜索索引与当前剧情目录不匹配：${scope}`);
   }
 
-  const releaseAsset = `search-${scope}-${manifest.sha256}.json`;
-  return [
-    sourceFromManifest(
-      manifest,
-      `${SEARCH_INDEX_CLOUDFLARE_BASE_URL}${manifest.object_key}`,
-    ),
-    sourceFromManifest(
-      manifest,
-      `${SEARCH_INDEX_GITHUB_RELEASE_BASE_URL}${releaseAsset}`,
-    ),
-  ];
+  const sources: SearchIndexSource[] = [];
+  if (manifest.version === 2) {
+    sources.push(
+      sourceFromManifest(manifest, {
+        chunk_base_url: `/search-chunks/${scope}/${manifest.sha256}/`,
+      }),
+    );
+  }
+  sources.push(
+    sourceFromManifest(manifest, {
+      url: `${SEARCH_INDEX_CLOUDFLARE_BASE_URL}${manifest.object_key}`,
+    }),
+  );
+  return sources;
 };

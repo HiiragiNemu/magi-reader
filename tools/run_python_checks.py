@@ -26,6 +26,9 @@ CRITICAL_FILES = (
     ROOT / "tools/apply_tw_official_metadata.py",
     ROOT / "tools/generate_exedra_localization_audit.py",
     ROOT / "tools/build_split_search_indexes.py",
+    ROOT / "tools/search_chunk_delivery.py",
+    ROOT / "tools/patch_search_chunk_runtime.py",
+    ROOT / "tools/patch_tw_deploy_workflow.py",
     ROOT / "tools/build_story_release_archive.py",
     ROOT / "scripts/materialize_proofreading_assets.py",
 )
@@ -48,11 +51,7 @@ def main() -> int:
         for index, path in enumerate(CRITICAL_FILES):
             output = compile_root / f"{index:02d}-{path.stem}.pyc"
             try:
-                py_compile.compile(
-                    str(path),
-                    cfile=str(output),
-                    doraise=True,
-                )
+                py_compile.compile(str(path), cfile=str(output), doraise=True)
             except py_compile.PyCompileError as error:
                 print(error.msg, file=sys.stderr)
                 return 2
@@ -61,14 +60,9 @@ def main() -> int:
     if not TEST_ROOT.is_dir():
         print(f"missing test directory: {TEST_ROOT}", file=sys.stderr)
         return 2
-
-    # Imports performed during unittest discovery must not create __pycache__
-    # inside a clean checkout.
     sys.dont_write_bytecode = True
     suite = unittest.defaultTestLoader.discover(
-        str(TEST_ROOT),
-        pattern="test_*.py",
-        top_level_dir=str(ROOT),
+        str(TEST_ROOT), pattern="test_*.py", top_level_dir=str(ROOT)
     )
     result = unittest.TextTestRunner(
         verbosity=2 if args.verbose else 1,

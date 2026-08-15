@@ -38,7 +38,10 @@ magiraexedra-translate-data-master/.Scenarios_full.failed-*/
 .open-next/
 .pages-deploy/
 website/public/search_content.json
+# Full-text payloads and their deploy-time physical chunks are generated from
+# committed story data.  Git keeps only the small content-addressed manifests.
 artifacts/search-split/search_content.*.json
+website/public/search-chunks/
 artifacts/story-release/*.zip
 artifacts/stale-next-dev-types-*/
 .tw-official-source/
