@@ -47,7 +47,7 @@ test('a manifest is valid only for its declared game scope', () => {
   );
 });
 
-test('loading one scope fetches one small manifest and exposes only that R2 object', async () => {
+test('loading one scope exposes R2 first and a content-addressed GitHub Release fallback', async () => {
   const calls: string[] = [];
   const manifest = manifestFor('exedra');
   const fetchManifest = (async (input: RequestInfo | URL) => {
@@ -66,9 +66,22 @@ test('loading one scope fetches one small manifest and exposes only that R2 obje
   );
 
   assert.deepEqual(calls, ['/search_index_manifest.exedra.json']);
-  assert.equal(sources.length, 1);
-  assert.match(sources[0].url, /\/search\/exedra\/[a-f0-9]{64}\.json$/u);
+  assert.equal(sources.length, 2);
+  assert.match(
+    sources[0].url,
+    /pub-23cae552ecf24722bf572b29fa8dd03f\.r2\.dev\/search\/exedra\/[a-f0-9]{64}\.json$/u,
+  );
+  assert.match(
+    sources[1].url,
+    /github\.com\/HiiragiNemu\/magi-reader\/releases\/download\/magireader-search-assets-v1\/search-exedra-[a-f0-9]{64}\.json$/u,
+  );
   assert.doesNotMatch(sources[0].url, /magireco/u);
+  assert.doesNotMatch(sources[1].url, /magireco/u);
+  for (const source of sources) {
+    assert.equal(source.sha256, manifest.sha256);
+    assert.equal(source.bytes, manifest.bytes);
+    assert.equal(source.entries, manifest.entries);
+  }
 });
 
 test('a stale scope manifest is rejected before its large object can load', async () => {

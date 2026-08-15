@@ -52,6 +52,8 @@ export const SEARCH_INDEX_SCOPE_CONFIG: Record<
 
 const SEARCH_INDEX_CLOUDFLARE_BASE_URL =
   'https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev/';
+const SEARCH_INDEX_GITHUB_RELEASE_BASE_URL =
+  'https://github.com/HiiragiNemu/magi-reader/releases/download/magireader-search-assets-v1/';
 
 export const isSearchIndexManifest = (
   value: unknown,
@@ -114,6 +116,23 @@ export const isSearchIndexManifest = (
   return total === Number(manifest.bytes);
 };
 
+const sourceFromManifest = (
+  manifest: SearchIndexManifest,
+  url: string,
+): SearchIndexSource => ({
+  url,
+  version: manifest.version,
+  sha256: manifest.sha256,
+  bytes: manifest.bytes,
+  entries: manifest.entries,
+  ...(manifest.version === 2
+    ? {
+        chunk_bytes: manifest.chunk_bytes,
+        chunks: manifest.chunks,
+      }
+    : {}),
+});
+
 export const getSearchIndexSources = async (
   signal: AbortSignal,
   storyIndexSha256: string,
@@ -135,19 +154,15 @@ export const getSearchIndexSources = async (
     throw new Error(`搜索索引与当前剧情目录不匹配：${scope}`);
   }
 
+  const releaseAsset = `search-${scope}-${manifest.sha256}.json`;
   return [
-    {
-      url: `${SEARCH_INDEX_CLOUDFLARE_BASE_URL}${manifest.object_key}`,
-      version: manifest.version,
-      sha256: manifest.sha256,
-      bytes: manifest.bytes,
-      entries: manifest.entries,
-      ...(manifest.version === 2
-        ? {
-            chunk_bytes: manifest.chunk_bytes,
-            chunks: manifest.chunks,
-          }
-        : {}),
-    },
+    sourceFromManifest(
+      manifest,
+      `${SEARCH_INDEX_CLOUDFLARE_BASE_URL}${manifest.object_key}`,
+    ),
+    sourceFromManifest(
+      manifest,
+      `${SEARCH_INDEX_GITHUB_RELEASE_BASE_URL}${releaseAsset}`,
+    ),
   ];
 };

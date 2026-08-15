@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Patch EXEDRA-TEST deployment to require the committed split-search R2 release."""
+"""Patch EXEDRA-TEST deployment to require a certified split-search public source."""
 from __future__ import annotations
 
 import re
@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PATH = ROOT / ".github/workflows/deploy-exedra-proofreading-test.yml"
-MARKER = "# TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V2"
+MARKER = "# TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V3"
 
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
@@ -35,7 +35,37 @@ def main() -> int:
         shell: bash
         run: |
           set -euo pipefail
-          search_public_base='https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev'
+          r2_base='https://pub-23cae552ecf24722bf572b29fa8dd03f.r2.dev'
+          release_base='https://github.com/HiiragiNemu/magi-reader/releases/download/magireader-search-assets-v1'
+
+          verify_search_url() {
+            local label="$1"
+            local url="$2"
+            local expected_sha="$3"
+            local expected_bytes="$4"
+            local require_cors="$5"
+            local output="$RUNNER_TEMP/deploy-search-${label}.json"
+            local headers="$RUNNER_TEMP/deploy-search-${label}.headers"
+            rm -f "$output" "$headers"
+            if ! curl --fail --location --silent --show-error \
+              --retry 4 --retry-all-errors --connect-timeout 15 --max-time 300 \
+              --dump-header "$headers" \
+              --header 'Origin: https://magireader-exedra-cn-test.crynetsystemscell.workers.dev' \
+              -o "$output" "$url"; then
+              return 1
+            fi
+            local actual_bytes actual_sha
+            actual_bytes="$(wc -c < "$output" | tr -d ' ')"
+            actual_sha="$(sha256sum "$output" | awk '{print $1}')"
+            if [ "$actual_bytes" != "$expected_bytes" ] || [ "$actual_sha" != "$expected_sha" ]; then
+              return 1
+            fi
+            if [ "$require_cors" = true ] && ! grep -Eiq '^access-control-allow-origin:[[:space:]]*(\\*|https://magireader-exedra-cn-test\\.crynetsystemscell\\.workers\\.dev)[[:space:]]*$' "$headers"; then
+              echo "::warning::Public search fallback lacks a usable CORS response: $url"
+              return 1
+            fi
+            return 0
+          }
 
           for scope in magireco exedra; do
             git show "$GITHUB_SHA:website/public/search_index_manifest.$scope.json" \
@@ -62,19 +92,24 @@ def main() -> int:
           print(value['object_key'], value['sha256'], value['bytes'])
           PY
             )"
+            release_asset="search-${scope}-${expected_sha}.json"
 
-            remote="$RUNNER_TEMP/search-r2-$scope.json"
-            curl --fail --location --silent --show-error \
-              --retry 4 --retry-all-errors --connect-timeout 15 --max-time 300 \
-              -o "$remote" \
-              "$search_public_base/$object_key?deploy_verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$scope"
-            actual_bytes="$(wc -c < "$remote" | tr -d ' ')"
-            actual_sha="$(sha256sum "$remote" | awk '{print $1}')"
-            if [ "$actual_bytes" != "$expected_bytes" ] || [ "$actual_sha" != "$expected_sha" ]; then
-              echo "::error::Published R2 search object mismatch for $scope: bytes=$actual_bytes/$expected_bytes sha=$actual_sha/$expected_sha"
-              exit 1
+            if verify_search_url \
+              "r2-$scope" \
+              "$r2_base/$object_key?deploy_verify=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$scope" \
+              "$expected_sha" "$expected_bytes" false; then
+              echo "SEARCH_PUBLIC_SOURCE_OK scope=$scope source=r2 bytes=$expected_bytes sha256=$expected_sha"
+              continue
             fi
-            echo "SEARCH_R2_DEPLOY_INPUT_OK scope=$scope bytes=$actual_bytes sha256=$actual_sha object=$object_key"
+            if verify_search_url \
+              "release-$scope" \
+              "$release_base/$release_asset" \
+              "$expected_sha" "$expected_bytes" true; then
+              echo "SEARCH_PUBLIC_SOURCE_OK scope=$scope source=github-release bytes=$expected_bytes sha256=$expected_sha"
+              continue
+            fi
+            echo "::error::No certified public split-search object is available for $scope"
+            exit 1
           done
 
 """
