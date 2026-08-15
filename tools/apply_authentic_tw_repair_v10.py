@@ -2,6 +2,7 @@
 """Repair compatibility shims and tests for canonical Chinese speaker Names."""
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -76,7 +77,7 @@ def apply_translated_texts(
     Authentic TW calls pass ``(tw_json, destination, converter)``.  Existing
     human and voice importers pass ``(jp_json, translated_texts, destination)``.
     The latter now canonicalizes every Name through dictionary.ts while keeping
-    all non-Name/non-Comment playback fields byte-for-byte equivalent.
+    all non-Name/non-Comment playback fields equivalent.
     """
 
     if (
@@ -107,12 +108,16 @@ def apply_translated_texts(
     )
 
     importer = IMPORTER.read_text(encoding="utf-8")
-    false_marker = '"speakerSequencesMayDiffer": False'
-    true_marker = '"speakerSequencesMayDiffer": True'
-    if false_marker in importer:
-        replace_once(IMPORTER, false_marker, true_marker)
-    elif true_marker not in importer:
-        raise RuntimeError("speakerSequencesMayDiffer policy is missing")
+    policy_pattern = re.compile(
+        r"([\"']speakerSequencesMayDiffer[\"']\s*:\s*)[^,\n}]+"
+    )
+    importer, substitutions = policy_pattern.subn(r"\1True", importer)
+    if substitutions != 1:
+        raise RuntimeError(
+            "speakerSequencesMayDiffer policy occurrence count="
+            f"{substitutions}; expected 1"
+        )
+    IMPORTER.write_text(importer, encoding="utf-8", newline="\n")
 
     generator = GENERATOR.read_text(encoding="utf-8")
     old_error = "ActionType/工作表/行位置/规范中文说话人 顺序不一致"
