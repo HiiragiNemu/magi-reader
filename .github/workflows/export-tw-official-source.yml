@@ -1,0 +1,146 @@
+name: Export official TW zh-CN source for manual retranslation
+
+on:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - .github/workflows/export-tw-official-source.yml
+      - .translation-export-trigger/**
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out certified TW source branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/tw-official-cn-complete
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Select and extract certified compact payloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tw-official-source/normalized .tw-official-source/scenarios .tw-official-source/manifests
+          python - <<'PY'
+          import base64
+          import json
+          import lzma
+          import re
+          from collections import defaultdict
+          from pathlib import Path
+
+          roots = [
+              Path('sources/tw-official-zh-cn'),
+              Path('sources/tw-official-zh-cn-v3'),
+              Path('sources/tw-official-zh-cn-valid'),
+          ]
+          target = Path('.tw-official-source/normalized')
+          pattern = re.compile(r'^(?P<prefix>.+\.xz\.b64)\.part(?P<number>\d+)$')
+          scenario = None
+          names = None
+
+          def canonical_decode(text: str) -> bytes:
+              value = ''.join(text.split()).rstrip('=')
+              value += '=' * ((-len(value)) % 4)
+              return base64.b64decode(value, validate=True)
+
+          for root in roots:
+              if not root.is_dir():
+                  continue
+              groups = defaultdict(list)
+              for path in root.glob('*.part*'):
+                  match = pattern.fullmatch(path.name)
+                  if match:
+                      groups[match.group('prefix')].append((int(match.group('number')), path))
+              for prefix, parts in sorted(groups.items()):
+                  ordered = [path for _number, path in sorted(parts)]
+                  numbers = [number for number, _path in sorted(parts)]
+                  if numbers != list(range(1, len(numbers) + 1)):
+                      continue
+                  texts = [path.read_text(encoding='ascii') for path in ordered]
+                  candidates = []
+                  try:
+                      candidates.append(canonical_decode(''.join(text.rstrip().rstrip('=') for text in texts)))
+                  except Exception:
+                      pass
+                  try:
+                      candidates.append(b''.join(canonical_decode(text) for text in texts))
+                  except Exception:
+                      pass
+                  seen = set()
+                  for compressed in candidates:
+                      marker = (len(compressed), compressed[:32], compressed[-32:])
+                      if marker in seen:
+                          continue
+                      seen.add(marker)
+                      try:
+                          value = json.loads(lzma.decompress(compressed).decode('utf-8'))
+                      except Exception:
+                          continue
+                      if not isinstance(value, dict):
+                          continue
+                      files = value.get('files')
+                      titles = value.get('titles')
+                      if scenario is None and isinstance(files, dict) and len(files) == 2780:
+                          scenario = compressed
+                      if names is None and isinstance(titles, dict) and len(titles) == 1608:
+                          names = compressed
+
+          if scenario is None:
+              raise SystemExit('No valid 2780-file TW Scenario payload found')
+          if names is None:
+              raise SystemExit('No valid 1608-title TW naming payload found')
+
+          for filename, compressed in (
+              ('Selected-Scenarios.xz.b64.part001', scenario),
+              ('Selected-Names.xz.b64.part001', names),
+          ):
+              (target / filename).write_text(base64.b64encode(compressed).decode('ascii') + '\n', encoding='ascii')
+          PY
+
+          python tools/extract_tw_compact_sources.py \
+            --source-dir .tw-official-source/normalized \
+            --scenario-output .tw-official-source/scenarios \
+            --manifest-output .tw-official-source/manifests
+
+          test "$(find .tw-official-source/scenarios -name '*.json' | wc -l)" -eq 2780
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          root = Path('.tw-official-source')
+          files = sorted(root.rglob('*.json'))
+          report = {
+              'scenario_json_count': len(list((root / 'scenarios').rglob('*.json'))),
+              'manifest_json_count': len(list((root / 'manifests').rglob('*.json'))),
+              'files': [
+                  {
+                      'path': str(path.relative_to(root)).replace('\\', '/'),
+                      'bytes': path.stat().st_size,
+                      'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+                  }
+                  for path in files
+              ],
+          }
+          (root / 'EXPORT_REPORT.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Upload extracted official source
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-tw-zh-cn-source-2780
+          path: .tw-official-source/
+          if-no-files-found: error
+          retention-days: 7
