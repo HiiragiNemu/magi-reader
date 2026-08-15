@@ -79,7 +79,7 @@ jobs:
           source = source.replace(
               canonicalizer_marker,
               canonicalizer_marker
-              + 'python tools/synchronize_exedra_speaker_dictionary.py\n'
+              + 'python tools/derive_exedra_speaker_aliases.py\n'
               + 'python tools/canonicalize_exedra_cn_speakers.py\n'
               + 'python tools/finalize_exedra_cn_json_names.py\n'
               + 'python tools/certify_authentic_tw_reports.py\n'
@@ -107,4 +107,4 @@ jobs:
           PY
           bash tools/run_authentic_tw_repair_v3.sh
 
-# repair-bootstrap-v18-corpus-dictionary
+# repair-bootstrap-v19-derived-speakers
