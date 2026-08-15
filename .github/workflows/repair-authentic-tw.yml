@@ -72,12 +72,15 @@ jobs:
               + 'python tools/apply_authentic_tw_repair_v9.py\n'
               + 'python tools/apply_authentic_tw_repair_v10.py\n'
               + 'python tools/apply_authentic_tw_repair_v11.py\n'
-              + 'python tools/apply_authentic_tw_repair_v16.py\n',
+              + 'python tools/apply_authentic_tw_repair_v16.py\n'
+              + 'python tools/apply_authentic_tw_repair_v18.py\n',
               1,
           )
           source = source.replace(
               canonicalizer_marker,
               canonicalizer_marker
+              + 'python tools/synchronize_exedra_speaker_dictionary.py\n'
+              + 'python tools/canonicalize_exedra_cn_speakers.py\n'
               + 'python tools/finalize_exedra_cn_json_names.py\n'
               + 'python tools/certify_authentic_tw_reports.py\n'
               + 'python tools/audit_exedra_jp_speaker_dictionary.py\n',
@@ -96,6 +99,7 @@ jobs:
               + '  tools/apply_authentic_tw_repair_v12.py \\\n'
               + '  tools/apply_authentic_tw_repair_v13.py \\\n'
               + '  tools/apply_authentic_tw_repair_v16.py \\\n'
+              + '  tools/apply_authentic_tw_repair_v18.py \\\n'
               + '  tools/finalize_exedra_cn_json_names.py \\\n',
               1,
           )
@@ -103,4 +107,4 @@ jobs:
           PY
           bash tools/run_authentic_tw_repair_v3.sh
 
-# repair-bootstrap-v17
+# repair-bootstrap-v18-corpus-dictionary
