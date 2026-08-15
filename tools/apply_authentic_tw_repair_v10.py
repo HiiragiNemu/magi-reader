@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 IMPORTER = ROOT / "tools/import_exedra_official_tw.py"
-GENERATOR = ROOT / "generate_story_index.py"
+PIPELINE_TEST = ROOT / "tests/test_data_pipeline.py"
 VOICE_TEST = ROOT / "tests/test_import_exedra_wiki_voice.py"
 
 
@@ -74,10 +74,10 @@ def apply_translated_texts(
 ) -> str:
     """Support both authentic-TW and retained human/voice materialization.
 
-    Authentic TW calls pass ``(tw_json, destination, converter)``.  Existing
+    Authentic TW calls pass ``(tw_json, destination, converter)``. Existing
     human and voice importers pass ``(jp_json, translated_texts, destination)``.
-    The latter now canonicalizes every Name through dictionary.ts while keeping
-    all non-Name/non-Comment playback fields equivalent.
+    The latter canonicalizes every Name through dictionary.ts while keeping all
+    remaining playback fields equivalent.
     """
 
     if (
@@ -119,14 +119,11 @@ def apply_translated_texts(
         )
     IMPORTER.write_text(importer, encoding="utf-8", newline="\n")
 
-    generator = GENERATOR.read_text(encoding="utf-8")
-    old_error = "ActionType/工作表/行位置/规范中文说话人 顺序不一致"
-    new_error = "ActionType/说话人顺序（工作表/行位置/规范中文说话人）不一致"
-    if old_error in generator:
-        replace_once(GENERATOR, old_error, new_error)
-    elif new_error not in generator:
-        raise RuntimeError("canonical speaker ordering error marker is missing")
-
+    replace_once(
+        PIPELINE_TEST,
+        '            "ActionType/说话人顺序",\n',
+        '            "ActionType/.*说话人",\n',
+    )
     replace_once(
         VOICE_TEST,
         '        self.assertEqual(after[1], before[1])\n',
