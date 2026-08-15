@@ -9,13 +9,12 @@ CERTIFIER = ROOT / "tools/certify_authentic_tw_reports.py"
 MATERIALIZER = ROOT / "tools/materialize_tw_official_cn.py"
 
 CERTIFIER_SOURCE = r'''#!/usr/bin/env python3
-"""Bind every official-TW import report to authentic source and current CN bytes.
+"""Bind every official-TW import report to authentic source and current bytes.
 
-This is a fail-closed certification pass.  It never invents a TW source hash:
+This is a fail-closed certification pass. It never invents a TW source hash:
 each report must already contain a valid immutable ``twSha256`` and ``twPath``
-from the verified source bundle.  It adds the explicit policy fields consumed by
-``generate_story_index.py`` and rebinds the generated CN JSON hashes after
-speaker canonicalization.
+from the verified source bundle. It rebinds the current CN JSON hashes and both
+current aggregate TXT speaker/block hashes after deterministic canonicalization.
 """
 from __future__ import annotations
 
@@ -23,11 +22,16 @@ import argparse
 import hashlib
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+import generate_story_index as pipeline  # noqa: E402
+
 DEFAULT_CN_ROOT = ROOT / "magiraexedra-translate-data-master/Scenarios_full"
+JP_ROOT = ROOT / "magiraexedra-source-master/Scenarios_full"
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 POLICY = "official_tw_name_column_tw2sp"
 STRUCTURE_POLICY = "same-section-source-count-action-row"
@@ -41,8 +45,115 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def text_sha256(path: Path) -> str:
+    value = path.read_text(encoding="utf-8-sig")
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
 def valid_sha256(value: object) -> bool:
     return isinstance(value, str) and SHA256_RE.fullmatch(value) is not None
+
+
+def mapping(value: object, *, label: str, path: Path) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise RuntimeError(f"TW report {label} is not an object: {path}")
+    return value
+
+
+def bind_current_texts(value: dict[str, Any], report_path: Path) -> int:
+    group = mapping(value.get("group"), label="group", path=report_path)
+    category = group.get("category")
+    group_key = group.get("groupKey")
+    if not isinstance(category, str) or not category:
+        raise RuntimeError(f"TW report group.category is missing: {report_path}")
+    if not isinstance(group_key, str) or not group_key:
+        raise RuntimeError(f"TW report group.groupKey is missing: {report_path}")
+
+    jp_path = JP_ROOT / category / group_key / f"{group_key}_jp.txt"
+    cn_path = report_path.parent / f"{group_key}_cn.txt"
+    if not jp_path.is_file() or jp_path.is_symlink():
+        raise RuntimeError(f"Certified JP aggregate TXT is missing: {jp_path}")
+    if not cn_path.is_file() or cn_path.is_symlink():
+        raise RuntimeError(f"Certified CN aggregate TXT is missing: {cn_path}")
+
+    jp_sections = pipeline._exedra_alignment_sections(jp_path)
+    cn_sections = pipeline._exedra_alignment_sections(cn_path)
+    if len(jp_sections) != len(cn_sections):
+        raise RuntimeError(
+            f"Certified TW JP/CN Section count differs: {group_key}: "
+            f"{len(jp_sections)} != {len(cn_sections)}"
+        )
+    if not jp_sections:
+        raise RuntimeError(f"Certified TW aggregate TXT has no Sections: {group_key}")
+
+    report_sections = value.get("sections")
+    if not isinstance(report_sections, list) or len(report_sections) != len(jp_sections):
+        raise RuntimeError(
+            f"TW report Section list does not bind current TXT: {report_path}"
+        )
+
+    for index, (jp, cn, entry) in enumerate(
+        zip(jp_sections, cn_sections, report_sections),
+        start=1,
+    ):
+        if not isinstance(entry, dict):
+            raise RuntimeError(f"TW report sections[{index}] is not an object: {report_path}")
+        if (
+            jp.number != index
+            or cn.number != index
+            or jp.source_name != cn.source_name
+        ):
+            raise RuntimeError(
+                f"Certified TW Section source/order differs: {group_key} Section {index}"
+            )
+        if jp.reader_block_count != cn.reader_block_count:
+            raise RuntimeError(
+                f"Certified TW reader block count differs: {group_key} Section {index}: "
+                f"{jp.reader_block_count} != {cn.reader_block_count}"
+            )
+        entry["section"] = index
+        entry["source"] = jp.source_name
+        entry["readerNormalizedBlocks"] = {
+            "jp": jp.reader_block_count,
+            "cn": cn.reader_block_count,
+            "matches": True,
+        }
+        entry["speakerSequenceSha256"] = {
+            "jp": jp.speaker_sequence_sha256,
+            "cn": cn.speaker_sequence_sha256,
+        }
+        entry["speakerSequenceMatches"] = (
+            jp.speaker_sequence_sha256 == cn.speaker_sequence_sha256
+        )
+
+    report_jp = mapping(value.get("jp"), label="jp", path=report_path)
+    report_cn = mapping(value.get("cn"), label="cn", path=report_path)
+    report_jp.update(
+        {
+            "contentSha256": text_sha256(jp_path),
+            "sectionCount": len(jp_sections),
+            "readerNormalizedBlockCount": sum(
+                section.reader_block_count for section in jp_sections
+            ),
+        }
+    )
+    report_cn.update(
+        {
+            "renderedSha256": text_sha256(cn_path),
+            "sectionCount": len(cn_sections),
+            "readerNormalizedBlockCount": sum(
+                section.reader_block_count for section in cn_sections
+            ),
+        }
+    )
+    value["currentTextCertification"] = {
+        "version": 1,
+        "jpSha256": report_jp["contentSha256"],
+        "cnSha256": report_cn["renderedSha256"],
+        "sectionCount": len(jp_sections),
+        "speakerSequencesMayDiffer": True,
+    }
+    return len(jp_sections)
 
 
 def certify_report(path: Path) -> tuple[int, int]:
@@ -109,6 +220,7 @@ def certify_report(path: Path) -> tuple[int, int]:
         entry["twSchemaPreserved"] = True
         source_updates += 1
 
+    section_count = bind_current_texts(value, path)
     value["authenticTwCertification"] = {
         "version": 1,
         "schemaSource": "official_tw_json",
@@ -116,6 +228,7 @@ def certify_report(path: Path) -> tuple[int, int]:
         "speakerPolicy": POLICY,
         "twSchemaPreserved": True,
         "sourceCount": len(sources),
+        "sectionCount": section_count,
     }
     path.write_text(
         json.dumps(value, ensure_ascii=False, indent=2) + "\n",
