@@ -95,16 +95,24 @@ const waitForResult = async (worker, sequence) => {
 
 test('same-origin physical v2 chunks reassemble one verified JSON stream', async () => {
   assert.match(workerSource, /SEARCH_CHUNK_DELIVERY_RUNTIME_V1/u);
-  // Production v2 is fixed at 1 MiB. Make the first searchable row slightly
-  // larger than one chunk so this fixture proves real cross-file reassembly
-  // instead of weakening the protocol to tiny synthetic chunk sizes.
+  // Cross the real 1 MiB physical boundary while keeping every individual JSON
+  // entry below the worker's independent 1 MiB per-entry safety ceiling.
+  // Extra fixture padding is discarded by validateCompactEntry, so search work
+  // remains small while the byte-stream reassembly is genuinely multi-part.
+  const fixturePadding = 540 * 1024;
   const payload = new TextEncoder().encode(JSON.stringify([
     {
       id: 'chunked-1',
-      c: `鹿目圆：简体中文全文搜索${'x'.repeat(CHUNK_BYTES + 256)}`,
+      c: '鹿目圆：简体中文全文搜索',
       l: 'cn',
+      pad: 'x'.repeat(fixturePadding),
     },
-    { id: 'chunked-2', c: '暁美ほむら：約束', l: 'jp' },
+    {
+      id: 'chunked-2',
+      c: '暁美ほむら：約束',
+      l: 'jp',
+      pad: 'y'.repeat(fixturePadding),
+    },
   ]));
   const parts = split(payload, CHUNK_BYTES);
   assert.equal(parts.length, 2);

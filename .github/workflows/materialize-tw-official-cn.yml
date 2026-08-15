@@ -91,6 +91,20 @@ jobs:
 
           npm --prefix website ci
           python -m unittest discover -s tests -p 'test_*.py'
+
+          # Emit failing Node test names at the very end of the diagnostic log.
+          # This runs before the composite `npm run check`; on success the full
+          # check still reruns the same suite together with lint/type/audit gates.
+          set +e
+          npm --prefix website test 2>&1 | tee "$RUNNER_TEMP/node-tests-preflight.log"
+          node_test_code="${PIPESTATUS[0]}"
+          set -e
+          if [ "$node_test_code" -ne 0 ]; then
+            echo '===== NODE TEST FAILURES ====='
+            grep -E '^not ok [0-9]+ - ' "$RUNNER_TEMP/node-tests-preflight.log" || true
+            exit "$node_test_code"
+          fi
+
           npm --prefix website run check
           python tools/build_split_search_indexes.py --validate-only
 
