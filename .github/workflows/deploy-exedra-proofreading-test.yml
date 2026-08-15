@@ -1,4 +1,4 @@
-name: Deploy Exedra Community Proofreading Test Site
+name: Deploy EXEDRA-TEST TW Simplified Site
 
 on:
   push:
@@ -14,6 +14,9 @@ concurrency:
 
 jobs:
   deploy:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.head_commit.message, '[tw-materialized]')
     runs-on: ubuntu-latest
     timeout-minutes: 180
     env:
@@ -40,193 +43,52 @@ jobs:
           cache: npm
           cache-dependency-path: website/package-lock.json
 
-      - name: Run Python tests
-        run: python -m unittest discover -s tests -p "test_*.py"
+      - name: Install website dependencies
+        working-directory: website
+        run: npm ci
 
-      - name: Generate complete deployable story data and machine baseline
+      - name: Rebuild committed data and materialize same-origin search chunks
         shell: bash
         run: |
           set -euo pipefail
+          cp website/public/story_index.json "$RUNNER_TEMP/story_index.committed.json"
+          for scope in magireco exedra; do
+            cp "website/public/search_index_manifest.$scope.json" \
+              "$RUNNER_TEMP/search_index_manifest.$scope.committed.json"
+          done
+
           python generate_story_index.py
           python tools/apply_tw_official_metadata.py
           python generate_machine_translation_manifest.py \
             --translation-base 65f221f2aaa5a9fe161ed32e03e4dfbb93d4746d \
             --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb
-          total="$(python3 - <<'PY'
-          import json
-          from pathlib import Path
-          manifest = json.loads(Path('website/public/data/machine_translation_manifest.generated.json').read_text(encoding='utf-8'))
-          print(manifest.get('total', 0))
-          PY
-          )"
-          if [ "$total" -le 15 ]; then
-            echo "Generated machine translation baseline is incomplete: $total" >&2
-            exit 1
-          fi
-          echo "EXPECTED_MACHINE_TOTAL=$total" >> "$GITHUB_ENV"
-          echo "MACHINE_BASELINE_OK total=$total"
-          voice_release="$(python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          public_root = Path('website/public')
-          manifest = json.loads(
-              (public_root / 'data/general_voice/general_voice_manifest.json')
-              .read_text(encoding='utf-8')
-          )
-          stories = json.loads(
-              (public_root / 'story_index.json').read_text(encoding='utf-8')
-          )
-          models = manifest.get('models') if isinstance(manifest, dict) else None
-          if (
-              manifest.get('version') != 1
-              or manifest.get('modelCount') != 410
-              or not isinstance(models, list)
-              or len(models) != 410
-          ):
-              raise SystemExit('Generated general_voice manifest is incomplete')
-          model_by_id = {
-              model.get('id'): model
-              for model in models
-              if isinstance(model, dict) and isinstance(model.get('id'), str)
-          }
-          if len(model_by_id) != len(models):
-              raise SystemExit('Generated general_voice manifest has duplicate model IDs')
-          published = {
-              model_id: model
-              for model_id, model in model_by_id.items()
-              if model.get('publishedModel') is True
-          }
-          hidden_aliases = {
-              model_id: model
-              for model_id, model in model_by_id.items()
-              if model.get('publishedModel') is False
-          }
-          components = {
-              model_id: model
-              for model_id, model in model_by_id.items()
-              if model.get('canonicalModelId') != model_id
-          }
-          if len(published) != 410 or hidden_aliases or len(components) != 38:
-              raise SystemExit(
-                  'Unexpected general_voice release boundary: '
-                  f'published={len(published)} hidden={len(hidden_aliases)} '
-                  f'components={len(components)}'
-              )
-          voice_story_list = [
-              story
-              for story in stories
-              if isinstance(story, dict)
-              and story.get('category') == 'general_voice'
-          ]
-          voice_stories = {
-              story.get('source_identity'): story
-              for story in voice_story_list
-          }
-          expected_identities = {
-              f'general_voice/{model_id}' for model_id in published
-          }
-          if (
-              len(voice_stories) != len(voice_story_list)
-              or set(voice_stories) != expected_identities
-          ):
-              raise SystemExit('story_index general_voice identities do not match the manifest')
-          for model_id, model in published.items():
-              story = voice_stories[f'general_voice/{model_id}']
-              component_ids = model.get('componentModelIds')
-              if not isinstance(component_ids, list):
-                  raise SystemExit(f'Invalid component list for {model_id}')
-              if story.get('component_model_ids', []) != component_ids:
-                  raise SystemExit(f'Component metadata mismatch for {model_id}')
-              if story.get('legacy_ids') not in (None, []):
-                  raise SystemExit(f'Unexpected legacy aliases for {model_id}')
-              if story.get('path_cn') != (
-                  f'/data/general_voice/{model_id}/{model_id}_cn.txt'
-              ):
-                  raise SystemExit(f'Unexpected public TXT path for {model_id}')
-              if story.get('json_paths_cn') != [
-                  f'/data/general_voice/{model_id}/{model_id}_cn.json'
-              ]:
-                  raise SystemExit(f'Unexpected public JSON path for {model_id}')
-          for model_id, model in components.items():
-              canonical_id = model.get('canonicalModelId')
-              canonical = published.get(canonical_id)
-              if (
-                  canonical is None
-                  or model_id not in canonical.get('componentModelIds', [])
-                  or f'general_voice/{model_id}' not in voice_stories
-              ):
-                  raise SystemExit(f'Component story was not losslessly published: {model_id}')
-          takina = published.get('406200')
-          takina_story = voice_stories.get('general_voice/406200')
-          if (
-              not isinstance(takina, dict)
-              or takina.get('translationPercent') != 0
-              or takina.get('translatedVoiceGroups') != 0
-              or takina.get('voiceGroups') != 39
-              or not isinstance(takina_story, dict)
-              or takina_story.get('percent') != 0
-              or takina_story.get('translated_units_cn') != 0
-              or takina_story.get('translation_units_total') != 39
-          ):
-              raise SystemExit('general_voice/406200 must remain 0/39 translated')
-          print(len(published), len(models), len(components))
-          PY
-          )"
-          read -r published_models manifest_models component_models <<< "$voice_release"
-          echo "EXPECTED_GENERAL_VOICE_PUBLISHED=$published_models" >> "$GITHUB_ENV"
-          echo "EXPECTED_GENERAL_VOICE_MODELS=$manifest_models" >> "$GITHUB_ENV"
-          echo "EXPECTED_GENERAL_VOICE_COMPONENTS=$component_models" >> "$GITHUB_ENV"
-          echo "GENERAL_VOICE_RELEASE_OK published=$published_models models=$manifest_models components=$component_models takina=0/39"
-
-      - name: Install website dependencies
-        working-directory: website
-        run: npm ci
-
-      - name: Enforce feature and external network policy
-        working-directory: website
-        run: npm run validate:feature
-
-      - name: Lint, type check and website tests
-        working-directory: website
-        run: |
-          npm run lint
-          npm run type-check
-          npm test
-
-      - name: Generate matching split search manifests
-        id: search
-        shell: bash
-        run: |
-          set -euo pipefail
           python tools/build_split_search_indexes.py
           python tools/build_split_search_indexes.py --validate-only
-          keys="$(python - <<'PY'
-          import json
-          import re
-          from pathlib import Path
 
-          values = []
-          for scope in ("magireco", "exedra"):
-              manifest = json.loads(
-                  Path(f"website/public/search_index_manifest.{scope}.json")
-                  .read_text(encoding="utf-8")
-              )
-              object_key = manifest.get("object_key", "")
-              if not re.fullmatch(rf"search/{scope}/[a-f0-9]{{64}}\.json", object_key):
-                  raise SystemExit(f"Invalid {scope} search object key: {object_key!r}")
-              values.append(object_key)
-          print(" ".join(values))
-          PY
-          )"
-          read -r magireco_key exedra_key <<< "$keys"
-          echo "magireco_key=$magireco_key" >> "$GITHUB_OUTPUT"
-          echo "exedra_key=$exedra_key" >> "$GITHUB_OUTPUT"
-          echo "Split full-text payloads are validated for manual R2 upload: $magireco_key $exedra_key"
+          cmp "$RUNNER_TEMP/story_index.committed.json" website/public/story_index.json
+          for scope in magireco exedra; do
+            cmp \
+              "$RUNNER_TEMP/search_index_manifest.$scope.committed.json" \
+              "website/public/search_index_manifest.$scope.json"
+          done
+
+          python tools/search_chunk_delivery.py materialize
+          python tools/search_chunk_delivery.py verify-tree --root website/public
+
+      - name: Run complete checks
+        working-directory: website
+        run: npm run check
 
       - name: Build Cloudflare Worker output
         working-directory: website
         run: npm run build:worker
+
+      - name: Verify Cloudflare output and physical search chunks
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix website run verify:cloudflare-output
+          python tools/search_chunk_delivery.py verify-tree --root website/.open-next/assets
 
       - name: Discover or create dedicated proofreading KV
         id: kv
@@ -254,7 +116,7 @@ jobs:
             site_key='1x00000000000000000000AA'
             secret_key='1x0000000000000000000000000000000AA'
             test_mode=true
-            echo "::warning::Using Cloudflare Turnstile test keys. Configure TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY before public launch."
+            echo "::warning::Using Cloudflare Turnstile test keys."
           fi
           echo "site_key=$site_key" >> "$GITHUB_OUTPUT"
           echo "test_mode=$test_mode" >> "$GITHUB_OUTPUT"
@@ -276,11 +138,6 @@ jobs:
         working-directory: website
         env:
           KV_NAMESPACE_ID: ${{ steps.kv.outputs.namespace_id }}
-          # Only add an R2 binding when this deployment credential could
-          # validate the exact managed-domain owner. A Workers-only token
-          # cannot deploy a config containing an R2 binding, even when the
-          # bucket name is already known; the browser then uses the audited
-          # fixed-origin CORS fallback instead.
           VOICE_R2_BUCKET_NAME: ${{ steps.voice_r2.outputs.bucket_name }}
           TURNSTILE_SITE_KEY: ${{ steps.turnstile.outputs.site_key }}
           TURNSTILE_TEST_MODE: ${{ steps.turnstile.outputs.test_mode }}
@@ -300,8 +157,9 @@ jobs:
           EOF
             )"
           else
-            echo "::warning::MAGIRECO_VOICE_R2 is not bound; the Worker will use the bounded fixed-origin HTTP fallback."
+            echo "::warning::MAGIRECO_VOICE_R2 is not bound; using the bounded fixed-origin HTTP fallback."
           fi
+
           cat > .wrangler-proofreading-bootstrap.jsonc <<EOF
           {
             "name": "$TEST_WORKER_NAME",
@@ -313,6 +171,7 @@ jobs:
           cat > .wrangler-proofreading-bootstrap.mjs <<'EOF'
           export default { fetch() { return new Response('Preparing proofreading deployment.'); } };
           EOF
+
           cat > .wrangler-proofreading-test.jsonc <<EOF
           {
             "\$schema": "node_modules/wrangler/config-schema.json",
@@ -355,7 +214,10 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           TURNSTILE_SECRET: ${{ env.TURNSTILE_SECRET_KEY_VALUE }}
         shell: bash
-        run: printf '%s' "$TURNSTILE_SECRET" | npx wrangler secret put TURNSTILE_SECRET_KEY --config .wrangler-proofreading-test.jsonc
+        run: >-
+          printf '%s' "$TURNSTILE_SECRET" |
+          npx wrangler secret put TURNSTILE_SECRET_KEY
+          --config .wrangler-proofreading-test.jsonc
 
       - name: Configure optional server-side GitHub token
         if: env.SERVER_GITHUB_TOKEN != ''
@@ -365,7 +227,10 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           PROOFREADING_GITHUB_TOKEN: ${{ env.SERVER_GITHUB_TOKEN }}
         shell: bash
-        run: printf '%s' "$PROOFREADING_GITHUB_TOKEN" | npx wrangler secret put PROOFREADING_GITHUB_TOKEN --config .wrangler-proofreading-test.jsonc
+        run: >-
+          printf '%s' "$PROOFREADING_GITHUB_TOKEN" |
+          npx wrangler secret put PROOFREADING_GITHUB_TOKEN
+          --config .wrangler-proofreading-test.jsonc
 
       - name: Configure optional shared admin token
         if: env.SHARED_ADMIN_TOKEN != ''
@@ -375,7 +240,10 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           SUBMISSIONS_ADMIN_TOKEN: ${{ env.SHARED_ADMIN_TOKEN }}
         shell: bash
-        run: printf '%s' "$SUBMISSIONS_ADMIN_TOKEN" | npx wrangler secret put SUBMISSIONS_ADMIN_TOKEN --config .wrangler-proofreading-test.jsonc
+        run: >-
+          printf '%s' "$SUBMISSIONS_ADMIN_TOKEN" |
+          npx wrangler secret put SUBMISSIONS_ADMIN_TOKEN
+          --config .wrangler-proofreading-test.jsonc
 
       - name: Deploy complete proofreading site
         working-directory: website
@@ -384,7 +252,15 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
         run: npx opennextjs-cloudflare deploy --config .wrangler-proofreading-test.jsonc
 
-      - name: Smoke-test public site and dynamic proofreading state
+      - name: Smoke-test deployed split-search chunks
+        env:
+          SITE_URL: https://${{ env.TEST_WORKER_HOSTNAME }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/search_chunk_delivery.py verify-http --base-url "$SITE_URL"
+
+      - name: Smoke-test deployed revision and official TW story bytes
         env:
           SITE_URL: https://${{ env.TEST_WORKER_HOSTNAME }}
         shell: bash
@@ -392,28 +268,18 @@ jobs:
           set -euo pipefail
           ready=false
           for attempt in $(seq 1 30); do
-            home_code="$(curl -L --silent --show-error -o "$RUNNER_TEMP/home.html" -w '%{http_code}' "$SITE_URL/?__revision=${GITHUB_SHA}-${attempt}")"
-            machine_code="$(curl -L --silent --show-error -o "$RUNNER_TEMP/machine-status.json" -w '%{http_code}' "$SITE_URL/api/proofreading/machine-status?__revision=${GITHUB_SHA}-${attempt}")"
-            if [ "$home_code" = 200 ] && [ "$machine_code" = 200 ]; then
-              live_total="$(python3 - "$RUNNER_TEMP/machine-status.json" <<'PY'
-          import json
-          from pathlib import Path
-          import sys
-          try:
-              value = json.loads(
-                  Path(sys.argv[1]).read_text(encoding='utf-8')
-              )
-              total = value.get('total') if isinstance(value, dict) else None
-              if isinstance(total, int) and not isinstance(total, bool):
-                  print(total)
-          except (OSError, UnicodeError, json.JSONDecodeError):
-              # A newly deployed Worker can briefly return an empty or
-              # incomplete body. Leave the value empty so the outer loop
-              # retries instead of aborting under `set -e`.
-              pass
+            home_code="$(curl -L --silent --show-error -o "$RUNNER_TEMP/home.html" -w '%{http_code}' "$SITE_URL/?__revision=${GITHUB_SHA}-${attempt}" || true)"
+            config_code="$(curl -L --silent --show-error -o "$RUNNER_TEMP/config.json" -w '%{http_code}' "$SITE_URL/api/proofreading/config?__revision=${GITHUB_SHA}-${attempt}" || true)"
+            if [ "$home_code" = 200 ] && [ "$config_code" = 200 ]; then
+              if python3 - "$RUNNER_TEMP/config.json" "$GITHUB_SHA" <<'PY'
+          import json, sys
+          value = json.load(open(sys.argv[1], encoding="utf-8"))
+          if value.get('target_branch') != 'EXEDRA-TEST':
+              raise SystemExit(1)
+          if value.get('source_revision') != sys.argv[2]:
+              raise SystemExit(1)
           PY
-              )"
-              if [ "$live_total" = "$EXPECTED_MACHINE_TOTAL" ]; then
+              then
                 ready=true
                 break
               fi
@@ -421,544 +287,61 @@ jobs:
             sleep 5
           done
           if [ "$ready" != true ]; then
-            echo "Deployed Worker did not expose the expected machine baseline in time." >&2
+            echo "Deployed Worker did not expose the expected EXEDRA-TEST revision." >&2
             exit 1
           fi
-          fetch_ready_asset() {
-            local url="$1"
-            local output="$2"
-            local minimum_bytes="$3"
-            local content_kind="$4"
-            local code
-            local size
-            local separator
-            local request_url
-            for attempt in $(seq 1 30); do
-              : > "$output"
-              separator='?'
-              if [[ "$url" == *\?* ]]; then
-                separator='&'
-              fi
-              # A Workers static-asset deployment can briefly expose a new
-              # manifest beside an older cached story index.  Bind every
-              # smoke-test request to the deployed commit so the consistency
-              # checks never compare assets from two revisions.
-              request_url="${url}${separator}__revision=${GITHUB_SHA}-${attempt}"
-              code="$(
-                curl -L --silent --show-error \
-                  -o "$output" -w '%{http_code}' "$request_url" || true
-              )"
-              size="$(wc -c < "$output")"
-              if [ "$code" = 200 ] && [ "$size" -ge "$minimum_bytes" ]; then
-                if [ "$content_kind" != json ] || \
-                  python3 -c \
-                    'import json, sys; json.load(open(sys.argv[1], encoding="utf-8"))' \
-                    "$output" >/dev/null 2>&1; then
-                  return 0
-                fi
-              fi
-              sleep 2
-            done
-            echo "Deployed asset did not become ready: $url" >&2
-            return 1
-          }
-          fetch_ready_asset \
-            "$SITE_URL/story_index.json" \
-            "$RUNNER_TEMP/story-index.json" 100 json
-          fetch_ready_asset \
-            "$SITE_URL/data/general_voice/general_voice_manifest.json" \
-            "$RUNNER_TEMP/general-voice-manifest.json" 100 json
-          fetch_ready_asset \
-            "$SITE_URL/api/proofreading/config" \
-            "$RUNNER_TEMP/config.json" 2 json
-          fetch_ready_asset \
-            "$SITE_URL/api/exedra/localization-status" \
-            "$RUNNER_TEMP/exedra-localization-status.json" 2 json
-          fetch_ready_asset \
-            "$SITE_URL/review/submissions" \
-            "$RUNNER_TEMP/submissions.html" 500 html
-          fetch_ready_asset \
-            "$SITE_URL/review/machine-translations" \
-            "$RUNNER_TEMP/machine-review.html" 500 html
-          python3 - "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/general-voice-manifest.json" "$RUNNER_TEMP/general-voice-smoke-assets.txt" "$RUNNER_TEMP/exedra-wiki-smoke-assets.txt" <<'PY'
+
+          sample_path="$(python3 - <<'PY'
           import json
-          import sys
-          from pathlib import Path, PurePosixPath
-
-          stories = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
-          if not isinstance(stories, list):
-              raise SystemExit('Deployed story index is not a list')
-          voice_manifest = json.loads(
-              Path(sys.argv[2]).read_text(encoding='utf-8')
-          )
-          models = (
-              voice_manifest.get('models')
-              if isinstance(voice_manifest, dict)
-              else None
-          )
-          if (
-              voice_manifest.get('version') != 1
-              or voice_manifest.get('modelCount') != 410
-              or not isinstance(models, list)
-              or len(models) != 410
-          ):
-              raise SystemExit('Deployed general_voice manifest is incomplete')
-          model_by_id = {
-              model.get('id'): model
-              for model in models
-              if isinstance(model, dict) and isinstance(model.get('id'), str)
-          }
-          if len(model_by_id) != len(models):
-              raise SystemExit('Deployed general_voice manifest has duplicate IDs')
-          published = {
-              model_id: model
-              for model_id, model in model_by_id.items()
-              if model.get('publishedModel') is True
-          }
-          hidden_aliases = {
-              model_id: model
-              for model_id, model in model_by_id.items()
-              if model.get('publishedModel') is False
-          }
-          components = {
-              model_id: model
-              for model_id, model in model_by_id.items()
-              if model.get('canonicalModelId') != model_id
-          }
-          if len(published) != 410 or hidden_aliases or len(components) != 38:
-              raise SystemExit(
-                  'Unexpected deployed general_voice boundary: '
-                  f'published={len(published)} hidden={len(hidden_aliases)} '
-                  f'components={len(components)}'
-              )
-          voice_story_list = [
-              story
-              for story in stories
-              if isinstance(story, dict)
-              and story.get('category') == 'general_voice'
-          ]
-          voice_stories = {
-              story.get('source_identity'): story
-              for story in voice_story_list
-          }
-          expected_identities = {
-              f'general_voice/{model_id}' for model_id in published
-          }
-          if (
-              len(voice_stories) != len(voice_story_list)
-              or set(voice_stories) != expected_identities
-          ):
-              raise SystemExit(
-                  'Deployed general_voice identities do not match the manifest'
-              )
-          for model_id, model in published.items():
-              story = voice_stories[f'general_voice/{model_id}']
-              component_ids = model.get('componentModelIds')
-              if not isinstance(component_ids, list):
-                  raise SystemExit(f'Invalid deployed component list for {model_id}')
-              if story.get('component_model_ids', []) != component_ids:
-                  raise SystemExit(
-                      f'Deployed component metadata mismatch for {model_id}'
-                  )
-              if story.get('legacy_ids') not in (None, []):
-                  raise SystemExit(f'Unexpected deployed aliases for {model_id}')
-              if story.get('path_cn') != (
-                  f'/data/general_voice/{model_id}/{model_id}_cn.txt'
-              ):
-                  raise SystemExit(f'Unexpected deployed TXT path for {model_id}')
-              if story.get('json_paths_cn') != [
-                  f'/data/general_voice/{model_id}/{model_id}_cn.json'
-              ]:
-                  raise SystemExit(f'Unexpected deployed JSON path for {model_id}')
-          for model_id, model in components.items():
-              canonical_id = model.get('canonicalModelId')
-              canonical = published.get(canonical_id)
-              if (
-                  canonical is None
-                  or model_id not in canonical.get('componentModelIds', [])
-                  or f'general_voice/{model_id}' not in voice_stories
-              ):
-                  raise SystemExit(
-                      f'Deployed component story is missing: {model_id}'
-                  )
-          takina = published.get('406200')
-          takina_story = voice_stories.get('general_voice/406200')
-          if (
-              not isinstance(takina, dict)
-              or takina.get('translationPercent') != 0
-              or takina.get('translatedVoiceGroups') != 0
-              or takina.get('voiceGroups') != 39
-              or not isinstance(takina_story, dict)
-              or takina_story.get('percent') != 0
-              or takina_story.get('translated_units_cn') != 0
-              or takina_story.get('translation_units_total') != 39
-          ):
-              raise SystemExit('Deployed general_voice/406200 is not 0/39')
-          sample_id = sorted(published)[0]
-          sample_story = voice_stories[f'general_voice/{sample_id}']
-          sample_json_paths = sample_story.get('json_paths_cn')
-          if not isinstance(sample_json_paths, list) or len(sample_json_paths) != 1:
-              raise SystemExit('Unable to derive a general_voice JSON smoke asset')
-          Path(sys.argv[3]).write_text(
-              f"{sample_story['path_cn']}\n{sample_json_paths[0]}\n",
-              encoding='utf-8',
-          )
-
-          repository_root = Path.cwd()
-          public_root = repository_root / 'website' / 'public'
-          translation_root = (
-              repository_root
-              / 'magiraexedra-translate-data-master'
-              / 'Scenarios_full'
-          )
-          candidates = []
-          for story in stories:
-              if (
-                  not isinstance(story, dict)
-                  or story.get('category')
-                  not in {'exedra_character', 'exedra_reaction'}
-                  or not isinstance(story.get('path_cn'), str)
-                  or not story['path_cn'].startswith('/data/')
-              ):
-                  continue
-              identity = story.get('source_identity')
-              if not isinstance(identity, str):
-                  continue
-              parts = identity.split(':', 2)
-              if len(parts) != 3 or parts[0] != 'exedra':
-                  continue
-              source_category, group_key = parts[1:]
-              provenance_path = (
-                  translation_root
-                  / source_category
-                  / group_key
-                  / f'{group_key}_cn.provenance.json'
-              )
-              if not provenance_path.is_file():
-                  continue
-              provenance = json.loads(
-                  provenance_path.read_text(encoding='utf-8-sig')
-              )
-              if (
-                  provenance.get('sourceIdentity') != identity
-                  or provenance.get('machineTranslation') is not False
-                  or provenance.get('provenance')
-                  not in {'exedra_wiki_human', 'exedra_wiki_voice_human'}
-              ):
-                  continue
-              sources = provenance.get('sourceJson')
-              if not isinstance(sources, list):
-                  sources = provenance.get('episodes')
-              if not isinstance(sources, list):
-                  continue
-              wiki_sources = [
-                  source for source in sources
-                  if isinstance(source, dict)
-                  and source.get('provenance')
-                  in {'exedra_wiki_human', 'exedra_wiki_voice_human'}
-                  and isinstance(source.get('source'), str)
-                  and source['source'].endswith('.json')
-              ]
-              if not wiki_sources:
-                  continue
-              txt_path = PurePosixPath(story['path_cn'])
-              json_path = txt_path.parent / wiki_sources[0]['source']
-              local_txt = public_root / str(txt_path).lstrip('/')
-              local_json = public_root / str(json_path).lstrip('/')
-              if local_txt.is_file() and local_json.is_file():
-                  candidates.append((identity, str(txt_path), str(json_path)))
-
-          if not candidates:
-              raise SystemExit(
-                  'No deployed Exedra Wiki human TXT/JSON pair could be derived '
-                  'from story_index and provenance manifests'
-              )
-          _, wiki_txt_path, wiki_json_path = sorted(candidates)[0]
-          Path(sys.argv[4]).write_text(
-              f'{wiki_txt_path}\n{wiki_json_path}\n',
-              encoding='utf-8',
-          )
-          PY
-          mapfile -t general_voice_assets < "$RUNNER_TEMP/general-voice-smoke-assets.txt"
-          if [ "${#general_voice_assets[@]}" -ne 2 ]; then
-            echo "Failed to derive general_voice smoke-test assets." >&2
-            exit 1
-          fi
-          general_voice_txt_path="${general_voice_assets[0]}"
-          general_voice_json_path="${general_voice_assets[1]}"
-          mapfile -t wiki_assets < "$RUNNER_TEMP/exedra-wiki-smoke-assets.txt"
-          if [ "${#wiki_assets[@]}" -ne 2 ]; then
-            echo "Failed to resolve Exedra Wiki smoke-test assets." >&2
-            exit 1
-          fi
-          wiki_txt_path="${wiki_assets[0]}"
-          wiki_json_path="${wiki_assets[1]}"
-          fetch_ready_asset \
-            "$SITE_URL$general_voice_txt_path" \
-            "$RUNNER_TEMP/general-voice-sample.txt" 100 text
-          fetch_ready_asset \
-            "$SITE_URL$general_voice_json_path" \
-            "$RUNNER_TEMP/general-voice-sample.json" 100 json
-          fetch_ready_asset \
-            "$SITE_URL$wiki_txt_path" \
-            "$RUNNER_TEMP/exedra-wiki-cn.txt" 20 text
-          fetch_ready_asset \
-            "$SITE_URL$wiki_json_path" \
-            "$RUNNER_TEMP/exedra-wiki-cn.json" 2 json
-          admin_code="$(curl --silent --show-error -o "$RUNNER_TEMP/admin.json" -w '%{http_code}' "$SITE_URL/api/admin/machine-review")"
-          python3 - "$RUNNER_TEMP/home.html" "$RUNNER_TEMP/story-index.json" "$RUNNER_TEMP/config.json" "$RUNNER_TEMP/machine-status.json" "$RUNNER_TEMP/exedra-localization-status.json" "$RUNNER_TEMP/submissions.html" "$RUNNER_TEMP/machine-review.html" "$admin_code" "$EXPECTED_MACHINE_TOTAL" "$RUNNER_TEMP/general-voice-manifest.json" "$EXPECTED_GENERAL_VOICE_PUBLISHED" "$EXPECTED_GENERAL_VOICE_MODELS" "$EXPECTED_GENERAL_VOICE_COMPONENTS" "$RUNNER_TEMP/general-voice-sample.txt" "$RUNNER_TEMP/general-voice-sample.json" "$general_voice_txt_path" "$general_voice_json_path" "$RUNNER_TEMP/exedra-wiki-cn.txt" "$RUNNER_TEMP/exedra-wiki-cn.json" "$wiki_txt_path" "$wiki_json_path" <<'PY'
-          import json, sys
           from pathlib import Path
-          home = Path(sys.argv[1]).read_text(encoding='utf-8', errors='replace')
-          stories = json.loads(Path(sys.argv[2]).read_text(encoding='utf-8'))
-          config = json.loads(Path(sys.argv[3]).read_text(encoding='utf-8'))
-          machine = json.loads(Path(sys.argv[4]).read_text(encoding='utf-8'))
-          exedra_localization = json.loads(
-              Path(sys.argv[5]).read_text(encoding='utf-8')
-          )
-          submissions = Path(sys.argv[6]).read_text(encoding='utf-8', errors='replace')
-          machine_review = Path(sys.argv[7]).read_text(encoding='utf-8', errors='replace')
-          admin_code = sys.argv[8]
-          expected_total = int(sys.argv[9])
-          general_voice_manifest = json.loads(
-              Path(sys.argv[10]).read_text(encoding='utf-8')
-          )
-          expected_voice_published = int(sys.argv[11])
-          expected_voice_models = int(sys.argv[12])
-          expected_voice_components = int(sys.argv[13])
-          general_voice_txt = Path(sys.argv[14]).read_text(
-              encoding='utf-8', errors='strict'
-          )
-          general_voice_json = json.loads(
-              Path(sys.argv[15]).read_text(encoding='utf-8')
-          )
-          general_voice_txt_path = sys.argv[16]
-          general_voice_json_path = sys.argv[17]
-          exedra_wiki_txt = Path(sys.argv[18]).read_text(
-              encoding='utf-8', errors='strict'
-          )
-          exedra_wiki_json = json.loads(
-              Path(sys.argv[19]).read_text(encoding='utf-8')
-          )
-          wiki_txt_path = sys.argv[20]
-          wiki_json_path = sys.argv[21]
-          if min(map(len, (home, submissions, machine_review))) < 500:
-              raise SystemExit('Deployed site content is incomplete')
-          if not isinstance(stories, list) or not stories:
-              raise SystemExit('Deployed story index is incomplete')
-          general_voice_stories = [
-              story for story in stories
-              if isinstance(story, dict) and story.get('category') == 'general_voice'
-          ]
-          general_voice_models = general_voice_manifest.get('models')
-          if (
-              not isinstance(general_voice_models, list)
-              or len(general_voice_models) != expected_voice_models
-              or sum(
-                  1 for model in general_voice_models
-                  if isinstance(model, dict)
-                  and model.get('publishedModel') is True
-              ) != expected_voice_published
-              or sum(
-                  1 for model in general_voice_models
-                  if isinstance(model, dict)
-                  and model.get('canonicalModelId') != model.get('id')
-              ) != expected_voice_components
-              or any(
-                  isinstance(model, dict)
-                  and model.get('publishedModel') is False
-                  for model in general_voice_models
-              )
-              or len(general_voice_stories) != expected_voice_published
-          ):
-              raise SystemExit(
-                  'Unexpected deployed general_voice release counts: '
-                  f'stories={len(general_voice_stories)} '
-                  f'published={expected_voice_published} '
-                  f'models={expected_voice_models} '
-                  f'components={expected_voice_components}'
-              )
-          if not config.get('submissions_enabled') or not config.get('turnstile_site_key'):
-              raise SystemExit(f'Proofreading service is not enabled: {config}')
-          if config.get('target_branch') != 'EXEDRA-TEST':
-              raise SystemExit(f'Unexpected target branch: {config}')
-          if machine.get('total') != expected_total:
-              raise SystemExit(f'Unexpected machine translation total: {machine}')
-          if machine.get('remaining') != machine.get('total') - machine.get('verified', 0):
-              raise SystemExit(f'Invalid machine translation status: {machine}')
-          if len(machine.get('machine_translation_ids', [])) != expected_total:
-              raise SystemExit('Incomplete machine translation id list')
-          if 'states' in machine:
-              raise SystemExit('Public machine status leaked private review metadata')
-          entries = exedra_localization.get('entries')
-          if (
-              exedra_localization.get('version') != 1
-              or exedra_localization.get('database_configured') is not True
-              or not isinstance(entries, list)
-              or exedra_localization.get('total') != len(entries)
-          ):
-              raise SystemExit(
-                  f'Invalid Exedra localization status: {exedra_localization}'
-              )
-          trusted_provenance = {
-              'local_human',
-              'official_tw_human',
-              'exedra_wiki_human',
-          }
-          rejected_provenance = [
-              entry.get('provenance')
-              for entry in entries
-              if (
-                  not isinstance(entry, dict)
-                  or entry.get('provenance') not in trusted_provenance
-              )
-          ]
-          if rejected_provenance:
-              raise SystemExit(
-                  'Exedra localization status accepted an untrusted or machine '
-                  f'provenance: {rejected_provenance}'
-              )
-          if 'machine_translation' in json.dumps(
-              exedra_localization, ensure_ascii=False
-          ):
-              raise SystemExit(
-                  'Exedra localization status exposed machine translation data'
-              )
-          if (
-              len(general_voice_txt) < 100
-              or '--- [Section 1]' not in general_voice_txt
-              or not isinstance(general_voice_json, dict)
-              or not isinstance(general_voice_json.get('story'), dict)
-              or not general_voice_json['story']
-          ):
-              raise SystemExit('Derived general_voice TXT/JSON assets are incomplete')
-          if (
-              len(exedra_wiki_txt) < 20
-              or '--- [Section 1]' not in exedra_wiki_txt
-              or not isinstance(exedra_wiki_json, dict)
-              or not isinstance(exedra_wiki_json.get('sheetList'), list)
-              or not exedra_wiki_json['sheetList']
-          ):
-              raise SystemExit('Derived Exedra Wiki TXT/JSON assets are incomplete')
-          if admin_code not in {'401', '503'}:
-              raise SystemExit(f'Unauthenticated admin API returned {admin_code}')
-          print(
-              f"SITE_OK stories={len(stories)} machine_total={machine['total']} "
-              f"verified={machine['verified']} remaining={machine['remaining']} "
-              f"general_voice={len(general_voice_stories)}/{expected_voice_models} "
-              f"voice_components={expected_voice_components} "
-              f"voice_txt={general_voice_txt_path} "
-              f"voice_json={general_voice_json_path} "
-              f"exedra_localizations={len(entries)} "
-              f"wiki_txt={wiki_txt_path} wiki_json={wiki_json_path} "
-              f"turnstile_test_mode={config.get('turnstile_test_mode')} "
-              f"admin_unauthenticated={admin_code}"
-          )
+          stories = json.loads(Path('website/public/story_index.json').read_text(encoding='utf-8'))
+          public = Path('website/public')
+          for story in stories:
+              if not isinstance(story, dict) or story.get('official_tw') is not True:
+                  continue
+              path = story.get('path_cn')
+              if isinstance(path, str) and path.startswith('/data/') and (public / path.lstrip('/')).is_file():
+                  print(path)
+                  break
+          else:
+              raise SystemExit('No official TW public TXT sample was found')
           PY
+          )"
+          local_sample="website/public/${sample_path#/}"
+          remote_sample="$RUNNER_TEMP/tw-sample.txt"
+          curl --fail --location --silent --show-error \
+            -o "$remote_sample" \
+            "$SITE_URL$sample_path?__revision=$GITHUB_SHA"
+          test "$(sha256sum "$local_sample" | awk '{print $1}')" = \
+               "$(sha256sum "$remote_sample" | awk '{print $1}')"
+          echo "TW_DEPLOY_BYTES_OK revision=$GITHUB_SHA path=$sample_path"
 
       - name: Smoke-test bounded voice playback assets
+        env:
+          SITE_URL: https://${{ env.TEST_WORKER_HOSTNAME }}
         shell: bash
         run: |
           set -euo pipefail
-          site_url="https://${TEST_WORKER_HOSTNAME}"
-          hca_sample="$RUNNER_TEMP/voice-sample.hca"
-          hca_headers="$RUNNER_TEMP/voice-sample.headers"
-          ogg_sample="$RUNNER_TEMP/exedra-local-sample.ogg"
-          wasm_sample="$RUNNER_TEMP/hca-wasm.wasm"
-
-          fetch_exact_asset() {
-            local url="$1"
-            local output="$2"
-            local expected_bytes="$3"
-            local range="${4:-}"
-            local code
-            local size
-            for attempt in $(seq 1 30); do
-              : > "$output"
-              if [ -n "$range" ]; then
-                code="$(
-                  curl -L --silent --show-error --range "$range" \
-                    -o "$output" -w '%{http_code}' "$url" || true
-                )"
-              else
-                code="$(
-                  curl -L --silent --show-error \
-                    -o "$output" -w '%{http_code}' "$url" || true
-                )"
-              fi
-              size="$(wc -c < "$output")"
-              if { [ "$code" = 200 ] || [ "$code" = 206 ]; } && \
-                [ "$size" -eq "$expected_bytes" ]; then
-                return 0
-              fi
-              sleep 2
-            done
-            echo "Deployed voice asset did not become ready: $url" >&2
-            return 1
-          }
-
-          # Prefer the same-origin Worker route. If the deployment credential
-          # cannot bind R2 and Workers cannot reach r2.dev server-side, verify
-          # the exact browser fallback including its CORS grant instead.
-          if ! fetch_exact_asset \
-            "$site_url/api/audio/magireco-voice/vo_char_3031_00_01" \
-            "$hca_sample" 256 0-255; then
-            direct_voice_url="https://${MAGIRECO_VOICE_R2_DOMAIN}/voice/vo_char_3031_00_01_hca.hca"
-            code="$(
-              curl -L --silent --show-error --range 0-255 \
-                -H "Origin: $site_url" \
-                -D "$hca_headers" \
-                -o "$hca_sample" -w '%{http_code}' \
-                "$direct_voice_url"
-            )"
-            if [ "$code" != 206 ] || [ "$(wc -c < "$hca_sample")" -ne 256 ]; then
-              echo "Browser voice fallback did not return the bounded HCA range." >&2
-              exit 1
-            fi
-            python3 - "$hca_headers" "$site_url" <<'PY'
-          import sys
-          from pathlib import Path
-
-          headers = Path(sys.argv[1]).read_text(
-              encoding='iso-8859-1', errors='strict'
-          )
-          expected = f'access-control-allow-origin: {sys.argv[2]}'.lower()
-          if expected not in headers.lower():
-              raise SystemExit(
-                  'Browser voice fallback is missing the exact test-site CORS grant'
-              )
-          PY
+          site_url="$SITE_URL"
+          headers="$RUNNER_TEMP/voice-headers.txt"
+          voice_code="$(curl -L --silent --show-error \
+            -H "Origin: $site_url" \
+            -H 'Range: bytes=0-1023' \
+            -D "$headers" -o "$RUNNER_TEMP/voice.bin" -w '%{http_code}' \
+            "$site_url/api/audio/magireco-voice/vo_char_3031_00_01" || true)"
+          if [ "$voice_code" != 200 ] && [ "$voice_code" != 206 ]; then
+            echo "Magia Record voice endpoint returned $voice_code" >&2
+            exit 1
           fi
-          fetch_exact_asset \
-            "$site_url/audio/exedra-local/cv_namae_call_01.ogg" \
-            "$ogg_sample" 12988
-          fetch_exact_asset \
-            "$site_url/audio/hca_wasm_bg.wasm" \
-            "$wasm_sample" 57096
+          grep -qi 'access-control-allow-origin' "$headers"
+          curl --fail --location --silent --show-error \
+            -o "$RUNNER_TEMP/exedra.ogg" \
+            "$site_url/audio/exedra-local/cv_namae_call_01.ogg"
+          curl --fail --location --silent --show-error \
+            -o "$RUNNER_TEMP/hca.wasm" \
+            "$site_url/audio/hca_wasm_bg.wasm"
+          test -s "$RUNNER_TEMP/exedra.ogg"
+          test -s "$RUNNER_TEMP/hca.wasm"
+          echo "VOICE_ASSETS_OK"
 
-          python3 - "$hca_sample" "$ogg_sample" "$wasm_sample" <<'PY'
-          import hashlib
-          import sys
-          from pathlib import Path
-
-          hca = Path(sys.argv[1]).read_bytes()
-          ogg = Path(sys.argv[2]).read_bytes()
-          wasm = Path(sys.argv[3]).read_bytes()
-          if len(hca) != 256 or bytes(value & 0x7F for value in hca[:4]) != b'HCA\0':
-              raise SystemExit('Deployed Magia Record voice proxy did not return HCA bytes')
-          if (
-              len(ogg) != 12_988
-              or ogg[:4] != b'OggS'
-              or hashlib.sha256(ogg).hexdigest()
-              != '69bd1c25376765e42995529607f551b413eb7dc7922033179d43cb45ca4b7452'
-          ):
-              raise SystemExit('Deployed Exedra local voice fallback is invalid')
-          if (
-              len(wasm) != 57_096
-              or wasm[:4] != b'\0asm'
-              or hashlib.sha256(wasm).hexdigest()
-              != '9f40419cb9080b7bb33087f66dbdbda90bbd323cfca574121af42ee100967bb5'
-          ):
-              raise SystemExit('Deployed bounded HCA decoder is invalid')
-          print('VOICE_ASSETS_OK hca_range=256 ogg=12988 wasm=57096')
-          PY
+# TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V4

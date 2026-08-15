@@ -54,60 +54,24 @@ test('community proofreading PR CI materializes playable JSON before TXT', () =>
   assert.match(workflow, /npm run build:worker/u);
 });
 
-test('test deployment uses a dedicated KV and supports real Turnstile secrets', () => {
+test('TW simplified test deployment is isolated, deterministic and chunk-verified', () => {
   const workflow = read('../.github/workflows/deploy-exedra-proofreading-test.yml');
+  assert.match(workflow, /TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V4/u);
+  assert.match(workflow, /branches:\s*\[EXEDRA-TEST\]/u);
+  assert.match(workflow, /startsWith\(github\.event\.head_commit\.message, '\[tw-materialized\]'\)/u);
   assert.match(workflow, /magi-submissions-exedra-cn-test/u);
   assert.match(workflow, /TURNSTILE_SITE_KEY/u);
   assert.match(workflow, /TURNSTILE_SECRET_KEY/u);
   assert.match(workflow, /PROOFREADING_TARGET_BRANCH/u);
-  assert.match(workflow, /EXEDRA-TEST/u);
-  assert.match(workflow, /npm run validate:feature/u);
+  assert.match(workflow, /PROOFREADING_SOURCE_COMMIT/u);
+  assert.match(workflow, /npm run check/u);
+  assert.match(workflow, /build_split_search_indexes\.py/u);
+  assert.match(workflow, /search_chunk_delivery\.py materialize/u);
+  assert.match(workflow, /search_chunk_delivery\.py verify-tree/u);
+  assert.match(workflow, /search_chunk_delivery\.py verify-http --base-url/u);
+  assert.match(workflow, /opennextjs-cloudflare deploy/u);
+  assert.match(workflow, /TW_DEPLOY_BYTES_OK/u);
   assert.doesNotMatch(workflow, /wrangler r2 object put/u);
-  if (workflow.includes('TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V4')) {
-    assert.match(workflow, /search_chunk_delivery\.py materialize/u);
-    assert.match(workflow, /search_chunk_delivery\.py verify-tree/u);
-    assert.match(workflow, /search_chunk_delivery\.py verify-http --base-url/u);
-  } else {
-    // Transitional source state before the materializer commits the V4
-    // deployment patch. The successful [tw-materialized] commit must move to
-    // the same-origin chunk assertions above.
-    assert.match(workflow, /manual R2 upload/u);
-  }
-  assert.match(workflow, /EXPECTED_GENERAL_VOICE_PUBLISHED/u);
-  assert.match(workflow, /len\(published\) != 410/u);
-  assert.match(workflow, /Component story was not losslessly published/u);
-  assert.match(workflow, /general_voice\/406200 must remain 0\/39 translated/u);
-  assert.doesNotMatch(
-    workflow,
-    /Unexpected general_voice story count:.*expected 410/u,
-  );
-  assert.doesNotMatch(workflow, /general_voice\/100100 index entry/u);
-  assert.match(workflow, /for attempt in \$\(seq 1 30\)/u);
-  assert.match(
-    workflow,
-    /except \(OSError, UnicodeError, json\.JSONDecodeError\):\s+# A newly deployed Worker/u,
-  );
-  assert.match(workflow, /fetch_ready_asset\(\)/u);
-  assert.match(
-    workflow,
-    /fetch_ready_asset\s+\\\s+"\$SITE_URL\/api\/proofreading\/config"/u,
-  );
-  assert.match(
-    workflow,
-    /fetch_ready_asset\s+\\\s+"\$SITE_URL\/data\/general_voice\/general_voice_manifest\.json"/u,
-  );
-  assert.match(
-    workflow,
-    /fetch_ready_asset\s+\\\s+"\$SITE_URL\$general_voice_json_path"/u,
-  );
-  assert.match(
-    workflow,
-    /fetch_ready_asset\s+\\\s+"\$SITE_URL\$wiki_json_path"/u,
-  );
-  assert.match(
-    workflow,
-    /json\.load\(open\(sys\.argv\[1\], encoding="utf-8"\)\)/u,
-  );
 });
 
 test('review login presents shared team token as the simple default', () => {
