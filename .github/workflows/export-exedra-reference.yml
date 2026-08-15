@@ -1,0 +1,69 @@
+name: Export Exedra JP/CN reference corpus
+
+on:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - .github/workflows/export-exedra-reference.yml
+      - .translation-export-trigger/exedra-reference-*
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out TW official completed branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/tw-official-cn-complete
+          fetch-depth: 1
+
+      - name: Inspect and package Exedra reference corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'Top-level Exedra paths:'
+          find . -maxdepth 2 -type d -iname '*exedra*' -print | sort
+          test -d magiraexedra-source-master/Scenarios_full
+          mkdir -p exedra-reference/tools exedra-reference/artifacts
+          cp -a magiraexedra-source-master exedra-reference/
+          if [ -d magiraexedra-translate-data-master ]; then
+            cp -a magiraexedra-translate-data-master exedra-reference/
+          fi
+          cp generate_story_index.py exedra-reference/
+          cp organize_exedra_scenarios.py exedra-reference/ 2>/dev/null || true
+          cp tools/import_exedra_official_tw.py exedra-reference/tools/
+          cp tools/tw_official_import_core.py exedra-reference/tools/
+          cp artifacts/exedra_portrait_title_catalog.json exedra-reference/artifacts/ 2>/dev/null || true
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          root = Path('exedra-reference')
+          jp = list((root / 'magiraexedra-source-master' / 'Scenarios_full').rglob('*.json'))
+          cnroot = root / 'magiraexedra-translate-data-master' / 'Scenarios_full'
+          cn = list(cnroot.rglob('*.json')) if cnroot.is_dir() else []
+          report = {
+              'jp_json': len(jp),
+              'cn_json': len(cn),
+              'jp_bytes': sum(p.stat().st_size for p in jp),
+              'cn_bytes': sum(p.stat().st_size for p in cn),
+              'exedra_manifest': str(root / 'magiraexedra-source-master' / 'Scenarios_full' / 'exedra_manifest.json'),
+          }
+          (root / 'EXPORT_REPORT.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print(json.dumps(report, ensure_ascii=False, indent=2))
+          PY
+          find exedra-reference -type f -print0 | sort -z | xargs -0 sha256sum > exedra-reference/SHA256SUMS.txt
+
+      - name: Upload Exedra reference corpus
+        uses: actions/upload-artifact@v4
+        with:
+          name: exedra-jp-cn-reference
+          path: exedra-reference/
+          if-no-files-found: error
+          compression-level: 6
+          retention-days: 7
