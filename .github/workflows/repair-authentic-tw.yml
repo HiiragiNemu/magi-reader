@@ -71,7 +71,8 @@ jobs:
               + 'python tools/apply_authentic_tw_repair_v8.py\n'
               + 'python tools/apply_authentic_tw_repair_v9.py\n'
               + 'python tools/apply_authentic_tw_repair_v10.py\n'
-              + 'python tools/apply_authentic_tw_repair_v11.py\n',
+              + 'python tools/apply_authentic_tw_repair_v11.py\n'
+              + 'python tools/apply_authentic_tw_repair_v13.py\n',
               1,
           )
           source = source.replace(
@@ -92,6 +93,7 @@ jobs:
               + '  tools/apply_authentic_tw_repair_v10.py \\\n'
               + '  tools/apply_authentic_tw_repair_v11.py \\\n'
               + '  tools/apply_authentic_tw_repair_v12.py \\\n'
+              + '  tools/apply_authentic_tw_repair_v13.py \\\n'
               + '  tools/finalize_exedra_cn_json_names.py \\\n',
               1,
           )
@@ -99,4 +101,4 @@ jobs:
           PY
           bash tools/run_authentic_tw_repair_v3.sh
 
-# repair-bootstrap-v15
+# repair-bootstrap-v16
