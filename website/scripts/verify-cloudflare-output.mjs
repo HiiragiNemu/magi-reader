@@ -144,6 +144,36 @@ const isValidSearchManifest = (manifest, scope) => {
   return total === manifest.bytes;
 };
 
+const verifyBuiltSearchChunks = (manifest, scope, errors) => {
+  const directory = path.join(assetsRoot, 'search-chunks', scope, manifest.sha256);
+  // Generic output verification remains backward-compatible with manifest-only
+  // fixtures and non-chunk deployments. The EXEDRA-TEST release pipeline calls
+  // search_chunk_delivery.py verify-tree immediately after the build, which is
+  // the fail-closed authority that requires every physical chunk to exist.
+  if (!existsSync(directory)) return;
+  const overall = createHash('sha256');
+  let total = 0;
+  for (let index = 0; index < manifest.chunks.length; index += 1) {
+    const expected = manifest.chunks[index];
+    const part = path.join(directory, `${String(index).padStart(4, '0')}.part`);
+    if (!existsSync(part)) {
+      errors.push(`${scope} 搜索分块缺少第 ${index + 1} 块`);
+      return;
+    }
+    const data = readFileSync(part);
+    const digest = createHash('sha256').update(data).digest('hex');
+    if (data.byteLength !== expected.bytes || digest !== expected.sha256) {
+      errors.push(`${scope} 搜索分块第 ${index + 1} 块大小或 SHA-256 不一致`);
+      return;
+    }
+    overall.update(data);
+    total += data.byteLength;
+  }
+  if (total !== manifest.bytes || overall.digest('hex') !== manifest.sha256) {
+    errors.push(`${scope} 搜索分块重组后的全局大小或 SHA-256 不一致`);
+  }
+};
+
 const errors = [];
 let storyIndexSha256 = '';
 
@@ -188,6 +218,8 @@ for (const searchManifest of searchManifests) {
       manifest.story_index_sha256 !== storyIndexSha256
     ) {
       errors.push(`${searchManifest.scope} 搜索清单与当前 story_index.json 不匹配`);
+    } else if (manifest.version === 2) {
+      verifyBuiltSearchChunks(manifest, searchManifest.scope, errors);
     }
   } catch {
     errors.push(`${path.basename(searchManifest.built)} 不是有效 JSON`);
@@ -206,3 +238,5 @@ if (errors.length > 0) {
 } else {
   console.log('Cloudflare 输出检查通过：服务端代码与静态资源已分离。');
 }
+
+// SEARCH_CHUNK_DELIVERY_BUILD_VERIFY_V1

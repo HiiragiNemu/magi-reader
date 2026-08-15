@@ -222,9 +222,13 @@ class StreamingSha256 {
 }
 
 const sanitizeSource = (source) => {
-  if (!source || typeof source !== 'object' || typeof source.url !== 'string') {
-    return null;
-  }
+  if (!source || typeof source !== 'object') return null;
+
+  const sourceUrl = typeof source.url === 'string' ? source.url : '';
+  const chunkBaseUrl = typeof source.chunk_base_url === 'string'
+    ? source.chunk_base_url
+    : '';
+  if (!sourceUrl && !chunkBaseUrl) return null;
 
   const sha256 = String(source.sha256 ?? '').toLowerCase();
   const bytes = Number(source.bytes);
@@ -242,13 +246,24 @@ const sanitizeSource = (source) => {
   ) {
     return null;
   }
-  const addressedHash = source.url.match(
-    /\/search\/([a-f0-9]{64})\.json(?:[?#].*)?$/i,
-  )?.[1]?.toLowerCase();
-  if (addressedHash && addressedHash !== sha256) return null;
+
+  if (sourceUrl) {
+    const addressedHash = sourceUrl.match(
+      /\/search\/([a-f0-9]{64})\.json(?:[?#].*)?$/i,
+    )?.[1]?.toLowerCase();
+    if (addressedHash && addressedHash !== sha256) return null;
+  }
+  if (chunkBaseUrl) {
+    if (version !== 2) return null;
+    const match = chunkBaseUrl.match(
+      /^\/search-chunks\/(?:magireco|exedra)\/([a-f0-9]{64})\/$/i,
+    );
+    if (!match || match[1].toLowerCase() !== sha256) return null;
+  }
 
   const sanitized = {
-    url: source.url,
+    ...(sourceUrl ? { url: sourceUrl } : {}),
+    ...(chunkBaseUrl ? { chunk_base_url: chunkBaseUrl } : {}),
     version,
     sha256,
     bytes,
@@ -631,6 +646,48 @@ const parseChunkedIndexResponse = async (response, source, signal) => {
   }
 };
 
+const parseChunkedIndexParts = async (source, signal) => {
+  const decoder = new TextDecoder('utf-8', { fatal: true });
+  const parser = createStreamingArrayParser(source.entries);
+  const overallHasher = new StreamingSha256();
+  let total = 0;
+
+  for (let index = 0; index < source.chunks.length; index += 1) {
+    if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+    const expected = source.chunks[index];
+    const partUrl = `${source.chunk_base_url}${String(index).padStart(4, '0')}.part`;
+    const response = await fetch(partUrl, {
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      signal,
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = await readBoundedResponse(
+      response,
+      { maxBytes: expected.bytes },
+      signal,
+    );
+    if (payload.byteLength !== expected.bytes) {
+      throw new Error(`索引第 ${index + 1} 块大小与清单不一致`);
+    }
+    const digest = hexDigest(await crypto.subtle.digest('SHA-256', payload));
+    if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+    if (digest !== expected.sha256) {
+      throw new Error(`索引第 ${index + 1} 块校验值与清单不一致`);
+    }
+    overallHasher.update(payload);
+    parser.push(decoder.decode(payload, { stream: true }));
+    total += payload.byteLength;
+  }
+
+  if (total !== source.bytes) throw new Error('索引大小与清单不一致');
+  if (overallHasher.digestHex() !== source.sha256) {
+    throw new Error('索引校验值与清单不一致');
+  }
+  parser.push(decoder.decode());
+  return parser.finish();
+};
+
 const parseIndexResponse = async (response, source, signal) =>
   source.version === 2
     ? parseChunkedIndexResponse(response, source, signal)
@@ -650,19 +707,23 @@ const loadIndex = async () => {
       activeLoadController = controller;
       try {
         self.postMessage({ type: 'status', status: 'loading' });
-        const response = await fetch(source.url, {
-          // Revalidate the manifest-selected object so a locally cached 404
-          // from pre-publication testing cannot mask a later successful upload.
-          cache: source.sha256 ? 'no-cache' : 'force-cache',
-          credentials: 'omit',
-          signal: controller.signal,
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        entries = await parseIndexResponse(
-          response,
-          source,
-          controller.signal,
-        );
+        if (source.chunk_base_url) {
+          entries = await parseChunkedIndexParts(source, controller.signal);
+        } else {
+          const response = await fetch(source.url, {
+            // Revalidate the manifest-selected object so a locally cached 404
+            // from pre-publication testing cannot mask a later successful upload.
+            cache: source.sha256 ? 'no-cache' : 'force-cache',
+            credentials: 'omit',
+            signal: controller.signal,
+          });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          entries = await parseIndexResponse(
+            response,
+            source,
+            controller.signal,
+          );
+        }
         self.postMessage({ type: 'status', status: 'ready' });
         return entries;
       } catch (error) {
@@ -780,3 +841,5 @@ self.addEventListener('message', (event) => {
     }
   }
 });
+
+// SEARCH_CHUNK_DELIVERY_RUNTIME_V1
