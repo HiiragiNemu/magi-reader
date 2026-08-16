@@ -74,7 +74,8 @@ jobs:
               + 'python tools/apply_authentic_tw_repair_v11.py\n'
               + 'python tools/apply_authentic_tw_repair_v16.py\n'
               + 'python tools/apply_authentic_tw_repair_v18.py\n'
-              + 'python tools/apply_authentic_tw_repair_v22.py\n',
+              + 'python tools/apply_authentic_tw_repair_v22.py\n'
+              + 'python tools/apply_authentic_tw_repair_v24.py\n',
               1,
           )
           source = source.replace(
@@ -101,6 +102,7 @@ jobs:
               + '  tools/apply_authentic_tw_repair_v16.py \\\n'
               + '  tools/apply_authentic_tw_repair_v18.py \\\n'
               + '  tools/apply_authentic_tw_repair_v22.py \\\n'
+              + '  tools/apply_authentic_tw_repair_v24.py \\\n'
               + '  tools/finalize_exedra_cn_json_names.py \\\n',
               1,
           )
@@ -108,4 +110,4 @@ jobs:
           PY
           bash tools/run_authentic_tw_repair_v3.sh
 
-# repair-bootstrap-v23-full-file-speaker-proof
+# repair-bootstrap-v24-structural-speaker-separation
