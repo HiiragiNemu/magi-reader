@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Apply the main-only V30 font scope and retire the EXEDRA test deployment.
+"""Apply the final main-only V30 font scope and retire the test environment.
 
-Every source edit is fail-closed. The migration is removed by its validation
-workflow after the generated tree passes the complete repository checks.
+The migration is intentionally fail-closed: every expected source fragment must
+match exactly, and the validation workflow removes this script only after the
+full repository test/build suite succeeds.
 """
 from __future__ import annotations
 
@@ -16,9 +17,15 @@ REFINEMENTS = ROOT / "website/app/ui-refinements.css"
 READER_FONTS = ROOT / "website/lib/reader-fonts.ts"
 EXEDRA_FONTS = ROOT / "website/lib/exedra-fonts.ts"
 EXEDRA_SETTINGS = ROOT / "website/components/ExedraFontSettings.tsx"
-DEPLOYMENT_TEST = ROOT / "website/tests/cloudflare-deployment.test.mjs"
+CONFIGURE_PAGES = ROOT / "website/scripts/configure-pages-project.mjs"
+CLOUDFLARE_TEST = ROOT / "website/tests/cloudflare-deployment.test.mjs"
+PROOFREADING_TEST = ROOT / "website/tests/proofreading-workflow.test.mjs"
 FONT_TEST = ROOT / "website/tests/global-font-scope-main-only.test.mjs"
+COMMUNITY_WORKFLOW = ROOT / ".github/workflows/community-proofreading-pr.yml"
+MATERIALIZE_WORKFLOW = ROOT / ".github/workflows/materialize-tw-official-cn.yml"
 TEST_DEPLOY_WORKFLOW = ROOT / ".github/workflows/deploy-exedra-proofreading-test.yml"
+REPAIR_WORKFLOW = ROOT / ".github/workflows/repair-authentic-tw.yml"
+VOICE_PATCH_WORKFLOW = ROOT / ".github/workflows/patch-voice-fallback-smoke.yml"
 RETIRE_WORKFLOW = ROOT / ".github/workflows/retire-exedra-test-environment.yml"
 
 
@@ -41,15 +48,19 @@ def replace_once(path: Path, old: str, new: str) -> None:
     write(path, source.replace(old, new, 1))
 
 
+def delete_required(path: Path) -> None:
+    if not path.is_file():
+        raise RuntimeError(f"required deletion target missing: {path.relative_to(ROOT)}")
+    path.unlink()
+
+
 CSS_APPEND = r'''
 
 /* =========================================
-   Reader UI V30 — global game-font scope and Exedra UI font scope
+   Reader UI V30 — global game-font scope and Exedra whole-UI font skin
    ========================================= */
 
-/* Enabling the Chinese game-font bundle makes Tengxiang Zhihēi the UI/title
-   face across the site. Plain text inherits from this scope; explicit utility
-   families are overridden so the brand, headers, sidebars and controls agree. */
+/* 腾祥智黑 covers all site UI when the Chinese game-font bundle is active. */
 html[data-reader-font-chinese='ready'] .magi-site-font-scope,
 html[data-reader-font-chinese='ready'] .magi-site-font-scope :where(
   button,
@@ -77,7 +88,7 @@ html[data-reader-font-chinese='ready'] .magi-site-font-scope :where(
     sans-serif !important;
 }
 
-/* Chinese story prose and proofreading text use Tengxiang Jiali Dayuan. */
+/* 腾祥嘉丽大圆 remains the Chinese story/proofreading prose face. */
 html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-cn-body,
 html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-cn-body *,
 html[data-reader-font-chinese='ready'] .magi-site-font-scope .magi-translation-textarea,
@@ -103,7 +114,7 @@ html[data-reader-font-chinese='ready'] .magi-site-font-scope .magi-translation-s
     sans-serif !important;
 }
 
-/* A Chinese UI font must never replace Japanese story rows. */
+/* Chinese UI fonts must not leak into Japanese story rows. */
 html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-jp-body,
 html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-jp-body * {
   font-family:
@@ -140,8 +151,7 @@ html[data-reader-font-japanese='ready'] .magi-site-font-scope .reader-font-jp-ti
     sans-serif !important;
 }
 
-/* On Exedra screens, 猫啃网糖圆体 is an intentional whole-UI skin, not only a
-   dialogue face. It overrides the generic Chinese bundle inside this scope. */
+/* 猫啃网糖圆体 is a whole-UI Exedra skin, including Chinese prose. */
 html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope,
 html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope :where(
   button,
@@ -176,7 +186,7 @@ html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope :where(
     sans-serif !important;
 }
 
-/* Preserve Japanese dialogue and titles after the whole-Exedra UI override. */
+/* Preserve Japanese language roles after the whole-Exedra UI override. */
 html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope .reader-font-jp-body,
 html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope .reader-font-jp-body *,
 html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope .reader-font-jp-title,
@@ -210,10 +220,8 @@ html[data-reader-font-japanese='ready'][data-exedra-font-tang-yuan='ready']
     sans-serif !important;
 }
 
-html[data-exedra-font-tsuku-old-gothic='ready']
-  .magi-exedra-ui-scope .reader-font-jp-title,
-html[data-exedra-font-tsuku-old-gothic='ready']
-  .magi-exedra-ui-scope .reader-font-jp-title * {
+html[data-exedra-font-tsuku='ready'] .magi-exedra-ui-scope .reader-font-jp-title,
+html[data-exedra-font-tsuku='ready'] .magi-exedra-ui-scope .reader-font-jp-title * {
   font-family:
     "MagiReaderExedraTsukuOldGothic",
     "Yu Gothic",
@@ -221,10 +229,8 @@ html[data-exedra-font-tsuku-old-gothic='ready']
     sans-serif !important;
 }
 
-html[data-exedra-font-new-cinema-a='ready']
-  .magi-exedra-ui-scope .reader-font-jp-body,
-html[data-exedra-font-new-cinema-a='ready']
-  .magi-exedra-ui-scope .reader-font-jp-body * {
+html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-body,
+html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-body * {
   font-family:
     "MagiReaderExedraNewCinemaA",
     "Yu Gothic",
@@ -270,7 +276,6 @@ jobs:
             echo 'Cloudflare cleanup credentials are missing.' >&2
             exit 1
           fi
-
           api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/$TEST_WORKER_NAME"
           status="$(curl --silent --show-error \
             --output "$RUNNER_TEMP/delete-test-worker.json" \
@@ -284,7 +289,6 @@ jobs:
             echo "Test Worker deletion returned HTTP $status" >&2
             exit 1
           fi
-
           verify_status="$(curl --silent --show-error \
             --output "$RUNNER_TEMP/verify-test-worker.json" \
             --write-out '%{http_code}' \
@@ -297,7 +301,7 @@ jobs:
           fi
           echo 'EXEDRA_TEST_WORKER_RETIRED'
 
-      - name: Delete retired test and temporary implementation branches
+      - name: Delete retired test and implementation branches
         shell: bash
         run: |
           set -euo pipefail
@@ -332,6 +336,7 @@ const css = readFileSync(new URL('../app/ui-refinements.css', import.meta.url), 
 const readerFonts = readFileSync(new URL('../lib/reader-fonts.ts', import.meta.url), 'utf8');
 const exedraFonts = readFileSync(new URL('../lib/exedra-fonts.ts', import.meta.url), 'utf8');
 const exedraSettings = readFileSync(new URL('../components/ExedraFontSettings.tsx', import.meta.url), 'utf8');
+const configurePages = readFileSync(new URL('../scripts/configure-pages-project.mjs', import.meta.url), 'utf8');
 const cleanupWorkflow = readFileSync(
   new URL('../../.github/workflows/retire-exedra-test-environment.yml', import.meta.url),
   'utf8',
@@ -367,23 +372,24 @@ test('TangYuan covers all Exedra UI while Japanese story font roles stay isolate
   assert.match(exedraFonts, /Exedra 全部 UI 与简体中文正文/u);
   assert.match(exedraSettings, /猫啃网糖圆体覆盖 Exedra 全部 UI 与简体中文正文/u);
   assert.match(css, /data-exedra-font-tang-yuan='ready'[\s\S]*magi-exedra-ui-scope[\s\S]*MagiReaderExedraTangYuan/u);
-  assert.match(css, /data-exedra-font-tsuku-old-gothic='ready'[\s\S]*reader-font-jp-title/u);
-  assert.match(css, /data-exedra-font-new-cinema-a='ready'[\s\S]*reader-font-jp-body/u);
+  assert.match(css, /data-exedra-font-tsuku='ready'[\s\S]*reader-font-jp-title/u);
+  assert.match(css, /data-exedra-font-new-cinema='ready'[\s\S]*reader-font-jp-body/u);
 });
 
-test('repository policy is main-only and the retirement workflow removes the old environment', () => {
+test('repository policy is main-only and retirement removes the old environment', () => {
   assert.equal(existsSync(testDeployWorkflow), false);
   assert.match(cleanupWorkflow, /workers\/scripts\/\$TEST_WORKER_NAME/u);
   assert.match(cleanupWorkflow, /EXEDRA-TEST/u);
   assert.match(cleanupWorkflow, /git push origin --delete/u);
   assert.match(cleanupWorkflow, /EXEDRA_TEST_WORKER_RETIRED/u);
   assert.match(cleanupWorkflow, /EXEDRA_TEST_BRANCH_RETIRED/u);
+  assert.match(configurePages, /PROOFREADING_TARGET_BRANCH:\s*plainText\('main'\)/u);
 });
 '''
 
 
 def patch_cloudflare_test() -> None:
-    source = read(DEPLOYMENT_TEST)
+    source = read(CLOUDFLARE_TEST)
     source = source.replace(
         "import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';",
         "import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';",
@@ -418,7 +424,134 @@ def patch_cloudflare_test() -> None:
   assert.match(cleanup, /EXEDRA-TEST/u);
 });
 '''
-    write(DEPLOYMENT_TEST, source[:start] + replacement)
+    write(CLOUDFLARE_TEST, source[:start] + replacement)
+
+
+def patch_proofreading_test() -> None:
+    source = read(PROOFREADING_TEST)
+    import_old = "import { readFileSync } from 'node:fs';\n"
+    import_new = "import { existsSync, readFileSync } from 'node:fs';\n"
+    if source.count(import_old) != 1:
+        raise RuntimeError("proofreading test node:fs import drifted")
+    source = source.replace(import_old, import_new, 1)
+
+    community_start = source.find(
+        "test('community proofreading PR CI materializes playable JSON before TXT'"
+    )
+    retired_start = source.find(
+        "test('TW simplified test deployment is isolated, deterministic and chunk-verified'"
+    )
+    next_start = source.find(
+        "test('review login presents shared team token as the simple default'",
+        retired_start,
+    )
+    if community_start < 0 or retired_start < 0 or next_start < 0:
+        raise RuntimeError("proofreading test section markers drifted")
+    community = source[community_start:retired_start]
+    old_assert = "  assert.match(workflow, /branches:\\s*\\[EXEDRA-TEST\\]/u);\n"
+    if community.count(old_assert) != 1:
+        raise RuntimeError("community workflow branch assertion drifted")
+    community = community.replace(
+        old_assert,
+        "  assert.match(workflow, /branches:\\s*\\[main\\]/u);\n",
+        1,
+    )
+    retirement = r'''test('main-only proofreading and TW materialization target production main', () => {
+  const retiredWorkflow = path.resolve(
+    '../.github/workflows/deploy-exedra-proofreading-test.yml',
+  );
+  const cleanup = read('../.github/workflows/retire-exedra-test-environment.yml');
+  const materialize = read('../.github/workflows/materialize-tw-official-cn.yml');
+  const configure = read('scripts/configure-pages-project.mjs');
+  assert.equal(existsSync(retiredWorkflow), false);
+  assert.match(cleanup, /magireader-exedra-cn-test/u);
+  assert.match(cleanup, /EXEDRA-TEST/u);
+  assert.match(cleanup, /git push origin --delete/u);
+  assert.match(materialize, /ref:\s*main/u);
+  assert.match(materialize, /git push origin HEAD:main/u);
+  assert.doesNotMatch(materialize, /branches:\s*\[EXEDRA-TEST\]/u);
+  assert.match(
+    configure,
+    /PROOFREADING_TARGET_BRANCH:\s*plainText\('main'\)/u,
+  );
+});
+
+'''
+    write(
+        PROOFREADING_TEST,
+        source[:community_start]
+        + community
+        + retirement
+        + source[next_start:],
+    )
+
+
+def patch_main_only_workflows() -> None:
+    replace_once(
+        COMMUNITY_WORKFLOW,
+        "    branches: [EXEDRA-TEST]\n",
+        "    branches: [main]\n",
+    )
+    replace_once(
+        CONFIGURE_PAGES,
+        "  PROOFREADING_TARGET_BRANCH: plainText('EXEDRA-TEST'),\n",
+        "  PROOFREADING_TARGET_BRANCH: plainText('main'),\n",
+    )
+    replace_once(
+        MATERIALIZE_WORKFLOW,
+        "name: Materialize TW Official Simplified Chinese into EXEDRA-TEST\n",
+        "name: Materialize TW Official Simplified Chinese into main\n",
+    )
+    replace_once(
+        MATERIALIZE_WORKFLOW,
+        "on:\n  push:\n    branches: [EXEDRA-TEST]\n  workflow_dispatch:\n",
+        "on:\n  workflow_dispatch:\n",
+    )
+    replace_once(
+        MATERIALIZE_WORKFLOW,
+        "  group: materialize-tw-official-cn-exedra-test\n",
+        "  group: materialize-tw-official-cn-main\n",
+    )
+    replace_once(
+        MATERIALIZE_WORKFLOW,
+        "          ref: EXEDRA-TEST\n",
+        "          ref: main\n",
+    )
+    replace_once(
+        MATERIALIZE_WORKFLOW,
+        "          git push origin HEAD:EXEDRA-TEST\n",
+        "          git push origin HEAD:main\n",
+    )
+
+
+def assert_main_only_policy() -> None:
+    allowed = {
+        "retire-exedra-test-environment.yml",
+        "apply-main-only-v30.yml",
+    }
+    unexpected_workflows: list[str] = []
+    for path in (ROOT / ".github/workflows").glob("*.yml"):
+        if path.name in allowed:
+            continue
+        if "EXEDRA-TEST" in read(path):
+            unexpected_workflows.append(str(path.relative_to(ROOT)))
+    if unexpected_workflows:
+        raise RuntimeError(
+            "non-retirement workflows still reference EXEDRA-TEST: "
+            + ", ".join(unexpected_workflows)
+        )
+
+    unexpected_runtime: list[str] = []
+    for root in (ROOT / "website/app", ROOT / "website/lib", ROOT / "website/scripts"):
+        for path in root.rglob("*"):
+            if path.is_file() and path.suffix in {".ts", ".tsx", ".js", ".mjs"}:
+                if "EXEDRA-TEST" in read(path):
+                    unexpected_runtime.append(str(path.relative_to(ROOT)))
+    if unexpected_runtime:
+        raise RuntimeError(
+            "runtime files still reference EXEDRA-TEST: "
+            + ", ".join(unexpected_runtime)
+        )
 
 
 def main() -> int:
@@ -448,8 +581,8 @@ def main() -> int:
     )
     replace_once(
         HOME,
-        'className="magi-home-search-snippet mt-0.5',
-        'className="magi-home-search-snippet reader-font-cn-body mt-0.5',
+        'className={`px-2 py-1.5 text-xs font-serif border-t ${',
+        'className={`magi-home-search-snippet reader-font-cn-body px-2 py-1.5 text-xs font-serif border-t ${',
     )
     replace_once(
         READER,
@@ -479,14 +612,18 @@ def main() -> int:
     write(REFINEMENTS, css + CSS_APPEND)
 
     patch_cloudflare_test()
-    if not TEST_DEPLOY_WORKFLOW.exists():
-        raise RuntimeError("test deployment workflow was already absent before migration")
-    TEST_DEPLOY_WORKFLOW.unlink()
+    patch_proofreading_test()
+    patch_main_only_workflows()
+
+    delete_required(TEST_DEPLOY_WORKFLOW)
+    delete_required(REPAIR_WORKFLOW)
+    delete_required(VOICE_PATCH_WORKFLOW)
     write(RETIRE_WORKFLOW, RETIRE_WORKFLOW_CONTENT)
     if FONT_TEST.exists():
         raise RuntimeError(f"test already exists: {FONT_TEST.relative_to(ROOT)}")
     write(FONT_TEST, FONT_TEST_CONTENT)
 
+    assert_main_only_policy()
     print("MAIN_ONLY_V30_FONT_SCOPE_APPLIED")
     return 0
 
