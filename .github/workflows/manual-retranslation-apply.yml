@@ -43,9 +43,11 @@ jobs:
           bundle_root="$RUNNER_TEMP/exact-bundles"
           mkdir -p "$bundle_root"
 
-          find manual_retranslation/exact_bundles \
-            -maxdepth 1 -type f -name '*.json.gz.b64' \
-            -exec cp '{}' "$bundle_root/" \;
+          if [[ -d manual_retranslation/exact_bundles ]]; then
+            find manual_retranslation/exact_bundles \
+              -maxdepth 1 -type f -name '*.json.gz.b64' \
+              -exec cp '{}' "$bundle_root/" \;
+          fi
 
           if [[ -d manual_retranslation/exact_parts ]]; then
             while IFS= read -r -d '' dir; do
@@ -91,6 +93,7 @@ jobs:
       - name: Commit translated scenario JSON files
         shell: bash
         run: |
+          set -euo pipefail
           if git diff --quiet -- magireco-translate-data-master/Scenarios_full; then
             echo "No scenario JSON changes are required."
             exit 0
@@ -99,4 +102,15 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- magireco-translate-data-master/Scenarios_full
           git commit -m "Translate reviewed scenario JSON batches from Japanese"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+          for attempt in 1 2 3 4 5; do
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+            echo "Push attempt ${attempt} lost a race; rebasing onto the latest branch head."
+            git fetch origin "${GITHUB_REF_NAME}"
+            git rebase "origin/${GITHUB_REF_NAME}"
+          done
+
+          echo "Unable to push translated scenario JSON files after five attempts." >&2
+          exit 1
