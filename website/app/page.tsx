@@ -60,6 +60,7 @@ import {
 
 type SearchMode = 'all' | 'title' | 'content';
 type StorySystem = SearchIndexScope;
+type MobileReviewPlacement = 'floating' | 'toolbar';
 
 type StoryGroup = {
   key: string;
@@ -135,6 +136,22 @@ const isExedraCategory = (category: string): boolean =>
 
 const isDayArchiveTheme = (theme: string): boolean =>
   theme === 'light' || theme === 'paper';
+
+const MOBILE_REVIEW_PLACEMENT_STORAGE_KEY =
+  'magi-reader-mobile-review-placement-v1';
+
+const pointInsideRect = (
+  x: number,
+  y: number,
+  rect: DOMRect | undefined,
+): boolean =>
+  Boolean(
+    rect
+    && x >= rect.left
+    && x <= rect.right
+    && y >= rect.top
+    && y <= rect.bottom,
+  );
 
 const getDisplayLabel = (story: Story): string => {
   const label = story.title || story.filename_cn || story.filename_jp || story.id;
@@ -433,7 +450,7 @@ function CategoryNav({
     <nav
       className={
         mobile
-          ? 'flex overflow-x-auto p-2 gap-2 no-scrollbar bg-inherit border-b border-black/5'
+          ? 'magi-home-mobile-category-nav flex overflow-x-auto p-2 gap-2 no-scrollbar bg-inherit border-b border-black/5'
           : 'flex-1 overflow-y-auto p-2 space-y-1'
       }
     >
@@ -501,6 +518,19 @@ export default function Home() {
   );
   const homeSidebarWidthRef = useRef(HOME_SIDEBAR_WIDTH_DEFAULT);
   const homeSidebarResizeCleanupRef = useRef<(() => void) | null>(null);
+  const [mobileReviewPlacement, setMobileReviewPlacement] =
+    useState<MobileReviewPlacement>('floating');
+  const [reviewDragPosition, setReviewDragPosition] =
+    useState<{ x: number; y: number } | null>(null);
+  const reviewDragStartRef = useRef<{
+    pointerId: number;
+    x: number;
+    y: number;
+  } | null>(null);
+  const reviewDraggingRef = useRef(false);
+  const reviewSuppressClickRef = useRef(false);
+  const homeToolbarRef = useRef<HTMLDivElement>(null);
+  const homeHeadingRef = useRef<HTMLDivElement>(null);
 
   const { theme, setTheme, lastCategory, setLastCategory } = useGlobal();
   const storySystem: StorySystem =
@@ -533,6 +563,21 @@ export default function Home() {
       window.cancelAnimationFrame(restoreFrame);
       homeSidebarResizeCleanupRef.current?.();
     };
+  }, []);
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(
+        MOBILE_REVIEW_PLACEMENT_STORAGE_KEY,
+      );
+      if (stored === 'toolbar' || stored === 'floating') {
+        // This one-time client preference hydration intentionally runs after mount.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setMobileReviewPlacement(stored);
+      }
+    } catch {
+      // The floating placement remains the safe compact default.
+    }
   }, []);
 
   const commitHomeSidebarWidth = useCallback((value: number) => {
@@ -580,6 +625,92 @@ export default function Home() {
     window.addEventListener('pointerup', onEnd, { once: true });
     window.addEventListener('pointercancel', onEnd, { once: true });
   }, [commitHomeSidebarWidth]);
+
+  const commitMobileReviewPlacement = useCallback(
+    (placement: MobileReviewPlacement) => {
+      setMobileReviewPlacement(placement);
+      try {
+        window.localStorage.setItem(
+          MOBILE_REVIEW_PLACEMENT_STORAGE_KEY,
+          placement,
+        );
+      } catch {
+        // Placement remains usable for the current visit.
+      }
+    },
+    [],
+  );
+
+  const beginReviewButtonDrag = useCallback(
+    (event: ReactPointerEvent<HTMLButtonElement>) => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      reviewDragStartRef.current = {
+        pointerId: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+      };
+      reviewDraggingRef.current = false;
+      reviewSuppressClickRef.current = false;
+      event.currentTarget.setPointerCapture(event.pointerId);
+    },
+    [],
+  );
+
+  const moveReviewButtonDrag = useCallback(
+    (event: ReactPointerEvent<HTMLButtonElement>) => {
+      const start = reviewDragStartRef.current;
+      if (!start || start.pointerId !== event.pointerId) return;
+      if (
+        !reviewDraggingRef.current
+        && Math.hypot(event.clientX - start.x, event.clientY - start.y) < 8
+      ) {
+        return;
+      }
+      reviewDraggingRef.current = true;
+      reviewSuppressClickRef.current = true;
+      setReviewDragPosition({ x: event.clientX, y: event.clientY });
+    },
+    [],
+  );
+
+  const endReviewButtonDrag = useCallback(
+    (event: ReactPointerEvent<HTMLButtonElement>) => {
+      const start = reviewDragStartRef.current;
+      if (!start || start.pointerId !== event.pointerId) return;
+      if (reviewDraggingRef.current) {
+        const toolbarRect = homeToolbarRef.current?.getBoundingClientRect();
+        const headingRect = homeHeadingRef.current?.getBoundingClientRect();
+        if (pointInsideRect(event.clientX, event.clientY, toolbarRect)) {
+          commitMobileReviewPlacement('toolbar');
+        } else if (pointInsideRect(event.clientX, event.clientY, headingRect)) {
+          commitMobileReviewPlacement('floating');
+        }
+      }
+      try {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      } catch {
+        // The browser may already have released capture.
+      }
+      reviewDragStartRef.current = null;
+      reviewDraggingRef.current = false;
+      setReviewDragPosition(null);
+    },
+    [commitMobileReviewPlacement],
+  );
+
+  const cancelReviewButtonDrag = useCallback(
+    (event: ReactPointerEvent<HTMLButtonElement>) => {
+      reviewDragStartRef.current = null;
+      reviewDraggingRef.current = false;
+      setReviewDragPosition(null);
+      try {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      } catch {
+        // The browser may already have released capture.
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     const controller = new AbortController();
@@ -846,6 +977,52 @@ export default function Home() {
     switchToStorySystem(storySystem === 'magireco' ? 'exedra' : 'magireco');
   };
 
+  const renderMobileReviewButton = (
+    placement: MobileReviewPlacement,
+  ) => (
+    <button
+      type="button"
+      data-placement={placement}
+      aria-controls={machineReviewPanelContentId}
+      aria-expanded={!machineReviewPanelCollapsed}
+      aria-label={`${machineReviewPanelCollapsed ? '打开' : '收起'}校验清单，仍需 ${proofreadingStatus?.remaining ?? 0} 部`}
+      title={
+        placement === 'floating'
+          ? '点击打开或收起；长按拖到顶部工具栏可吸附'
+          : '点击打开或收起；长按拖到分类标题右侧可移回'
+      }
+      onPointerDown={beginReviewButtonDrag}
+      onPointerMove={moveReviewButtonDrag}
+      onPointerUp={endReviewButtonDrag}
+      onPointerCancel={cancelReviewButtonDrag}
+      onClick={event => {
+        if (reviewSuppressClickRef.current) {
+          event.preventDefault();
+          reviewSuppressClickRef.current = false;
+          return;
+        }
+        setMachineReviewPanelCollapsedPreference(
+          !machineReviewPanelCollapsed,
+        );
+      }}
+      style={
+        reviewDragPosition
+          ? {
+              position: 'fixed',
+              left: `${reviewDragPosition.x}px`,
+              top: `${reviewDragPosition.y}px`,
+              transform: 'translate(-50%, -50%)',
+            }
+          : undefined
+      }
+      className={`magi-home-mobile-review-button md:hidden ${
+        reviewDragPosition ? 'is-dragging' : ''
+      }`}
+    >
+      校验清单
+    </button>
+  );
+
   if (loading) {
     return (
       <div className="flex h-screen h-[100dvh] items-center justify-center opacity-50">
@@ -952,7 +1129,12 @@ export default function Home() {
                 : 'border-black/5 bg-white/60'
           }`}
         >
-          <div className="magi-home-toolbar-row flex flex-wrap items-start justify-between gap-2 md:items-center">
+          <div
+            ref={homeToolbarRef}
+            className={`magi-home-toolbar-row flex flex-wrap items-start justify-between gap-2 md:items-center ${
+              reviewDragPosition ? 'magi-home-review-drop-target' : ''
+            }`}
+          >
             <div className="magi-home-toolbar-controls relative flex min-w-0 flex-1 flex-wrap items-center gap-2">
               <div
                 className="magi-home-search-shell relative min-w-0"
@@ -1073,25 +1255,10 @@ export default function Home() {
                 <Book size={14} />
                 {storySystem === 'magireco' ? 'Exedra' : 'Magia Record'}
               </button>
-              {storySystem === 'magireco' && proofreadingStatus && (
-                <button
-                  type="button"
-                  aria-controls={machineReviewPanelContentId}
-                  aria-expanded={!machineReviewPanelCollapsed}
-                  aria-label={`${machineReviewPanelCollapsed ? '打开' : '收起'}校验清单，仍需 ${proofreadingStatus.remaining} 部`}
-                  title={`仍需人工校验 ${proofreadingStatus.remaining} 部`}
-                  onClick={() => setMachineReviewPanelCollapsedPreference(!machineReviewPanelCollapsed)}
-                  className={`inline-flex min-h-8 shrink-0 items-center rounded-md border px-2 py-1 text-xs font-black shadow-sm transition md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
-                    machineReviewPanelCollapsed
-                      ? theme === 'dark'
-                        ? 'border-amber-700 bg-amber-950/60 text-amber-200 hover:bg-amber-900/70'
-                        : 'border-amber-300 bg-amber-50/80 text-amber-800 hover:bg-amber-100'
-                      : 'border-amber-600 bg-amber-500 text-white hover:bg-amber-600'
-                  }`}
-                >
-                  校验清单
-                </button>
-              )}
+              {storySystem === 'magireco'
+                && proofreadingStatus
+                && mobileReviewPlacement === 'toolbar'
+                && renderMobileReviewButton('toolbar')}
             </div>
 
             <div
@@ -1280,20 +1447,26 @@ export default function Home() {
               </div>
             )}
 
-            {!normalizedQuery && (
-              <h2 className={`mb-4 px-1 text-xl font-bold opacity-80 ${
-                isDayArchiveTheme(theme) ? 'magi-home-light-section-title' : ''
+            <div
+              ref={homeHeadingRef}
+              className={`magi-home-section-heading-row ${
+                reviewDragPosition ? 'magi-home-review-drop-target' : ''
+              }`}
+            >
+              <h2 className={`px-1 text-xl font-bold opacity-80 ${
+                isDayArchiveTheme(theme)
+                  ? 'magi-home-light-section-title'
+                  : ''
               }`}>
-                {CATEGORY_CONFIG[lastCategory]?.label ?? lastCategory}
+                {normalizedQuery
+                  ? `搜索结果：“${searchTerm}” ${searchJp ? '（含日文）' : ''}`
+                  : CATEGORY_CONFIG[lastCategory]?.label ?? lastCategory}
               </h2>
-            )}
-            {normalizedQuery && (
-              <h2 className={`mb-4 px-1 text-xl font-bold opacity-80 ${
-                isDayArchiveTheme(theme) ? 'magi-home-light-section-title' : ''
-              }`}>
-                搜索结果：“{searchTerm}” {searchJp ? '（含日文）' : ''}
-              </h2>
-            )}
+              {storySystem === 'magireco'
+                && proofreadingStatus
+                && mobileReviewPlacement === 'floating'
+                && renderMobileReviewButton('floating')}
+            </div>
 
             <div className="columns-1 md:columns-2 xl:columns-3 gap-4 space-y-4">
               {displayedGroups.map((group) => (

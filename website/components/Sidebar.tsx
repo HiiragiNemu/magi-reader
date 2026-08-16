@@ -113,6 +113,8 @@ type SidebarProps = {
   currentId?: string;
   isOpen: boolean;
   onClose: () => void;
+  utilityPanelOpen: boolean;
+  onOpenUtilityPanel: () => void;
   className?: string;
 };
 
@@ -155,6 +157,8 @@ export default function Sidebar({
   currentId,
   isOpen,
   onClose,
+  utilityPanelOpen,
+  onOpenUtilityPanel,
   className = '',
 }: SidebarProps) {
   const { theme, lastCategory, setLastCategory } = useGlobal();
@@ -163,6 +167,7 @@ export default function Sidebar({
   const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_WIDTH_DEFAULT);
   const resizeCleanupRef = useRef<(() => void) | null>(null);
   const sidebarRef = useDialog<HTMLElement>(isOpen, onClose);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     try {
@@ -239,13 +244,41 @@ export default function Sidebar({
   }, [showExedra, stories]);
 
   useEffect(() => {
-    if (!isOpen || !currentId) return;
+    if (!currentId || !currentStory) return;
+
+    const category = currentStory.category || 'Unclassified';
+    const folder = currentStory.folder || '未分类';
+    const folderKey = `${category}\u0000${folder}`;
+    setCategoryOverrides(previous =>
+      previous[category] === true
+        ? previous
+        : { ...previous, [category]: true },
+    );
+    setFolderOverrides(previous =>
+      previous[folderKey] === true
+        ? previous
+        : { ...previous, [folderKey]: true },
+    );
+
     const timer = window.setTimeout(() => {
-      document.getElementById(`nav-item-${currentId}`)
-        ?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }, 200);
+      const container = scrollContainerRef.current;
+      const target = document.getElementById(`nav-item-${currentId}`);
+      if (!container || !target || !container.contains(target)) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
+      const targetTop =
+        container.scrollTop
+        + targetRect.top
+        - containerRect.top
+        - (container.clientHeight - targetRect.height) / 2;
+      container.scrollTo({
+        top: Math.max(0, targetTop),
+        behavior: 'smooth',
+      });
+    }, 120);
     return () => window.clearTimeout(timer);
-  }, [currentId, isOpen]);
+  }, [currentId, currentStory, isOpen, stories.length]);
 
   const themeClass =
     theme === 'dark'
@@ -296,6 +329,18 @@ export default function Sidebar({
           >
             MagiReader
           </Link>
+          {!utilityPanelOpen && (
+            <button
+              type="button"
+              aria-label="展开阅读导航"
+              title="展开阅读导航"
+              onClick={onOpenUtilityPanel}
+              className="magi-reader-utility-dock magi-reader-utility-dock-desktop hidden md:inline-flex"
+            >
+              <span aria-hidden="true">⌂</span>
+              <span>导航</span>
+            </button>
+          )}
           <button
             type="button"
             aria-label="关闭剧情目录"
@@ -308,7 +353,11 @@ export default function Sidebar({
           </button>
         </div>
 
-        <div className="scrollbar-thin flex-1 overflow-y-auto p-2">
+        <div
+          ref={scrollContainerRef}
+          data-sidebar-scroll-container="true"
+          className="scrollbar-thin flex-1 overflow-y-auto p-2"
+        >
           {Object.keys(groupedData)
             .sort(
               (a, b) =>

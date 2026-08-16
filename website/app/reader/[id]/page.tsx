@@ -318,6 +318,8 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   } | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [utilityPanelOpen, setUtilityPanelOpen] = useState(true);
+  const [utilityPanelClosing, setUtilityPanelClosing] = useState(false);
+  const utilityPanelCloseTimerRef = useRef<number | null>(null);
   const [editMessage, setEditMessage] = useState('');
 
   useEffect(() => {
@@ -330,6 +332,31 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const changeBilingualLayout = (layout: BilingualLayout) => {
     setBilingualLayout(layout);
     window.localStorage.setItem(BILINGUAL_LAYOUT_STORAGE_KEY, layout);
+  };
+
+  useEffect(() => () => {
+    if (utilityPanelCloseTimerRef.current !== null) {
+      window.clearTimeout(utilityPanelCloseTimerRef.current);
+    }
+  }, []);
+
+  const openUtilityPanel = () => {
+    if (utilityPanelCloseTimerRef.current !== null) {
+      window.clearTimeout(utilityPanelCloseTimerRef.current);
+      utilityPanelCloseTimerRef.current = null;
+    }
+    setUtilityPanelClosing(false);
+    setUtilityPanelOpen(true);
+  };
+
+  const closeUtilityPanel = () => {
+    if (utilityPanelClosing) return;
+    setUtilityPanelClosing(true);
+    utilityPanelCloseTimerRef.current = window.setTimeout(() => {
+      setUtilityPanelOpen(false);
+      setUtilityPanelClosing(false);
+      utilityPanelCloseTimerRef.current = null;
+    }, 220);
   };
 
   const directSourceResolution = useMemo(() => {
@@ -1316,10 +1343,13 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
         currentId={currentStory?.id ?? id}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        utilityPanelOpen={utilityPanelOpen}
+        onOpenUtilityPanel={openUtilityPanel}
         className={sidebarOpen ? '' : 'hidden md:flex'}
       />
 
       <div className="relative flex min-w-0 flex-1 flex-col">
+        <div className="magi-reader-header-stack relative z-20 shrink-0">
         <header className={`magi-reader-header magi-reader-header-compact z-20 flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 border-b px-2 py-1.5 ${HEADER_STYLES[theme]}`}>
           <div className="magi-reader-header-identity flex min-w-0 flex-1 items-center gap-2">
             <button
@@ -1360,7 +1390,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                       cnSource.raw,
                       sourceDownloadName(id, 'cn', cnSource),
                     )}
-                    className="flex items-center gap-1 rounded px-1.5 py-0.5 opacity-50 transition hover:text-green-600 hover:opacity-100"
+                    className="magi-reader-source-download flex items-center gap-1 rounded px-1.5 py-0.5 opacity-50 transition hover:text-green-600 hover:opacity-100"
                   >
                     <Download size={14} /><span className="text-[10px]">CN</span>
                   </button>
@@ -1373,9 +1403,21 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                       jpSource.raw,
                       sourceDownloadName(id, 'jp', jpSource),
                     )}
-                    className="flex items-center gap-1 rounded px-1.5 py-0.5 opacity-50 transition hover:text-blue-600 hover:opacity-100"
+                    className="magi-reader-source-download flex items-center gap-1 rounded px-1.5 py-0.5 opacity-50 transition hover:text-blue-600 hover:opacity-100"
                   >
                     <Download size={14} /><span className="text-[10px]">JP</span>
+                  </button>
+                )}
+                {!utilityPanelOpen && (
+                  <button
+                    type="button"
+                    aria-label="展开阅读导航"
+                    title="展开阅读导航"
+                    onClick={openUtilityPanel}
+                    className="magi-reader-utility-dock magi-reader-utility-dock-mobile magi-reader-utility-reopen md:hidden"
+                  >
+                    <span aria-hidden="true">⌂</span>
+                    <span className="sr-only">导航</span>
                   </button>
                 )}
               </div>
@@ -1471,6 +1513,79 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
             </button>
           </div>
         </header>
+
+          {!loadError && utilityPanelOpen && (
+            <section
+              className={`magi-reader-utility-panel magi-reader-utility-panel-overlay ${
+                utilityPanelClosing ? 'is-closing' : 'is-open'
+              }`}
+              aria-label="阅读导航与分页"
+            >
+              <button
+                type="button"
+                aria-label="关闭阅读导航栏"
+                title="关闭阅读导航栏"
+                onClick={closeUtilityPanel}
+                className="magi-reader-utility-close"
+              >
+                ×
+              </button>
+              <div className="magi-reader-utility-content">
+                <div className="magi-reader-utility-search lg:hidden">
+                  <Search
+                    size={16}
+                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 opacity-45"
+                  />
+                  <input
+                    type="search"
+                    aria-label="在当前剧情中搜索"
+                    placeholder="页内搜索"
+                    title="输入关键词后按 Enter 跳到下一处"
+                    value={searchQuery}
+                    onChange={event => changeSearch(event.target.value)}
+                    onKeyDown={event => {
+                      if (event.key === 'Enter') jumpToNextMatch();
+                    }}
+                    className="magi-reader-search-input h-9 w-full py-1.5 pl-9 pr-14 text-sm leading-5 outline-none"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={jumpToNextMatch}
+                      className="magi-reader-search-next"
+                    >
+                      {matchedIndices.length
+                        ? `${currentMatchIndex >= 0 ? currentMatchIndex + 1 : 0}/${matchedIndices.length} ↓`
+                        : '0'}
+                    </button>
+                  )}
+                </div>
+                <div className="magi-reader-utility-actions">
+                  <Link href="/" className="magi-reader-utility-button">
+                    🏠 返回首页
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setAboutOpen(true)}
+                    className="magi-reader-utility-button"
+                  >
+                    🔗 我的工具与动态
+                  </button>
+                  <span
+                    aria-live="polite"
+                    className="magi-reader-page-summary"
+                  >
+                    第 {visiblePage + 1} / {pageCount} 页 · 第 {pageStart + 1}–
+                    {Math.min(
+                      pageStart + visibleRenderList.length,
+                      renderList.length,
+                    )} 行，共 {renderList.length} 行
+                  </span>
+                </div>
+              </div>
+            </section>
+          )}
+        </div>
 
         <main
           className={`magi-reader-main z-10 flex-1 overflow-y-auto scroll-smooth p-2 md:p-6 ${
@@ -1763,86 +1878,6 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   </p>
                 )}
               </section>
-            )}
-
-            {!loadError && utilityPanelOpen && (
-              <section
-                className="magi-reader-utility-panel"
-                aria-label="阅读导航与分页"
-              >
-                <button
-                  type="button"
-                  aria-label="关闭阅读导航栏"
-                  title="关闭阅读导航栏"
-                  onClick={() => setUtilityPanelOpen(false)}
-                  className="magi-reader-utility-close"
-                >
-                  ×
-                </button>
-                <div className="magi-reader-utility-content">
-                  <div className="magi-reader-utility-search lg:hidden">
-                    <Search
-                      size={16}
-                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 opacity-45"
-                    />
-                    <input
-                      type="search"
-                      aria-label="在当前剧情中搜索"
-                      placeholder="页内搜索"
-                      title="输入关键词后按 Enter 跳到下一处"
-                      value={searchQuery}
-                      onChange={event => changeSearch(event.target.value)}
-                      onKeyDown={event => {
-                        if (event.key === 'Enter') jumpToNextMatch();
-                      }}
-                      className="magi-reader-search-input h-9 w-full py-1.5 pl-9 pr-14 text-sm leading-5 outline-none"
-                    />
-                    {searchQuery && (
-                      <button
-                        type="button"
-                        onClick={jumpToNextMatch}
-                        className="magi-reader-search-next"
-                      >
-                        {matchedIndices.length
-                          ? `${currentMatchIndex >= 0 ? currentMatchIndex + 1 : 0}/${matchedIndices.length} ↓`
-                          : '0'}
-                      </button>
-                    )}
-                  </div>
-                  <div className="magi-reader-utility-actions">
-                    <Link href="/" className="magi-reader-utility-button">
-                      🏠 返回首页
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => setAboutOpen(true)}
-                      className="magi-reader-utility-button"
-                    >
-                      🔗 我的工具与动态
-                    </button>
-                    <span
-                      aria-live="polite"
-                      className="magi-reader-page-summary"
-                    >
-                      第 {visiblePage + 1} / {pageCount} 页 · 第 {pageStart + 1}–
-                      {Math.min(
-                        pageStart + visibleRenderList.length,
-                        renderList.length,
-                      )} 行，共 {renderList.length} 行
-                    </span>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {!loadError && !utilityPanelOpen && (
-              <button
-                type="button"
-                onClick={() => setUtilityPanelOpen(true)}
-                className="magi-reader-utility-reopen"
-              >
-                ⌂ 导航
-              </button>
             )}
 
             {!loadError && visibleRenderList.map((row, offset) => {
