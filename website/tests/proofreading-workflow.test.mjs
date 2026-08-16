@@ -56,7 +56,7 @@ test('community proofreading PR CI materializes playable JSON before TXT', () =>
 
 test('TW simplified test deployment is isolated, deterministic and chunk-verified', () => {
   const workflow = read('../.github/workflows/deploy-exedra-proofreading-test.yml');
-  assert.match(workflow, /TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V4/u);
+  assert.match(workflow, /AUTHENTIC_TW_CANONICAL_CN_DEPLOY_V1/u);
   assert.match(workflow, /branches:\s*\[EXEDRA-TEST\]/u);
   assert.match(workflow, /startsWith\(github\.event\.head_commit\.message, '\[tw-materialized\]'\)/u);
   assert.match(workflow, /magi-submissions-exedra-cn-test/u);

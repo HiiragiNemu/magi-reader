@@ -216,7 +216,7 @@ test('Pages binding configuration uses the runtime GitHub repository variable', 
 
 test('isolated Exedra V4 deployment verifies search chunks, revision, voice systems and decoder', () => {
   const workflow = readFileSync(testDeploymentWorkflow, 'utf8');
-  assert.match(workflow, /TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V4/u);
+  assert.match(workflow, /AUTHENTIC_TW_CANONICAL_CN_DEPLOY_V1/u);
   assert.match(workflow, /startsWith\(github\.event\.head_commit\.message, '\[tw-materialized\]'\)/u);
   assert.match(workflow, /\?__revision=\$\{GITHUB_SHA\}-\$\{attempt\}/u);
   assert.match(workflow, /search_chunk_delivery\.py verify-http --base-url/u);
