@@ -116,8 +116,11 @@ jobs:
               raise SystemExit('V28 generated a duplicated Reader main marker')
           if source.count('className={`magi-reader-main ') != 1:
               raise SystemExit('V28 Reader main element count is not exactly one')
+          utility_markup = 'className={`magi-reader-utility-widget ${'
+          if source.count(utility_markup) != 1:
+              raise SystemExit('V28 rendered utility widget count is not exactly one')
           if source.index('const renderList = useMemo(') > source.index(
-              'magi-reader-utility-widget'
+              utility_markup
           ):
               raise SystemExit(
                   'V28 floating utility was emitted before render state declarations'
