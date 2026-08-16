@@ -1,0 +1,86 @@
+name: Retire EXEDRA test environment
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: retire-exedra-test-environment
+  cancel-in-progress: false
+
+jobs:
+  retire:
+    if: contains(github.event.head_commit.message, '[main-only-v30]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TEST_WORKER_NAME: magireader-exedra-cn-test
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Delete dedicated Cloudflare test Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo 'Cloudflare cleanup credentials are missing.' >&2
+            exit 1
+          fi
+
+          api="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/$TEST_WORKER_NAME"
+          status="$(curl --silent --show-error \
+            --output "$RUNNER_TEMP/delete-test-worker.json" \
+            --write-out '%{http_code}' \
+            --request DELETE \
+            --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            --header 'Content-Type: application/json' \
+            "$api")"
+          if [ "$status" != '200' ] && [ "$status" != '404' ]; then
+            cat "$RUNNER_TEMP/delete-test-worker.json" >&2 || true
+            echo "Test Worker deletion returned HTTP $status" >&2
+            exit 1
+          fi
+
+          verify_status="$(curl --silent --show-error \
+            --output "$RUNNER_TEMP/verify-test-worker.json" \
+            --write-out '%{http_code}' \
+            --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "$api")"
+          if [ "$verify_status" != '404' ]; then
+            cat "$RUNNER_TEMP/verify-test-worker.json" >&2 || true
+            echo "Test Worker still resolves through the Cloudflare API (HTTP $verify_status)." >&2
+            exit 1
+          fi
+          echo 'EXEDRA_TEST_WORKER_RETIRED'
+
+      - name: Delete retired test and implementation branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          for branch in \
+            EXEDRA-TEST \
+            work/main-only-v30-font-scope \
+            tmp-v30-bootstrap-safety \
+            tmp-main-only-v30-validation \
+            tmp-main-only-v30-cleanup \
+            tmp-v30-do-not-use \
+            tmp-v30-final-safety \
+            tmp-v30-ignore-2; do
+            if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+              git push origin --delete "$branch"
+            fi
+            if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+              echo "Branch still exists: $branch" >&2
+              exit 1
+            fi
+          done
+          echo 'EXEDRA_TEST_BRANCH_RETIRED'
