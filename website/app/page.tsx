@@ -505,6 +505,16 @@ export default function Home() {
   const { theme, setTheme, lastCategory, setLastCategory } = useGlobal();
   const storySystem: StorySystem =
     lastCategory.startsWith('exedra_') ? 'exedra' : 'magireco';
+  const compactSearchCharacters = Math.min(
+    34,
+    Math.max(
+      12,
+      Array.from(
+        searchTerm ||
+          (searchLoading ? '正在准备正文搜索' : '搜索标题或正文'),
+      ).length + 3,
+    ),
+  );
 
   useEffect(() => {
     const restoreFrame = window.requestAnimationFrame(() => {
@@ -942,9 +952,14 @@ export default function Home() {
                 : 'border-black/5 bg-white/60'
           }`}
         >
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-            <div className="relative flex-1 max-w-4xl flex flex-wrap gap-2">
-              <div className="relative flex-1 min-w-56">
+          <div className="magi-home-toolbar-row flex flex-wrap items-start justify-between gap-2 md:items-center">
+            <div className="magi-home-toolbar-controls relative flex min-w-0 flex-1 flex-wrap items-center gap-2">
+              <div
+                className="magi-home-search-shell relative min-w-0"
+                style={{
+                  '--magi-home-search-width': `${compactSearchCharacters}em`,
+                } as CSSProperties}
+              >
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none opacity-50">
                   <Search size={16} />
                 </div>
@@ -1080,7 +1095,7 @@ export default function Home() {
             </div>
 
             <div
-              className={`flex gap-1 p-1 rounded-full self-end md:self-auto ${
+              className={`magi-home-theme-switcher flex gap-1 p-1 rounded-full self-end md:self-auto ${
                 theme === 'dark'
                   ? 'bg-black/20'
                   : isDayArchiveTheme(theme)

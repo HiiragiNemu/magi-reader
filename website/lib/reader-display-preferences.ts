@@ -20,7 +20,7 @@ const DEFAULT_PREFERENCES: ReaderDisplayPreferences = {
   textWidthPx: DEFAULT_READER_TEXT_WIDTH,
   fontSizePx: DEFAULT_READER_FONT_SIZE,
   fontControlOpen: true,
-  showLineBreaks: false,
+  showLineBreaks: true,
 };
 const DEFAULT_SNAPSHOT = JSON.stringify(DEFAULT_PREFERENCES);
 let volatileSnapshot = DEFAULT_SNAPSHOT;
@@ -64,7 +64,10 @@ export const parseReaderDisplayPreferences = (
       textWidthPx: normalizeTextWidth(record.textWidthPx),
       fontSizePx: normalizeFontSize(record.fontSizePx),
       fontControlOpen: record.fontControlOpen !== false,
-      showLineBreaks: record.showLineBreaks === true,
+      showLineBreaks:
+        typeof record.showLineBreaks === 'boolean'
+          ? record.showLineBreaks
+          : DEFAULT_PREFERENCES.showLineBreaks,
     };
   } catch {
     return { ...DEFAULT_PREFERENCES };
@@ -78,7 +81,7 @@ const serializeReaderDisplayPreferences = (
     textWidthPx: normalizeTextWidth(preferences.textWidthPx),
     fontSizePx: normalizeFontSize(preferences.fontSizePx),
     fontControlOpen: preferences.fontControlOpen !== false,
-    showLineBreaks: preferences.showLineBreaks === true,
+    showLineBreaks: preferences.showLineBreaks !== false,
   } satisfies ReaderDisplayPreferences);
 
 export const getReaderDisplayPreferencesSnapshot = (): string => {

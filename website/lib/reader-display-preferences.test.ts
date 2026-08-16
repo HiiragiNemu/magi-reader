@@ -13,18 +13,18 @@ import {
   updateReaderDisplayPreferences,
 } from './reader-display-preferences.ts';
 
-test('reader display preferences keep the current 768px width as the safe default', () => {
+test('reader display preferences default to visible line-break markers', () => {
   assert.deepEqual(parseReaderDisplayPreferences(null), {
     textWidthPx: DEFAULT_READER_TEXT_WIDTH,
     fontSizePx: DEFAULT_READER_FONT_SIZE,
     fontControlOpen: true,
-    showLineBreaks: false,
+    showLineBreaks: true,
   });
   assert.deepEqual(parseReaderDisplayPreferences('{broken'), {
     textWidthPx: DEFAULT_READER_TEXT_WIDTH,
     fontSizePx: DEFAULT_READER_FONT_SIZE,
     fontControlOpen: true,
-    showLineBreaks: false,
+    showLineBreaks: true,
   });
 });
 
@@ -59,10 +59,16 @@ test('reader display preferences clamp and snap persisted widths', () => {
   );
 });
 
-test('reader display preferences accept only an explicit boolean marker choice', () => {
+test('legacy or malformed marker choices fall back to the visible default', () => {
   assert.equal(
     parseReaderDisplayPreferences(
       JSON.stringify({ textWidthPx: 768, showLineBreaks: 'true' }),
+    ).showLineBreaks,
+    true,
+  );
+  assert.equal(
+    parseReaderDisplayPreferences(
+      JSON.stringify({ textWidthPx: 768, showLineBreaks: false }),
     ).showLineBreaks,
     false,
   );

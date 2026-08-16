@@ -5,12 +5,13 @@ import test from 'node:test';
 const readerPath = new URL('../app/reader/[id]/page.tsx', import.meta.url);
 const cssPath = new URL('../app/globals.css', import.meta.url);
 
-test('reader exposes a complete in-page search label at desktop and mobile widths', async () => {
+test('reader exposes desktop search and compact utility-panel mobile search', async () => {
   const reader = await readFile(readerPath, 'utf8');
   assert.equal((reader.match(/placeholder="页内搜索"/g) ?? []).length, 2);
-  assert.match(reader, /magi-reader-search-shell[\s\S]*min-w-64/);
+  assert.match(reader, /magi-reader-search-shell[\s\S]*min-w-48/);
   assert.match(reader, /magi-reader-search-shell[\s\S]*lg:flex/);
-  assert.match(reader, /magi-reader-mobile-search[\s\S]*lg:hidden/);
+  assert.match(reader, /magi-reader-utility-search[\s\S]*lg:hidden/);
+  assert.doesNotMatch(reader, /magi-reader-mobile-search/);
   assert.match(reader, /magi-reader-search-input h-9[\s\S]*leading-5/);
   assert.match(reader, /title="输入关键词后按 Enter 跳到下一处"/);
 });
@@ -70,34 +71,29 @@ test('day Reader themes put the stronger grid on the document instead of chrome'
   );
 });
 
-test('reader provides persistent boundary-aware edge pagination without covering mobile text', async () => {
-  const [reader, css] = await Promise.all([
+test('reader keeps edge pagination while merging page status into a closable utility window', async () => {
+  const [reader, pageTurnCss, refinements] = await Promise.all([
     readFile(readerPath, 'utf8'),
     readFile(cssPath, 'utf8'),
+    readFile(new URL('../app/ui-refinements.css', import.meta.url), 'utf8'),
   ]);
   assert.match(reader, /pageCount > 1 && \([\s\S]*?aria-label="剧情快速翻页"/);
   assert.match(reader, /visiblePage > 0 && \([\s\S]*?aria-label="上一页"/);
   assert.match(reader, /visiblePage \+ 1 < pageCount && \([\s\S]*?aria-label="下一页"/);
-  assert.match(reader, /onClick=\{\(\) => changeVisiblePage\(visiblePage - 1\)\}/);
-  assert.match(reader, /onClick=\{\(\) => changeVisiblePage\(visiblePage \+ 1\)\}/);
-  assert.match(reader, /aria-keyshortcuts="ArrowLeft"/);
-  assert.match(reader, /aria-keyshortcuts="ArrowRight"/);
+  assert.match(reader, /magi-reader-utility-panel/);
+  assert.match(reader, /aria-label="关闭阅读导航栏"/);
+  assert.match(reader, /magi-reader-page-summary/);
+  assert.match(reader, /第 \{visiblePage \+ 1\} \/ \{pageCount\} 页/);
+  assert.match(reader, /magi-reader-utility-reopen/);
+  assert.doesNotMatch(reader, /<StoryPagination/);
+  assert.doesNotMatch(reader, /← 上一页/);
+  assert.doesNotMatch(reader, /下一页 →/);
   assert.match(reader, /window\.addEventListener\('keydown', handlePageTurnKeyDown\)/);
-  assert.match(reader, /isReaderPagingInteractionTarget\(event\.target\)/);
-  assert.match(reader, /event\.key === 'ArrowLeft'[\s\S]*?visiblePage > 0/);
-  assert.match(reader, /event\.key === 'ArrowRight'[\s\S]*?visiblePage \+ 1 < pageCount/);
   assert.match(reader, /onTouchStart=\{handlePageTouchStart\}/);
   assert.match(reader, /onTouchEnd=\{handlePageTouchEnd\}/);
-  assert.match(reader, /PAGE_SWIPE_MIN_DISTANCE_PX = 64/);
   assert.match(reader, /paddingInline: 'clamp\(3\.25rem, 6vw, 4rem\)'/);
-  assert.match(
-    reader,
-    /Math\.min\(pageCount - 1, Math\.max\(0, page\)\)/,
-  );
-  assert.match(css, /\.magi-reader-page-turn[\s\S]*?min-width:\s*2\.8rem;[\s\S]*?min-height:\s*2\.8rem;/);
-  assert.match(css, /@media \(max-width: 767px\)[\s\S]*?\.magi-reader-main-paginated[\s\S]*?padding-left:\s*2\.8rem !important;/);
-  assert.match(css, /\.magi-reader-theme-dark \.magi-reader-page-turn/);
-  assert.match(css, /\.magi-reader-theme-green \.magi-reader-page-turn/);
+  assert.match(refinements, /\.magi-reader-utility-panel[\s\S]*backdrop-filter:/);
+  assert.match(pageTurnCss, /\.magi-reader-page-turn[\s\S]*?min-width:\s*2\.8rem;/);
 });
 
 test('day Reader chrome is neutral while official status badges use a darker title-bar treatment', async () => {

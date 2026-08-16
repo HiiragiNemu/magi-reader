@@ -115,3 +115,15 @@ test('home catalogue desktop sidebar resizes independently without changing mobi
   assert.match(page, /<main className="flex-1 flex flex-col min-w-0 bg-transparent">/u);
   assert.match(css, /@media \(min-width: 768px\)[\s\S]*\.magi-home-sidebar\s*\{[\s\S]*flex-basis:\s*var\(--magi-home-sidebar-width/u);
 });
+
+test('home search grows from a compact measured width before other mobile controls', () => {
+  const refinements = readFileSync(
+    path.resolve('app', 'ui-refinements.css'),
+    'utf8',
+  );
+  assert.match(page, /compactSearchCharacters/u);
+  assert.match(page, /--magi-home-search-width/u);
+  assert.match(page, /magi-home-search-shell relative min-w-0/u);
+  assert.match(page, /magi-home-theme-switcher/u);
+  assert.match(refinements, /\.magi-home-search-shell\s*\{[\s\S]*--magi-home-search-width/u);
+});

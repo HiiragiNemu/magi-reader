@@ -317,6 +317,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     highlight: boolean;
   } | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [utilityPanelOpen, setUtilityPanelOpen] = useState(true);
   const [editMessage, setEditMessage] = useState('');
 
   useEffect(() => {
@@ -512,6 +513,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     setTurnstileResetKey((value) => value + 1);
     setSearchQuery('');
     setCurrentMatchIndex(-1);
+    setUtilityPanelOpen(true);
 
     const fetchSource = async (
       path: string,
@@ -1318,8 +1320,8 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       />
 
       <div className="relative flex min-w-0 flex-1 flex-col">
-        <header className={`magi-reader-header z-20 flex shrink-0 items-center justify-between border-b px-4 py-2 ${HEADER_STYLES[theme]}`}>
-          <div className="flex min-w-0 items-center gap-3">
+        <header className={`magi-reader-header magi-reader-header-compact z-20 flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 border-b px-2 py-1.5 ${HEADER_STYLES[theme]}`}>
+          <div className="magi-reader-header-identity flex min-w-0 flex-1 items-center gap-2">
             <button
               type="button"
               aria-label="打开剧情目录"
@@ -1340,7 +1342,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                 {isLocal ? '本地文件' : currentStory?.folder || '剧情阅读器'}
                 {storyTitle ? ` · ${storyTitle}` : ''}
               </span>
-              <div className="flex min-w-0 flex-wrap items-center gap-2 text-sm font-bold">
+              <div className="magi-reader-header-meta flex min-w-0 flex-nowrap items-center gap-1 text-sm font-bold">
                 <span className="magi-reader-story-id truncate font-mono text-emerald-600">{id}</span>
                 {currentStory?.official_tw && (
                   <span
@@ -1380,7 +1382,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
             </div>
           </div>
 
-          <div className="magi-reader-search-shell group relative mx-4 hidden min-w-64 max-w-md flex-1 lg:flex">
+          <div className="magi-reader-search-shell group relative mx-2 hidden min-w-48 max-w-sm flex-[0_1_20rem] lg:flex">
             <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="search"
@@ -1407,7 +1409,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
             )}
           </div>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="magi-reader-header-actions ml-auto flex shrink-0 items-center gap-1">
             <button
               type="button"
               aria-pressed={isEditMode}
@@ -1526,30 +1528,68 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
             )}
 
             {isEditMode && !loadError && (
-              <section className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50/80 p-4 shadow-sm">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="mr-1 text-xs font-bold text-emerald-800 opacity-70">初始化：</span>
-                  <button type="button" onClick={() => initializeEditing('empty')} className="rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-50">
+              <section className="magi-proofreading-panel mb-4 p-3">
+                <div className="magi-proofreading-toolbar">
+                  <span className="magi-proofreading-kicker">初始化</span>
+                  <button
+                    type="button"
+                    data-variant="secondary"
+                    onClick={() => initializeEditing('empty')}
+                    className="magi-proofreading-button"
+                  >
                     仅填入译名
                   </button>
-                  <button type="button" onClick={() => initializeEditing('jp')} className="rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-50">
+                  <button
+                    type="button"
+                    data-variant="secondary"
+                    onClick={() => initializeEditing('jp')}
+                    className="magi-proofreading-button"
+                  >
                     填入日文原文
                   </button>
-                  <label className="flex cursor-pointer items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-100">
+                  <label
+                    data-variant="secondary"
+                    className="magi-proofreading-button cursor-pointer"
+                  >
                     上传 JSON / TXT
-                    <input type="file" accept=".json,.txt" className="hidden" onChange={uploadTranslation} />
+                    <input
+                      type="file"
+                      accept=".json,.txt"
+                      className="hidden"
+                      onChange={uploadTranslation}
+                    />
                   </label>
-                  <button type="button" onClick={downloadTranslation} className="ml-auto rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow hover:bg-blue-700">
+                  <button
+                    type="button"
+                    data-variant="primary"
+                    onClick={downloadTranslation}
+                    className="magi-proofreading-button"
+                  >
                     下载当前进度（UTF-8）
                   </button>
+                  <label className="magi-proofreading-linebreak-toggle">
+                    <input
+                      type="checkbox"
+                      checked={readerDisplayPreferences.showLineBreaks}
+                      onChange={event =>
+                        updateReaderDisplayPreferences({
+                          showLineBreaks: event.target.checked,
+                        })
+                      }
+                    />
+                    <span>
+                      <strong>显示换行符 <span aria-hidden="true">↵</span></strong>
+                      <small>按 Enter 插入真实换行；TXT / JSON 下载会保留。</small>
+                    </span>
+                  </label>
                 </div>
 
                 <div
                   data-scenario-json-tools="true"
-                  className="mt-4 rounded-xl border border-sky-200 bg-sky-50/80 p-3 text-sky-950"
+                  className="magi-proofreading-json-tools mt-3"
                 >
-                  <div className="flex flex-col gap-3">
-                    <label className="text-xs font-bold">
+                  <div className="magi-proofreading-json-layout">
+                    <label className="magi-proofreading-label">
                       来源 JSON（按 Section）
                       <select
                         aria-label="选择要下载或生成的来源 JSON"
@@ -1561,7 +1601,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                           jsonSourceOptionsState.options.length === 0 ||
                           jsonDownloadBusy !== null
                         }
-                        className="mt-1 min-h-11 w-full rounded-lg border border-sky-200 bg-white px-3 py-2 font-normal text-gray-900 outline-none focus:border-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="magi-proofreading-select"
                       >
                         {jsonSourceOptionsState.options.length === 0 ? (
                           <option value="">当前剧情没有 JSON 来源清单</option>
@@ -1575,7 +1615,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                       </select>
                     </label>
 
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                    <div className="magi-proofreading-json-actions">
                       <button
                         type="button"
                         onClick={() => void downloadOriginalJson('jp')}
@@ -1583,7 +1623,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                           jsonDownloadBusy !== null ||
                           selectedJsonSource?.jpIndex === undefined
                         }
-                        className="min-h-11 rounded-lg border border-blue-300 bg-white px-3 py-2 text-xs font-bold text-blue-700 shadow-sm hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-40"
+                        data-variant="secondary" className="magi-proofreading-button magi-proofreading-json-button"
                       >
                         {jsonDownloadBusy === 'jp'
                           ? '读取日文 JSON…'
@@ -1596,7 +1636,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                           jsonDownloadBusy !== null ||
                           selectedJsonSource?.cnIndex === undefined
                         }
-                        className="min-h-11 rounded-lg border border-emerald-300 bg-white px-3 py-2 text-xs font-bold text-emerald-700 shadow-sm hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-40"
+                        data-variant="secondary" className="magi-proofreading-button magi-proofreading-json-button"
                       >
                         {jsonDownloadBusy === 'cn'
                           ? '读取中文 JSON…'
@@ -1614,7 +1654,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                           ) ||
                           editedCnLines.length === 0
                         }
-                        className="min-h-11 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-bold text-white shadow hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-40"
+                        data-variant="primary" className="magi-proofreading-button magi-proofreading-json-button"
                       >
                         {jsonDownloadBusy === 'edited'
                           ? '校验并生成 JSON…'
@@ -1624,26 +1664,26 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   </div>
 
                   {jsonSourceOptionsState.error ? (
-                    <p className="mt-2 text-xs font-bold text-red-700">
+                    <p className="magi-proofreading-alert mt-2">
                       {jsonSourceOptionsState.error}
                     </p>
                   ) : selectedJsonSource?.cnIndex === undefined &&
                     selectedJsonSource?.jpIndex !== undefined ? (
-                      <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-2 py-1.5 text-[11px] text-amber-900">
+                      <p className="magi-proofreading-alert mt-2">
                         此 Section 没有中文源 JSON。生成编辑 JSON 时会明确使用日文
                         JSON 作为结构模板，只把当前中文逐事件写入允许的文本字段；
                         事件数量、动作、分支或位置不一致时会停止。
                       </p>
                     ) : (
-                      <p className="mt-2 text-[11px] text-sky-800/80">
+                      <p className="magi-proofreading-help mt-2">
                         编辑 JSON 优先使用中文结构源；生成前会逐事件校验，且不会改动
                         动作、资源、分支、位置或其他播放字段。
                       </p>
                     )}
                 </div>
 
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  <label className="text-xs font-bold text-emerald-900">
+                <div className="magi-proofreading-fields mt-3">
+                  <label className="magi-proofreading-label">
                     昵称（可选）
                     <input
                       type="text"
@@ -1651,10 +1691,10 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                       value={proofreadingNickname}
                       onChange={(event) => setProofreadingNickname(event.target.value)}
                       placeholder="匿名校对者"
-                      className="mt-1 w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 font-normal outline-none focus:border-emerald-500"
+                      className="magi-proofreading-input"
                     />
                   </label>
-                  <label className="text-xs font-bold text-emerald-900">
+                  <label className="magi-proofreading-label">
                     修改说明（可选）
                     <textarea
                       maxLength={1_000}
@@ -1662,18 +1702,18 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                       value={proofreadingNote}
                       onChange={(event) => setProofreadingNote(event.target.value)}
                       placeholder="例如：修正角色口吻、专有名词或错字"
-                      className="mt-1 w-full resize-y rounded-lg border border-emerald-200 bg-white px-3 py-2 font-normal outline-none focus:border-emerald-500"
+                      className="magi-proofreading-input magi-proofreading-note"
                     />
                   </label>
                 </div>
 
-                <div className="mt-3 rounded-lg border border-emerald-200 bg-white/70 p-3">
+                <div className="magi-proofreading-submit-panel mt-3">
                   {proofreadingConfigLoading ? (
-                    <p className="text-xs text-emerald-800">正在连接投稿服务…</p>
+                    <p className="magi-proofreading-help">正在连接投稿服务…</p>
                   ) : proofreadingConfig?.submissions_enabled && proofreadingConfig.turnstile_site_key ? (
                     <>
                       {proofreadingConfig.turnstile_test_mode && (
-                        <p className="mb-2 rounded bg-amber-50 px-2 py-1 text-[10px] text-amber-800">
+                        <p className="magi-proofreading-alert mb-2">
                           当前检查站使用 Cloudflare 测试验证密钥，仅用于功能验收；正式开放前必须换成真实 Turnstile 密钥。
                         </p>
                       )}
@@ -1685,37 +1725,37 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                         onError={handleTurnstileError}
                       />
                       <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                        <p className="text-[10px] text-emerald-700/70">
+                        <p className="magi-proofreading-help">
                           投稿会记录当前剧情目录哈希和中文源文件哈希；源文本更新后，旧投稿不会被自动覆盖。
                         </p>
                         <button
                           type="button"
                           onClick={() => void submitToCloud()}
                           disabled={!turnstileToken || submittingProofreading}
-                          className="rounded-lg bg-purple-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-40"
+                          data-variant="primary" className="magi-proofreading-button"
                         >
                           {submittingProofreading ? '正在提交…' : '提交审核'}
                         </button>
                       </div>
                     </>
                   ) : (
-                    <p className="text-xs text-amber-800">
+                    <p className="magi-proofreading-alert">
                       投稿服务尚未配置。你仍可下载 TXT，并将文件交给项目维护者。
                     </p>
                   )}
                 </div>
 
-                <p className="mt-2 text-[10px] text-emerald-700/70">
+                <p className="magi-proofreading-help mt-2">
                   编辑模式保留未合并的逐事件行；标题、分支、位置与动作信息不会被
                   TXT 或 JSON 下载改写。请定期下载 TXT 备份。
                 </p>
                 {editMessage && (
-                  <p role="status" className="mt-2 rounded bg-white/70 px-2 py-1 text-xs text-emerald-900">
+                  <p role="status" className="magi-proofreading-status mt-2">
                     {editMessage}
                     {lastSubmissionId && (
                       <>
                         {' '}
-                        <Link href="/proofreading/status" className="font-bold text-blue-700 underline">
+                        <Link href="/proofreading/status" className="magi-proofreading-status-link font-bold underline">
                           查看审核状态
                         </Link>
                       </>
@@ -1725,61 +1765,84 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
               </section>
             )}
 
-            <div className="magi-reader-mobile-search relative mb-4 px-1 lg:hidden">
-              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="search"
-                aria-label="在当前剧情中搜索"
-                placeholder="页内搜索"
-                title="输入关键词后按 Enter 跳到下一处"
-                value={searchQuery}
-                onChange={event => changeSearch(event.target.value)}
-                onKeyDown={event => {
-                  if (event.key === 'Enter') jumpToNextMatch();
-                }}
-                className={`magi-reader-search-input h-11 w-full rounded-lg border py-2.5 pl-10 pr-16 text-sm leading-5 shadow-sm outline-none ${
-                  theme === 'dark'
-                    ? 'border-gray-700 bg-gray-800 text-gray-100'
-                    : 'border-gray-200 bg-white text-gray-900'
-                }`}
-              />
-              {searchQuery && (
+            {!loadError && utilityPanelOpen && (
+              <section
+                className="magi-reader-utility-panel"
+                aria-label="阅读导航与分页"
+              >
                 <button
                   type="button"
-                  onClick={jumpToNextMatch}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-blue-500 px-2 py-1 text-xs text-white"
+                  aria-label="关闭阅读导航栏"
+                  title="关闭阅读导航栏"
+                  onClick={() => setUtilityPanelOpen(false)}
+                  className="magi-reader-utility-close"
                 >
-                  {matchedIndices.length
-                    ? `${currentMatchIndex >= 0 ? currentMatchIndex + 1 : 0}/${matchedIndices.length} ↓`
-                    : '0'}
+                  ×
                 </button>
-              )}
-            </div>
-
-            {!isEditMode && !loadError && (
-              <div className={`mb-4 rounded-xl border p-4 text-center text-sm ${
-                theme === 'dark' ? 'border-white/10 bg-white/5' : 'border-black/5 bg-black/[0.02]'
-              }`}>
-                <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-bold">
-                  <Link href="/" className="rounded-lg border border-current px-3 py-1.5 opacity-70 hover:opacity-100">
-                    🏠 返回首页
-                  </Link>
-                  <button type="button" onClick={() => setAboutOpen(true)} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-700">
-                    🔗 我的工具与动态
-                  </button>
+                <div className="magi-reader-utility-content">
+                  <div className="magi-reader-utility-search lg:hidden">
+                    <Search
+                      size={16}
+                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 opacity-45"
+                    />
+                    <input
+                      type="search"
+                      aria-label="在当前剧情中搜索"
+                      placeholder="页内搜索"
+                      title="输入关键词后按 Enter 跳到下一处"
+                      value={searchQuery}
+                      onChange={event => changeSearch(event.target.value)}
+                      onKeyDown={event => {
+                        if (event.key === 'Enter') jumpToNextMatch();
+                      }}
+                      className="magi-reader-search-input h-9 w-full py-1.5 pl-9 pr-14 text-sm leading-5 outline-none"
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={jumpToNextMatch}
+                        className="magi-reader-search-next"
+                      >
+                        {matchedIndices.length
+                          ? `${currentMatchIndex >= 0 ? currentMatchIndex + 1 : 0}/${matchedIndices.length} ↓`
+                          : '0'}
+                      </button>
+                    )}
+                  </div>
+                  <div className="magi-reader-utility-actions">
+                    <Link href="/" className="magi-reader-utility-button">
+                      🏠 返回首页
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => setAboutOpen(true)}
+                      className="magi-reader-utility-button"
+                    >
+                      🔗 我的工具与动态
+                    </button>
+                    <span
+                      aria-live="polite"
+                      className="magi-reader-page-summary"
+                    >
+                      第 {visiblePage + 1} / {pageCount} 页 · 第 {pageStart + 1}–
+                      {Math.min(
+                        pageStart + visibleRenderList.length,
+                        renderList.length,
+                      )} 行，共 {renderList.length} 行
+                    </span>
+                  </div>
                 </div>
-              </div>
+              </section>
             )}
 
-            {!loadError && renderList.length > 0 && (
-              <StoryPagination
-                page={visiblePage}
-                pageCount={pageCount}
-                start={pageStart}
-                end={Math.min(pageStart + visibleRenderList.length, renderList.length)}
-                total={renderList.length}
-                onPage={changeVisiblePage}
-              />
+            {!loadError && !utilityPanelOpen && (
+              <button
+                type="button"
+                onClick={() => setUtilityPanelOpen(true)}
+                className="magi-reader-utility-reopen"
+              >
+                ⌂ 导航
+              </button>
             )}
 
             {!loadError && visibleRenderList.map((row, offset) => {
@@ -1807,16 +1870,6 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
               );
             })}
 
-            {!loadError && renderList.length > STORY_ROWS_PER_PAGE && (
-              <StoryPagination
-                page={visiblePage}
-                pageCount={pageCount}
-                start={pageStart}
-                end={Math.min(pageStart + visibleRenderList.length, renderList.length)}
-                total={renderList.length}
-                onPage={changeVisiblePage}
-              />
-            )}
           </div>
         </main>
 
@@ -2043,53 +2096,6 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   );
 }
 
-type StoryPaginationProps = {
-  page: number;
-  pageCount: number;
-  start: number;
-  end: number;
-  total: number;
-  onPage: (page: number) => void;
-};
-
-function StoryPagination({
-  page,
-  pageCount,
-  start,
-  end,
-  total,
-  onPage,
-}: StoryPaginationProps) {
-  if (pageCount <= 1) return null;
-
-  return (
-    <nav
-      aria-label="剧情分页"
-      className="my-4 flex flex-wrap items-center justify-center gap-3 rounded-xl border border-black/10 bg-white/50 px-3 py-2 text-xs shadow-sm"
-    >
-      <button
-        type="button"
-        disabled={page <= 0}
-        onClick={() => onPage(Math.max(0, page - 1))}
-        className="rounded-lg border border-current px-3 py-1.5 font-bold disabled:cursor-not-allowed disabled:opacity-30"
-      >
-        ← 上一页
-      </button>
-      <span aria-live="polite" className="tabular-nums opacity-75">
-        第 {page + 1} / {pageCount} 页 · 第 {start + 1}–{end} 行，共 {total} 行
-      </span>
-      <button
-        type="button"
-        disabled={page >= pageCount - 1}
-        onClick={() => onPage(Math.min(pageCount - 1, page + 1))}
-        className="rounded-lg border border-current px-3 py-1.5 font-bold disabled:cursor-not-allowed disabled:opacity-30"
-      >
-        下一页 →
-      </button>
-    </nav>
-  );
-}
-
 type StoryRowProps = {
   row: AlignedStoryLine;
   index: number;
@@ -2203,11 +2209,11 @@ function StoryRow({
     return (
       <div id={`line-${index}`} className="my-3 flex justify-center">
         {isEditMode ? (
-          <label className="reader-font-cn-title flex w-full max-w-xl items-center gap-2 rounded-xl border-2 border-amber-300 bg-amber-50 p-2 text-xs font-bold text-amber-900">
+          <label className="magi-translation-choice-shell reader-font-cn-title flex w-full max-w-xl items-center gap-2 p-2 text-xs font-bold">
             选项
             <input
               aria-label={`第 ${index + 1} 行选项文本`}
-              className="reader-font-cn-title min-w-0 flex-1 rounded border border-amber-200 bg-white px-2 py-1.5 font-normal text-black outline-none focus:ring-2 focus:ring-amber-400"
+              className="magi-translation-choice-input reader-font-cn-title min-w-0 flex-1 px-2 py-1.5 font-normal outline-none"
               value={editableChoice?.choiceLabel || editableChoice?.text || ''}
               onChange={event => {
                 const value = event.target.value;
@@ -2288,11 +2294,7 @@ function StoryRow({
             <>
               <input
                 aria-label={`第 ${index + 1} 行角色名`}
-                className={`reader-font-cn-title w-20 flex-shrink-0 rounded border px-1 py-1 text-right text-[11px] font-bold leading-tight outline-none focus:ring-2 focus:ring-emerald-500 md:w-24 ${
-                  theme === 'dark'
-                    ? 'border-gray-700 bg-gray-800 text-white'
-                    : 'border-gray-200 bg-white text-black'
-                }`}
+                className="magi-translation-speaker-input reader-font-cn-title w-20 flex-shrink-0 px-1 py-1 text-right font-bold leading-tight outline-none md:w-24"
                 value={
                   editedLines[editIndex]?.speaker
                   || translatedSpeaker(
@@ -2320,11 +2322,7 @@ function StoryRow({
                       ? lineBreakDescriptionId
                       : undefined
                   }
-                  className={`reader-font-cn-body relative z-0 block w-full rounded border p-2 font-sans text-sm outline-none transition focus:ring-2 focus:ring-emerald-500 ${
-                    theme === 'dark'
-                      ? 'border-gray-700 bg-gray-800 text-white'
-                      : 'border-gray-200 bg-white text-black'
-                  }`}
+                  className="magi-translation-textarea reader-font-cn-body relative z-0 block w-full p-2 font-sans outline-none transition"
                   value={editedText}
                   placeholder="在此输入翻译内容…"
                   onChange={event => {
@@ -2356,7 +2354,7 @@ function StoryRow({
                     <div
                       aria-hidden="true"
                       data-line-break-overlay="true"
-                      className="reader-font-cn-body pointer-events-none absolute inset-0 z-10 select-none overflow-hidden whitespace-pre-wrap break-words rounded border border-transparent p-2 font-sans text-sm"
+                      className="magi-translation-linebreak-overlay reader-font-cn-body pointer-events-none absolute inset-0 z-10 select-none overflow-hidden whitespace-pre-wrap break-words p-2 font-sans"
                     >
                       <LineBreakMarkerText text={editedText} markerOnly />
                     </div>
@@ -2406,7 +2404,7 @@ function StoryRow({
           {row.jp ? (
             <>
               <SpeakerLabel line={row.jp} highlighted={jpSpeakerMatches} faded language="jp" />
-              <div className={`exedra-jp-story-text min-w-0 flex-1 break-words whitespace-pre-wrap font-sans text-sm opacity-70 ${lineTextAlignClass(row.jp)} ${lineKindClass(row.jp)}`}>
+              <div className={`exedra-jp-story-text min-w-0 flex-1 break-words whitespace-pre-wrap font-sans opacity-70 ${lineTextAlignClass(row.jp)} ${lineKindClass(row.jp)}`}>
                 <StoryText
                   text={row.jp.text}
                   query={query}
@@ -2441,7 +2439,7 @@ function SpeakerLabel({
       : line.speaker;
   return (
     <div
-      className={`${language === 'cn' ? 'reader-font-cn-title' : 'reader-font-jp-title'} h-fit w-20 flex-shrink-0 break-words rounded px-1 pt-1 text-right text-[11px] font-bold leading-tight md:w-24 ${
+      className={`magi-reader-speaker-label ${language === 'cn' ? 'reader-font-cn-title' : 'reader-font-jp-title'} h-fit w-20 flex-shrink-0 break-words rounded px-1 pt-1 text-right font-bold leading-tight md:w-24 ${
         highlighted ? 'ring-2 ring-yellow-400' : faded ? 'opacity-50' : ''
       }`}
       style={{ color: speakerColor(displayedSpeaker) }}
