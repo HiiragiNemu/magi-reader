@@ -39,23 +39,52 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('tools/apply_reader_ui_v28.py')
+          source = path.read_text(encoding='utf-8')
+          old = '''        <main
+'''
+          old += '''
+    replace_between(
+        READER,
+        "          {!loadError && utilityPanelOpen && (\\n",
+        "        <main\\n",
+        utility_widget,
+    )
+'''
+          new = '''
+    replace_between(
+        READER,
+        "          {!loadError && utilityPanelOpen && (\\n",
+        "        <main\\n          className={`magi-reader-main ",
+        utility_widget,
+    )
+'''
+          if source.count(old) != 1:
+              raise SystemExit(
+                  'V28 utility migration source anchor is not unique; refusing '
+                  'to guess the final Reader main element'
+              )
+          path.write_text(
+              source.replace(old, new, 1),
+              encoding='utf-8',
+              newline='\n',
+          )
+          PY
           python tools/apply_reader_ui_v28.py
           python - <<'PY'
           from pathlib import Path
 
           reader = Path('website/app/reader/[id]/page.tsx')
           source = reader.read_text(encoding='utf-8')
-          duplicated_main = '        <main\n        <main\n'
-          if source.count(duplicated_main) != 1:
-              raise SystemExit(
-                  'V28 utility replacement did not produce the expected single '
-                  'duplicate main marker'
-              )
-          reader.write_text(
-              source.replace(duplicated_main, '        <main\n', 1),
-              encoding='utf-8',
-              newline='\n',
-          )
+          if '        <main\n        <main\n' in source:
+              raise SystemExit('V28 generated a duplicated Reader main marker')
+          if source.count('className={`magi-reader-main ') != 1:
+              raise SystemExit('V28 Reader main element count is not exactly one')
+          if source.index('const renderList = useMemo(') > source.index('magi-reader-utility-widget'):
+              raise SystemExit('V28 floating utility was emitted before render state declarations')
 
           css = Path('website/app/ui-refinements.css')
           css.write_text(
