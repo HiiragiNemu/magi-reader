@@ -42,6 +42,7 @@ jobs:
           python tools/apply_reader_ui_v27.py
           python - <<'PY'
           from pathlib import Path
+          import re
 
           css = Path('website/app/ui-refinements.css')
           css_value = css.read_text(encoding='utf-8')
@@ -65,47 +66,48 @@ jobs:
 
           reader = Path('website/app/reader/[id]/page.tsx')
           reader_value = reader.read_text(encoding='utf-8')
-          replacements = (
-              (
-                  '                onClick={() => goToSection(previousSectionIndex)}\n'
-                  '                disabled={previousSectionIndex < 0}\n',
-                  '                onClick={() => {\n'
-                  '                  if (\n'
-                  '                    previousSectionIndex !== undefined\n'
-                  '                    && previousSectionIndex >= 0\n'
-                  '                  ) {\n'
-                  '                    goToSection(previousSectionIndex);\n'
-                  '                  }\n'
-                  '                }}\n'
-                  '                disabled={\n'
-                  '                  previousSectionIndex === undefined\n'
-                  '                  || previousSectionIndex < 0\n'
-                  '                }\n',
-              ),
-              (
-                  '                onClick={() => goToSection(nextSectionIndex)}\n'
-                  '                disabled={nextSectionIndex < 0}\n',
-                  '                onClick={() => {\n'
-                  '                  if (\n'
-                  '                    nextSectionIndex !== undefined\n'
-                  '                    && nextSectionIndex >= 0\n'
-                  '                  ) {\n'
-                  '                    goToSection(nextSectionIndex);\n'
-                  '                  }\n'
-                  '                }}\n'
-                  '                disabled={\n'
-                  '                  nextSectionIndex === undefined\n'
-                  '                  || nextSectionIndex < 0\n'
-                  '                }\n',
-              ),
-          )
-          for target, replacement in replacements:
-              if reader_value.count(target) != 1:
+
+          def guard_optional_index(value: str, variable: str) -> str:
+              pattern = re.compile(
+                  rf'(?m)^(?P<indent>[ \t]*)onClick=\{{\(\) => '
+                  rf'goToSection\({variable}\)\}}\n'
+                  rf'(?P=indent)disabled=\{{{variable} < 0\}}'
+              )
+
+              def replace(match: re.Match[str]) -> str:
+                  indent = match.group('indent')
+                  child = indent + '  '
+                  grandchild = child + '  '
+                  return '\n'.join((
+                      f'{indent}onClick={{() => {{',
+                      f'{child}if (',
+                      f'{grandchild}{variable} !== undefined',
+                      f'{grandchild}&& {variable} >= 0',
+                      f'{child}) {{',
+                      f'{grandchild}goToSection({variable});',
+                      f'{child}}}',
+                      f'{indent}}}}}',
+                      f'{indent}disabled={{',
+                      f'{child}{variable} === undefined',
+                      f'{child}|| {variable} < 0',
+                      f'{indent}}}',
+                  ))
+
+              updated, count = pattern.subn(replace, value)
+              if count not in {1, 2}:
                   raise SystemExit(
-                      'section navigation index-guard marker is not unique: '
-                      + target.splitlines()[0]
+                      f'section navigation {variable} guard count={count}; expected 1 or 2'
                   )
-              reader_value = reader_value.replace(target, replacement, 1)
+              return updated
+
+          reader_value = guard_optional_index(
+              reader_value,
+              'previousSectionIndex',
+          )
+          reader_value = guard_optional_index(
+              reader_value,
+              'nextSectionIndex',
+          )
           reader.write_text(reader_value, encoding='utf-8', newline='\n')
           PY
           git diff --check
