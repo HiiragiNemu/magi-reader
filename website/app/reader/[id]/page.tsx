@@ -1552,17 +1552,46 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                     >
                       🔗 我的工具与动态
                     </button>
-                    <span
-                      aria-live="polite"
-                      className="magi-reader-page-summary"
+                    <div
+                      className="magi-reader-utility-theme-switcher"
+                      role="group"
+                      aria-label="阅读主题"
                     >
-                      第 {visiblePage + 1} / {pageCount} 页 · 第 {pageStart + 1}–
-                      {Math.min(
-                        pageStart + visibleRenderList.length,
-                        renderList.length,
-                      )} 行，共 {renderList.length} 行
-                    </span>
+                      {([
+                        { key: 'light', icon: Sun, label: '亮色' },
+                        { key: 'paper', icon: BookOpen, label: '护眼' },
+                        { key: 'dark', icon: Moon, label: '暗黑' },
+                        { key: 'green', icon: Leaf, label: '绿色' },
+                      ] as const).map(option => (
+                        <button
+                          type="button"
+                          key={option.key}
+                          data-theme-option={option.key}
+                          aria-label={`切换为${option.label}主题`}
+                          aria-pressed={theme === option.key}
+                          title={option.label}
+                          onClick={() => setTheme(option.key)}
+                          className="magi-reader-theme-option"
+                        >
+                          <option.icon
+                            size={15}
+                            strokeWidth={theme === option.key ? 2.5 : 1.9}
+                          />
+                          <span className="sr-only">{option.label}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
+                  <span
+                    aria-live="polite"
+                    className="magi-reader-page-summary"
+                  >
+                    第 {visiblePage + 1} / {pageCount} 页 · 第 {pageStart + 1}–
+                    {Math.min(
+                      pageStart + visibleRenderList.length,
+                      renderList.length,
+                    )} 行，共 {renderList.length} 行
+                  </span>
                 </div>
               </section>
             ) : (
@@ -2001,32 +2030,6 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
           bodyClassName="p-5"
         >
               <div className="space-y-4 text-sm">
-                <div>
-                  <p className="mb-2 opacity-70">主题</p>
-                  <div className="flex justify-center gap-2">
-                    {([
-                      { key: 'light', icon: Sun, label: '亮色' },
-                      { key: 'paper', icon: BookOpen, label: '护眼' },
-                      { key: 'dark', icon: Moon, label: '暗黑' },
-                      { key: 'green', icon: Leaf, label: '绿色' },
-                    ] as const).map(option => (
-                      <button
-                        type="button"
-                        key={option.key}
-                        aria-pressed={theme === option.key}
-                        onClick={() => setTheme(option.key)}
-                        className={`flex flex-1 flex-col items-center gap-1 rounded border py-2 ${
-                          theme === option.key
-                            ? 'border-blue-500 bg-blue-500/10 text-blue-500'
-                            : 'border-transparent bg-black/5'
-                        }`}
-                      >
-                        <option.icon size={16} />
-                        <span className="text-[10px]">{option.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
                 <label className="block">
                   <span className="mb-1 block opacity-70">字号（{fontSize}px）</span>
                   <input

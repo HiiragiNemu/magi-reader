@@ -1674,3 +1674,161 @@
     transition: none;
   }
 }
+
+/* =========================================
+   Reader UI V29 — compact intrinsic utility panel and theme switcher
+   ========================================= */
+
+.magi-reader-utility-widget,
+.magi-reader-utility-widget.is-expanded {
+  width: fit-content;
+  max-width: calc(100vw - 1rem);
+}
+
+.magi-reader-utility-panel-floating {
+  width: auto;
+  max-width: calc(100vw - 2.35rem);
+}
+
+.magi-reader-utility-panel-floating .magi-reader-utility-content {
+  width: max-content;
+  max-width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.28rem;
+}
+
+.magi-reader-utility-panel-floating .magi-reader-utility-actions {
+  display: flex;
+  width: auto;
+  min-width: 0;
+  flex: 0 1 auto;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.28rem;
+}
+
+.magi-reader-utility-panel-floating .magi-reader-page-summary {
+  align-self: flex-end;
+  min-width: 0;
+  flex: none;
+  padding-inline: 0.18rem;
+  white-space: nowrap;
+  font-size: 0.62rem;
+  line-height: 1.25;
+}
+
+.magi-reader-utility-theme-switcher {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.16rem;
+  padding: 0.16rem;
+  border: 1px solid color-mix(in srgb, var(--magi-tool-border) 58%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--magi-tool-control) 74%, transparent);
+  box-shadow:
+    inset 1px 1px var(--magi-tool-inset),
+    inset -1px -1px color-mix(in srgb, var(--magi-tool-shadow) 38%, transparent);
+}
+
+.magi-reader-theme-option {
+  display: inline-grid;
+  width: 1.72rem;
+  height: 1.72rem;
+  flex: 0 0 1.72rem;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  opacity: 0.68;
+  box-shadow: none;
+  transition:
+    transform 140ms ease,
+    opacity 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.magi-reader-theme-option:hover,
+.magi-reader-theme-option:focus-visible {
+  opacity: 1;
+  transform: translateY(-1px);
+  outline: 2px solid var(--magi-tool-inset);
+  outline-offset: -3px;
+}
+
+.magi-reader-theme-option[data-theme-option='light'] {
+  color: #9a6500;
+  background: radial-gradient(circle at 42% 38%, #fff8c8 0 28%, rgba(245, 190, 60, 0.22) 68%, transparent 70%);
+}
+
+.magi-reader-theme-option[data-theme-option='paper'] {
+  color: #705535;
+  background: linear-gradient(145deg, rgba(255, 249, 224, 0.94), rgba(205, 183, 132, 0.34));
+}
+
+.magi-reader-theme-option[data-theme-option='dark'] {
+  color: #b9c8ff;
+  background: radial-gradient(circle at 38% 36%, rgba(111, 128, 190, 0.58), rgba(23, 31, 58, 0.82) 72%);
+}
+
+.magi-reader-theme-option[data-theme-option='green'] {
+  color: #176c3d;
+  background: linear-gradient(145deg, rgba(225, 249, 231, 0.92), rgba(92, 171, 116, 0.3));
+}
+
+.magi-reader-theme-option[aria-pressed='true'] {
+  opacity: 1;
+  transform: translateY(-1px) scale(1.04);
+  border-color: currentColor;
+  box-shadow:
+    0 2px 7px color-mix(in srgb, currentColor 25%, transparent),
+    inset 0 0 0 2px color-mix(in srgb, var(--magi-tool-inset) 72%, transparent);
+}
+
+@media (max-width: 767px) {
+  .magi-reader-utility-widget,
+  .magi-reader-utility-widget.is-expanded {
+    width: fit-content;
+    max-width: calc(100vw - 0.7rem);
+  }
+
+  .magi-reader-utility-panel-floating {
+    width: auto;
+    max-width: calc(100vw - 2.05rem);
+  }
+
+  .magi-reader-utility-panel-floating .magi-reader-utility-content {
+    width: min(19rem, calc(100vw - 3rem));
+  }
+
+  .magi-reader-utility-panel-floating .magi-reader-utility-search {
+    width: 100%;
+    flex: none;
+  }
+
+  .magi-reader-utility-panel-floating .magi-reader-utility-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .magi-reader-utility-panel-floating .magi-reader-page-summary {
+    align-self: flex-start;
+    white-space: normal;
+    text-align: left;
+  }
+
+  .magi-reader-theme-option {
+    width: 1.66rem;
+    height: 1.66rem;
+    flex-basis: 1.66rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .magi-reader-theme-option {
+    transition: none;
+  }
+}
