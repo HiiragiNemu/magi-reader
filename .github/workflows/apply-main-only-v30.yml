@@ -42,6 +42,29 @@ jobs:
           set -euo pipefail
           python tools/apply_main_only_v30_runtime.py
           python tools/apply_main_only_v30.py
+          python - <<'PY'
+          from pathlib import Path
+
+          unexpected = []
+          for root in (
+              Path('website/app'),
+              Path('website/lib'),
+              Path('website/scripts'),
+          ):
+              for path in root.rglob('*'):
+                  if (
+                      path.is_file()
+                      and path.suffix in {'.ts', '.tsx', '.js', '.mjs'}
+                      and 'EXEDRA-TEST' in path.read_text(encoding='utf-8')
+                  ):
+                      unexpected.append(str(path))
+          if unexpected:
+              raise SystemExit(
+                  'Runtime files still reference EXEDRA-TEST after migration: '
+                  + ', '.join(unexpected)
+              )
+          print('MAIN_ONLY_RUNTIME_REFS_CLEARED')
+          PY
           git diff --check
           git status --short
 
