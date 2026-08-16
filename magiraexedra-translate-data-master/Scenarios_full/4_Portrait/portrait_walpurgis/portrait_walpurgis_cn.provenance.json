@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "503d6092a5ccbc799a16869854daeeaa122de72396d041b3bee879415b08d872",
-  "cnSha256": "b1f55e7ecff3a8cf84c1ed31b802573e7fbce3e8cc9aea1b7e579b167f30d941",
+  "cnSha256": "094056f99766a5a6aa8ac1ae06bbe28412ae207b9f7418c352534e7437865110",
   "chapterTitle": "第十四章 · 舞台设备的魔女",
   "sections": [
     {
@@ -62,10 +65,24 @@
       "twPath": "4_Portrait/portrait_walpurgis_1/portrait_walpurgis_1.json",
       "twSha256": "1e578e146c5b008261eafead56e3dc6220bc249ae9e69031bb12071e713284f9",
       "jpSha256": "0490250346e5ec658b0a9dcbcd62c781f9b92c60849f56c9feee0905356891c9",
-      "cnSha256": "a3f04072a7b2275a4ee29370d87c91587ac51e333264c91cac6b5ae4ce52c969",
-      "simplifiedJsonSha256": "a3f04072a7b2275a4ee29370d87c91587ac51e333264c91cac6b5ae4ce52c969",
+      "cnSha256": "4cbd22b429b24bc57201cdf5fa39ed690abe812dbce355b4a152e7f0558f10a7",
+      "simplifiedJsonSha256": "4cbd22b429b24bc57201cdf5fa39ed690abe812dbce355b4a152e7f0558f10a7",
       "eventCount": 77,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 75,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -63,7 +66,21 @@
       "cnSha256": "fd002f8647a41726a631b94dd1a6c13600f95114f21efbc2c263d9188af930c0",
       "simplifiedJsonSha256": "fd002f8647a41726a631b94dd1a6c13600f95114f21efbc2c263d9188af930c0",
       "eventCount": 18,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 18,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

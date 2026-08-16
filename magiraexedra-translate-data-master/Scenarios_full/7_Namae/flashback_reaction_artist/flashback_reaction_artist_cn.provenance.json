@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -103,7 +106,14 @@
       "cnSha256": "a887efd299caff40fc7f1084e975ee50714f03b097a91e06289e5dbc7fe1cdd0",
       "simplifiedJsonSha256": "a887efd299caff40fc7f1084e975ee50714f03b097a91e06289e5dbc7fe1cdd0",
       "eventCount": 4,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 4,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "flashback_reaction_artist2.json",
@@ -114,7 +124,14 @@
       "cnSha256": "324ce53cb23018c0f7a9e236bab0560852d5cc824e477c967b519e542d70a4e8",
       "simplifiedJsonSha256": "324ce53cb23018c0f7a9e236bab0560852d5cc824e477c967b519e542d70a4e8",
       "eventCount": 7,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 7,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "flashback_reaction_artist3.json",
@@ -125,7 +142,21 @@
       "cnSha256": "7ef89a196bd2f6916b86e5cad7b3caaae2cf48f814f8154f7e0dc9a065198650",
       "simplifiedJsonSha256": "7ef89a196bd2f6916b86e5cad7b3caaae2cf48f814f8154f7e0dc9a065198650",
       "eventCount": 6,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 6,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

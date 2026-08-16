@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "58ebaf8d65920782ed406a5a23bfff3364e201c6bc3f286e14a9430a4ffbd0e7",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 203
+    "readerNormalizedBlockCount": 369
   },
   "cn": {
-    "renderedSha256": "90f4b0f11ec05554c487beb69670424f1e2202b66a965aae1ac132139f5a7b7f",
+    "renderedSha256": "f56c09e072aa02de66904f94fc3dd6b67689f6bf9e4fb3a09f95990a881330ef",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 203
+    "readerNormalizedBlockCount": 369
   },
   "sections": [
     {
@@ -31,112 +37,120 @@
       "source": "character_seika_0.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 3,
+        "cn": 3,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "1f2e1f54dfaafff2cc03da81e60759325d860ea0159af8c636ad4d9ee1dd0e5a",
-        "cn": "1f2e1f54dfaafff2cc03da81e60759325d860ea0159af8c636ad4d9ee1dd0e5a"
-      }
+        "jp": "06e37158eda556eab9196823b0a98de9a169f509281542c483910883e96e70e2",
+        "cn": "06e37158eda556eab9196823b0a98de9a169f509281542c483910883e96e70e2"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "character_seika_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 14,
-        "cn": 14,
+        "jp": 47,
+        "cn": 47,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "9dfb15ac048534aacbad3a8310650162aa8fdea7ec5cf689dfd4f3500245beea",
-        "cn": "9dfb15ac048534aacbad3a8310650162aa8fdea7ec5cf689dfd4f3500245beea"
-      }
+        "jp": "794fa4989d1fbc2f379eab013571272d23b1b90c27fdf45898551e25174b5a32",
+        "cn": "794fa4989d1fbc2f379eab013571272d23b1b90c27fdf45898551e25174b5a32"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "character_seika_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 31,
-        "cn": 31,
+        "jp": 59,
+        "cn": 59,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "4e01823a20ab7e1bcbc8fd6723c3763ec82d3bc0a8442e70d0a0b958f304d851",
-        "cn": "4e01823a20ab7e1bcbc8fd6723c3763ec82d3bc0a8442e70d0a0b958f304d851"
-      }
+        "jp": "28e11dd45fe555faf9f41063db95a8daadc2a497523980e54e72af807058410c",
+        "cn": "28e11dd45fe555faf9f41063db95a8daadc2a497523980e54e72af807058410c"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
       "source": "character_seika_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 31,
-        "cn": 31,
+        "jp": 69,
+        "cn": 69,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "ada4a5a7d4ae1a510514683b67b3e3f5ee87f31379b7344276c1139e4a2aeb28",
-        "cn": "ada4a5a7d4ae1a510514683b67b3e3f5ee87f31379b7344276c1139e4a2aeb28"
-      }
+        "jp": "2e977900942c8c30990834faf288bfc4f427daa1c2441b6583f0a3f068c65ab2",
+        "cn": "2e977900942c8c30990834faf288bfc4f427daa1c2441b6583f0a3f068c65ab2"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 5,
       "source": "character_seika_4.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 32,
-        "cn": 32,
+        "jp": 50,
+        "cn": 50,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "4f3ae298804738dbca5bf00b666cfdb4d000b886b3d6142fe91fc2f150c62477",
-        "cn": "4f3ae298804738dbca5bf00b666cfdb4d000b886b3d6142fe91fc2f150c62477"
-      }
+        "jp": "6ecdb304afd4c26cc091248e65959ef954fe60bcffaa62041698e4e55b0fba53",
+        "cn": "6ecdb304afd4c26cc091248e65959ef954fe60bcffaa62041698e4e55b0fba53"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 6,
       "source": "character_seika_5.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 30,
-        "cn": 30,
+        "jp": 37,
+        "cn": 37,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "d1562838e961b15505416ee7e6c9d2b04d7761d5aa3e24a322390970da83c991",
-        "cn": "d1562838e961b15505416ee7e6c9d2b04d7761d5aa3e24a322390970da83c991"
-      }
+        "jp": "dc202600d1df451095061cde5e75ce705f81e8162cc913c8a19ed4cb7615f892",
+        "cn": "dc202600d1df451095061cde5e75ce705f81e8162cc913c8a19ed4cb7615f892"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 7,
       "source": "character_seika_6.json",
       "wikiEpisode": 6,
       "readerNormalizedBlocks": {
-        "jp": 14,
-        "cn": 14,
+        "jp": 24,
+        "cn": 24,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "7139ec337b2f0acd3274b414cd6e082d24faa46b314e26d3377ae7cce6c6a386",
-        "cn": "7139ec337b2f0acd3274b414cd6e082d24faa46b314e26d3377ae7cce6c6a386"
-      }
+        "jp": "e166254906aab36425b3d23a27d7ce54116578cfe8b04967a9475ebe431bdf54",
+        "cn": "e166254906aab36425b3d23a27d7ce54116578cfe8b04967a9475ebe431bdf54"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 8,
       "source": "character_seika_7.json",
       "wikiEpisode": 7,
       "readerNormalizedBlocks": {
-        "jp": 50,
-        "cn": 50,
+        "jp": 80,
+        "cn": 80,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "5d5a4193ecfcf5c20f0b3e8336a4d78bee663ad9fa8e9fc07e56cd8048b4798f",
-        "cn": "5d5a4193ecfcf5c20f0b3e8336a4d78bee663ad9fa8e9fc07e56cd8048b4798f"
-      }
+        "jp": "1b863d7062c94b9b2f0baab79bf5ff9e8d1d370517b0510d6fa182952a102d72",
+        "cn": "f9467f24d05e6eab2473b5a28656e9a57099c4aae26a51c851ef187239c0eb36"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -146,10 +160,17 @@
       "twPath": "3_Character/character_seika_0/character_seika_0.json",
       "twSha256": "0129497a131b610a8aa76b6af4e0e3ecb5664ef922db692960f9518f31227697",
       "jpSha256": "7e37a2e2e3971348a0c5a934877c0d29e2381f1dfde73ebbc10ee19bc279958b",
-      "cnSha256": "1db5e1a946b92b1c8e99ea7cb8a0d5ada140af93d0481a817c9fcd1e6ed2ea64",
-      "simplifiedJsonSha256": "1db5e1a946b92b1c8e99ea7cb8a0d5ada140af93d0481a817c9fcd1e6ed2ea64",
+      "cnSha256": "c34c165c1798c7132ae4f1648ee81e8ad8673d46dd5aca01642973fef914bde5",
+      "simplifiedJsonSha256": "c34c165c1798c7132ae4f1648ee81e8ad8673d46dd5aca01642973fef914bde5",
       "eventCount": 3,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 3,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_seika_1.json",
@@ -157,10 +178,17 @@
       "twPath": "3_Character/character_seika_1/character_seika_1.json",
       "twSha256": "2695a9027d8cc16912a5fb4fd12d7676da4fd9cec80dc830f5aa4a10df88b1bc",
       "jpSha256": "a7f2d51c6f7ac1eb5b84e139042721a7db9362d799bb8db3cf41bd4d76c51347",
-      "cnSha256": "90fcc649a63a901853d4b8b8aca47bc6ca97a05a26b66db93d8440df64485066",
-      "simplifiedJsonSha256": "90fcc649a63a901853d4b8b8aca47bc6ca97a05a26b66db93d8440df64485066",
+      "cnSha256": "6a77d77084c991a13b4346b57ea1cd9a4160065ed3f7d143fb991e8675357b6e",
+      "simplifiedJsonSha256": "6a77d77084c991a13b4346b57ea1cd9a4160065ed3f7d143fb991e8675357b6e",
       "eventCount": 47,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 31,
+      "dictionaryFallbackSpeakerEvents": 13,
+      "narrationSpeakerEvents": 3,
+      "canonicalNameFields": true
     },
     {
       "source": "character_seika_2.json",
@@ -168,10 +196,17 @@
       "twPath": "3_Character/character_seika_2/character_seika_2.json",
       "twSha256": "9506cb06120987d3827efc3eeeb8d0faa591e5bc6630f587f433e04c0ffd3bcb",
       "jpSha256": "1fbf2db4af15688c724cce6497945b37a93b6252e7fef1b1c5b7f5ba2f7141b1",
-      "cnSha256": "2aff4001d65997cfd44dccf7eeaf220dc7d0c5faf9c9e3e3038f1f49e1ca95e8",
-      "simplifiedJsonSha256": "2aff4001d65997cfd44dccf7eeaf220dc7d0c5faf9c9e3e3038f1f49e1ca95e8",
+      "cnSha256": "1acddd2d5c5bb43fecde174b26b7c3661496605c1267c0b441188832a647bdc9",
+      "simplifiedJsonSha256": "1acddd2d5c5bb43fecde174b26b7c3661496605c1267c0b441188832a647bdc9",
       "eventCount": 59,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 50,
+      "dictionaryFallbackSpeakerEvents": 2,
+      "narrationSpeakerEvents": 7,
+      "canonicalNameFields": true
     },
     {
       "source": "character_seika_3.json",
@@ -179,10 +214,17 @@
       "twPath": "3_Character/character_seika_3/character_seika_3.json",
       "twSha256": "84c86e99e9711bdcea4c936845979a52eddfad1044510ef77ad30e64ed92a019",
       "jpSha256": "3a981c26408afa97f23a8102e67a02d04c0cf0fb1c2917d67b64acdf604d7d87",
-      "cnSha256": "0ea1f5620052270d3ef5efe93d3a75737c8b81387ad6b8d49ccd1cd0812b9318",
-      "simplifiedJsonSha256": "0ea1f5620052270d3ef5efe93d3a75737c8b81387ad6b8d49ccd1cd0812b9318",
+      "cnSha256": "1a3779c7956f96380dc35434b680f1011328846d39e5c43d0d79a9553c85a16f",
+      "simplifiedJsonSha256": "1a3779c7956f96380dc35434b680f1011328846d39e5c43d0d79a9553c85a16f",
       "eventCount": 69,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 62,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 7,
+      "canonicalNameFields": true
     },
     {
       "source": "character_seika_4.json",
@@ -190,10 +232,17 @@
       "twPath": "3_Character/character_seika_4/character_seika_4.json",
       "twSha256": "3e527d6f203ab1dac8c44953c0b09167b5e5395a849d666f994fbd4e11475bf9",
       "jpSha256": "22836ba3030dbccf8fc8ffd9dfa83e0e7d7dac249c8090f0abf7f44830a88089",
-      "cnSha256": "1ac95051bf01129b7d0c19662f346a4f7e19e2b7fc23542de486ca4b29353465",
-      "simplifiedJsonSha256": "1ac95051bf01129b7d0c19662f346a4f7e19e2b7fc23542de486ca4b29353465",
+      "cnSha256": "1e6aa1329842b0ec5cb34511172a0086b74f2d222a501583d2dad96bfe08255d",
+      "simplifiedJsonSha256": "1e6aa1329842b0ec5cb34511172a0086b74f2d222a501583d2dad96bfe08255d",
       "eventCount": 50,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 37,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 12,
+      "canonicalNameFields": true
     },
     {
       "source": "character_seika_5.json",
@@ -201,10 +250,17 @@
       "twPath": "3_Character/character_seika_5/character_seika_5.json",
       "twSha256": "fefb100586b52cca8e8eb6a422c431d58f5acbb8035eaa1396d548120dc1ad30",
       "jpSha256": "320382b29378d73b5b83b1f7c6af4a4c751b2e0137475790c951710f044d4ccb",
-      "cnSha256": "cfd77949423d54088bea736d057c98126b865a0294587b26f9784fa686808ab8",
-      "simplifiedJsonSha256": "cfd77949423d54088bea736d057c98126b865a0294587b26f9784fa686808ab8",
+      "cnSha256": "febdfaf0778f2d43db91d17a547d1c610c4906e88029bfe42326a09904efb38c",
+      "simplifiedJsonSha256": "febdfaf0778f2d43db91d17a547d1c610c4906e88029bfe42326a09904efb38c",
       "eventCount": 37,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 34,
+      "dictionaryFallbackSpeakerEvents": 3,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_seika_6.json",
@@ -212,10 +268,17 @@
       "twPath": "3_Character/character_seika_6/character_seika_6.json",
       "twSha256": "fb6defc7728548977a34acb95de5c19e6691ad19295768fd4cd803101ad78f5f",
       "jpSha256": "79c8e5f6b3b87434e50d03bfc6bcc42d22dbc0c7800a9715d6bf0c1b3488cbb8",
-      "cnSha256": "0067af2b5d62cd00cbcdb173a169f23e200ad05864d80215107c5480a8858984",
-      "simplifiedJsonSha256": "0067af2b5d62cd00cbcdb173a169f23e200ad05864d80215107c5480a8858984",
+      "cnSha256": "131973c26020c28d8fa1a6008ac5df45cc3e390f1b6c454d8636d4b2c8010f32",
+      "simplifiedJsonSha256": "131973c26020c28d8fa1a6008ac5df45cc3e390f1b6c454d8636d4b2c8010f32",
       "eventCount": 24,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 20,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 3,
+      "canonicalNameFields": true
     },
     {
       "source": "character_seika_7.json",
@@ -223,10 +286,17 @@
       "twPath": "3_Character/character_seika_7/character_seika_7.json",
       "twSha256": "3afc9570133aeeb81ed0e55ca805d994602c7ff0b8a4d93dc15d34c8596555ce",
       "jpSha256": "7b6496f1ec6af0f73a2ce069f69b8b73657da3184b061a14b2cfbdaed01b8187",
-      "cnSha256": "d40f7706849f1f24016b4f65b9d55eaab0ff9d8576acde2547e12c5f99e2f798",
-      "simplifiedJsonSha256": "d40f7706849f1f24016b4f65b9d55eaab0ff9d8576acde2547e12c5f99e2f798",
+      "cnSha256": "23c7239c208e484a651c0aab0850487cc707ed042f3ed4688d5e51c5dc3bb62b",
+      "simplifiedJsonSha256": "23c7239c208e484a651c0aab0850487cc707ed042f3ed4688d5e51c5dc3bb62b",
       "eventCount": 80,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 61,
+      "dictionaryFallbackSpeakerEvents": 19,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -428,5 +498,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "58ebaf8d65920782ed406a5a23bfff3364e201c6bc3f286e14a9430a4ffbd0e7",
+    "cnSha256": "f56c09e072aa02de66904f94fc3dd6b67689f6bf9e4fb3a09f95990a881330ef",
+    "sectionCount": 8,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 8,
+    "sectionCount": 8
   }
 }

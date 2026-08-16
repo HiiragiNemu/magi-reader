@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "9dae4a4aceb8d8cb6c2964b35b925c5d595a71f119ea331813e8e5b3925f6390",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 62
+    "readerNormalizedBlockCount": 99
   },
   "cn": {
-    "renderedSha256": "7293b95d569ada4783296ce4bcb298dc30c51f87ff03a05c804399381996fb87",
+    "renderedSha256": "236015f6cdfd5a51b08d771ef9ec7bfe6160c5d201fd85ba42868cd1a45bf185",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 62
+    "readerNormalizedBlockCount": 99
   },
   "sections": [
     {
@@ -31,28 +37,30 @@
       "source": "portrait_asakokoito_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 39,
-        "cn": 39,
+        "jp": 60,
+        "cn": 60,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "ad733728f3df064db74e024a2726847e070a5cc05ab3317e051e9455c0c4c418",
-        "cn": "ad733728f3df064db74e024a2726847e070a5cc05ab3317e051e9455c0c4c418"
-      }
+        "jp": "2ff7519c1e1fd7e0d29ad5b988cfad91287ff8150aa913f2e1b73171c8850284",
+        "cn": "47277a2aa0834ef774e68a60b5266fbe21b8f6104ddd5d44545aecd065e1f364"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 2,
       "source": "portrait_asakokoito_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 23,
-        "cn": 23,
+        "jp": 39,
+        "cn": 39,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "73f49d75af57dcd6c8a8dd61c044a454d0d1993e37ec1598d6650b89a2e9c12d",
-        "cn": "73f49d75af57dcd6c8a8dd61c044a454d0d1993e37ec1598d6650b89a2e9c12d"
-      }
+        "jp": "9eb58f669cf4c1567d622f84c6ba1d4d85f9a7f9a435fb31c8cd04b5b2e3dc0c",
+        "cn": "57aad56270bb62d409ad18cb429aff07dd42bdfd049bae5d91c1c0e05413e230"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -62,10 +70,17 @@
       "twPath": "4_Portrait/portrait_asakokoito_1/portrait_asakokoito_1.json",
       "twSha256": "d87cc51942e83e9ea54cfe3a96c60e5060c1fdbdede6762e8f7ec4281d481283",
       "jpSha256": "cfb31d9ab7146ca01b6c5fcc6502cae74f53663ef109729179d20ef81ee420cf",
-      "cnSha256": "e52c351a7717b8f9d322923e12a595d3fde094953779bb29b4e40e0e05fc6cd1",
-      "simplifiedJsonSha256": "e52c351a7717b8f9d322923e12a595d3fde094953779bb29b4e40e0e05fc6cd1",
+      "cnSha256": "13566f0a38b440e13cc4e66184eb9a7f516e03e28dea00e3bd69c4155575ffab",
+      "simplifiedJsonSha256": "13566f0a38b440e13cc4e66184eb9a7f516e03e28dea00e3bd69c4155575ffab",
       "eventCount": 60,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 53,
+      "dictionaryFallbackSpeakerEvents": 5,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_asakokoito_2.json",
@@ -73,10 +88,17 @@
       "twPath": "4_Portrait/portrait_asakokoito_2/portrait_asakokoito_2.json",
       "twSha256": "16e1dcd65de61e185db94a82f8eb03f88a009a3c7062a71467bae16090d65247",
       "jpSha256": "3602396a930bcd2e0617467d9d9bb472350a276c9ce08c35ab2cf7237275e088",
-      "cnSha256": "bbb3305547d4fae3d005f78d83541cc3203af0583e1f16fd90d9da322a230138",
-      "simplifiedJsonSha256": "bbb3305547d4fae3d005f78d83541cc3203af0583e1f16fd90d9da322a230138",
+      "cnSha256": "f9a4cce08785fa87cb144ffb136ac81820a1427423e62b98ac9c250205632c4b",
+      "simplifiedJsonSha256": "f9a4cce08785fa87cb144ffb136ac81820a1427423e62b98ac9c250205632c4b",
       "eventCount": 39,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 37,
+      "dictionaryFallbackSpeakerEvents": 2,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -142,5 +164,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "9dae4a4aceb8d8cb6c2964b35b925c5d595a71f119ea331813e8e5b3925f6390",
+    "cnSha256": "236015f6cdfd5a51b08d771ef9ec7bfe6160c5d201fd85ba42868cd1a45bf185",
+    "sectionCount": 2,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 2,
+    "sectionCount": 2
   }
 }

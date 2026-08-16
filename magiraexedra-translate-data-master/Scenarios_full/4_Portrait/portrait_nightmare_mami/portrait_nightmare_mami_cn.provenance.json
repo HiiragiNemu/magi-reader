@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "2d2e5a72a800118aeaeaa7af527c73abd43562f0b2f54492dabdd78f574275d7",
-  "cnSha256": "974eedc5398db81ce76817b51bf77a8182a04dc1a41f92d2df2b6816d85973b9",
+  "cnSha256": "816d20490a12aa0a61014d537e410dc578ade5d7734f30b9a6f008542335aa3d",
   "chapterTitle": "前篇 · 梦魇",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_nightmare_mami_1/portrait_nightmare_mami_1.json",
       "twSha256": "cce87b626f93c518c6aba3425093c3590845322a44a0bd3d63a4020b033ccee4",
       "jpSha256": "63cd07226bf3f49aca0cfb51f53e68295abe7d7a15715ed1aad615188eb6abe8",
-      "cnSha256": "536bf260adda03765e96acaab5a9a9f57e76dda79db36fce9a0f5010d18b6fbd",
-      "simplifiedJsonSha256": "536bf260adda03765e96acaab5a9a9f57e76dda79db36fce9a0f5010d18b6fbd",
+      "cnSha256": "b4164daf00c9d2c388a8b6e60eb9a47d645153c57555da45127bbafcda85f5ee",
+      "simplifiedJsonSha256": "b4164daf00c9d2c388a8b6e60eb9a47d645153c57555da45127bbafcda85f5ee",
       "eventCount": 49,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 42,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 7,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_nightmare_mami_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_nightmare_mami_2/portrait_nightmare_mami_2.json",
       "twSha256": "dc406c10b2d92cc2bdcfe10b3cc78fbe55c19aae50b2d8044f98fe2ebc41b46f",
       "jpSha256": "0c28eb40b9a1431f79b5515b930accc9543d1e87d49574ceed17e3114b1fe5e9",
-      "cnSha256": "7ec041c050df00f8ce7aad0af413225d5e1c053fef014a1b6cf835935c79e8b7",
-      "simplifiedJsonSha256": "7ec041c050df00f8ce7aad0af413225d5e1c053fef014a1b6cf835935c79e8b7",
+      "cnSha256": "9c0001c182c5a8226a6595b742d32cc99044ec771de4eefffa5dad5115e05c00",
+      "simplifiedJsonSha256": "9c0001c182c5a8226a6595b742d32cc99044ec771de4eefffa5dad5115e05c00",
       "eventCount": 57,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 56,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "7c9731cb0451ad098fe80e968a0ef5bc55891a51d14bba10050a36e62816b306",
-  "cnSha256": "654411a452b1206f155523068f06e7f1edd3322d5a0c2d84c52879537d1e0a23",
+  "cnSha256": "3818654cafbbe736a48be64348aa555e583bfae2745baad9475c9a986e8deb0d",
   "chapterTitle": "第八章 · 影之魔女",
   "sections": [
     {
@@ -62,10 +65,24 @@
       "twPath": "4_Portrait/portrait_kage_1/portrait_kage_1.json",
       "twSha256": "fa25d0139e01de9b709688a1b5396829606c9cbc2e46b242cad4c04e52e73b29",
       "jpSha256": "b52feeb9c77f034eb37e5c2c8799a820f2c9e4591197d3e84fc83dc3ed90266b",
-      "cnSha256": "b1cbf85b4ff43578363254245ba7965b73ec096712c47de9d6fb0f1d21179f13",
-      "simplifiedJsonSha256": "b1cbf85b4ff43578363254245ba7965b73ec096712c47de9d6fb0f1d21179f13",
+      "cnSha256": "799e244a053cf71a7f25a2ab7dffbab00666ddb9296c93cb15c0d7e50e94949c",
+      "simplifiedJsonSha256": "799e244a053cf71a7f25a2ab7dffbab00666ddb9296c93cb15c0d7e50e94949c",
       "eventCount": 82,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 77,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

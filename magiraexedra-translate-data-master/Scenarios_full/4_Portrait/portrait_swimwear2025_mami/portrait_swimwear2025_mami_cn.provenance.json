@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "b0b93e0700c047325b7763fcbd2b2acc01d5d9f25446a06096996fa138bbdebb",
-  "cnSha256": "213bfa52623f9ff8ea079d5d69ac600edde8c4eead49687f4d16ce6fc4daf299",
+  "cnSha256": "aeec08effda151b9b97b41eb5f905ff725d171f54fe1b96adb336470a9fa0344",
   "chapterTitle": "",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_swimwear2025_mami_1/portrait_swimwear2025_mami_1.json",
       "twSha256": "89fea143eb662bfa1c4edbb00e7ad7b233ddae28d6132905967fd2a7c2f4d1d1",
       "jpSha256": "573a5a9d84577e432b8d6a66836143e9c405b7d76971ec23a44b09c36abcb9cd",
-      "cnSha256": "5cea4e94fd27310b1aa3e7f1ba7c786dcccfdd88375119b1420cac8036c17251",
-      "simplifiedJsonSha256": "5cea4e94fd27310b1aa3e7f1ba7c786dcccfdd88375119b1420cac8036c17251",
+      "cnSha256": "c442a905b8a97f6b3b7713d11f71da775d903f77a22b44bd8ed2534a84670835",
+      "simplifiedJsonSha256": "c442a905b8a97f6b3b7713d11f71da775d903f77a22b44bd8ed2534a84670835",
       "eventCount": 46,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 42,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 4,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_swimwear2025_mami_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_swimwear2025_mami_2/portrait_swimwear2025_mami_2.json",
       "twSha256": "946a3914e95fbb8dfe607a24812845b824c557a118d258c710181eccceed3f30",
       "jpSha256": "ccbb990921cedfe5ee68324da1c03438a97f19efc2f41acc8a27c79128acf38f",
-      "cnSha256": "591dad0cff3e4079cd08ce474d4055ff291c3c7c5169da358cca09786096051a",
-      "simplifiedJsonSha256": "591dad0cff3e4079cd08ce474d4055ff291c3c7c5169da358cca09786096051a",
+      "cnSha256": "067369aa992f5dba7788a1fad8d8bb2a135f425a8a94f3ea5dee0911874114db",
+      "simplifiedJsonSha256": "067369aa992f5dba7788a1fad8d8bb2a135f425a8a94f3ea5dee0911874114db",
       "eventCount": 43,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 38,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

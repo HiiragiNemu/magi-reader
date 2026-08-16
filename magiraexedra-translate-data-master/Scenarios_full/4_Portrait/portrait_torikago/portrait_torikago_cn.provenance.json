@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "f221bcc5d0032611798635688dbc5fd38a48d88b81dbc96415b25d12d38332de",
-  "cnSha256": "6aa242613c63a9a1544dc829b1c51934d3c0e6e98e65b384a2459dc6a4d54cf2",
+  "cnSha256": "588740a5f57d4bfd1d8100820a550ee9f0e485d6fd597721f0578729e85f9006",
   "chapterTitle": "第十三章 · 鸟笼的魔女",
   "sections": [
     {
@@ -62,10 +65,24 @@
       "twPath": "4_Portrait/portrait_torikago_1/portrait_torikago_1.json",
       "twSha256": "05abbdc07ee73aa606f9b1ff72dfdb5a4f01ecc044f909212b5c93e9bc09cc78",
       "jpSha256": "dafbc92d96374b6e3bcb17821a761527caf8d8204c958bcf59e5b08fb9b45312",
-      "cnSha256": "a61ce88002fa07d86e5b5cb46c26b3153d2a017d92a21f58b4930933873dd753",
-      "simplifiedJsonSha256": "a61ce88002fa07d86e5b5cb46c26b3153d2a017d92a21f58b4930933873dd753",
+      "cnSha256": "afed053bd7dc7efc98721bce8c959fa769744a880cd6d3ed23443decc2deee92",
+      "simplifiedJsonSha256": "afed053bd7dc7efc98721bce8c959fa769744a880cd6d3ed23443decc2deee92",
       "eventCount": 71,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 69,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

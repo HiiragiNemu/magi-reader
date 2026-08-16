@@ -1,41 +1,4 @@
 #!/usr/bin/env python3
-"""Infer exact JP→CN Exedra speaker aliases from the aligned corpus."""
-from __future__ import annotations
-
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-MODULE = ROOT / "tools/tw_authentic_scenario.py"
-SYNC = ROOT / "tools/synchronize_exedra_speaker_dictionary.py"
-
-OLD_TRANSLATOR = '''def translate_speaker(value: str, mapping: dict[str, str]) -> str:
-    normalized = normalize_display_punctuation(value)
-    if not normalized or normalized in NARRATION_SPEAKERS:
-        return "旁白"
-    parts = tuple(part for part in MULTI_SPEAKER_RE.split(normalized) if part)
-    if len(parts) > 1:
-        return "＆".join(translate_speaker(part, mapping) for part in parts)
-    return _translate_speaker_component(normalized, mapping)
-'''
-
-NEW_TRANSLATOR = '''def translate_speaker(value: str, mapping: dict[str, str]) -> str:
-    normalized = normalize_display_punctuation(value)
-    if not normalized or normalized in NARRATION_SPEAKERS:
-        return "旁白"
-    # Exact corpus aliases take precedence over component heuristics. This is
-    # required for ensemble labels, historical names and role descriptions
-    # whose individual fragments are not independently meaningful.
-    key = speaker_lookup_key(normalized)
-    direct = mapping.get(key) or EXEDRA_ADDITIONAL_SPEAKER_LOOKUP.get(key)
-    if direct is not None and not contains_japanese_script(direct):
-        return normalize_display_punctuation(direct)
-    parts = tuple(part for part in MULTI_SPEAKER_RE.split(normalized) if part)
-    if len(parts) > 1:
-        return "＆".join(translate_speaker(part, mapping) for part in parts)
-    return _translate_speaker_component(normalized, mapping)
-'''
-
-SYNC_SOURCE = r'''#!/usr/bin/env python3
 """Synchronize dictionary.ts from exact aligned Exedra JP/CN speaker pairs.
 
 The script never translates prose. It learns only unambiguous speaker aliases
@@ -341,28 +304,6 @@ def main() -> int:
         "EXEDRA_SPEAKER_DICTIONARY_SYNCHRONIZED "
         + " ".join(f"{key}={value}" for key, value in stats.items())
     )
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
-'''
-
-
-def main() -> int:
-    source = MODULE.read_text(encoding="utf-8")
-    count = source.count(OLD_TRANSLATOR)
-    if count != 1:
-        raise RuntimeError(
-            f"tw_authentic_scenario translate_speaker count={count}; expected 1"
-        )
-    MODULE.write_text(
-        source.replace(OLD_TRANSLATOR, NEW_TRANSLATOR, 1),
-        encoding="utf-8",
-        newline="\n",
-    )
-    SYNC.write_text(SYNC_SOURCE, encoding="utf-8", newline="\n")
-    print("AUTHENTIC_TW_REPAIR_V18_APPLIED")
     return 0
 
 

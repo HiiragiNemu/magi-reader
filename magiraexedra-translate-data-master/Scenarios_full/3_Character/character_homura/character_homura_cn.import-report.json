@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "42045da0eb56938fe24de5040ad5d7836ce3898071b0c2f01612880c118df70c",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 82
+    "readerNormalizedBlockCount": 269
   },
   "cn": {
-    "renderedSha256": "34f81e9add07fbf9361c048b6f7c213f56e14ff5f48c23f816b3dae34e67044d",
+    "renderedSha256": "4c0b87d034180d46923276967b733a4b20343293b203228be23ad840846c13d7",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 82
+    "readerNormalizedBlockCount": 269
   },
   "sections": [
     {
@@ -31,112 +37,120 @@
       "source": "character_homura_0.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 3,
+        "cn": 3,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "4697b19b41954ad000600b2cb04ff6b2a4761f19f7be9feb6ebab7452d230fcb",
-        "cn": "4697b19b41954ad000600b2cb04ff6b2a4761f19f7be9feb6ebab7452d230fcb"
-      }
+        "jp": "fa3bd51deea83f8453cba2b5ed27a62e30485a4dacd134cd17f4343f4fb5b7ed",
+        "cn": "fa3bd51deea83f8453cba2b5ed27a62e30485a4dacd134cd17f4343f4fb5b7ed"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "character_homura_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 13,
-        "cn": 13,
+        "jp": 34,
+        "cn": 34,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "8cabda93883813eaa2cc0083dbe02a38526202d8ff5199644585968c41ff495a",
-        "cn": "8cabda93883813eaa2cc0083dbe02a38526202d8ff5199644585968c41ff495a"
-      }
+        "jp": "7028766d84f0c2a12eaab02493e4c944aca1e26aabc24172ec4293aa7ab3053a",
+        "cn": "7028766d84f0c2a12eaab02493e4c944aca1e26aabc24172ec4293aa7ab3053a"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "character_homura_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 11,
-        "cn": 11,
+        "jp": 42,
+        "cn": 42,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "eb3ceabd5665c8e638512c30082f52772bf86714c39e456a16231c535ecfa142",
-        "cn": "eb3ceabd5665c8e638512c30082f52772bf86714c39e456a16231c535ecfa142"
-      }
+        "jp": "d1ef92d2248f95a4d26702a453570ad963ea423082c8c933f1e67529dc9bc9a6",
+        "cn": "d1ef92d2248f95a4d26702a453570ad963ea423082c8c933f1e67529dc9bc9a6"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
       "source": "character_homura_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 14,
-        "cn": 14,
+        "jp": 40,
+        "cn": 40,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "842a3bc4a03aef25b7eb77381d3df8d368b71c6d5d5efb4675e40d7654d11896",
-        "cn": "842a3bc4a03aef25b7eb77381d3df8d368b71c6d5d5efb4675e40d7654d11896"
-      }
+        "jp": "db574933a993eeb3aa77d297fc161107aeec14efd8da3ca6d482f30566c22c35",
+        "cn": "db574933a993eeb3aa77d297fc161107aeec14efd8da3ca6d482f30566c22c35"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 5,
       "source": "character_homura_4.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 30,
+        "cn": 30,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "4697b19b41954ad000600b2cb04ff6b2a4761f19f7be9feb6ebab7452d230fcb",
-        "cn": "4697b19b41954ad000600b2cb04ff6b2a4761f19f7be9feb6ebab7452d230fcb"
-      }
+        "jp": "49ff23879ead8ac3ef2f7f6b86a0fa0fcd64a376c95624c0ff3eb261d7c25a96",
+        "cn": "49ff23879ead8ac3ef2f7f6b86a0fa0fcd64a376c95624c0ff3eb261d7c25a96"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 6,
       "source": "character_homura_5.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 11,
-        "cn": 11,
+        "jp": 26,
+        "cn": 26,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "fa276b67e369b46b126dcdb955eb9d76e8ac655d1de1e11f3aa8ca3980b006de",
-        "cn": "fa276b67e369b46b126dcdb955eb9d76e8ac655d1de1e11f3aa8ca3980b006de"
-      }
+        "jp": "e220f91489cdc9dccc0950c0f1c8b2634ccb7fdd361b26335d2ae049fa784c41",
+        "cn": "e220f91489cdc9dccc0950c0f1c8b2634ccb7fdd361b26335d2ae049fa784c41"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 7,
       "source": "character_homura_6.json",
       "wikiEpisode": 6,
       "readerNormalizedBlocks": {
-        "jp": 8,
-        "cn": 8,
+        "jp": 52,
+        "cn": 52,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "7dfbeef98a0ddf69c41eec86f5ec3d76f2265e70ee6d075b891eadbe0a67e546",
-        "cn": "7dfbeef98a0ddf69c41eec86f5ec3d76f2265e70ee6d075b891eadbe0a67e546"
-      }
+        "jp": "c9b457a63106133887860b21a803ea33737623c571312866a9567fd128900ddb",
+        "cn": "c9b457a63106133887860b21a803ea33737623c571312866a9567fd128900ddb"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 8,
       "source": "character_homura_7.json",
       "wikiEpisode": 7,
       "readerNormalizedBlocks": {
-        "jp": 23,
-        "cn": 23,
+        "jp": 42,
+        "cn": 42,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "c97800a285fabed369a2b22ec2701afc526c6e7f8bf66799d5fc1b5c318ebc6a",
-        "cn": "c97800a285fabed369a2b22ec2701afc526c6e7f8bf66799d5fc1b5c318ebc6a"
-      }
+        "jp": "01778a5539609330dd69fe964b0f69487e4d1c0b3c1b5f2e523a87226911dbca",
+        "cn": "01778a5539609330dd69fe964b0f69487e4d1c0b3c1b5f2e523a87226911dbca"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -146,10 +160,17 @@
       "twPath": "3_Character/character_homura_0/character_homura_0.json",
       "twSha256": "9a0ac3c80c4e92963d3a104532080f2e15c1dc6ca6d49fbb32fd943828ea5af1",
       "jpSha256": "418b0ea28c04bf5fc64468cf0331171b788097afb213fd3b010e9efc263cb912",
-      "cnSha256": "f39c7abf279f31ee3046e2f5572af080c7dd486977a33c05ee774e8cfed39fb7",
-      "simplifiedJsonSha256": "f39c7abf279f31ee3046e2f5572af080c7dd486977a33c05ee774e8cfed39fb7",
+      "cnSha256": "5ac6afb7e26bee9c09260c4b05aa5a87878aaf0779d2719e6ff9c3bc7d985580",
+      "simplifiedJsonSha256": "5ac6afb7e26bee9c09260c4b05aa5a87878aaf0779d2719e6ff9c3bc7d985580",
       "eventCount": 3,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 3,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_homura_1.json",
@@ -157,10 +178,17 @@
       "twPath": "3_Character/character_homura_1/character_homura_1.json",
       "twSha256": "7d11a6ccf5fa271a4a0113d6b30d8432ff7152f24f3177833cf8dbfa7a981362",
       "jpSha256": "8fe9985cc3a9cd21791e38d1cb5d793ff58177fbd6ae7a2db27ca3a18f352888",
-      "cnSha256": "38e76a247315f910dbb464516c66d35fd576032ffadbc2395f25e8d29c57230c",
-      "simplifiedJsonSha256": "38e76a247315f910dbb464516c66d35fd576032ffadbc2395f25e8d29c57230c",
+      "cnSha256": "e702599814883c40f6aa0c1d76e62bda12c113bf9fda5f7e2fd7a0bf08c179ed",
+      "simplifiedJsonSha256": "e702599814883c40f6aa0c1d76e62bda12c113bf9fda5f7e2fd7a0bf08c179ed",
       "eventCount": 34,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 32,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "character_homura_2.json",
@@ -168,10 +196,17 @@
       "twPath": "3_Character/character_homura_2/character_homura_2.json",
       "twSha256": "0127335a1422b36e13b4e9e542ddcef9f77484996c86acae8cf28e19b66d8abb",
       "jpSha256": "4793641e525091a58b715a71f3ddfa81673a1c29debba018f8100f276a8d1b62",
-      "cnSha256": "eda21074efbf999fcb96d409b91afe12dd2554137484f3aba3b71377dd4b82e7",
-      "simplifiedJsonSha256": "eda21074efbf999fcb96d409b91afe12dd2554137484f3aba3b71377dd4b82e7",
+      "cnSha256": "81688b29cfd9b71abb3931a35f9dc1a3811055679653bedd14e55787aad16a41",
+      "simplifiedJsonSha256": "81688b29cfd9b71abb3931a35f9dc1a3811055679653bedd14e55787aad16a41",
       "eventCount": 42,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 39,
+      "dictionaryFallbackSpeakerEvents": 2,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     },
     {
       "source": "character_homura_3.json",
@@ -179,10 +214,17 @@
       "twPath": "3_Character/character_homura_3/character_homura_3.json",
       "twSha256": "d55472bc9ddd3201b5b23afc4fb6b3310cba17d5c6a9e7a36536a4e6284bf854",
       "jpSha256": "ee9302007c74228b29ae7774efd696666b0846f1e38de5e395d7b4b71820b023",
-      "cnSha256": "707cdef47a9478a3ea91f3516fdaaab264f16c872ed86a0bce3fcd57f538b662",
-      "simplifiedJsonSha256": "707cdef47a9478a3ea91f3516fdaaab264f16c872ed86a0bce3fcd57f538b662",
+      "cnSha256": "319d07817f5b3e87c201b3620b6058b14c86dbc56852718019434de7dbd6e3f8",
+      "simplifiedJsonSha256": "319d07817f5b3e87c201b3620b6058b14c86dbc56852718019434de7dbd6e3f8",
       "eventCount": 40,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 40,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_homura_4.json",
@@ -190,10 +232,17 @@
       "twPath": "3_Character/character_homura_4/character_homura_4.json",
       "twSha256": "1c592aaa2b969138c926463b8a66ea005e43fb15af2b11cf0c5ff94ec6b1597e",
       "jpSha256": "f022dce18e1b9c9da7bc1feb6abaad42304d282f560bcf168fd7be3a5c0b24c0",
-      "cnSha256": "fc741d32cce9cea859f5e21c2e32521888832ea08129271413cd204268a66e53",
-      "simplifiedJsonSha256": "fc741d32cce9cea859f5e21c2e32521888832ea08129271413cd204268a66e53",
+      "cnSha256": "f60e044c43777a0dc85be05d11033d267d42314a0a13ce2982e91c9b8c62e605",
+      "simplifiedJsonSha256": "f60e044c43777a0dc85be05d11033d267d42314a0a13ce2982e91c9b8c62e605",
       "eventCount": 30,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 30,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_homura_5.json",
@@ -201,10 +250,17 @@
       "twPath": "3_Character/character_homura_5/character_homura_5.json",
       "twSha256": "7faf2eedb2d1626ce77b6e89721be075632802cdd862c42d2af3b583f74c22b1",
       "jpSha256": "90b372292aa9479e3c7fa6d6574a78070897ac64b7ce0ca14bcf9fc96a1d15b7",
-      "cnSha256": "549c2e5c6707ddb0de5aff78302693621dadff015487a5fdc172aa512bddb2c9",
-      "simplifiedJsonSha256": "549c2e5c6707ddb0de5aff78302693621dadff015487a5fdc172aa512bddb2c9",
+      "cnSha256": "026719ce49bf0850ad1982c7b203ad367ef810156c0627a9c150928170d67ef4",
+      "simplifiedJsonSha256": "026719ce49bf0850ad1982c7b203ad367ef810156c0627a9c150928170d67ef4",
       "eventCount": 26,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 26,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_homura_6.json",
@@ -212,10 +268,17 @@
       "twPath": "3_Character/character_homura_6/character_homura_6.json",
       "twSha256": "f493e7dad5bd1a67acca795a514d4f2958cd834dc86dd1bb9059582559ef0fca",
       "jpSha256": "fe5df7e4d07a5af499e21d35b6d3cf21107e7680c88d0d6a7aeb643458f549bc",
-      "cnSha256": "83ed9227b17057ec3b0c5a20486188e175db34074379124823df817746c254ae",
-      "simplifiedJsonSha256": "83ed9227b17057ec3b0c5a20486188e175db34074379124823df817746c254ae",
+      "cnSha256": "30d0729ba09152df10c6ecad7335bec0ec5906f3d9f3d6b3f25a836ecad641fb",
+      "simplifiedJsonSha256": "30d0729ba09152df10c6ecad7335bec0ec5906f3d9f3d6b3f25a836ecad641fb",
       "eventCount": 52,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 51,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     },
     {
       "source": "character_homura_7.json",
@@ -223,10 +286,17 @@
       "twPath": "3_Character/character_homura_7/character_homura_7.json",
       "twSha256": "e0d19fa0d52bc07008b6167c9b84c1749fc8c7630e5a6a6ead7318afdb78da98",
       "jpSha256": "501196a6472cfed270ca874f81fb09226b3e0c34f4f4c78c1ed5af6aa960a153",
-      "cnSha256": "d3f6c288647d607860714050225f3298d7d2d5f12a99281e0e5312206180f341",
-      "simplifiedJsonSha256": "d3f6c288647d607860714050225f3298d7d2d5f12a99281e0e5312206180f341",
+      "cnSha256": "56b7ba403042c520c3ebda1ad3ca02bc1cfca9293dab3a5abab2e084ec115851",
+      "simplifiedJsonSha256": "56b7ba403042c520c3ebda1ad3ca02bc1cfca9293dab3a5abab2e084ec115851",
       "eventCount": 42,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 41,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -428,5 +498,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "42045da0eb56938fe24de5040ad5d7836ce3898071b0c2f01612880c118df70c",
+    "cnSha256": "4c0b87d034180d46923276967b733a4b20343293b203228be23ad840846c13d7",
+    "sectionCount": 8,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 8,
+    "sectionCount": 8
   }
 }

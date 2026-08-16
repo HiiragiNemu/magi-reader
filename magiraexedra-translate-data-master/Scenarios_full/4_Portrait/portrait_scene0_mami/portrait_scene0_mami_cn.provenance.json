@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "7ebe31f3e74d86c6cdc42e1f4be544623459d433f8763ee709326fd237eba01b",
-  "cnSha256": "d14be4953927045e65835872faec0ae938efcfee764628064549c67d5af9d61e",
+  "cnSha256": "8ccc667a40918fe13995532d4b4bd117fad84636ba69fc670c21ce619df300e6",
   "chapterTitle": "后篇 · 爱生眩的记忆 后篇",
   "sections": [
     {
@@ -100,10 +103,17 @@
       "twPath": "4_Portrait/portrait_scene0_mami_1/portrait_scene0_mami_1.json",
       "twSha256": "923bd57e317486df6aac9be532a0d73259a5874f2f6834890e62e8892fc8bdde",
       "jpSha256": "923bd57e317486df6aac9be532a0d73259a5874f2f6834890e62e8892fc8bdde",
-      "cnSha256": "56f707ba0ecc4f823b1ce42f2926b152da071614c1528d309c95d3d64f86a895",
-      "simplifiedJsonSha256": "56f707ba0ecc4f823b1ce42f2926b152da071614c1528d309c95d3d64f86a895",
+      "cnSha256": "563fc661c3946b8e8ebf6c480bab80c111d122682cd2b8785f8cb287138c7ba0",
+      "simplifiedJsonSha256": "563fc661c3946b8e8ebf6c480bab80c111d122682cd2b8785f8cb287138c7ba0",
       "eventCount": 225,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 210,
+      "dictionaryFallbackSpeakerEvents": 10,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_scene0_mami_2.json",
@@ -111,10 +121,17 @@
       "twPath": "4_Portrait/portrait_scene0_mami_2/portrait_scene0_mami_2.json",
       "twSha256": "0986b4fdc92fa058eddc8334221c25be5536311048f2946a00c0c7664cfa7aa1",
       "jpSha256": "0986b4fdc92fa058eddc8334221c25be5536311048f2946a00c0c7664cfa7aa1",
-      "cnSha256": "aac358e39a24b7be357d469a10923734e7f1a384ad199d7aae09e8bef624cc39",
-      "simplifiedJsonSha256": "aac358e39a24b7be357d469a10923734e7f1a384ad199d7aae09e8bef624cc39",
+      "cnSha256": "5d601f0d5daaa823b0015b25b7da8a02fb2f0bdc48089a33c1a6d16528984183",
+      "simplifiedJsonSha256": "5d601f0d5daaa823b0015b25b7da8a02fb2f0bdc48089a33c1a6d16528984183",
       "eventCount": 263,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 261,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_scene0_mami_3.json",
@@ -122,10 +139,24 @@
       "twPath": "4_Portrait/portrait_scene0_mami_3/portrait_scene0_mami_3.json",
       "twSha256": "545a84521b0976864b2bd27c9e074a019464d1a983774497a6d013db2e3e4fa1",
       "jpSha256": "545a84521b0976864b2bd27c9e074a019464d1a983774497a6d013db2e3e4fa1",
-      "cnSha256": "7fec2fa1a22666a25410c5c3872f944de6b806d45aef5067bf19a2a7eecfef10",
-      "simplifiedJsonSha256": "7fec2fa1a22666a25410c5c3872f944de6b806d45aef5067bf19a2a7eecfef10",
+      "cnSha256": "48388afb464257253b948c8df8b5abe16a39c108f0412e2f2f58c948741b1f16",
+      "simplifiedJsonSha256": "48388afb464257253b948c8df8b5abe16a39c108f0412e2f2f58c948741b1f16",
       "eventCount": 249,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 226,
+      "dictionaryFallbackSpeakerEvents": 14,
+      "narrationSpeakerEvents": 9,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

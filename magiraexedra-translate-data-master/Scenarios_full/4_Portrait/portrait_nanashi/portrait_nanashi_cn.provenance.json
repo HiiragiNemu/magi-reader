@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "82908b4bcab1dd02f8da4d39a24ab5b3148e105515ed9e77ab8acecdf15451a6",
-  "cnSha256": "45ba07fc93dcdb3651c5532d64fecd2a7748e1cf498582b079633a573474e760",
+  "cnSha256": "b5751ebbfaa805a3258656cf5accc91d4b08bd24aea52a01b39aa1cd286ef52a",
   "chapterTitle": "第三章 · 无名人工智能的谣言",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_nanashi_1/portrait_nanashi_1.json",
       "twSha256": "52db556a54dbc96cdc5c240837940f2de4d798b730b9c25cb62ebda8538cc439",
       "jpSha256": "7b01db880765841fad36cecd0750968d6174869c227c32cd63761eacd47ab60f",
-      "cnSha256": "7e9c1d3f3c8a773f6464868a80d2cee03afb15c52ecd8cbf013728b0d7b6fbc5",
-      "simplifiedJsonSha256": "7e9c1d3f3c8a773f6464868a80d2cee03afb15c52ecd8cbf013728b0d7b6fbc5",
+      "cnSha256": "eba418dee0346a3986f93782d6e9b7c659617666383ec9a112fff6ff192f9a68",
+      "simplifiedJsonSha256": "eba418dee0346a3986f93782d6e9b7c659617666383ec9a112fff6ff192f9a68",
       "eventCount": 45,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 42,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 3,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_nanashi_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_nanashi_2/portrait_nanashi_2.json",
       "twSha256": "a2546d092c4e48bd549ad796775c8519019559ba291637ccfcf6921cf4209e57",
       "jpSha256": "282865bc81026409470971b63dc91639325361bbe5d8979ea621b07d6c28b193",
-      "cnSha256": "803bc481a54550145eb298f1bd904a10e73cc13ce2c2b5d8fabf09ce950c9efb",
-      "simplifiedJsonSha256": "803bc481a54550145eb298f1bd904a10e73cc13ce2c2b5d8fabf09ce950c9efb",
+      "cnSha256": "534980c00e7ba43f6725bfb59044bf2512f395e70121125f264ce459d7bbc919",
+      "simplifiedJsonSha256": "534980c00e7ba43f6725bfb59044bf2512f395e70121125f264ce459d7bbc919",
       "eventCount": 71,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 69,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

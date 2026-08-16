@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "cd8af238c40dfd3123afedcae9722bc3215a6dc1acadfd59b3ae18179834c6f8",
     "sectionCount": 1,
-    "readerNormalizedBlockCount": 3
+    "readerNormalizedBlockCount": 4
   },
   "cn": {
     "renderedSha256": "3fc797b5df663e044a23be4724485f1a1622bf13f34523d025e76dfa219f99ee",
     "sectionCount": 1,
-    "readerNormalizedBlockCount": 3
+    "readerNormalizedBlockCount": 4
   },
   "sections": [
     {
@@ -31,14 +37,15 @@
       "source": "quest_tutorial_07_branch.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 3,
-        "cn": 3,
+        "jp": 4,
+        "cn": 4,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "7d5240403135091085faf6174f58319515f2cec380806b30de24027d438b5d95",
-        "cn": "7d5240403135091085faf6174f58319515f2cec380806b30de24027d438b5d95"
-      }
+        "jp": "228ff8cc98b0f45ec16216b627d4f2c090038e2d7c9096cbd90298e3373c1233",
+        "cn": "228ff8cc98b0f45ec16216b627d4f2c090038e2d7c9096cbd90298e3373c1233"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -51,7 +58,14 @@
       "cnSha256": "58c14f704cc0d77d14538ade467bcd0819d0b7f7c683d53d84828ec82917f8e5",
       "simplifiedJsonSha256": "58c14f704cc0d77d14538ade467bcd0819d0b7f7c683d53d84828ec82917f8e5",
       "eventCount": 4,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 4,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -97,5 +111,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "cd8af238c40dfd3123afedcae9722bc3215a6dc1acadfd59b3ae18179834c6f8",
+    "cnSha256": "3fc797b5df663e044a23be4724485f1a1622bf13f34523d025e76dfa219f99ee",
+    "sectionCount": 1,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 1,
+    "sectionCount": 1
   }
 }

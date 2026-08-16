@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "468ae32993223042daedad281c1ed887bae662cbe75ff066b5f23e7f80f3b7d8",
-  "cnSha256": "665f7dcae4b00006fb914a0db9103982d997a221ccae9671457f6c546f0339e0",
+  "cnSha256": "5fcfdc52ddfd1956925863a3fb5b57d12cde394261dfde20d34172fd69d0a9ca",
   "chapterTitle": "",
   "sections": [
     {
@@ -83,7 +86,14 @@
       "cnSha256": "8979f9d1b510ea3798c4e3124961f1b53c782816326f2ff6ad1c6d6ab8ba82f5",
       "simplifiedJsonSha256": "8979f9d1b510ea3798c4e3124961f1b53c782816326f2ff6ad1c6d6ab8ba82f5",
       "eventCount": 21,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 21,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_hangyaku_normal_02.json",
@@ -91,10 +101,24 @@
       "twPath": "7_Namae/pp_monogatari_hangyaku_normal_02/pp_monogatari_hangyaku_normal_02.json",
       "twSha256": "7b52145c6390bc9e2af9766edb2022ac957fa5a8f4472c66f7c8d5cc364008e0",
       "jpSha256": "abaff7b93f55250faaa74915a014ea125f17029570fb688ea06de4dfd977c38c",
-      "cnSha256": "d528346523c06fa6967a858cb183d0fab974488b172bd572f17dffdcfe9f57ed",
-      "simplifiedJsonSha256": "d528346523c06fa6967a858cb183d0fab974488b172bd572f17dffdcfe9f57ed",
+      "cnSha256": "e413ec50f403fca64c23c0d2bc1e41ceecc7084d10a1711f3eb3c0d5f62c8ff7",
+      "simplifiedJsonSha256": "e413ec50f403fca64c23c0d2bc1e41ceecc7084d10a1711f3eb3c0d5f62c8ff7",
       "eventCount": 63,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 63,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "73e052df21a8bf9fca0ef129fa4ffe817a58658f9085b9114d85e307f01503f4",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 64
+    "readerNormalizedBlockCount": 108
   },
   "cn": {
-    "renderedSha256": "980a83b75ab55cd9001f52cec6242d157ec4cbf5e26917dc79cdd6b6d13a728b",
+    "renderedSha256": "73159be08e942fb9a3f2b77a66494746866b177475ab1d6b9aa4e3e85d479e35",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 64
+    "readerNormalizedBlockCount": 108
   },
   "sections": [
     {
@@ -31,28 +37,30 @@
       "source": "portrait_kurumi_kyoko_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 44,
-        "cn": 44,
+        "jp": 69,
+        "cn": 69,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "8db9f9366fb36a65aff4cedc1de0955de7985a967a0159d9154ff8e5c1d446cf",
-        "cn": "8db9f9366fb36a65aff4cedc1de0955de7985a967a0159d9154ff8e5c1d446cf"
-      }
+        "jp": "4a9a31a2d21d62b5db34f651f04adc5a2243655ab8ecadfa304818bfdc43dc69",
+        "cn": "4a9a31a2d21d62b5db34f651f04adc5a2243655ab8ecadfa304818bfdc43dc69"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "portrait_kurumi_kyoko_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 20,
-        "cn": 20,
+        "jp": 39,
+        "cn": 39,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "cce16f93c11fca1b5837e04f02552bedf5d78255a0c2565bffba5a044a6d176c",
-        "cn": "cce16f93c11fca1b5837e04f02552bedf5d78255a0c2565bffba5a044a6d176c"
-      }
+        "jp": "a36cb1dfd0fda96331dd9cebd0fcfdf7307cb60db4c7be580b75e4bc219c675d",
+        "cn": "a36cb1dfd0fda96331dd9cebd0fcfdf7307cb60db4c7be580b75e4bc219c675d"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -62,10 +70,17 @@
       "twPath": "4_Portrait/portrait_kurumi_kyoko_1/portrait_kurumi_kyoko_1.json",
       "twSha256": "ce8b14a25bc31ac639851205700f1a256cd55773b3c484d0654bf3ed38519c28",
       "jpSha256": "7927119ead50308d0acd7946ba177c251d7fec6b45d67de3e47d5179f5c38ba9",
-      "cnSha256": "7d13d477b9366427ff965351a5eb9bf5eae4ab3642554741ca5077d7fced8490",
-      "simplifiedJsonSha256": "7d13d477b9366427ff965351a5eb9bf5eae4ab3642554741ca5077d7fced8490",
+      "cnSha256": "41ff302ca1ad6b836cb2517230a833e081c9c73f75b7d76a0c24497f85625afd",
+      "simplifiedJsonSha256": "41ff302ca1ad6b836cb2517230a833e081c9c73f75b7d76a0c24497f85625afd",
       "eventCount": 69,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 67,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_kurumi_kyoko_2.json",
@@ -73,10 +88,17 @@
       "twPath": "4_Portrait/portrait_kurumi_kyoko_2/portrait_kurumi_kyoko_2.json",
       "twSha256": "6c2b77d2bf986304580f8f894f517aecc8c6f9d13d8edfb18dd016970ca1a844",
       "jpSha256": "303ad102628fa8493af464cba9d6453cc9cdda0d5fd8e921e9b44aa0b00678f0",
-      "cnSha256": "6935c7c1b71f6ceed755a34a7ac61c04d3db460979abdb833e22dbf9c380eb75",
-      "simplifiedJsonSha256": "6935c7c1b71f6ceed755a34a7ac61c04d3db460979abdb833e22dbf9c380eb75",
+      "cnSha256": "e5b0282628dca28c2de85ea02d6818d0b2a8ca3a221d505e30ae457f0382beab",
+      "simplifiedJsonSha256": "e5b0282628dca28c2de85ea02d6818d0b2a8ca3a221d505e30ae457f0382beab",
       "eventCount": 39,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 35,
+      "dictionaryFallbackSpeakerEvents": 4,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -142,5 +164,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "73e052df21a8bf9fca0ef129fa4ffe817a58658f9085b9114d85e307f01503f4",
+    "cnSha256": "73159be08e942fb9a3f2b77a66494746866b177475ab1d6b9aa4e3e85d479e35",
+    "sectionCount": 2,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 2,
+    "sectionCount": 2
   }
 }

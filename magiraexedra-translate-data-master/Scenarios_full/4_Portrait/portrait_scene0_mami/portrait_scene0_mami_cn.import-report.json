@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "7ebe31f3e74d86c6cdc42e1f4be544623459d433f8763ee709326fd237eba01b",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 354
+    "readerNormalizedBlockCount": 737
   },
   "cn": {
-    "renderedSha256": "d14be4953927045e65835872faec0ae938efcfee764628064549c67d5af9d61e",
+    "renderedSha256": "8ccc667a40918fe13995532d4b4bd117fad84636ba69fc670c21ce619df300e6",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 354
+    "readerNormalizedBlockCount": 737
   },
   "sections": [
     {
@@ -31,42 +37,45 @@
       "source": "portrait_scene0_mami_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 122,
-        "cn": 122,
+        "jp": 225,
+        "cn": 225,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "f29853c2c725d5596d4f3facab9ce3912db8df654b9414b09bdcef84b7d4c587",
-        "cn": "f29853c2c725d5596d4f3facab9ce3912db8df654b9414b09bdcef84b7d4c587"
-      }
+        "jp": "a0a79d9753485ca83bf6b20f8563f2c798ef4da5a82541810aba601be3ed8478",
+        "cn": "85ecf9c8b31c1b44ee810d9ced4ac9fe2a3a6c6030ffc9ef572ea080a44468e3"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 2,
       "source": "portrait_scene0_mami_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 138,
-        "cn": 138,
+        "jp": 263,
+        "cn": 263,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6da1d9dc642e9070ce251e1f53c707332fdbf04c1f03236645cb91def4f43b6d",
-        "cn": "6da1d9dc642e9070ce251e1f53c707332fdbf04c1f03236645cb91def4f43b6d"
-      }
+        "jp": "453a77be7842013de30ff405249e48ccda8e60f8bb09a944e30f8417da666d70",
+        "cn": "453a77be7842013de30ff405249e48ccda8e60f8bb09a944e30f8417da666d70"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "portrait_scene0_mami_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 94,
-        "cn": 94,
+        "jp": 249,
+        "cn": 249,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6997e19d9f47f9f05c32cd0979a86a5c6aebe22f60294deb7f095e73caefd473",
-        "cn": "6997e19d9f47f9f05c32cd0979a86a5c6aebe22f60294deb7f095e73caefd473"
-      }
+        "jp": "052df5413df9568720dd80af415dd4654aeabe4df7296f398287bb1aa8cafd59",
+        "cn": "06b7a13eb5dd5d27f17f33850c3fa49c03d28ecb833331e2c108e49761552b9d"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -76,10 +85,17 @@
       "twPath": "4_Portrait/portrait_scene0_mami_1/portrait_scene0_mami_1.json",
       "twSha256": "923bd57e317486df6aac9be532a0d73259a5874f2f6834890e62e8892fc8bdde",
       "jpSha256": "923bd57e317486df6aac9be532a0d73259a5874f2f6834890e62e8892fc8bdde",
-      "cnSha256": "56f707ba0ecc4f823b1ce42f2926b152da071614c1528d309c95d3d64f86a895",
-      "simplifiedJsonSha256": "56f707ba0ecc4f823b1ce42f2926b152da071614c1528d309c95d3d64f86a895",
+      "cnSha256": "563fc661c3946b8e8ebf6c480bab80c111d122682cd2b8785f8cb287138c7ba0",
+      "simplifiedJsonSha256": "563fc661c3946b8e8ebf6c480bab80c111d122682cd2b8785f8cb287138c7ba0",
       "eventCount": 225,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 210,
+      "dictionaryFallbackSpeakerEvents": 10,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_scene0_mami_2.json",
@@ -87,10 +103,17 @@
       "twPath": "4_Portrait/portrait_scene0_mami_2/portrait_scene0_mami_2.json",
       "twSha256": "0986b4fdc92fa058eddc8334221c25be5536311048f2946a00c0c7664cfa7aa1",
       "jpSha256": "0986b4fdc92fa058eddc8334221c25be5536311048f2946a00c0c7664cfa7aa1",
-      "cnSha256": "aac358e39a24b7be357d469a10923734e7f1a384ad199d7aae09e8bef624cc39",
-      "simplifiedJsonSha256": "aac358e39a24b7be357d469a10923734e7f1a384ad199d7aae09e8bef624cc39",
+      "cnSha256": "5d601f0d5daaa823b0015b25b7da8a02fb2f0bdc48089a33c1a6d16528984183",
+      "simplifiedJsonSha256": "5d601f0d5daaa823b0015b25b7da8a02fb2f0bdc48089a33c1a6d16528984183",
       "eventCount": 263,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 261,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_scene0_mami_3.json",
@@ -98,10 +121,17 @@
       "twPath": "4_Portrait/portrait_scene0_mami_3/portrait_scene0_mami_3.json",
       "twSha256": "545a84521b0976864b2bd27c9e074a019464d1a983774497a6d013db2e3e4fa1",
       "jpSha256": "545a84521b0976864b2bd27c9e074a019464d1a983774497a6d013db2e3e4fa1",
-      "cnSha256": "7fec2fa1a22666a25410c5c3872f944de6b806d45aef5067bf19a2a7eecfef10",
-      "simplifiedJsonSha256": "7fec2fa1a22666a25410c5c3872f944de6b806d45aef5067bf19a2a7eecfef10",
+      "cnSha256": "48388afb464257253b948c8df8b5abe16a39c108f0412e2f2f58c948741b1f16",
+      "simplifiedJsonSha256": "48388afb464257253b948c8df8b5abe16a39c108f0412e2f2f58c948741b1f16",
       "eventCount": 249,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 226,
+      "dictionaryFallbackSpeakerEvents": 14,
+      "narrationSpeakerEvents": 9,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -187,5 +217,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "7ebe31f3e74d86c6cdc42e1f4be544623459d433f8763ee709326fd237eba01b",
+    "cnSha256": "8ccc667a40918fe13995532d4b4bd117fad84636ba69fc670c21ce619df300e6",
+    "sectionCount": 3,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 3,
+    "sectionCount": 3
   }
 }

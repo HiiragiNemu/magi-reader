@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "f68d43ae0973510d49b4895cc1da7d06fc7fd772d48c73ed60ad985f7e492d3a",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 15
+    "readerNormalizedBlockCount": 22
   },
   "cn": {
     "renderedSha256": "ec40accc1f9081ec7917b378c0e79b26571b37a93c282af639213d86351e7f39",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 15
+    "readerNormalizedBlockCount": 22
   },
   "sections": [
     {
@@ -31,42 +37,45 @@
       "source": "quest_tutorial_04_nextopen1.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 5,
-        "cn": 5,
+        "jp": 6,
+        "cn": 6,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "f776f4c6540f0d10fbbd59bacbc089314ba970b1e05c60952511126c27edc05d",
-        "cn": "f776f4c6540f0d10fbbd59bacbc089314ba970b1e05c60952511126c27edc05d"
-      }
+        "jp": "47fd47b21b75df46dee879b7e1c4c5f4b7c6460192c37eed97cfdc78d8645d8f",
+        "cn": "47fd47b21b75df46dee879b7e1c4c5f4b7c6460192c37eed97cfdc78d8645d8f"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "quest_tutorial_06_nextopen2.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 6,
-        "cn": 6,
+        "jp": 10,
+        "cn": 10,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "74c8ab37feb6004887addb698f5e17817c7bcbbcf912789c37989f04181c0e69",
-        "cn": "74c8ab37feb6004887addb698f5e17817c7bcbbcf912789c37989f04181c0e69"
-      }
+        "jp": "e35f5be2652201d8456f2129cffeffa5886c8b2520027aa2aa4c873d7f03985a",
+        "cn": "e35f5be2652201d8456f2129cffeffa5886c8b2520027aa2aa4c873d7f03985a"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "quest_tutorial_08_nextopen3.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 4,
-        "cn": 4,
+        "jp": 6,
+        "cn": 6,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "e711b759c40cfd0156c5d351163f3353739e5ef02694192328e62ffa14423caf",
-        "cn": "e711b759c40cfd0156c5d351163f3353739e5ef02694192328e62ffa14423caf"
-      }
+        "jp": "310e4156d4d5478ee3cb25c76ae0c61147dd2105a84bc28a0c60d382dd135ef2",
+        "cn": "310e4156d4d5478ee3cb25c76ae0c61147dd2105a84bc28a0c60d382dd135ef2"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -79,7 +88,14 @@
       "cnSha256": "7c78cb89d3731e371acffc79434d2d0467163560cfdd5e6831094c1127755bc3",
       "simplifiedJsonSha256": "7c78cb89d3731e371acffc79434d2d0467163560cfdd5e6831094c1127755bc3",
       "eventCount": 6,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 6,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "quest_tutorial_06_nextopen2.json",
@@ -90,7 +106,14 @@
       "cnSha256": "263f7d920c80d369eb9de182f78c516223d6223d802cd23abab2c39d14bc1d5d",
       "simplifiedJsonSha256": "263f7d920c80d369eb9de182f78c516223d6223d802cd23abab2c39d14bc1d5d",
       "eventCount": 10,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 10,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "quest_tutorial_08_nextopen3.json",
@@ -101,7 +124,14 @@
       "cnSha256": "722b711d8ac1fe5489987ed87aa327da02053fa64e95597478f80f601b9e9a10",
       "simplifiedJsonSha256": "722b711d8ac1fe5489987ed87aa327da02053fa64e95597478f80f601b9e9a10",
       "eventCount": 6,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 6,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -187,5 +217,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "f68d43ae0973510d49b4895cc1da7d06fc7fd772d48c73ed60ad985f7e492d3a",
+    "cnSha256": "ec40accc1f9081ec7917b378c0e79b26571b37a93c282af639213d86351e7f39",
+    "sectionCount": 3,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 3,
+    "sectionCount": 3
   }
 }

@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "95f67436f595ae1086871b6cf43d4ce523d2dcfddf6569ce3c8fcf2769c1c98a",
-  "cnSha256": "f837900c131c42a85eb4ddf85d3e4387c75449624952da18ef9bb4e8d6ea18ec",
+  "cnSha256": "ba4d6fa2b5125affbee689db835d1e407a16f2219373d77ca1010ebd75b248d7",
   "chapterTitle": "第二章 · 寻人马的谣言",
   "sections": [
     {
@@ -84,10 +87,17 @@
       "twPath": "4_Portrait/portrait_machibitouma_1/portrait_machibitouma_1.json",
       "twSha256": "bbd0880f6f06333261de101fe3e6e9a00e7bb3fadb36c316dddd6eb64a3eb568",
       "jpSha256": "c8f7d28e1a055cd3f29ae1e6f3d8b5cce9324bdeabadd1f53825abdadc6ab45c",
-      "cnSha256": "f604455cf38a9069255afe4a8169b8a2a42d5ec99e6f3e0ec02dacaca8f3758d",
-      "simplifiedJsonSha256": "f604455cf38a9069255afe4a8169b8a2a42d5ec99e6f3e0ec02dacaca8f3758d",
+      "cnSha256": "448a2a47d2c2c2543d663316524ad6b6875cb54882e478a54d2ba254a4888056",
+      "simplifiedJsonSha256": "448a2a47d2c2c2543d663316524ad6b6875cb54882e478a54d2ba254a4888056",
       "eventCount": 39,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 37,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_machibitouma_2.json",
@@ -95,10 +105,24 @@
       "twPath": "4_Portrait/portrait_machibitouma_2/portrait_machibitouma_2.json",
       "twSha256": "74e576935874471b9da254aa2c412398b6068b562a8b8f7c56499d6674757a02",
       "jpSha256": "f3e6e72f1ad6dd53d95f583268a10eb16e4e381858c4ef0a36fd98e226fa9198",
-      "cnSha256": "b9687d5c2b5200196131dbb8043694113c8f893d42c7a8c1e059980114312dcd",
-      "simplifiedJsonSha256": "b9687d5c2b5200196131dbb8043694113c8f893d42c7a8c1e059980114312dcd",
+      "cnSha256": "e7f7ca1f43dbe0f8ebf00d43346b85b195ad49a0f4647406c13849fbc0feedf5",
+      "simplifiedJsonSha256": "e7f7ca1f43dbe0f8ebf00d43346b85b195ad49a0f4647406c13849fbc0feedf5",
       "eventCount": 71,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 57,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 14,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

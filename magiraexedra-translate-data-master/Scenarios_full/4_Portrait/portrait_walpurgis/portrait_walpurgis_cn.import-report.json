@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "503d6092a5ccbc799a16869854daeeaa122de72396d041b3bee879415b08d872",
     "sectionCount": 1,
-    "readerNormalizedBlockCount": 51
+    "readerNormalizedBlockCount": 77
   },
   "cn": {
-    "renderedSha256": "b1f55e7ecff3a8cf84c1ed31b802573e7fbce3e8cc9aea1b7e579b167f30d941",
+    "renderedSha256": "094056f99766a5a6aa8ac1ae06bbe28412ae207b9f7418c352534e7437865110",
     "sectionCount": 1,
-    "readerNormalizedBlockCount": 51
+    "readerNormalizedBlockCount": 77
   },
   "sections": [
     {
@@ -31,14 +37,15 @@
       "source": "portrait_walpurgis_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 51,
-        "cn": 51,
+        "jp": 77,
+        "cn": 77,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "10d619a5b0300cc77ccd83820f77dac195b94f08a130bc67bde7a7d59a7427f1",
-        "cn": "10d619a5b0300cc77ccd83820f77dac195b94f08a130bc67bde7a7d59a7427f1"
-      }
+        "jp": "ea65cda435e63a9ef4bc81537300f2be7b164d75dff89c86f02b191b90a4c225",
+        "cn": "66da601bb335319641dd7f908cbd6a90b63b57a75ad37b5aef8d7b826a7652ec"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -48,10 +55,17 @@
       "twPath": "4_Portrait/portrait_walpurgis_1/portrait_walpurgis_1.json",
       "twSha256": "1e578e146c5b008261eafead56e3dc6220bc249ae9e69031bb12071e713284f9",
       "jpSha256": "0490250346e5ec658b0a9dcbcd62c781f9b92c60849f56c9feee0905356891c9",
-      "cnSha256": "a3f04072a7b2275a4ee29370d87c91587ac51e333264c91cac6b5ae4ce52c969",
-      "simplifiedJsonSha256": "a3f04072a7b2275a4ee29370d87c91587ac51e333264c91cac6b5ae4ce52c969",
+      "cnSha256": "4cbd22b429b24bc57201cdf5fa39ed690abe812dbce355b4a152e7f0558f10a7",
+      "simplifiedJsonSha256": "4cbd22b429b24bc57201cdf5fa39ed690abe812dbce355b4a152e7f0558f10a7",
       "eventCount": 77,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 75,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -99,5 +113,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "503d6092a5ccbc799a16869854daeeaa122de72396d041b3bee879415b08d872",
+    "cnSha256": "094056f99766a5a6aa8ac1ae06bbe28412ae207b9f7418c352534e7437865110",
+    "sectionCount": 1,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 1,
+    "sectionCount": 1
   }
 }

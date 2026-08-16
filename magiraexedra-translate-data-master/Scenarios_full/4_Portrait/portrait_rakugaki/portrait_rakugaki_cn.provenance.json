@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "d4080a15c2765e3527207a5ee4f01592343e4b125f43fce34d437dfedcc3a48c",
-  "cnSha256": "779b84660d3ac6674fc2321e9c57e61988e04e4ecb5e5e2ef160c2687f696669",
+  "cnSha256": "6be3aca5b74b809f73a15acce36a239eb64464ef91dc8dd3699ea1892180fb1b",
   "chapterTitle": "第六章 · 涂鸦的魔女",
   "sections": [
     {
@@ -62,10 +65,24 @@
       "twPath": "4_Portrait/portrait_rakugaki_1/portrait_rakugaki_1.json",
       "twSha256": "9d4331ab79518aaf4bbfdc7306812a006b51d110acd24a31bdac5a7744c41593",
       "jpSha256": "b0939cd9510ae9f13972c72441d6c8c20e8a3f00de3508677f2479033e1cf2b2",
-      "cnSha256": "2f58156d6a09d901581f16e5c8362c925452b4489d00d97fa3b6c040118ad16f",
-      "simplifiedJsonSha256": "2f58156d6a09d901581f16e5c8362c925452b4489d00d97fa3b6c040118ad16f",
+      "cnSha256": "f2fef3c391b81b23266ed896638ec96881e4ed14e126accfdb0512f26d550d33",
+      "simplifiedJsonSha256": "f2fef3c391b81b23266ed896638ec96881e4ed14e126accfdb0512f26d550d33",
       "eventCount": 87,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 82,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

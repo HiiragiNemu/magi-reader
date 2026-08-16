@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "07efda3dd71b0b21ea1c5c5b89bd95a61954d39ea4f5feefad2976e4b9865b58",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 63
+    "readerNormalizedBlockCount": 104
   },
   "cn": {
-    "renderedSha256": "514f51c1fe77d70412e7c01b52e44348253f45bb80beb26cd63165dc6b382d06",
+    "renderedSha256": "8d09306f50f0bb8d9a598d501700690c6f48e777b3b54e873b7eeab49773e97b",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 63
+    "readerNormalizedBlockCount": 104
   },
   "sections": [
     {
@@ -31,28 +37,30 @@
       "source": "portrait_mannenzakura_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 35,
-        "cn": 35,
+        "jp": 56,
+        "cn": 56,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "307d910c1b2cbe34636ba22f5d8297d85083c0b52291d14a619e565c30534703",
-        "cn": "307d910c1b2cbe34636ba22f5d8297d85083c0b52291d14a619e565c30534703"
-      }
+        "jp": "cbadbb09dde6cc9baf5404b71c41309a3d9f7ca1a4a62ca76af0fcbaa559ee44",
+        "cn": "e5058992761f041118a0c85441736c3456eb893d19fdfc7d45281687fe246bfc"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 2,
       "source": "portrait_mannenzakura_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 28,
-        "cn": 28,
+        "jp": 48,
+        "cn": 48,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "fe6e39345c6be05e9bf79a76a729910b33f1b90676532ffd3a1de8cd7ca27fc8",
-        "cn": "fe6e39345c6be05e9bf79a76a729910b33f1b90676532ffd3a1de8cd7ca27fc8"
-      }
+        "jp": "008d8748d80247d4f5f882eb7faaf44c92cc64c8392a7f61ae5a4c88bd9bd216",
+        "cn": "b7b656783efe0db0ffa11d27dd285a1ae9b99caa33a992c62cfbb4715fadb538"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -62,10 +70,17 @@
       "twPath": "4_Portrait/portrait_mannenzakura_1/portrait_mannenzakura_1.json",
       "twSha256": "a72d05836d8872757a9698f2f65d021412c76497360afa326ce886d62086f26c",
       "jpSha256": "5b522928641fe9940f8860de96fc930072709d73b74334a484dfae70bf3c82d6",
-      "cnSha256": "40e0a1760533252f89f9deb2db507eb2fe0bc4e2494760294486b3ff3b604070",
-      "simplifiedJsonSha256": "40e0a1760533252f89f9deb2db507eb2fe0bc4e2494760294486b3ff3b604070",
+      "cnSha256": "62d24ecde22170bff9547a7c066a66fb34eaee2eeba0134ac271e21a88b02e36",
+      "simplifiedJsonSha256": "62d24ecde22170bff9547a7c066a66fb34eaee2eeba0134ac271e21a88b02e36",
       "eventCount": 56,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 53,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 3,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_mannenzakura_2.json",
@@ -73,10 +88,17 @@
       "twPath": "4_Portrait/portrait_mannenzakura_2/portrait_mannenzakura_2.json",
       "twSha256": "3384f01b4605d221ef44dd141ed88d7adb77e913be2665d6ddf1a9d605e40199",
       "jpSha256": "9bcfc09ede9a7714b96c26533b5159d20fccc7ced3df65fc0a90943fd1c80076",
-      "cnSha256": "9e475a763c2130c6d68dcf300908acd0497ca7099cff1938b1f8ed22ee97049f",
-      "simplifiedJsonSha256": "9e475a763c2130c6d68dcf300908acd0497ca7099cff1938b1f8ed22ee97049f",
+      "cnSha256": "6fb31a7f622ca1a19628f41de120d8ae7f163581c3f2932f146d34786f8b7799",
+      "simplifiedJsonSha256": "6fb31a7f622ca1a19628f41de120d8ae7f163581c3f2932f146d34786f8b7799",
       "eventCount": 48,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 46,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -142,5 +164,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "07efda3dd71b0b21ea1c5c5b89bd95a61954d39ea4f5feefad2976e4b9865b58",
+    "cnSha256": "8d09306f50f0bb8d9a598d501700690c6f48e777b3b54e873b7eeab49773e97b",
+    "sectionCount": 2,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 2,
+    "sectionCount": 2
   }
 }

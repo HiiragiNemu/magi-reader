@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "0a3d1bed55ca730c16b70ca690e93d3448d37546506df43e3b69e347a10b94cc",
     "sectionCount": 6,
-    "readerNormalizedBlockCount": 269
+    "readerNormalizedBlockCount": 569
   },
   "cn": {
-    "renderedSha256": "635b67499c507f7388730d7dd6a235238ad022ea329fadb2e8f7e1120faf63cb",
+    "renderedSha256": "4f3d64bf27f7c291a2e4930eea22b8f61dd9076bd23f6e7892266de0ae4b83b9",
     "sectionCount": 6,
-    "readerNormalizedBlockCount": 269
+    "readerNormalizedBlockCount": 569
   },
   "sections": [
     {
@@ -31,84 +37,90 @@
       "source": "main_rakugaki_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 32,
-        "cn": 32,
+        "jp": 83,
+        "cn": 83,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "8097efde8f91e83500d508fcd1be72dae2823c21c3dfa3f855995360c282bf56",
-        "cn": "8097efde8f91e83500d508fcd1be72dae2823c21c3dfa3f855995360c282bf56"
-      }
+        "jp": "397632366ee9121f6ecea3611c96e4af2a13f439bfe79ed1f300dd056c362735",
+        "cn": "397632366ee9121f6ecea3611c96e4af2a13f439bfe79ed1f300dd056c362735"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "main_rakugaki_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 43,
-        "cn": 43,
+        "jp": 97,
+        "cn": 97,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "7f5b43629088532bb04ad36aa1c9ee64cfe370241009a51b1f846123976bc2fa",
-        "cn": "7f5b43629088532bb04ad36aa1c9ee64cfe370241009a51b1f846123976bc2fa"
-      }
+        "jp": "8278b99d0b63aff70d47be128562bc316b98d6e5b7e66716fe266b150debe83c",
+        "cn": "8278b99d0b63aff70d47be128562bc316b98d6e5b7e66716fe266b150debe83c"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "main_rakugaki_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 50,
-        "cn": 50,
+        "jp": 92,
+        "cn": 92,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "735af24de1e9e61e5f614976fc21510392a9be1f5013c166601a28074e4d543b",
-        "cn": "735af24de1e9e61e5f614976fc21510392a9be1f5013c166601a28074e4d543b"
-      }
+        "jp": "10955d2204ac29a9d701a02ae320e18b91b1590526d3270d8f8feef54b777b81",
+        "cn": "10955d2204ac29a9d701a02ae320e18b91b1590526d3270d8f8feef54b777b81"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
       "source": "main_rakugaki_4.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 48,
-        "cn": 48,
+        "jp": 93,
+        "cn": 93,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "712e6c35ed19513d61c78bdf874f0bea5018ecfb9006558b5465cf716da35ba9",
-        "cn": "712e6c35ed19513d61c78bdf874f0bea5018ecfb9006558b5465cf716da35ba9"
-      }
+        "jp": "21523dc566ba35f31ce2fb77bbe788d474c5752c50c6dfc8fae1b5a991e1cf0b",
+        "cn": "21523dc566ba35f31ce2fb77bbe788d474c5752c50c6dfc8fae1b5a991e1cf0b"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 5,
       "source": "main_rakugaki_5.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 48,
-        "cn": 48,
+        "jp": 105,
+        "cn": 105,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "f234d9c1a5c54bf89747b23aeb91dd244989648052ac841eb143037389339acb",
-        "cn": "f234d9c1a5c54bf89747b23aeb91dd244989648052ac841eb143037389339acb"
-      }
+        "jp": "d652993832168521d698cd4a35c64ea466e4d14867c85028ec1ed4dcc25b026f",
+        "cn": "1f3bcca06253cc003e74fec17f478f5efaf2e5cee5a3b3aaa92465bc7badf03e"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 6,
       "source": "main_rakugaki_6.json",
       "wikiEpisode": 6,
       "readerNormalizedBlocks": {
-        "jp": 48,
-        "cn": 48,
+        "jp": 99,
+        "cn": 99,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "09299b3a4de265db5c29b3badd29f81c3e865432719206c8b75a2a2bfd4c7583",
-        "cn": "09299b3a4de265db5c29b3badd29f81c3e865432719206c8b75a2a2bfd4c7583"
-      }
+        "jp": "6a81ba1aa785efd863ec0e35c279324b5a2ecab058675d37a6ddc1fa8740badc",
+        "cn": "1e7a997948cd1df81064d0dc0acb2d4aa6621cd2017d8c04db05a62ca0ad1a0e"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -118,10 +130,17 @@
       "twPath": "1_Main/main_rakugaki_1/main_rakugaki_1.json",
       "twSha256": "0d3a1561aeeec0706d65c30ff0d8eb85a3012df9629a90b936bcacb38530a9c9",
       "jpSha256": "91b9fc46a4be77bf0438bbd3d6c53344e52c557dfe997507961dc476371cdf1f",
-      "cnSha256": "924c4de5f22c71c8f66733ce0a8ae3c5c312fb2cd2fb71ad0f4d435ccba4a179",
-      "simplifiedJsonSha256": "924c4de5f22c71c8f66733ce0a8ae3c5c312fb2cd2fb71ad0f4d435ccba4a179",
+      "cnSha256": "17894c776ef405b22279bc47c8e4cbcc4bfc7a17c121c7014308f923b4c0171c",
+      "simplifiedJsonSha256": "17894c776ef405b22279bc47c8e4cbcc4bfc7a17c121c7014308f923b4c0171c",
       "eventCount": 83,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 83,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "main_rakugaki_2.json",
@@ -129,10 +148,17 @@
       "twPath": "1_Main/main_rakugaki_2/main_rakugaki_2.json",
       "twSha256": "cd449ae3a3f154ef8c59d7e63fb130ac2004148a788265e158c0f4ea1b9f3fbc",
       "jpSha256": "173d47458b9c82ba69ecde4c31d5cf45c1c99f9399006cde7f4ef01ae0be017c",
-      "cnSha256": "ca8a12c10860c5d2cd59cbed1a36c79929c5d8bb60ef9a085abe11ba7a596f3f",
-      "simplifiedJsonSha256": "ca8a12c10860c5d2cd59cbed1a36c79929c5d8bb60ef9a085abe11ba7a596f3f",
+      "cnSha256": "e642093f1f9836544dfa75fdd291cc187d2de8733828babe4e0eeb6204bb40d0",
+      "simplifiedJsonSha256": "e642093f1f9836544dfa75fdd291cc187d2de8733828babe4e0eeb6204bb40d0",
       "eventCount": 97,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 97,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "main_rakugaki_3.json",
@@ -140,10 +166,17 @@
       "twPath": "1_Main/main_rakugaki_3/main_rakugaki_3.json",
       "twSha256": "d7f38cdf984e55efd39a953c7030f336d8a5c2ff17da8475d4acb49d85a016c7",
       "jpSha256": "4cea5048b82eb4240b3f6aeac27081de6f183fa08fc768245b77a1301dbbf252",
-      "cnSha256": "67e5bc0ee71006840744780fd62775a5b73267496c441505a0c599ee3f75a44f",
-      "simplifiedJsonSha256": "67e5bc0ee71006840744780fd62775a5b73267496c441505a0c599ee3f75a44f",
+      "cnSha256": "75e74bd0a2af50f7c88b7e50bba495b32ca6d3792a34039edc866fded3a0fb7d",
+      "simplifiedJsonSha256": "75e74bd0a2af50f7c88b7e50bba495b32ca6d3792a34039edc866fded3a0fb7d",
       "eventCount": 92,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 92,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "main_rakugaki_4.json",
@@ -151,10 +184,17 @@
       "twPath": "1_Main/main_rakugaki_4/main_rakugaki_4.json",
       "twSha256": "1cfac611d793e963faf09bfbab88a4c78fbd01c39ff1b8e07879803e87cf4285",
       "jpSha256": "5f9c4558a7e1d44105fd178ee48a99cdcae14c8301dada537065bb8ff51c8444",
-      "cnSha256": "ad664b25d32cfe6529181dd4b471b56c967b8ba2a7116f04c3351039ac5eec46",
-      "simplifiedJsonSha256": "ad664b25d32cfe6529181dd4b471b56c967b8ba2a7116f04c3351039ac5eec46",
+      "cnSha256": "d61c82aaea3088b52b9c9b56644633b3ff8bfbf29330246f1aed328e80464c7e",
+      "simplifiedJsonSha256": "d61c82aaea3088b52b9c9b56644633b3ff8bfbf29330246f1aed328e80464c7e",
       "eventCount": 93,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 93,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "main_rakugaki_5.json",
@@ -162,10 +202,17 @@
       "twPath": "1_Main/main_rakugaki_5/main_rakugaki_5.json",
       "twSha256": "5fed0c1eb891282f64e96a774bf853c17dc144ca2eea3b04274bd7942c605a56",
       "jpSha256": "61c8d3ba9ebbabff2a22586fac85f7cc1e8e42ff14bba479e560dc5ef99891ce",
-      "cnSha256": "1bf9e24d4d2245a341e5a4e8fc66a424eb7e426c2fc96d48ddac7cfd7452fe99",
-      "simplifiedJsonSha256": "1bf9e24d4d2245a341e5a4e8fc66a424eb7e426c2fc96d48ddac7cfd7452fe99",
+      "cnSha256": "e1d5ddb0cf6b54274d4da2d16870a2e3a3cf43650468a0272b35bfce1d87853b",
+      "simplifiedJsonSha256": "e1d5ddb0cf6b54274d4da2d16870a2e3a3cf43650468a0272b35bfce1d87853b",
       "eventCount": 105,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 105,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "main_rakugaki_6.json",
@@ -173,10 +220,17 @@
       "twPath": "1_Main/main_rakugaki_6/main_rakugaki_6.json",
       "twSha256": "91a4d89b7af15062f8c45ed0fa3acff351f599298ea9aa0e18a38994d2666f89",
       "jpSha256": "1c3efbbe33c8857acde2894b4f3c024f984f48fb2ce6d45bb0105072441651ba",
-      "cnSha256": "365cfd2b6f3a7b4bd9cce8fd5993d0016466846c528c2287a4c1a2e364860b8f",
-      "simplifiedJsonSha256": "365cfd2b6f3a7b4bd9cce8fd5993d0016466846c528c2287a4c1a2e364860b8f",
+      "cnSha256": "37f93cb92bcfbb54478de40036097397a998e5fd7bdbe9f37aea2e0c85b286ba",
+      "simplifiedJsonSha256": "37f93cb92bcfbb54478de40036097397a998e5fd7bdbe9f37aea2e0c85b286ba",
       "eventCount": 99,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 97,
+      "dictionaryFallbackSpeakerEvents": 2,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -334,5 +388,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "0a3d1bed55ca730c16b70ca690e93d3448d37546506df43e3b69e347a10b94cc",
+    "cnSha256": "4f3d64bf27f7c291a2e4930eea22b8f61dd9076bd23f6e7892266de0ae4b83b9",
+    "sectionCount": 6,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 6,
+    "sectionCount": 6
   }
 }

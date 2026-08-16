@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "cfc03b216bb6545b6b0598700e9456632c1ffb3ba86a80cc8b71ce67ef3a8734",
-  "cnSha256": "67ee889f845877b7e98cd8da0c03a504b22c16d2e2049a228b43f540f8a6bd4f",
+  "cnSha256": "53ee9d6d10252ebe07880917b50ef1def28ee5558ce2632bc9076cbeafe0ff28",
   "chapterTitle": "",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_Christmas2025_kyoko_1/portrait_Christmas2025_kyoko_1.json",
       "twSha256": "7f97c20526234e14728ce668739a8c19cb23d8daef6bb0e7b6f1483b76d52d34",
       "jpSha256": "01402451d65fd9b177898f280318fc889aecbcb01fa27768b0a681bded8805ab",
-      "cnSha256": "84264524a78e80670565c33cecabc86757c88202b098fef75aa87039c412114c",
-      "simplifiedJsonSha256": "84264524a78e80670565c33cecabc86757c88202b098fef75aa87039c412114c",
+      "cnSha256": "e097c1c776693d0f11c9c1db90ac14d6bd0385517ed7a6abeee8812a8e437663",
+      "simplifiedJsonSha256": "e097c1c776693d0f11c9c1db90ac14d6bd0385517ed7a6abeee8812a8e437663",
       "eventCount": 55,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 47,
+      "dictionaryFallbackSpeakerEvents": 2,
+      "narrationSpeakerEvents": 6,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_Christmas2025_kyoko_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_Christmas2025_kyoko_2/portrait_Christmas2025_kyoko_2.json",
       "twSha256": "94a16443901d599f33c67a30a0e54117f3a9eb9781bc68d813e3e4e3ca8969da",
       "jpSha256": "5c05a42e49e379fa5fdc67fbb05ee9d5b622c216cea3c920f838f2a7a7bf3e31",
-      "cnSha256": "48ea1f21a17c9989d9cb2b8481fc87eebe98febdf157814c9032bb4eaf53d63c",
-      "simplifiedJsonSha256": "48ea1f21a17c9989d9cb2b8481fc87eebe98febdf157814c9032bb4eaf53d63c",
+      "cnSha256": "7b0c4ba02668d364b9b6ce02c94f731d9876e1d065389033455f239c1447f4d2",
+      "simplifiedJsonSha256": "7b0c4ba02668d364b9b6ce02c94f731d9876e1d065389033455f239c1447f4d2",
       "eventCount": 49,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 43,
+      "dictionaryFallbackSpeakerEvents": 4,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "516e15e2fd3bf259dee21b82876eb10b503ca1a88ddd845d9d1a5af529231780",
-  "cnSha256": "b1d489d1feefef6062aafaa2ad1372daee5452694bfc22fa4ea259bcc4686d7d",
+  "cnSha256": "f5c85366d157180a995a7520616e56972d8f854181d27aa530dd5a02ee3384b5",
   "chapterTitle": "",
   "sections": [
     {
@@ -60,10 +63,24 @@
       "twPath": "2_Sub/sub_april2025_1/sub_april2025_1.json",
       "twSha256": "13bbbf08ba08bd543d571d0c04142f79b3181eaba7236655407cbb36a64c9be8",
       "jpSha256": "95fb6fbdfaa0e106bc175c9d6befb158b09a0fbb8d83a7c301e4c618f21a62df",
-      "cnSha256": "91875cb5156944113f267334f85bc89363b525de21858b70181b6f7269173a9b",
-      "simplifiedJsonSha256": "91875cb5156944113f267334f85bc89363b525de21858b70181b6f7269173a9b",
+      "cnSha256": "7ab7273eadc39c69d26e7d43597307d46a3c39c771cf437c0bb5712e1befa615",
+      "simplifiedJsonSha256": "7ab7273eadc39c69d26e7d43597307d46a3c39c771cf437c0bb5712e1befa615",
       "eventCount": 127,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 125,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

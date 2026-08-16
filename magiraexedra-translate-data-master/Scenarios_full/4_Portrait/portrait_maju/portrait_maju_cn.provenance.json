@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "72ff6879745bf82c03a272efaa0a8b8c26ef779b71167155ddff72e149cf77a8",
-  "cnSha256": "3bff12cb553e4c0c2cb6386ad2e129e8952953def8bde7c4d4522b7313409a0e",
+  "cnSha256": "6c3e129118c88127b05fe6140ddeab178ea8cc1b776549734e50c5494bb49a74",
   "chapterTitle": "魔兽 · 魔兽",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_maju_1/portrait_maju_1.json",
       "twSha256": "a153f0f9562fd477bcc55690429fed7f8817497dcb0dc7c6f0ac106b097f80d2",
       "jpSha256": "e8d9b2b8ce02b315d76d5c491deb72fb0e5cf22c3da813406404e2f759857ce9",
-      "cnSha256": "7d7592b99c15367cd65b14e9fd17ce5bda7a04a0bd58ebf255e2895e579ace53",
-      "simplifiedJsonSha256": "7d7592b99c15367cd65b14e9fd17ce5bda7a04a0bd58ebf255e2895e579ace53",
+      "cnSha256": "4d79d4f1320f18f4c9b994e822070195a51c623b89ecb6e627f0a4912520de44",
+      "simplifiedJsonSha256": "4d79d4f1320f18f4c9b994e822070195a51c623b89ecb6e627f0a4912520de44",
       "eventCount": 27,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 27,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_maju_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_maju_2/portrait_maju_2.json",
       "twSha256": "f1de1748d29ec5241c26abfef246ab6c8ffda46ccd49c11e1bfcb7386523672e",
       "jpSha256": "249804275ba669e948d482b769fc8af5c8bb415b79128dd279e5f7ca104c5429",
-      "cnSha256": "fbe871c28ab931c79aa9881b1b956381c5f9c3d193725b2a6bfd7946a81e422c",
-      "simplifiedJsonSha256": "fbe871c28ab931c79aa9881b1b956381c5f9c3d193725b2a6bfd7946a81e422c",
+      "cnSha256": "b527f495fcebddd3c479d930365c8853565197f4942c9395dbce519e78e6bb67",
+      "simplifiedJsonSha256": "b527f495fcebddd3c479d930365c8853565197f4942c9395dbce519e78e6bb67",
       "eventCount": 45,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 45,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

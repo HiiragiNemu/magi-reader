@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-event-count-action-row",
+    "speakerPolicy": "dictionary_canonicalized_jp_name",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": false
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "770e23582eb1cf0420052fd172819cb44ad557b2b7bbe510e73760f64ab615c2",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 111
+    "readerNormalizedBlockCount": 149
   },
   "cn": {
-    "renderedSha256": "42b36562000128df4b09c7035903363a95754fa26f7df2b37f3cc3a85ff78028",
+    "renderedSha256": "dab3ab65842820ac039805ee3e6d7031e950995c9cf3f02e93dad4975fdd34ee",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 111
+    "readerNormalizedBlockCount": 149
   },
   "sections": [
     {
@@ -31,35 +37,37 @@
       "source": "portrait_magirekozero3_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 64,
-        "cn": 64,
+        "jp": 75,
+        "cn": 75,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "353ee48a46cf6196846c97d2590b91a81b2bf55accd50985cdb7e13185871a86",
-        "cn": "353ee48a46cf6196846c97d2590b91a81b2bf55accd50985cdb7e13185871a86"
-      }
+        "jp": "9b2fc45884f09054c81d40e1097662ef2a8cde8683b5f07def549f1e785ce98d",
+        "cn": "9b2fc45884f09054c81d40e1097662ef2a8cde8683b5f07def549f1e785ce98d"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "portrait_magirekozero3_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 47,
-        "cn": 47,
+        "jp": 74,
+        "cn": 74,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "f994182e5b2adb7ec8249ddadbf0e8d2f6b8adc8b59f5b2ecc0b5764eae51ec3",
-        "cn": "f994182e5b2adb7ec8249ddadbf0e8d2f6b8adc8b59f5b2ecc0b5764eae51ec3"
-      }
+        "jp": "833c11511683130be18d87f74b8902467013f3118424dc47d07769d7a73df2b1",
+        "cn": "833c11511683130be18d87f74b8902467013f3118424dc47d07769d7a73df2b1"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
     {
       "source": "portrait_magirekozero3_1.json",
       "jpSha256": "5e5be70107110f3f5f8c22e634d52b2ba59a72c47c7d5ba9983f89cb3c51d50c",
-      "cnSha256": "522c4f5222691985be4131b47118e7d826580edfd2729bd251eed1d685b64316",
+      "cnSha256": "e271e78a9910be2abed8aa70518bec10d23154802761f2b0292c662a40a7b353",
       "provenance": "rounddora_0728_human",
       "sourceName": "CreMemo3_Bonus.ass",
       "sourceUrl": "",
@@ -107,16 +115,19 @@
         "groupSection": 1
       },
       "mutationProof": {
-        "nonCommentFieldsMatch": true,
         "playableCommentSequenceMatches": true,
         "mutableCommentCellCount": 75,
-        "canonicalEventCount": 75
-      }
+        "canonicalEventCount": 75,
+        "nonLocalizedFieldsMatch": true,
+        "canonicalNameFields": true
+      },
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "portrait_magirekozero3_2.json",
       "jpSha256": "75763a59cf135519a7db236bad19860c0b61557b06e24348a8fc5f0955e62512",
-      "cnSha256": "af583f71282c9d8961f9a8f3bca7638b0b24a9248a793fb97ed0c7eacb4d0684",
+      "cnSha256": "efb20106fdb1c7efac876217e3a9963b6b2b787d0b65da5453825a5cdde55c4c",
       "provenance": "rounddora_0728_human",
       "sourceName": "CreMemo3_Bonus.ass",
       "sourceUrl": "",
@@ -164,16 +175,26 @@
         "groupSection": 2
       },
       "mutationProof": {
-        "nonCommentFieldsMatch": true,
         "playableCommentSequenceMatches": true,
         "mutableCommentCellCount": 74,
-        "canonicalEventCount": 74
-      }
+        "canonicalEventCount": 74,
+        "nonLocalizedFieldsMatch": true,
+        "canonicalNameFields": true
+      },
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     }
   ],
   "sourcePriority": [
     "repository_existing_chinese",
     "exedra_wiki_human",
     "rounddora_0728_human"
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 148,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "1a96a2c1857a321169ed303240e4e263c01a3a18114b26ef5f9fa3a5d7b16b67",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 281
+    "readerNormalizedBlockCount": 466
   },
   "cn": {
-    "renderedSha256": "e3fbbe272f9662362d441badcd7b0283767b8ad3399682399a3100cf2a083300",
+    "renderedSha256": "181521863f5b90922c20f74792d9961ec25a1e81148c518246afbb9706bf4b52",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 281
+    "readerNormalizedBlockCount": 466
   },
   "sections": [
     {
@@ -31,112 +37,120 @@
       "source": "character_himika_0.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 3,
+        "cn": 3,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "be09e5b2a1c2833d4ea71243d099ef23d6b30d83cc0d0e69e4cbbe2317fffacb",
+        "cn": "be09e5b2a1c2833d4ea71243d099ef23d6b30d83cc0d0e69e4cbbe2317fffacb"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "character_himika_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 30,
-        "cn": 30,
+        "jp": 67,
+        "cn": 67,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "2ff12c462a9f3a7e7fb215e5ee5a1509e64a21961410af78ff355fe95b2d6076",
-        "cn": "2ff12c462a9f3a7e7fb215e5ee5a1509e64a21961410af78ff355fe95b2d6076"
-      }
+        "jp": "3a8e1897320349f8071662c6d6c10cd7aacd682b0d6d12f15da21fa7d27c3edf",
+        "cn": "3a8e1897320349f8071662c6d6c10cd7aacd682b0d6d12f15da21fa7d27c3edf"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "character_himika_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 33,
-        "cn": 33,
+        "jp": 65,
+        "cn": 65,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "f767252f4063257c00977debaebdf3f8fe8769ae43ccc78e8000866c146171b4",
-        "cn": "f767252f4063257c00977debaebdf3f8fe8769ae43ccc78e8000866c146171b4"
-      }
+        "jp": "df0243d0ec57311024abd1faf570f8f7ddf953124c11d0513513dcb96c35748b",
+        "cn": "df0243d0ec57311024abd1faf570f8f7ddf953124c11d0513513dcb96c35748b"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
       "source": "character_himika_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 31,
-        "cn": 31,
+        "jp": 49,
+        "cn": 49,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "9ad468eb5e62ec4f44e0a630d2cbbe6e2c8c2c36cddc6411f6c474bd2da72657",
-        "cn": "9ad468eb5e62ec4f44e0a630d2cbbe6e2c8c2c36cddc6411f6c474bd2da72657"
-      }
+        "jp": "deae854730da5a98402f80c6aefffd8012c14f591ec74c1adb7adf94135089c8",
+        "cn": "deae854730da5a98402f80c6aefffd8012c14f591ec74c1adb7adf94135089c8"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 5,
       "source": "character_himika_4.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 39,
-        "cn": 39,
+        "jp": 64,
+        "cn": 64,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "b64c45e9e5c234d76a3009185c0ac851e300a73a1cb0ad2e96838675ab6994e4",
-        "cn": "b64c45e9e5c234d76a3009185c0ac851e300a73a1cb0ad2e96838675ab6994e4"
-      }
+        "jp": "2d8a54613e951751ab1e476b0709405aecc26c27d108c6b50a87b45eb73d3f25",
+        "cn": "9113d4604acab0c1322ee65748c8288db024d025ef786b8f720886741e0f411d"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 6,
       "source": "character_himika_5.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 53,
-        "cn": 53,
+        "jp": 72,
+        "cn": 72,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "e7e1b1a7cc8c221b94e8c9fa731fc3119eef82f0643bf0f363ec112d611fd08f",
-        "cn": "e7e1b1a7cc8c221b94e8c9fa731fc3119eef82f0643bf0f363ec112d611fd08f"
-      }
+        "jp": "2fad187b5ec735c06dee7d4db08b3fc3eb4ca90afbca843b85a695b97fabe062",
+        "cn": "2fad187b5ec735c06dee7d4db08b3fc3eb4ca90afbca843b85a695b97fabe062"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 7,
       "source": "character_himika_6.json",
       "wikiEpisode": 6,
       "readerNormalizedBlocks": {
-        "jp": 55,
-        "cn": 55,
+        "jp": 76,
+        "cn": 76,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "3774724483a1199bf4c36ee42212339efed90d94e380d9939877852fcd128baa",
-        "cn": "3774724483a1199bf4c36ee42212339efed90d94e380d9939877852fcd128baa"
-      }
+        "jp": "7f5ac5943aa19f7c0349e416dc76c73b3daf181fcc3f4ba1aa87fbd439111595",
+        "cn": "7f5ac5943aa19f7c0349e416dc76c73b3daf181fcc3f4ba1aa87fbd439111595"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 8,
       "source": "character_himika_7.json",
       "wikiEpisode": 7,
       "readerNormalizedBlocks": {
-        "jp": 39,
-        "cn": 39,
+        "jp": 70,
+        "cn": 70,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "2cf9592c93d613ddd13a93a0b763a1b59b6b83b93cac3cd2afa0e731d846b8b1",
-        "cn": "2cf9592c93d613ddd13a93a0b763a1b59b6b83b93cac3cd2afa0e731d846b8b1"
-      }
+        "jp": "555d2c9b189f412d0a21f3a40ee159d0198ed020505bd33bbdbc2e6f2e24b5f3",
+        "cn": "555d2c9b189f412d0a21f3a40ee159d0198ed020505bd33bbdbc2e6f2e24b5f3"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -146,10 +160,17 @@
       "twPath": "3_Character/character_himika_0/character_himika_0.json",
       "twSha256": "00b1f4a3f8828ae2a0b1ee8662c9e1f09bedf2ffd3613a62f906b7f8c7d5dfde",
       "jpSha256": "a8a4ce06371bcb585bed543e582be6a37d53fd6ecb4dc65d209deb859504289f",
-      "cnSha256": "c8c4af20096698adfc5a8c5f5f7cb9c91f713093d66cd282823b2fa5489b8089",
-      "simplifiedJsonSha256": "c8c4af20096698adfc5a8c5f5f7cb9c91f713093d66cd282823b2fa5489b8089",
+      "cnSha256": "1963a66e7a78f0f77ebbae684627840b6845020021b216acb428d1fb02f63878",
+      "simplifiedJsonSha256": "1963a66e7a78f0f77ebbae684627840b6845020021b216acb428d1fb02f63878",
       "eventCount": 3,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 3,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_himika_1.json",
@@ -157,10 +178,17 @@
       "twPath": "3_Character/character_himika_1/character_himika_1.json",
       "twSha256": "eb2fbf8beb28173048721782126395ce28f40eb8a2adee905c9dda9137115fa4",
       "jpSha256": "715afcefbb95df0c00afc848fffa28012d780286d34a533509c34113d8f14511",
-      "cnSha256": "106de6657db38f004d5db4222819692808c62c2ac5d6fd21ac91af95d4de780c",
-      "simplifiedJsonSha256": "106de6657db38f004d5db4222819692808c62c2ac5d6fd21ac91af95d4de780c",
+      "cnSha256": "790ca7acff6337bc2496cb581311793134990e78dadaddcfa1a06001a2051a95",
+      "simplifiedJsonSha256": "790ca7acff6337bc2496cb581311793134990e78dadaddcfa1a06001a2051a95",
       "eventCount": 67,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 50,
+      "dictionaryFallbackSpeakerEvents": 12,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     },
     {
       "source": "character_himika_2.json",
@@ -168,10 +196,17 @@
       "twPath": "3_Character/character_himika_2/character_himika_2.json",
       "twSha256": "bb16ee6783fee13d30faf554b8610dcf789d27cb90d330872b2808cdac832276",
       "jpSha256": "48cda6f75cff5bf2cb33fe941e2684d558a5409e9ba5a2fbdf90b2a8be73ae36",
-      "cnSha256": "4afcca79c5287e4ebc519c65a70638c778c6087920d75365589749e4e39f5545",
-      "simplifiedJsonSha256": "4afcca79c5287e4ebc519c65a70638c778c6087920d75365589749e4e39f5545",
+      "cnSha256": "dde315b3a2d0e90593e322dae4aa8d3226f38844536c86f0c9f3f8e89d38a163",
+      "simplifiedJsonSha256": "dde315b3a2d0e90593e322dae4aa8d3226f38844536c86f0c9f3f8e89d38a163",
       "eventCount": 65,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 61,
+      "dictionaryFallbackSpeakerEvents": 2,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "character_himika_3.json",
@@ -179,10 +214,17 @@
       "twPath": "3_Character/character_himika_3/character_himika_3.json",
       "twSha256": "b5234b5f32764854a51a20ccae764d90181ef66edb977c77b95c9c4e22210ef7",
       "jpSha256": "d6af211059ff11ed3c52a4a304a0b6c15a90cc0148a716d769e9bd31ae8ba1a9",
-      "cnSha256": "4b0a24a4e8303a9a50fc12b8e7c8ac29782474a2e99d2873e6575f38f05b5e35",
-      "simplifiedJsonSha256": "4b0a24a4e8303a9a50fc12b8e7c8ac29782474a2e99d2873e6575f38f05b5e35",
+      "cnSha256": "be759607c79b97609dece520f82998ca8504d944cce772cebf6cc4ca88e1d203",
+      "simplifiedJsonSha256": "be759607c79b97609dece520f82998ca8504d944cce772cebf6cc4ca88e1d203",
       "eventCount": 49,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 49,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_himika_4.json",
@@ -190,10 +232,17 @@
       "twPath": "3_Character/character_himika_4/character_himika_4.json",
       "twSha256": "1a15de29a366c4dea45a54225a5b1fae328d8034640cc143569a06c74e4dfb7a",
       "jpSha256": "0290c05f142d6f5c06ff0b30f0c063fddf0dcfad95f34b27da37344752d514ed",
-      "cnSha256": "16579bd15e9cf0a96209cd319955fade392b33bc2f94d409bb720f2a18bc141b",
-      "simplifiedJsonSha256": "16579bd15e9cf0a96209cd319955fade392b33bc2f94d409bb720f2a18bc141b",
+      "cnSha256": "4bb3edbff0872021d4d17c2b55c9c6cd694f38aaaea6a533ce174da872342f5c",
+      "simplifiedJsonSha256": "4bb3edbff0872021d4d17c2b55c9c6cd694f38aaaea6a533ce174da872342f5c",
       "eventCount": 64,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 63,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     },
     {
       "source": "character_himika_5.json",
@@ -201,10 +250,17 @@
       "twPath": "3_Character/character_himika_5/character_himika_5.json",
       "twSha256": "534a47f75ef6f9b2bd8c8a0d8f21c73cba3ca8085cb2e4bedfd5fb0f7bc32cae",
       "jpSha256": "8a6c7be71ee6f93602ff7541c22a8d919b8f2a7c60cb6fc8ab77ac2c1a87c952",
-      "cnSha256": "59df10c8e4cf94d1098febf088e9c074d4e4c3a8b16a1b182223a12f5ae61f9b",
-      "simplifiedJsonSha256": "59df10c8e4cf94d1098febf088e9c074d4e4c3a8b16a1b182223a12f5ae61f9b",
+      "cnSha256": "3ced106cfcf7eee896d280d4105640f0e76aa9521794964fdefe70e23e947ae1",
+      "simplifiedJsonSha256": "3ced106cfcf7eee896d280d4105640f0e76aa9521794964fdefe70e23e947ae1",
       "eventCount": 72,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 59,
+      "dictionaryFallbackSpeakerEvents": 6,
+      "narrationSpeakerEvents": 7,
+      "canonicalNameFields": true
     },
     {
       "source": "character_himika_6.json",
@@ -212,10 +268,17 @@
       "twPath": "3_Character/character_himika_6/character_himika_6.json",
       "twSha256": "acf929943ce3b2abdaf566ae29344d95288c0e62003f972bcb183fb1385d6b5b",
       "jpSha256": "126a980a5cb9c78e96d1b1fa0d503930432781ebd778117419e7ced75a4d493a",
-      "cnSha256": "54a99a5f8a0954eb1e50541913123a93568c4e8ea1e953092d70386cd91b7b10",
-      "simplifiedJsonSha256": "54a99a5f8a0954eb1e50541913123a93568c4e8ea1e953092d70386cd91b7b10",
+      "cnSha256": "57d01b624483f1d4a41ee36101c5e34b6e4bf20d1ed3be0da902c7d8d4032afe",
+      "simplifiedJsonSha256": "57d01b624483f1d4a41ee36101c5e34b6e4bf20d1ed3be0da902c7d8d4032afe",
       "eventCount": 76,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 63,
+      "dictionaryFallbackSpeakerEvents": 6,
+      "narrationSpeakerEvents": 7,
+      "canonicalNameFields": true
     },
     {
       "source": "character_himika_7.json",
@@ -223,10 +286,17 @@
       "twPath": "3_Character/character_himika_7/character_himika_7.json",
       "twSha256": "7dca26711ea79d3569081c24909cf37311e6e16f3ffcf0b4ff37cf8465fc2f75",
       "jpSha256": "28e30859792bb2fd53424e2abe74249da157b4d854b9583dac7f0ce19027e9d3",
-      "cnSha256": "293a78d16f2727ccc51d00a0877f10e435a1b37f1e919b2d29e49b22414a02b0",
-      "simplifiedJsonSha256": "293a78d16f2727ccc51d00a0877f10e435a1b37f1e919b2d29e49b22414a02b0",
+      "cnSha256": "4f24d4a4c0cfd1a3fb7dbafe678fa6ed945f355b09d3d25a7dacebc79eceba77",
+      "simplifiedJsonSha256": "4f24d4a4c0cfd1a3fb7dbafe678fa6ed945f355b09d3d25a7dacebc79eceba77",
       "eventCount": 70,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 63,
+      "dictionaryFallbackSpeakerEvents": 2,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -428,5 +498,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "1a96a2c1857a321169ed303240e4e263c01a3a18114b26ef5f9fa3a5d7b16b67",
+    "cnSha256": "181521863f5b90922c20f74792d9961ec25a1e81148c518246afbb9706bf4b52",
+    "sectionCount": 8,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 8,
+    "sectionCount": 8
   }
 }

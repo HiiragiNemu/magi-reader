@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-event-count-action-row",
+    "speakerPolicy": "dictionary_canonicalized_jp_name",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": false
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "2647709c30130ca82c41faab00892b65c438d04312bc1d1253095f0beb9ad3ba",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 156
+    "readerNormalizedBlockCount": 384
   },
   "cn": {
-    "renderedSha256": "67d13ae7266a4372c52abacafc9a8d411ea6be67a6175716b82455d1da036642",
+    "renderedSha256": "35a16a9d2228dcbd1bd20557c023090b32ace0a464c266080822371fd0be9bd9",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 156
+    "readerNormalizedBlockCount": 384
   },
   "sections": [
     {
@@ -31,199 +37,230 @@
       "source": "character_liz_0.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 3,
+        "cn": 3,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "0a413e70debc2a2e65d47699cc68cf6a894046413ce1a3f94521e17f864d7a94",
-        "cn": "0a413e70debc2a2e65d47699cc68cf6a894046413ce1a3f94521e17f864d7a94"
-      }
+        "jp": "4e9d20be8477bc30b02ba02a02d7d2d6691a6cc428db97aac27d351dea924a7c",
+        "cn": "4e9d20be8477bc30b02ba02a02d7d2d6691a6cc428db97aac27d351dea924a7c"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "character_liz_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 20,
-        "cn": 20,
+        "jp": 48,
+        "cn": 48,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "b235f4eaaf23becec85eeed936deb5c3f747691508ed7e77aa103333be189771",
-        "cn": "b235f4eaaf23becec85eeed936deb5c3f747691508ed7e77aa103333be189771"
-      }
+        "jp": "704969dad2b89933def6bfc6458ffb63d7ea9ccc25405617bdbb2db99c9699a3",
+        "cn": "704969dad2b89933def6bfc6458ffb63d7ea9ccc25405617bdbb2db99c9699a3"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "character_liz_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 27,
-        "cn": 27,
+        "jp": 63,
+        "cn": 63,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "df3911c54fe2afb2bb9ada8dea852369ad91ea02c3aeb71593f7943a9c07e24c",
-        "cn": "df3911c54fe2afb2bb9ada8dea852369ad91ea02c3aeb71593f7943a9c07e24c"
-      }
+        "jp": "5458e6341ff2934592aace38edc0d51fbf451f2e78a133bb1b55ebe76b2d95ea",
+        "cn": "5458e6341ff2934592aace38edc0d51fbf451f2e78a133bb1b55ebe76b2d95ea"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
       "source": "character_liz_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 36,
-        "cn": 36,
+        "jp": 67,
+        "cn": 67,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "0e6fdf711c13dac5cfdeaaac7125fd69f0cbfecbc3591efbf4ca8d07c2571cfe",
-        "cn": "0e6fdf711c13dac5cfdeaaac7125fd69f0cbfecbc3591efbf4ca8d07c2571cfe"
-      }
+        "jp": "a5959c10676eadb25dea41891ed576227b84ced946f5a73fc7422e909c6c2db1",
+        "cn": "a5959c10676eadb25dea41891ed576227b84ced946f5a73fc7422e909c6c2db1"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 5,
       "source": "character_liz_4.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 19,
-        "cn": 19,
+        "jp": 47,
+        "cn": 47,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "1b6752fe42aa2e85424db313f90aa692b8ec722ce21e49055a8fcaacce2d02fd",
-        "cn": "1b6752fe42aa2e85424db313f90aa692b8ec722ce21e49055a8fcaacce2d02fd"
-      }
+        "jp": "791cfa8c75a806420248c0d6b956569194ddbdfcbe46ac894ca83d338194244f",
+        "cn": "791cfa8c75a806420248c0d6b956569194ddbdfcbe46ac894ca83d338194244f"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 6,
       "source": "character_liz_5.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 11,
-        "cn": 11,
+        "jp": 64,
+        "cn": 64,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "d055d247546140a115f33944edd82e19c5e7a4eb89117e1e6ef24f91e0bcb19c",
-        "cn": "d055d247546140a115f33944edd82e19c5e7a4eb89117e1e6ef24f91e0bcb19c"
-      }
+        "jp": "6ff84cdbc68b16dd2e7a4545764aca436707efe91f8996089b31d404aded0626",
+        "cn": "6ff84cdbc68b16dd2e7a4545764aca436707efe91f8996089b31d404aded0626"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 7,
       "source": "character_liz_6.json",
       "wikiEpisode": 6,
       "readerNormalizedBlocks": {
-        "jp": 20,
-        "cn": 20,
+        "jp": 51,
+        "cn": 51,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "734a603c0fe0774916f4ba9f3ef47d8a0b3b9e39526a2ada3fff1d3e7cc57762",
-        "cn": "734a603c0fe0774916f4ba9f3ef47d8a0b3b9e39526a2ada3fff1d3e7cc57762"
-      }
+        "jp": "49d2fd31d02e142c5d59fe5a10bc7674431dd6f4c11b6d625098fe3a1767d57b",
+        "cn": "49d2fd31d02e142c5d59fe5a10bc7674431dd6f4c11b6d625098fe3a1767d57b"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 8,
       "source": "character_liz_7.json",
       "wikiEpisode": 7,
       "readerNormalizedBlocks": {
-        "jp": 22,
-        "cn": 22,
+        "jp": 41,
+        "cn": 41,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "b3645423609045797a37af6911681aef1c3a70133d3c319005cfa64a72d6a986",
-        "cn": "b3645423609045797a37af6911681aef1c3a70133d3c319005cfa64a72d6a986"
-      }
+        "jp": "a8154fa3d611fd1d28cfd9a7e7642d06620e40f518681a263cd8c13a8b352722",
+        "cn": "a8154fa3d611fd1d28cfd9a7e7642d06620e40f518681a263cd8c13a8b352722"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
     {
       "source": "character_liz_0.json",
       "jpSha256": "6d644aa5bbfcce12129331b9e3b56e8600e296db65e5de1c8ead0a001b2c3147",
-      "cnSha256": "23f97c408ffa6a5e503546f11ba82198ede3768a3b6c6b9cd02214b51657275d",
+      "cnSha256": "f6f6d9c25f015f55e38a79053ab526eb1c8d130ec5824bfe24ffe1ace3a6ee0b",
       "provenance": "rounddora_0728_human",
       "sourceName": "Liz0.ass",
       "sourceUrl": "",
       "sourceSha256": "7444bcd653f203f7eb4a9dd7424f55abc244d7d3f5cda967913b36fbdb7d7713",
-      "eventCount": 3
+      "eventCount": 3,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_liz_1.json",
       "jpSha256": "5fba66db1b10e1956462a6bf836c3a62a73a14c3e3efa727d57e3f5de912105d",
-      "cnSha256": "c8cc34de0d79b36079899f740f14f9879c81f42c134605bc9a93d2619b308620",
+      "cnSha256": "20fced6c7d205a369715525290fa6cde2390718f8764e50661227496e783e2e4",
       "provenance": "rounddora_0728_human",
       "sourceName": "Liz1.ass",
       "sourceUrl": "",
       "sourceSha256": "280c555b70e9703fda234ffa9c78b189d6e32b293289a77e57850eafc87da1f0",
-      "eventCount": 48
+      "eventCount": 48,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_liz_2.json",
       "jpSha256": "c3421d383e6c559a722b3d0fbe6934d36efd4a205d6e2571465c75fe1a36cc0c",
-      "cnSha256": "2296b0053ae4c4fe0c58e2a3ab6efe1d81614ab0f3b07b8c08504d88bd4be81b",
+      "cnSha256": "832deccbe4cc56209e54f65e6103c6e6c73159977d659314911925986b260d99",
       "provenance": "rounddora_0728_human",
       "sourceName": "Liz2.ass",
       "sourceUrl": "",
       "sourceSha256": "7565619f40a45e3de5579a6edda61a668cbe79851cf205a0b90b3cbf7bfd4784",
-      "eventCount": 63
+      "eventCount": 63,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_liz_3.json",
       "jpSha256": "92f8139ab63e01ccec33943edae2cf011c41e48e14f8b742386096e7f80fb0e3",
-      "cnSha256": "2d7cfa410c202ddcd66611d60e26600d0e35dc7168fb12f2c4e96c711086feea",
+      "cnSha256": "f6e709d2d59f78fe1e7c8513e2a79b3580cb084f744c8dfe54f4ba8b034487fa",
       "provenance": "rounddora_0728_human",
       "sourceName": "Liz3.ass",
       "sourceUrl": "",
       "sourceSha256": "f50ed70f173051cbcfb301b452a0a73150bc159158b33e3c23e5f3718df52957",
-      "eventCount": 67
+      "eventCount": 67,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_liz_4.json",
       "jpSha256": "d5ad6a3c003782bd9c86e060fc73ea48d4821439ecc1f2ea620d69da22f03dc3",
-      "cnSha256": "be507af62228300c1835768cf1a8664ed5216612f476077f2a4a9379421fe9fe",
+      "cnSha256": "5923d162d959d8c11aee7d69395e6d038f76579a80ad30a1da60399e0207aead",
       "provenance": "rounddora_0728_human",
       "sourceName": "Liz4.ass",
       "sourceUrl": "",
       "sourceSha256": "67b6a6483cdceab94643501b6e2e9d32f5789391c7e72e41b7d821f7bcb10f94",
-      "eventCount": 47
+      "eventCount": 47,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_liz_5.json",
       "jpSha256": "6a53e732107f2b1e68cda97d52a6cc988174c6b18ced3b64b23a7fc6a1a8588a",
-      "cnSha256": "c6414bfb17f890afff2336ea9803859bb213f1eff7ceb33b57491a7c7d0c4ecf",
+      "cnSha256": "794bd8fbab9d88eb01a8a5647855b6934d0f64a75dcab4b7009e89fe4a7affe5",
       "provenance": "rounddora_0728_human",
       "sourceName": "Liz5.ass",
       "sourceUrl": "",
       "sourceSha256": "07570936914cd6b34fe90d74f7b9075763e1ec12834b4e7976ff170d231b69fd",
-      "eventCount": 64
+      "eventCount": 64,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_liz_6.json",
       "jpSha256": "def986cb05d42d909adeed82ca70678e70678fc62acf5a5fa415edd3b05497fd",
-      "cnSha256": "752ee135326913daa107dafbd3e5dcb369778ccb0b74a2cb804eb5e660df4ea1",
+      "cnSha256": "3cb5a799ec0b26823044bcc9b06d5897aad8be4c01a4f41a036f04783972f70b",
       "provenance": "rounddora_0728_human",
       "sourceName": "Liz6.ass",
       "sourceUrl": "",
       "sourceSha256": "9e873a315bafd72ea53272fc0d5b2a8bb4e760dae85ef4f1971bf68a39f629a0",
-      "eventCount": 51
+      "eventCount": 51,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_liz_7.json",
       "jpSha256": "0ccb69f6dcf0140c59b89b0b1195c080246b2db2a43acd125537c527ce4ac880",
-      "cnSha256": "d38ca6a535d16f86ed3d397b29774d5bdc93542195a0a7df80d795a389f5d956",
+      "cnSha256": "e15f51327303dff672cb93134f75d884ede557e857981761abc5403d65390d42",
       "provenance": "rounddora_0728_human",
       "sourceName": "Liz7.ass",
       "sourceUrl": "",
       "sourceSha256": "a773173bde55c33fce321ff9b94edb8a17dd748f995dc32e4eeaff3b9b58ad1d",
-      "eventCount": 41
+      "eventCount": 41,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     }
   ],
   "sourcePriority": [
     "repository_existing_chinese",
     "exedra_wiki_human",
     "rounddora_0728_human"
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 377,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

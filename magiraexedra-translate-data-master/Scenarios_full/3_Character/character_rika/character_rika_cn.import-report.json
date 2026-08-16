@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "1d31c3ea33143002de88543868dbeb40d84218bb11caa78be94443bc47efdf45",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 193
+    "readerNormalizedBlockCount": 428
   },
   "cn": {
-    "renderedSha256": "b69642c9936f9c618fd6beff95c5f0d8bfc38e235fed2785e03f4c332617d860",
+    "renderedSha256": "8597a3cfe7bfdc042d1a0e0ff0b27005a90bd921b3454bb97458d67a113ef613",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 193
+    "readerNormalizedBlockCount": 428
   },
   "sections": [
     {
@@ -31,112 +37,120 @@
       "source": "character_rika_0.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 3,
+        "cn": 3,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "38704e7f8c7559bfaf7aa8aeffa5349bd628c167a76b7e57b267d5547abf2dee",
-        "cn": "38704e7f8c7559bfaf7aa8aeffa5349bd628c167a76b7e57b267d5547abf2dee"
-      }
+        "jp": "bd114edd589e7bd107252f5485034a8541e90806df50708e40710d14e8152bea",
+        "cn": "bd114edd589e7bd107252f5485034a8541e90806df50708e40710d14e8152bea"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "character_rika_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 26,
-        "cn": 26,
+        "jp": 47,
+        "cn": 47,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "0b7d66f6da35e4c7be916706cd991b9664d956827581a353a7f2955d7e670e95",
-        "cn": "0b7d66f6da35e4c7be916706cd991b9664d956827581a353a7f2955d7e670e95"
-      }
+        "jp": "9dcb5184268dc4e4c3c6e18d4c379c4a564af663bbf601ce1da7b888b3969dca",
+        "cn": "9dcb5184268dc4e4c3c6e18d4c379c4a564af663bbf601ce1da7b888b3969dca"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "character_rika_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 23,
-        "cn": 23,
+        "jp": 51,
+        "cn": 51,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "2bc63eed3003c1ffdd55e30aeb9603c0d7feba393ba7c46068f66c1365d97000",
-        "cn": "2bc63eed3003c1ffdd55e30aeb9603c0d7feba393ba7c46068f66c1365d97000"
-      }
+        "jp": "8f0767050df7cbdb942e3f317292952e7d884bf61c8061d9f55f5fe9b297c2d2",
+        "cn": "8f0767050df7cbdb942e3f317292952e7d884bf61c8061d9f55f5fe9b297c2d2"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
       "source": "character_rika_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 23,
-        "cn": 23,
+        "jp": 64,
+        "cn": 64,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6a66838b2fd16413c5c56d8ecc95f7131140b5f2db13399eca77cfe4fdaa672b",
-        "cn": "6a66838b2fd16413c5c56d8ecc95f7131140b5f2db13399eca77cfe4fdaa672b"
-      }
+        "jp": "5e23693d7c48b1e8b385e00a2371873a97e75b3f93661c7dc4095439cffc5487",
+        "cn": "5e23693d7c48b1e8b385e00a2371873a97e75b3f93661c7dc4095439cffc5487"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 5,
       "source": "character_rika_4.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 32,
-        "cn": 32,
+        "jp": 66,
+        "cn": 66,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "b2699734ef2dd428b27bf4c85c178383d7beb3f9a0538a2ccaaf670de33e45aa",
-        "cn": "b2699734ef2dd428b27bf4c85c178383d7beb3f9a0538a2ccaaf670de33e45aa"
-      }
+        "jp": "14c57f24289707a183a293f818d4d125cdf96092e437461e5f4a98fe07c94e8a",
+        "cn": "14c57f24289707a183a293f818d4d125cdf96092e437461e5f4a98fe07c94e8a"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 6,
       "source": "character_rika_5.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 30,
-        "cn": 30,
+        "jp": 59,
+        "cn": 59,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "e52b914a583db96395e8dc34b66d3462b8f45327b80b722bf34ecf312d4395e7",
-        "cn": "e52b914a583db96395e8dc34b66d3462b8f45327b80b722bf34ecf312d4395e7"
-      }
+        "jp": "7334f8faab063503656b3b7c3c61bf0e480e95271f16e3bc65577e614d07f71f",
+        "cn": "7334f8faab063503656b3b7c3c61bf0e480e95271f16e3bc65577e614d07f71f"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 7,
       "source": "character_rika_6.json",
       "wikiEpisode": 6,
       "readerNormalizedBlocks": {
-        "jp": 28,
-        "cn": 28,
+        "jp": 62,
+        "cn": 62,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "4e4757f341b7f8ad9ef7bbabefe3a247fb83ebf0bb519fc89d78742e23650e58",
-        "cn": "4e4757f341b7f8ad9ef7bbabefe3a247fb83ebf0bb519fc89d78742e23650e58"
-      }
+        "jp": "97703aabfffc2b69d116770f3c3d8618e48ed36c75ae841ef44b0417426d7d49",
+        "cn": "97703aabfffc2b69d116770f3c3d8618e48ed36c75ae841ef44b0417426d7d49"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 8,
       "source": "character_rika_7.json",
       "wikiEpisode": 7,
       "readerNormalizedBlocks": {
-        "jp": 30,
-        "cn": 30,
+        "jp": 76,
+        "cn": 76,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "781340572acb4f6026760c29453fc6e3ddcaa09a32d9d99146b3338dcb0a8e07",
-        "cn": "781340572acb4f6026760c29453fc6e3ddcaa09a32d9d99146b3338dcb0a8e07"
-      }
+        "jp": "f5744d85b85b605190e23665612bcf9c336a12fb14fc913ac3ad2199b3395b50",
+        "cn": "f5744d85b85b605190e23665612bcf9c336a12fb14fc913ac3ad2199b3395b50"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -146,10 +160,17 @@
       "twPath": "3_Character/character_rika_0/character_rika_0.json",
       "twSha256": "294e6717c5db2ff5fa362fdc06fd6b61273aa7c7f3f478b0df6933fd494799c3",
       "jpSha256": "5f890777a5b183c2a28f3c33c0ccceeb574135a6eb3fc485f16e67b8fb947c98",
-      "cnSha256": "d02ceea91042e86ae0ae8178239a8242c88ede364216e219c75c38eaf733d4eb",
-      "simplifiedJsonSha256": "d02ceea91042e86ae0ae8178239a8242c88ede364216e219c75c38eaf733d4eb",
+      "cnSha256": "8561b81e69d5382f2973859852a6f470ba44c18d0af871e30a9edb155602236d",
+      "simplifiedJsonSha256": "8561b81e69d5382f2973859852a6f470ba44c18d0af871e30a9edb155602236d",
       "eventCount": 3,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 3,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rika_1.json",
@@ -157,10 +178,17 @@
       "twPath": "3_Character/character_rika_1/character_rika_1.json",
       "twSha256": "a9d2bf880701a34f759daa4e4dfb96a24b6322be3642c756619c544e043d6444",
       "jpSha256": "4f2396e569160fa71b0ebef3d0be1ae49164caf4a53c6bc2a9d01f27b7549918",
-      "cnSha256": "14d840ab32165f9620c598053e04245656205b7ac61a31a241d97d36e9526a23",
-      "simplifiedJsonSha256": "14d840ab32165f9620c598053e04245656205b7ac61a31a241d97d36e9526a23",
+      "cnSha256": "c8ca8e1c48e1cb6fec16ccc6db5c4a258058ca510ca3ba01514d133ca41b5186",
+      "simplifiedJsonSha256": "c8ca8e1c48e1cb6fec16ccc6db5c4a258058ca510ca3ba01514d133ca41b5186",
       "eventCount": 47,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 42,
+      "dictionaryFallbackSpeakerEvents": 3,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rika_2.json",
@@ -168,10 +196,17 @@
       "twPath": "3_Character/character_rika_2/character_rika_2.json",
       "twSha256": "0ae36106b61bc5676738f89fbfd937eb5ca247a37c33fa6ff9c30b35addf0a7a",
       "jpSha256": "5b23653810fa13b435bff512f0b1cf08e4a1a2dcb93ec0ab0278b4314658c2f3",
-      "cnSha256": "725cf8be532111336de6a6007d2c616f2b9c72486532f431387425aeec3764bc",
-      "simplifiedJsonSha256": "725cf8be532111336de6a6007d2c616f2b9c72486532f431387425aeec3764bc",
+      "cnSha256": "0071fc6a91efa275a7f664570b78e586d9f93a5c53cd1db599d145359580f617",
+      "simplifiedJsonSha256": "0071fc6a91efa275a7f664570b78e586d9f93a5c53cd1db599d145359580f617",
       "eventCount": 51,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 50,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rika_3.json",
@@ -179,10 +214,17 @@
       "twPath": "3_Character/character_rika_3/character_rika_3.json",
       "twSha256": "e9a53eb91e4c0b9a9362e61f7feb0404806b00ed82b5e7d096cfca819aaf218e",
       "jpSha256": "4789134e83ea9d229895903392c1b828e2c9b72bb9e215f36d808229b01f2281",
-      "cnSha256": "82a491e9daa54313f3e0026898f2ff08acbc6526350dbc4d71d8a4121025bcd4",
-      "simplifiedJsonSha256": "82a491e9daa54313f3e0026898f2ff08acbc6526350dbc4d71d8a4121025bcd4",
+      "cnSha256": "ede123615de262200f286d866ad152a4c3bff4bffeb1cfade143a3897353e0ab",
+      "simplifiedJsonSha256": "ede123615de262200f286d866ad152a4c3bff4bffeb1cfade143a3897353e0ab",
       "eventCount": 64,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 59,
+      "dictionaryFallbackSpeakerEvents": 3,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rika_4.json",
@@ -190,10 +232,17 @@
       "twPath": "3_Character/character_rika_4/character_rika_4.json",
       "twSha256": "d64079c4297976526a7f751fc9f9446bbcbe082b5c114da587593df7c3156008",
       "jpSha256": "e4d67e0609a2e7acc70f6a59302eee1f0909b1ff4b76017d56f5970d7a5d3883",
-      "cnSha256": "753c67cbd1c49f0078fd88744ab917a7b66950b21d8ae76dc1a6b0309757049e",
-      "simplifiedJsonSha256": "753c67cbd1c49f0078fd88744ab917a7b66950b21d8ae76dc1a6b0309757049e",
+      "cnSha256": "13ec7a0822ef024087bfcff22fdc9750477bf53c7ff1af5d0c6fd7a357074252",
+      "simplifiedJsonSha256": "13ec7a0822ef024087bfcff22fdc9750477bf53c7ff1af5d0c6fd7a357074252",
       "eventCount": 66,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 59,
+      "dictionaryFallbackSpeakerEvents": 2,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rika_5.json",
@@ -201,10 +250,17 @@
       "twPath": "3_Character/character_rika_5/character_rika_5.json",
       "twSha256": "9041d4e7d8d1bf5ceccd7e9d9e3decead4bdc550e6d6ff4b7554c23bd8e54e77",
       "jpSha256": "935b6460e5bb63d2aa9fed6b73ddb2a24b0865ec8ee65828b0951aba88faf3e6",
-      "cnSha256": "f364730ef504d10286fd191ff513042478676990a2c329aae73ce4e32ca3bef4",
-      "simplifiedJsonSha256": "f364730ef504d10286fd191ff513042478676990a2c329aae73ce4e32ca3bef4",
+      "cnSha256": "8cd23aeda25063bad05a6f7623c52c9eb8296eb56258058b2f3a227ee6eb1869",
+      "simplifiedJsonSha256": "8cd23aeda25063bad05a6f7623c52c9eb8296eb56258058b2f3a227ee6eb1869",
       "eventCount": 59,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 46,
+      "dictionaryFallbackSpeakerEvents": 12,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rika_6.json",
@@ -212,10 +268,17 @@
       "twPath": "3_Character/character_rika_6/character_rika_6.json",
       "twSha256": "10b10227f5ce7f883307db0a959025d217800be7c7522c11ed13653a1e1a9fd5",
       "jpSha256": "8b93a8808c52b20c1acb739a7f19cbc4c4fb1f505bc8adbe1c3076051878ecb4",
-      "cnSha256": "3a20927a355c73052ef48ff43a6b92fddb9929a65b5a9e8b46000bb906c7af48",
-      "simplifiedJsonSha256": "3a20927a355c73052ef48ff43a6b92fddb9929a65b5a9e8b46000bb906c7af48",
+      "cnSha256": "8cc3c1e4eece1a5ae5e35d98d5b49ed97ed478502d9c8e755dcfed1258f1fc64",
+      "simplifiedJsonSha256": "8cc3c1e4eece1a5ae5e35d98d5b49ed97ed478502d9c8e755dcfed1258f1fc64",
       "eventCount": 62,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 59,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rika_7.json",
@@ -223,10 +286,17 @@
       "twPath": "3_Character/character_rika_7/character_rika_7.json",
       "twSha256": "3a873bf3af64a40f9ffac7cb99f6065bdc549018d693f787150508c34764e699",
       "jpSha256": "c57406a11c23dcfbafd5279252b5145663f7e935649b6e1ab0c36fcb7dd3ab34",
-      "cnSha256": "8c78378917aa6f15d3373d69397816a9112144795ad81cc1ed2bf0272bff26d0",
-      "simplifiedJsonSha256": "8c78378917aa6f15d3373d69397816a9112144795ad81cc1ed2bf0272bff26d0",
+      "cnSha256": "d58bb91c7da07d3941a0be51538c9970ab0774d35c7767a69458cd8886821654",
+      "simplifiedJsonSha256": "d58bb91c7da07d3941a0be51538c9970ab0774d35c7767a69458cd8886821654",
       "eventCount": 76,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 76,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -428,5 +498,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "1d31c3ea33143002de88543868dbeb40d84218bb11caa78be94443bc47efdf45",
+    "cnSha256": "8597a3cfe7bfdc042d1a0e0ff0b27005a90bd921b3454bb97458d67a113ef613",
+    "sectionCount": 8,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 8,
+    "sectionCount": 8
   }
 }

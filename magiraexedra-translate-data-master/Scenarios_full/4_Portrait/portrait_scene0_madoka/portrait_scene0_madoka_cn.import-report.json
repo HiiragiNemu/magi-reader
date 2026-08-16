@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "9df477e27446a3c63680dd66ccbe3d8ccb435036d8fbee815fbf58862b84efdb",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 349
+    "readerNormalizedBlockCount": 627
   },
   "cn": {
-    "renderedSha256": "25105fdc4557a7cf8dfc748c466cecc2f0764044626114078898081833f25bcb",
+    "renderedSha256": "ac640c4a25d65d49522a5f96cb897e0c3b4d9549956966881d04685d5204d2d6",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 349
+    "readerNormalizedBlockCount": 627
   },
   "sections": [
     {
@@ -31,42 +37,45 @@
       "source": "portrait_scene0_madoka_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 110,
-        "cn": 110,
+        "jp": 203,
+        "cn": 203,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "651a374edf733091b93fe906c7b5d9a01a083f05dd46d213f7a8efe0ce913906",
-        "cn": "651a374edf733091b93fe906c7b5d9a01a083f05dd46d213f7a8efe0ce913906"
-      }
+        "jp": "7454399010e0b182b35e64539f450bb00a77ec1ad8a64fddbc2cac336552044e",
+        "cn": "c5b6ac47da9d885ddd33c18b03fafbaa5571b4636c3d6e6397de0a13ce5311f1"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 2,
       "source": "portrait_scene0_madoka_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 110,
-        "cn": 110,
+        "jp": 201,
+        "cn": 201,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "1cf8c80ddf0d36b252e73ec741f9ccb47e59d5d0d8c224d3f788b17c1272949f",
-        "cn": "1cf8c80ddf0d36b252e73ec741f9ccb47e59d5d0d8c224d3f788b17c1272949f"
-      }
+        "jp": "9b12809ee47f56a4060081f8bb48a85138eb942d3fb9a434f237d15f4e1d9190",
+        "cn": "c18b64d0fd2f4f0990ae6432fdef691b97e370cca2a22ca0289d7ccc0421e4c8"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 3,
       "source": "portrait_scene0_madoka_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 129,
-        "cn": 129,
+        "jp": 223,
+        "cn": 223,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "89878015b15909923a918a5c1d3afd441aaf6a298eb8d68f55205d927d4c96d3",
-        "cn": "89878015b15909923a918a5c1d3afd441aaf6a298eb8d68f55205d927d4c96d3"
-      }
+        "jp": "f4b98e6af736157c5a3bdd3a857019fc5109b4ceb01037299328c7c7bfef7467",
+        "cn": "0d3765f361c1c1ed2dc11a3010412750b5c85c6cf0af618660bb433da6f68aff"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -76,10 +85,17 @@
       "twPath": "4_Portrait/portrait_scene0_madoka_1/portrait_scene0_madoka_1.json",
       "twSha256": "4433fae51693cd1e091f9d6c98886ae40501200ed87b7d2a3c71f75c05f1b61d",
       "jpSha256": "5b2da6f3cb5fc83e1029f83782fdb37fc2b8e736be1531a15a04692cd51f6778",
-      "cnSha256": "79e9865437dbcc71f638240fa0c11fd9ed05438a22f8b96979b80635e360d201",
-      "simplifiedJsonSha256": "79e9865437dbcc71f638240fa0c11fd9ed05438a22f8b96979b80635e360d201",
+      "cnSha256": "c66396f82f699bd3b23a56424564ac25e24046ac35bb16a966de582e891fc215",
+      "simplifiedJsonSha256": "c66396f82f699bd3b23a56424564ac25e24046ac35bb16a966de582e891fc215",
       "eventCount": 203,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 185,
+      "dictionaryFallbackSpeakerEvents": 3,
+      "narrationSpeakerEvents": 15,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_scene0_madoka_2.json",
@@ -87,10 +103,17 @@
       "twPath": "4_Portrait/portrait_scene0_madoka_2/portrait_scene0_madoka_2.json",
       "twSha256": "a6f8846ae6e9fbc70a02205159aa7cfaaaed12c5af593612832017999bc3757b",
       "jpSha256": "9e37e206eafe583695b9fcf12c8a5663f1982c9f440d9714df95949e88eb1969",
-      "cnSha256": "e5f7857c10978911ce9e9485e9b4d9b403357f9b51f02fc22bd0ac4c90e82595",
-      "simplifiedJsonSha256": "e5f7857c10978911ce9e9485e9b4d9b403357f9b51f02fc22bd0ac4c90e82595",
+      "cnSha256": "6d2d0fa98dbf7ea3e81c7bcd123837b475ea3c3dfae1d5558ba3a3494381dd3f",
+      "simplifiedJsonSha256": "6d2d0fa98dbf7ea3e81c7bcd123837b475ea3c3dfae1d5558ba3a3494381dd3f",
       "eventCount": 201,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 194,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 6,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_scene0_madoka_3.json",
@@ -98,10 +121,17 @@
       "twPath": "4_Portrait/portrait_scene0_madoka_3/portrait_scene0_madoka_3.json",
       "twSha256": "e54d38c1e204809afe380eb7d1ee31c415ea2734d1c0e8abe321046fce7a959a",
       "jpSha256": "b70f97f334883f8199a25dc2623fbc960e89baccd0593191f401fc374723454f",
-      "cnSha256": "5cacc96dcacde6d9968497d35482ca0e5715024e73893d4be17241f5782265ff",
-      "simplifiedJsonSha256": "5cacc96dcacde6d9968497d35482ca0e5715024e73893d4be17241f5782265ff",
+      "cnSha256": "cd59effba517857adf718d32e88da44bcd9ebe18441fb345d6936d87819ce36f",
+      "simplifiedJsonSha256": "cd59effba517857adf718d32e88da44bcd9ebe18441fb345d6936d87819ce36f",
       "eventCount": 223,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 215,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 8,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -187,5 +217,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "9df477e27446a3c63680dd66ccbe3d8ccb435036d8fbee815fbf58862b84efdb",
+    "cnSha256": "ac640c4a25d65d49522a5f96cb897e0c3b4d9549956966881d04685d5204d2d6",
+    "sectionCount": 3,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 3,
+    "sectionCount": 3
   }
 }

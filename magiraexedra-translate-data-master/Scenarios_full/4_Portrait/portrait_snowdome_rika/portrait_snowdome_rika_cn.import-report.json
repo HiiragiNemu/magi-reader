@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "f319814166e336aee8abb38be32683eb12f67c95f8d8170cd0efc4c67f6d2891",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 61
+    "readerNormalizedBlockCount": 81
   },
   "cn": {
-    "renderedSha256": "aa669f6e273785af31574bdaa6e8f1b23d648c73d0ac38cd36c0d8a3d96a8730",
+    "renderedSha256": "53ccc0eafa44b991c8f91da9bb770197a18305e69580e47d7f70f3c2427fb771",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 61
+    "readerNormalizedBlockCount": 81
   },
   "sections": [
     {
@@ -31,28 +37,30 @@
       "source": "portrait_snowdome_rika_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 29,
-        "cn": 29,
+        "jp": 42,
+        "cn": 42,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "2bfcb5e2be0d53a323da41eeec4a646650c7ae270ccd8c7766e2e2fb17224c26",
-        "cn": "2bfcb5e2be0d53a323da41eeec4a646650c7ae270ccd8c7766e2e2fb17224c26"
-      }
+        "jp": "f5c5981070728bac2f1ebbdc3d69a8bfb6b646d3a75b7f46bf7e41f4c6392ede",
+        "cn": "f5c5981070728bac2f1ebbdc3d69a8bfb6b646d3a75b7f46bf7e41f4c6392ede"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "portrait_snowdome_rika_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 32,
-        "cn": 32,
+        "jp": 39,
+        "cn": 39,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "0d1dfb90323e36186e46c0447ee4601652fd3b205c5bfb807e0d444a3d3186ec",
-        "cn": "0d1dfb90323e36186e46c0447ee4601652fd3b205c5bfb807e0d444a3d3186ec"
-      }
+        "jp": "f656d9b41a0c7eb6ef2904bf517a00ec191f4b8a6fac1a36efedb8413ad1df58",
+        "cn": "5969dc9c9e744646e57a658e16ebba000c87e1c4a511af8110102d63cbb146f5"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -62,10 +70,17 @@
       "twPath": "4_Portrait/portrait_snowdome_rika_1/portrait_snowdome_rika_1.json",
       "twSha256": "0c6071f5b46f32b867fe21f21ab74d58a37545cdfc112b629a62330efd624761",
       "jpSha256": "4ea147c39d16076388c0fdfee5d2ffa4d1a713c10bbc391bbd783456da1e56a0",
-      "cnSha256": "322a8ec0f49ce408f730990243fd92d719f2d4c5c344ec4cfd839fe00673c463",
-      "simplifiedJsonSha256": "322a8ec0f49ce408f730990243fd92d719f2d4c5c344ec4cfd839fe00673c463",
+      "cnSha256": "af0d7975e9a9c0f325b645acb41615533dc4c1d8e126b1e049141745ea0d3964",
+      "simplifiedJsonSha256": "af0d7975e9a9c0f325b645acb41615533dc4c1d8e126b1e049141745ea0d3964",
       "eventCount": 42,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 40,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_snowdome_rika_2.json",
@@ -73,10 +88,17 @@
       "twPath": "4_Portrait/portrait_snowdome_rika_2/portrait_snowdome_rika_2.json",
       "twSha256": "3b3511828cad34ddc7761aa2944834fbae178a89902e7440bf0b01a01fb77088",
       "jpSha256": "a7f9e5692166e6198343b68189c9cdcb48953a34c3074116fb2fe19b7c07a1eb",
-      "cnSha256": "6a8f308622316aa19647a70b604b1b06171b98dbbecba19f29d9b24f23fdf744",
-      "simplifiedJsonSha256": "6a8f308622316aa19647a70b604b1b06171b98dbbecba19f29d9b24f23fdf744",
+      "cnSha256": "c8ae243e2c5dd9ad8e64a800e8f64a2689f51450b1eb7fdc19b9f85a7a301f57",
+      "simplifiedJsonSha256": "c8ae243e2c5dd9ad8e64a800e8f64a2689f51450b1eb7fdc19b9f85a7a301f57",
       "eventCount": 39,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 37,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -142,5 +164,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "f319814166e336aee8abb38be32683eb12f67c95f8d8170cd0efc4c67f6d2891",
+    "cnSha256": "53ccc0eafa44b991c8f91da9bb770197a18305e69580e47d7f70f3c2427fb771",
+    "sectionCount": 2,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 2,
+    "sectionCount": 2
   }
 }

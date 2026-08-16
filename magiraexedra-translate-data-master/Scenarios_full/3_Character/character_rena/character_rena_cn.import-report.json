@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "a19bfa3171c926be8d41cce7ab90fc68efd5e6e64690a9288c023a0ab9f93ff8",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 251
+    "readerNormalizedBlockCount": 403
   },
   "cn": {
-    "renderedSha256": "4df89dfaba954223e0325bf3b27617978a486fbea1ea5b122d7f0cbf5d435142",
+    "renderedSha256": "08c03ef86138b649a857685e27f455c08db8c6947e4ded3ea127e5480ed54b2c",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 251
+    "readerNormalizedBlockCount": 403
   },
   "sections": [
     {
@@ -31,112 +37,120 @@
       "source": "character_rena_0.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 3,
+        "cn": 3,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "d992fc8121ab16b384c642aef18eaeeb0853cb2468ddd03dd2e6d4780c15db16",
-        "cn": "d992fc8121ab16b384c642aef18eaeeb0853cb2468ddd03dd2e6d4780c15db16"
-      }
+        "jp": "2abc09bd058290cde7cb432ffb15c7d65f01fe0129794509b2e5847e205b3b1d",
+        "cn": "2abc09bd058290cde7cb432ffb15c7d65f01fe0129794509b2e5847e205b3b1d"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "character_rena_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 37,
-        "cn": 37,
+        "jp": 50,
+        "cn": 50,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "a29469569b7f81e44c5a5c70e246299292daab89f70a11b6f3cb4832c872c885",
-        "cn": "a29469569b7f81e44c5a5c70e246299292daab89f70a11b6f3cb4832c872c885"
-      }
+        "jp": "16b1e2af5c230f77d524571d57197055e8292bcb7cf5a6c05bb4132b5b7eea38",
+        "cn": "16b1e2af5c230f77d524571d57197055e8292bcb7cf5a6c05bb4132b5b7eea38"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "character_rena_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 42,
-        "cn": 42,
+        "jp": 50,
+        "cn": 50,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "cac1c3bb9743dcf0d71c59983be7810e3a1a3c4572d54061efc53927a6a842ee",
-        "cn": "cac1c3bb9743dcf0d71c59983be7810e3a1a3c4572d54061efc53927a6a842ee"
-      }
+        "jp": "8cbdd7e130357d0661fece11b32d068f3d5b269e4ab760358113b22e9935d306",
+        "cn": "41f76fbf7623cf29211942363eb9409885a93a6808b5cc9995223009d0c01af2"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 4,
       "source": "character_rena_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 43,
-        "cn": 43,
+        "jp": 62,
+        "cn": 62,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "7c264a0b21dc4760d5f093a9bb76d41c424b1fd9d8d66049626f26497e091bc4",
-        "cn": "7c264a0b21dc4760d5f093a9bb76d41c424b1fd9d8d66049626f26497e091bc4"
-      }
+        "jp": "17e554c9f6cfd862df521c74174c6c7675e4d532a082cb98e12b507c4ee3fbd6",
+        "cn": "8ac469e624165424c6995d9a86171a3233c2dd213977ade906d2b5a2dbd4c8da"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 5,
       "source": "character_rena_4.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 31,
-        "cn": 31,
+        "jp": 55,
+        "cn": 55,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "5b4547f4d2b6df37a1429eee019c18dadd92b4df23aff4244416161944b921fe",
-        "cn": "5b4547f4d2b6df37a1429eee019c18dadd92b4df23aff4244416161944b921fe"
-      }
+        "jp": "610c140f3306fc248bb405898f20a7890a6620a85b06a350e4299fb8f021fc71",
+        "cn": "610c140f3306fc248bb405898f20a7890a6620a85b06a350e4299fb8f021fc71"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 6,
       "source": "character_rena_5.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 46,
-        "cn": 46,
+        "jp": 63,
+        "cn": 63,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "0ceb3c1dbd0ba2f8eeaf8d9aeff3e65835b0d0a1c46a77fd14f9d25aec9bad08",
-        "cn": "0ceb3c1dbd0ba2f8eeaf8d9aeff3e65835b0d0a1c46a77fd14f9d25aec9bad08"
-      }
+        "jp": "417b6b7f54ba78b57b3e12dd3b2f1bb66f65c2f6ade68c3815b44a8ac76fc836",
+        "cn": "417b6b7f54ba78b57b3e12dd3b2f1bb66f65c2f6ade68c3815b44a8ac76fc836"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 7,
       "source": "character_rena_6.json",
       "wikiEpisode": 6,
       "readerNormalizedBlocks": {
-        "jp": 23,
-        "cn": 23,
+        "jp": 64,
+        "cn": 64,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "37135075ad0928d4539538275b2df5e4df9be838cee6f2637739430e9629563f",
-        "cn": "37135075ad0928d4539538275b2df5e4df9be838cee6f2637739430e9629563f"
-      }
+        "jp": "b5c94ace401af76053648d8a091555c9d3623ca63c8644ec6c81b1288bcdbd60",
+        "cn": "b5c94ace401af76053648d8a091555c9d3623ca63c8644ec6c81b1288bcdbd60"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 8,
       "source": "character_rena_7.json",
       "wikiEpisode": 7,
       "readerNormalizedBlocks": {
-        "jp": 28,
-        "cn": 28,
+        "jp": 56,
+        "cn": 56,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "d731b69f22aa68050ef6048b05d4e675a091d21b3a0cdee5aae1f62e0c2d10f8",
-        "cn": "d731b69f22aa68050ef6048b05d4e675a091d21b3a0cdee5aae1f62e0c2d10f8"
-      }
+        "jp": "eb6dc10f8382e8d130ca2631d56799842f2133b502472afb2e9195484ca69951",
+        "cn": "eb6dc10f8382e8d130ca2631d56799842f2133b502472afb2e9195484ca69951"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -146,10 +160,17 @@
       "twPath": "3_Character/character_rena_0/character_rena_0.json",
       "twSha256": "9025824a88f0f36700af9b84eaa00b9f3c964f89032e011977a4d8edf4a51a52",
       "jpSha256": "a2a4579fc2c331f961e3a3cf370072f81c3302bfbc84334da727ded2a69b2f40",
-      "cnSha256": "afe2d34fae02e10d2376cf15e76dcfb7f236d56c616b5b2522695df9a216e57a",
-      "simplifiedJsonSha256": "afe2d34fae02e10d2376cf15e76dcfb7f236d56c616b5b2522695df9a216e57a",
+      "cnSha256": "47a61243c1df2e89db133d71b2fffe35a01baecca41786ba3bc1f9a43a865ff1",
+      "simplifiedJsonSha256": "47a61243c1df2e89db133d71b2fffe35a01baecca41786ba3bc1f9a43a865ff1",
       "eventCount": 3,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 3,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rena_1.json",
@@ -157,10 +178,17 @@
       "twPath": "3_Character/character_rena_1/character_rena_1.json",
       "twSha256": "679bef2076e04709e6e82c8f897e6916a4130d6796782fea5b59be1cd42e8ab0",
       "jpSha256": "5661fbc5f7d99a43de73010f6b9b1f114ff154ac0ec756b619761298a8ae81f6",
-      "cnSha256": "05ba35a1661b69abab52821f6891010b7a8ae54740ce4429e9492509515db319",
-      "simplifiedJsonSha256": "05ba35a1661b69abab52821f6891010b7a8ae54740ce4429e9492509515db319",
+      "cnSha256": "826691f12cad5dc7c0e3ec32fe438b86d45fd10f98f9e72ea35145672e657306",
+      "simplifiedJsonSha256": "826691f12cad5dc7c0e3ec32fe438b86d45fd10f98f9e72ea35145672e657306",
       "eventCount": 50,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 44,
+      "dictionaryFallbackSpeakerEvents": 4,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rena_2.json",
@@ -168,10 +196,17 @@
       "twPath": "3_Character/character_rena_2/character_rena_2.json",
       "twSha256": "71a7621bb9ca511842ccd15525a60692991049b62bbab2b4f3cafe178cefac43",
       "jpSha256": "5282ed96aa6a22427966fe5add771a736e54e19b84c2379c9179c3c4e039a0e1",
-      "cnSha256": "19c7aef20531a2ea517abd403077b0d4543173d5aa1a0058c6f74ad36bff63ce",
-      "simplifiedJsonSha256": "19c7aef20531a2ea517abd403077b0d4543173d5aa1a0058c6f74ad36bff63ce",
+      "cnSha256": "2366b8bd5825e994043fde73960e36ea570ee5ba58d36723007d80c85412e5a3",
+      "simplifiedJsonSha256": "2366b8bd5825e994043fde73960e36ea570ee5ba58d36723007d80c85412e5a3",
       "eventCount": 50,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 50,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rena_3.json",
@@ -179,10 +214,17 @@
       "twPath": "3_Character/character_rena_3/character_rena_3.json",
       "twSha256": "6c03ec04b1e1f06534d413923fdcdc54c82bcd9e053e9c7536aa12fcc7698aff",
       "jpSha256": "94e67c433e45a91e2fe205671442ffc1f6c5092a55e0bafcacea37505ddd0dce",
-      "cnSha256": "96e9f65b95f024ca92b3c934d96154298e313723b5d52806e10448af73981c0d",
-      "simplifiedJsonSha256": "96e9f65b95f024ca92b3c934d96154298e313723b5d52806e10448af73981c0d",
+      "cnSha256": "1bdf7bb3330a4528dd1e06c805a93bfe13fcc83aa1f53eef8a63914e02e7c4da",
+      "simplifiedJsonSha256": "1bdf7bb3330a4528dd1e06c805a93bfe13fcc83aa1f53eef8a63914e02e7c4da",
       "eventCount": 62,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 62,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rena_4.json",
@@ -190,10 +232,17 @@
       "twPath": "3_Character/character_rena_4/character_rena_4.json",
       "twSha256": "646aad6caa67fcaea7f567fbcd0fd7713762a0e04d8c58fdeb371f964f5b2519",
       "jpSha256": "ac5d2ab70df0f747621b6a2f53eee2ec55e0616c899ea0e72d7b998902aeb9f5",
-      "cnSha256": "1bf5077beddc78ad392ed2117db661ad0030b69640fbf8deb6b9eb59459f0eae",
-      "simplifiedJsonSha256": "1bf5077beddc78ad392ed2117db661ad0030b69640fbf8deb6b9eb59459f0eae",
+      "cnSha256": "ec04093680ca0499cc47d15776c78f2816da93b060c5ecace56ac406922b5d75",
+      "simplifiedJsonSha256": "ec04093680ca0499cc47d15776c78f2816da93b060c5ecace56ac406922b5d75",
       "eventCount": 55,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 52,
+      "dictionaryFallbackSpeakerEvents": 3,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rena_5.json",
@@ -201,10 +250,17 @@
       "twPath": "3_Character/character_rena_5/character_rena_5.json",
       "twSha256": "6bd986a796389d2c830004906ca13ea4907966298f1bd99e9296d48a16d7dd55",
       "jpSha256": "a3d117e8cdd9e93d5c14efb44fce02b2207c4a5c193a8be7c933109c31f288e5",
-      "cnSha256": "e9a113b88b2d112e32a053c3aad2ce95be4a6c073b85eb20a9fc1d956f559009",
-      "simplifiedJsonSha256": "e9a113b88b2d112e32a053c3aad2ce95be4a6c073b85eb20a9fc1d956f559009",
+      "cnSha256": "8efbe5c950f2e0fc99cb3b6f16874fe92a3124461689158df8a57eea01fc6dcd",
+      "simplifiedJsonSha256": "8efbe5c950f2e0fc99cb3b6f16874fe92a3124461689158df8a57eea01fc6dcd",
       "eventCount": 63,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 60,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 3,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rena_6.json",
@@ -212,10 +268,17 @@
       "twPath": "3_Character/character_rena_6/character_rena_6.json",
       "twSha256": "a550546f3067016babc2ed5c371a240b9219f25021777b901b90fc1d71f43cf5",
       "jpSha256": "b9518de3de009011d043d5772c2cc84d510668f8bfcdd9eb77c3e05a450bf669",
-      "cnSha256": "6823f97610d63cb5779d2dc15a9bdda1e24a3656edb7c15a585c961627840ff4",
-      "simplifiedJsonSha256": "6823f97610d63cb5779d2dc15a9bdda1e24a3656edb7c15a585c961627840ff4",
+      "cnSha256": "87a09fed01c0c1a0c8d77d35171d4d0ec07bb524882ec0c12a0e36d90175e0c7",
+      "simplifiedJsonSha256": "87a09fed01c0c1a0c8d77d35171d4d0ec07bb524882ec0c12a0e36d90175e0c7",
       "eventCount": 64,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 62,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "character_rena_7.json",
@@ -223,10 +286,17 @@
       "twPath": "3_Character/character_rena_7/character_rena_7.json",
       "twSha256": "bc5ff292bdee0d03d3a6a1c25d1c96f66c74550f8dbe6d41e67f2609616ab3b0",
       "jpSha256": "0b0383c128e698753bb17270b471de0de8aed3ebcb550c18b01ec12a3185319e",
-      "cnSha256": "46a55e3936c46546c47c8977ad361c88175b7198a736c8272f49db032ed28b78",
-      "simplifiedJsonSha256": "46a55e3936c46546c47c8977ad361c88175b7198a736c8272f49db032ed28b78",
+      "cnSha256": "d12810acc3309af3712c964764c3687423a335acdf425c7ebbeca58683255a5c",
+      "simplifiedJsonSha256": "d12810acc3309af3712c964764c3687423a335acdf425c7ebbeca58683255a5c",
       "eventCount": 56,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 53,
+      "dictionaryFallbackSpeakerEvents": 3,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -428,5 +498,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "a19bfa3171c926be8d41cce7ab90fc68efd5e6e64690a9288c023a0ab9f93ff8",
+    "cnSha256": "08c03ef86138b649a857685e27f455c08db8c6947e4ded3ea127e5480ed54b2c",
+    "sectionCount": 8,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 8,
+    "sectionCount": 8
   }
 }

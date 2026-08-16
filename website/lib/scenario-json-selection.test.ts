@@ -121,6 +121,12 @@ test('Japanese Exedra structure can safely receive current Chinese event rows', 
     aggregateEditingBaselineLines: cnLines,
     aggregateEditedLines: edited,
   });
+  assert.deepEqual(
+    mapped.editedLines
+      .filter(line => !line.isHeader)
+      .map(line => line.speaker),
+    ['鹿目圆', '鹿目圆'],
+  );
   const download = createEditedScenarioJsonDownload({
     sourceJson,
     sourceFilename: filename,
@@ -133,6 +139,9 @@ test('Japanese Exedra structure can safely receive current Chinese event rows', 
     }>;
   };
   const rows = output.sheetList[0].contentRowList;
+  assert.equal(rows[0].cellList[1], '鹿目圆');
+  assert.equal(rows[1].cellList[1], '鹿目圆');
+  assert.equal(rows[2].cellList[1], '鹿目圆');
   assert.equal(rows[1].cellList[2], '你好');
   assert.equal(rows[2].cellList[2], '下次见');
   assert.deepEqual(rows[1].cellList.slice(3), ['madoka', 'Left', 'Talk']);
@@ -186,6 +195,8 @@ test('uploaded JSON imports only editable event text into the selected aggregate
     aggregateEditingBaselineLines: aggregate,
     aggregateCurrentEditedLines: aggregate,
   });
+  assert.equal(imported[1].speaker, '鹿目圆');
+  assert.equal(imported[2].speaker, '鹿目圆');
   assert.equal(imported[1].text, '中文一');
   assert.equal(imported[2].text, '中文二');
   assert.equal(imported[4].text, '保持不变');

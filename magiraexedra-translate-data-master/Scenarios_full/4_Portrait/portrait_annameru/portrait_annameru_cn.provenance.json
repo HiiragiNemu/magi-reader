@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "1d9518bc8951a884630647b2266abde021604c72bc46dd68b3fc18cd7c2628a8",
-  "cnSha256": "a99fd7533f6489143d2d69305d0674e5913759ed9dc54134eb8abb8443ac3e04",
+  "cnSha256": "a8122ed062e2abe32c3805e128160cb9cc23c3f6362d811dddc72022dbc3ed15",
   "chapterTitle": "",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_annameru_1/portrait_annameru_1.json",
       "twSha256": "d66ae4fedcd3cb720d254b42adf8558305fff51c276e2f74f9eb5136f2e52669",
       "jpSha256": "de3a1b7c3025aa97697affd2df301dea125d2cec89908c42bcfe7507807956dc",
-      "cnSha256": "033815273cc69b6896bce020e5050e52f23828bcbe9772477e2ca947a0fe28a7",
-      "simplifiedJsonSha256": "033815273cc69b6896bce020e5050e52f23828bcbe9772477e2ca947a0fe28a7",
+      "cnSha256": "aec8613afdf5d351be20fee1aaab91799b9e62c8b64f23e15fd1e140cb236390",
+      "simplifiedJsonSha256": "aec8613afdf5d351be20fee1aaab91799b9e62c8b64f23e15fd1e140cb236390",
       "eventCount": 69,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 67,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_annameru_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_annameru_2/portrait_annameru_2.json",
       "twSha256": "4f1c842a152c9598782ab5a9fe9ebf931f35e1690af7629ab13fdd3bffe172c9",
       "jpSha256": "d9f7faeb733dc94befa8f5024d340cc3eb6ec47ae53a90204c767b266aa79a86",
-      "cnSha256": "c08d5d9a97502410baf0d41c33ce8df5b99041cb2ca6b11d8f09a116cf242ae1",
-      "simplifiedJsonSha256": "c08d5d9a97502410baf0d41c33ce8df5b99041cb2ca6b11d8f09a116cf242ae1",
+      "cnSha256": "78679f3720f78fedd510ce0cb42bc4c320f82ce7088ed5ef6e7b0c9a5509d414",
+      "simplifiedJsonSha256": "78679f3720f78fedd510ce0cb42bc4c320f82ce7088ed5ef6e7b0c9a5509d414",
       "eventCount": 60,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 60,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

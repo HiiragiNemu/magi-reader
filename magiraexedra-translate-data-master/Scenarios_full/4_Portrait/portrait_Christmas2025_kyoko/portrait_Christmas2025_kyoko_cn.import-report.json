@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "cfc03b216bb6545b6b0598700e9456632c1ffb3ba86a80cc8b71ce67ef3a8734",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 53
+    "readerNormalizedBlockCount": 104
   },
   "cn": {
-    "renderedSha256": "67ee889f845877b7e98cd8da0c03a504b22c16d2e2049a228b43f540f8a6bd4f",
+    "renderedSha256": "53ee9d6d10252ebe07880917b50ef1def28ee5558ce2632bc9076cbeafe0ff28",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 53
+    "readerNormalizedBlockCount": 104
   },
   "sections": [
     {
@@ -31,28 +37,30 @@
       "source": "portrait_Christmas2025_kyoko_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 29,
-        "cn": 29,
+        "jp": 55,
+        "cn": 55,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "c063c87bcd27661bf10cfb7965e95f2c6e0dfc6d8792b013ee22850691cc3084",
-        "cn": "c063c87bcd27661bf10cfb7965e95f2c6e0dfc6d8792b013ee22850691cc3084"
-      }
+        "jp": "05a1ae3d3cea517d93f9bc25cfd32adeb58e34301512f13d0ccc23faee2b23ee",
+        "cn": "05a1ae3d3cea517d93f9bc25cfd32adeb58e34301512f13d0ccc23faee2b23ee"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "portrait_Christmas2025_kyoko_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 24,
-        "cn": 24,
+        "jp": 49,
+        "cn": 49,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "9059c7888c4725ebae911541a80e432fa170c2437eea59580880e67c907abcb0",
-        "cn": "9059c7888c4725ebae911541a80e432fa170c2437eea59580880e67c907abcb0"
-      }
+        "jp": "b3732a7647edac37fbcb44c77a779ef5ce4fd378aec593c8130d5229a9c0ec18",
+        "cn": "b3732a7647edac37fbcb44c77a779ef5ce4fd378aec593c8130d5229a9c0ec18"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -62,10 +70,17 @@
       "twPath": "4_Portrait/portrait_Christmas2025_kyoko_1/portrait_Christmas2025_kyoko_1.json",
       "twSha256": "7f97c20526234e14728ce668739a8c19cb23d8daef6bb0e7b6f1483b76d52d34",
       "jpSha256": "01402451d65fd9b177898f280318fc889aecbcb01fa27768b0a681bded8805ab",
-      "cnSha256": "84264524a78e80670565c33cecabc86757c88202b098fef75aa87039c412114c",
-      "simplifiedJsonSha256": "84264524a78e80670565c33cecabc86757c88202b098fef75aa87039c412114c",
+      "cnSha256": "e097c1c776693d0f11c9c1db90ac14d6bd0385517ed7a6abeee8812a8e437663",
+      "simplifiedJsonSha256": "e097c1c776693d0f11c9c1db90ac14d6bd0385517ed7a6abeee8812a8e437663",
       "eventCount": 55,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 47,
+      "dictionaryFallbackSpeakerEvents": 2,
+      "narrationSpeakerEvents": 6,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_Christmas2025_kyoko_2.json",
@@ -73,10 +88,17 @@
       "twPath": "4_Portrait/portrait_Christmas2025_kyoko_2/portrait_Christmas2025_kyoko_2.json",
       "twSha256": "94a16443901d599f33c67a30a0e54117f3a9eb9781bc68d813e3e4e3ca8969da",
       "jpSha256": "5c05a42e49e379fa5fdc67fbb05ee9d5b622c216cea3c920f838f2a7a7bf3e31",
-      "cnSha256": "48ea1f21a17c9989d9cb2b8481fc87eebe98febdf157814c9032bb4eaf53d63c",
-      "simplifiedJsonSha256": "48ea1f21a17c9989d9cb2b8481fc87eebe98febdf157814c9032bb4eaf53d63c",
+      "cnSha256": "7b0c4ba02668d364b9b6ce02c94f731d9876e1d065389033455f239c1447f4d2",
+      "simplifiedJsonSha256": "7b0c4ba02668d364b9b6ce02c94f731d9876e1d065389033455f239c1447f4d2",
       "eventCount": 49,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 43,
+      "dictionaryFallbackSpeakerEvents": 4,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -142,5 +164,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "cfc03b216bb6545b6b0598700e9456632c1ffb3ba86a80cc8b71ce67ef3a8734",
+    "cnSha256": "53ee9d6d10252ebe07880917b50ef1def28ee5558ce2632bc9076cbeafe0ff28",
+    "sectionCount": 2,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 2,
+    "sectionCount": 2
   }
 }

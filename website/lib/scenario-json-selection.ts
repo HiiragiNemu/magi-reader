@@ -1,4 +1,5 @@
 import type { StoryIndexEntry } from './story-index.ts';
+import { translateSpeakerName } from '../app/config/dictionary.ts';
 import {
   parseStoryContent,
   type StoryFormat,
@@ -26,6 +27,24 @@ export class ScenarioJsonSelectionError extends Error {
     this.name = 'ScenarioJsonSelectionError';
   }
 }
+
+const EXEDRA_NARRATION_SPEAKERS = new Set([
+  '',
+  '旁白',
+  'Narration',
+  'ナレーション',
+]);
+
+const canonicalScenarioSpeaker = (
+  format: StoryFormat,
+  speaker: string,
+): string => {
+  if (format !== 'exedra-json') return speaker;
+  const normalized = speaker.trim();
+  return EXEDRA_NARRATION_SPEAKERS.has(normalized)
+    ? '旁白'
+    : translateSpeakerName(normalized);
+};
 
 const jsonFilenameFromRepositoryPath = (path: string): string => {
   const filename = path.split('/').at(-1)?.trim() ?? '';
@@ -250,7 +269,10 @@ export const mapAggregateEditsToScenarioJson = ({
     }
     editedLines[jsonIndex] = {
       ...jsonBaseline,
-      speaker: aggregateEdited.speaker,
+      speaker: canonicalScenarioSpeaker(
+        parsed.format,
+        aggregateEdited.speaker,
+      ),
       text: aggregateEdited.text,
       ...(jsonBaseline.isChoice
         ? {
@@ -338,7 +360,10 @@ export const applyScenarioJsonUploadToAggregate = ({
     const current = result[aggregateIndex];
     result[aggregateIndex] = {
       ...current,
-      speaker: uploadedLine.speaker,
+      speaker: canonicalScenarioSpeaker(
+        uploaded.format,
+        uploadedLine.speaker,
+      ),
       text: uploadedLine.text,
       ...(current.isChoice
         ? {

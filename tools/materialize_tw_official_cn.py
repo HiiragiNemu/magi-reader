@@ -120,6 +120,8 @@ def main() -> int:
         ),
     )
 
+    run(sys.executable, "tools/canonicalize_exedra_cn_speakers.py")
+    run(sys.executable, "tools/certify_authentic_tw_reports.py")
     run(sys.executable, "generate_story_index.py")
     run(sys.executable, "tools/apply_tw_official_metadata.py")
     run(

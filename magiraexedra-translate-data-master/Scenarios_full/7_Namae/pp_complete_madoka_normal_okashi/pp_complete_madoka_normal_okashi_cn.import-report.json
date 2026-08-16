@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "94c9dc90198ff8f1c1f1e082f3a8bab1891527a04b085c31cd774e092ef86f08",
     "sectionCount": 1,
-    "readerNormalizedBlockCount": 13
+    "readerNormalizedBlockCount": 24
   },
   "cn": {
     "renderedSha256": "fbe28d45ed8926ae8349dc6364cb1e8fc5a7e0cf2196cfc063a25227b20c026d",
     "sectionCount": 1,
-    "readerNormalizedBlockCount": 13
+    "readerNormalizedBlockCount": 24
   },
   "sections": [
     {
@@ -31,14 +37,15 @@
       "source": "pp_complete_madoka_normal_okashi.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 13,
-        "cn": 13,
+        "jp": 24,
+        "cn": 24,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "1b9da3561355ed54a0fc33e964bca89b87b6a43bc42dd1c542b1f80e7e2bf186",
-        "cn": "1b9da3561355ed54a0fc33e964bca89b87b6a43bc42dd1c542b1f80e7e2bf186"
-      }
+        "jp": "40674c74d7f6408515f9b3001d4a84b4f06b1f9966c1b7cd16c747de04300635",
+        "cn": "40674c74d7f6408515f9b3001d4a84b4f06b1f9966c1b7cd16c747de04300635"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -51,7 +58,14 @@
       "cnSha256": "b91fd1cbc856d64f5569e36b3e9e10bbda699fd5d01a224b67c5b6a1451c85b1",
       "simplifiedJsonSha256": "b91fd1cbc856d64f5569e36b3e9e10bbda699fd5d01a224b67c5b6a1451c85b1",
       "eventCount": 24,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 24,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -97,5 +111,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "94c9dc90198ff8f1c1f1e082f3a8bab1891527a04b085c31cd774e092ef86f08",
+    "cnSha256": "fbe28d45ed8926ae8349dc6364cb1e8fc5a7e0cf2196cfc063a25227b20c026d",
+    "sectionCount": 1,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 1,
+    "sectionCount": 1
   }
 }

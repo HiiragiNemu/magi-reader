@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-event-count-action-row",
+    "speakerPolicy": "dictionary_canonicalized_jp_name",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": false
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "574e8210f3ab93ce7ed3fbab892f89a72080930eca824902b58e6c2ad7cc7b03",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 153
+    "readerNormalizedBlockCount": 262
   },
   "cn": {
-    "renderedSha256": "b505bc391ce587b2801cd485f09060abb7802e6d3d9587eb886146593758884a",
+    "renderedSha256": "4fe4ad2f3d35bddde01156ae237877435af87a31d6ecfbccc2a90f196f5bd5ae",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 153
+    "readerNormalizedBlockCount": 262
   },
   "sections": [
     {
@@ -31,112 +37,120 @@
       "source": "character_shinobu_0.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 3,
+        "cn": 3,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "358fff3ccd84d82af3a29f30a9d8198c777a94fecd2c20255e046d666fd7eb35",
-        "cn": "358fff3ccd84d82af3a29f30a9d8198c777a94fecd2c20255e046d666fd7eb35"
-      }
+        "jp": "c73e0f32163c7d2fd95819b206fe8a4b015acbdca75ea53772e61eeeeccd9df2",
+        "cn": "c73e0f32163c7d2fd95819b206fe8a4b015acbdca75ea53772e61eeeeccd9df2"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "character_shinobu_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 21,
-        "cn": 21,
+        "jp": 34,
+        "cn": 34,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "ccb414785b9ed7fa7e3544f00ec031f3417f0a2537ffe37c026d78a1758da610",
-        "cn": "ccb414785b9ed7fa7e3544f00ec031f3417f0a2537ffe37c026d78a1758da610"
-      }
+        "jp": "07e85e73b48ebac3e3dfcd2776b8bd0bb8a9b8fd3c61a599c63921c3da38402a",
+        "cn": "07e85e73b48ebac3e3dfcd2776b8bd0bb8a9b8fd3c61a599c63921c3da38402a"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "character_shinobu_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 21,
-        "cn": 21,
+        "jp": 38,
+        "cn": 38,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "3c24687714524e074f1af1a59066f586428eb571833d545ae7e4b574c109753a",
-        "cn": "3c24687714524e074f1af1a59066f586428eb571833d545ae7e4b574c109753a"
-      }
+        "jp": "797385ca8fee0b9c81b42ea5f7038629f0b0b3c10874cfe06f2dc5d6ba2b918e",
+        "cn": "797385ca8fee0b9c81b42ea5f7038629f0b0b3c10874cfe06f2dc5d6ba2b918e"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
       "source": "character_shinobu_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 18,
-        "cn": 18,
+        "jp": 33,
+        "cn": 33,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "13e9a2c68791456c48693fbf4b19073c43dafb9fccb2f905d18d444e1ef9d504",
-        "cn": "13e9a2c68791456c48693fbf4b19073c43dafb9fccb2f905d18d444e1ef9d504"
-      }
+        "jp": "d46ed07faabb72bc918ec84ebc5610b69c82263921301419bb09fa233df048c1",
+        "cn": "d46ed07faabb72bc918ec84ebc5610b69c82263921301419bb09fa233df048c1"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 5,
       "source": "character_shinobu_4.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 26,
-        "cn": 26,
+        "jp": 42,
+        "cn": 42,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "0c626dd5780784e49235765f995a1a3b8cdcbbc3298a1c5d8b6e9216136a2d7f",
-        "cn": "0c626dd5780784e49235765f995a1a3b8cdcbbc3298a1c5d8b6e9216136a2d7f"
-      }
+        "jp": "191573e2a8115145bc7ba9670fbc79eca941b8911c751d3c06f1673d35e768f6",
+        "cn": "191573e2a8115145bc7ba9670fbc79eca941b8911c751d3c06f1673d35e768f6"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 6,
       "source": "character_shinobu_5.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 22,
-        "cn": 22,
+        "jp": 38,
+        "cn": 38,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "7fb3565529756d03ec2067772412511630fdb1c90ae0fe5e1234499cdccbab75",
-        "cn": "7fb3565529756d03ec2067772412511630fdb1c90ae0fe5e1234499cdccbab75"
-      }
+        "jp": "a67272bdb05264908167c45e39b6e34956593779f7795674b86d0a6cb00ddb77",
+        "cn": "a67272bdb05264908167c45e39b6e34956593779f7795674b86d0a6cb00ddb77"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 7,
       "source": "character_shinobu_6.json",
       "wikiEpisode": 6,
       "readerNormalizedBlocks": {
-        "jp": 21,
-        "cn": 21,
+        "jp": 35,
+        "cn": 35,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "c5f5aa45c8dbcd1e0ad1f5fc2981d27bb32df7f565d73dce6039e6fe41f80420",
-        "cn": "c5f5aa45c8dbcd1e0ad1f5fc2981d27bb32df7f565d73dce6039e6fe41f80420"
-      }
+        "jp": "9ad76f27aa07b81dbc8bc52ddabb83ae903b4e2e4c34d866b1eb68050c488a4d",
+        "cn": "9ad76f27aa07b81dbc8bc52ddabb83ae903b4e2e4c34d866b1eb68050c488a4d"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 8,
       "source": "character_shinobu_7.json",
       "wikiEpisode": 7,
       "readerNormalizedBlocks": {
-        "jp": 23,
-        "cn": 23,
+        "jp": 39,
+        "cn": 39,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "113539ec6104a875ce6742d7d987c4ee4b4c21487f64bb190303a053a7c27e75",
-        "cn": "113539ec6104a875ce6742d7d987c4ee4b4c21487f64bb190303a053a7c27e75"
-      }
+        "jp": "62b7d7c884183e9146ae5a39f133de8768f6404bbb2b8a0bbe23bc7febe1d84b",
+        "cn": "62b7d7c884183e9146ae5a39f133de8768f6404bbb2b8a0bbe23bc7febe1d84b"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -148,7 +162,9 @@
       "sourceName": "OshinoShinobu0.ass",
       "sourceUrl": "",
       "sourceSha256": "a362e97d910f4c1d6bca871efaece227543a63accf7fb21b9b46ec4b9be0aa51",
-      "eventCount": 3
+      "eventCount": 3,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_shinobu_1.json",
@@ -158,7 +174,9 @@
       "sourceName": "OshinoShinobu1.ass",
       "sourceUrl": "",
       "sourceSha256": "30b71c44f66bb44051b5cfddec520eaf890b9164406e637a4ddf2485ef211366",
-      "eventCount": 34
+      "eventCount": 34,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_shinobu_2.json",
@@ -168,7 +186,9 @@
       "sourceName": "OshinoShinobu2.ass",
       "sourceUrl": "",
       "sourceSha256": "a35682884bb1ef3b2d5baff70375f9c2432716ec89d01bd0156caf693a28ff94",
-      "eventCount": 38
+      "eventCount": 38,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_shinobu_3.json",
@@ -178,7 +198,9 @@
       "sourceName": "OshinoShinobu3.ass",
       "sourceUrl": "",
       "sourceSha256": "723846e9a136e05a79aed3eb34cef114749971dd243701171b2ebef97a48e8b2",
-      "eventCount": 33
+      "eventCount": 33,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_shinobu_4.json",
@@ -188,7 +210,9 @@
       "sourceName": "OshinoShinobu4.ass",
       "sourceUrl": "",
       "sourceSha256": "59852e17b4b0f290b91c2188d4274170f3e35b8a1d7aaa4933013b3e917e5e92",
-      "eventCount": 42
+      "eventCount": 42,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_shinobu_5.json",
@@ -198,7 +222,9 @@
       "sourceName": "OshinoShinobu5.ass",
       "sourceUrl": "",
       "sourceSha256": "229611c127c8494e20dd06c784221a7e0cee6e4f9b9ef7bc68472bb3219ce013",
-      "eventCount": 38
+      "eventCount": 38,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_shinobu_6.json",
@@ -208,22 +234,33 @@
       "sourceName": "OshinoShinobu6.ass",
       "sourceUrl": "",
       "sourceSha256": "da23d409c1a3cfbe7676ec47cdf129aa51c696753f0c8053a903fa1a26cc9d15",
-      "eventCount": 35
+      "eventCount": 35,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "character_shinobu_7.json",
       "jpSha256": "4a8df2056f6724ff4ac93abe13c365b82830510037f3497cdeb528d6f4ee2962",
-      "cnSha256": "c689b1a47f94b75f06df06cea25f6baa970fb42f796dbeca4e808be83953e4f6",
+      "cnSha256": "bedc67eb2b1cc563c20aa9cf167fa26f8cea38538f8532e5997836b71e681e13",
       "provenance": "rounddora_0728_human",
       "sourceName": "OshinoShinobu7.ass",
       "sourceUrl": "",
       "sourceSha256": "bd393933f2972704667d93dc1aed8f402863068b533aaf33cddfe83f3e336d0a",
-      "eventCount": 39
+      "eventCount": 39,
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     }
   ],
   "sourcePriority": [
     "repository_existing_chinese",
     "exedra_wiki_human",
     "rounddora_0728_human"
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 6,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

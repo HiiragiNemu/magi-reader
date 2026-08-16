@@ -211,7 +211,7 @@ class ExedraWikiVoiceImportTests(unittest.TestCase):
             62,
         )
 
-    def test_playable_json_generation_changes_only_comment_cells(self) -> None:
+    def test_playable_json_generation_localizes_name_and_comment_cells(self) -> None:
         document = {
             "bookTitle": "voice",
             "sheetList": [
@@ -255,7 +255,7 @@ class ExedraWikiVoiceImportTests(unittest.TestCase):
         before = document["sheetList"][0]["contentRowList"][0]["cellList"]
         after = translated["sheetList"][0]["contentRowList"][0]["cellList"]
         self.assertEqual(after[0], before[0])
-        self.assertEqual(after[1], before[1])
+        self.assertEqual(after[1], "鹿目圆")
         self.assertEqual(after[2], "中文")
         self.assertEqual(after[3], before[3])
         self.assertEqual(translated["bookTitle"], document["bookTitle"])

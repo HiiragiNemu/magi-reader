@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "7fd62b0fefa79a0dcf75e15fa24cb5c857dff796547bfaef4c240aa60ee34c3c",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 253
+    "readerNormalizedBlockCount": 595
   },
   "cn": {
-    "renderedSha256": "7364cf6f0f3f283a213a2cadffadedc6f8160eef7d474bf8b3ea75f6492cf51c",
+    "renderedSha256": "dc073b72b1bded88f63678cc316b056eddf82ce7435d5e96d369cb2815818604",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 253
+    "readerNormalizedBlockCount": 595
   },
   "sections": [
     {
@@ -31,42 +37,45 @@
       "source": "portrait_scene0_kyoko_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 119,
-        "cn": 119,
+        "jp": 239,
+        "cn": 239,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "b92500e1f14ed0f833665f57145f6a389f34d0891f3e8895311ecf74da3023ab",
-        "cn": "b92500e1f14ed0f833665f57145f6a389f34d0891f3e8895311ecf74da3023ab"
-      }
+        "jp": "977ed71647bc53c56ef8eb033a4f8f64b55e02999a6c6380018c844462a779ea",
+        "cn": "977ed71647bc53c56ef8eb033a4f8f64b55e02999a6c6380018c844462a779ea"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "portrait_scene0_kyoko_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 80,
-        "cn": 80,
+        "jp": 191,
+        "cn": 191,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "1546ad2c6f513e4d2f268b698e9e159d88b29f545fd71ef034822ecee981877c",
-        "cn": "1546ad2c6f513e4d2f268b698e9e159d88b29f545fd71ef034822ecee981877c"
-      }
+        "jp": "1c8aee61449a7866090ba1811b6ab86e3ee829bd597393a674f4eaf5ab92ab8a",
+        "cn": "1c8aee61449a7866090ba1811b6ab86e3ee829bd597393a674f4eaf5ab92ab8a"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "portrait_scene0_kyoko_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 54,
-        "cn": 54,
+        "jp": 165,
+        "cn": 165,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "1b0c402f6994470fba89c22dfe76a77dfe860fd9c12e4fefb83488449eab4883",
-        "cn": "1b0c402f6994470fba89c22dfe76a77dfe860fd9c12e4fefb83488449eab4883"
-      }
+        "jp": "5ca5aacce8350dcbe4a7e57cf3dd8b9abbf1d95ccedabf9b973858826b52ca27",
+        "cn": "5ca5aacce8350dcbe4a7e57cf3dd8b9abbf1d95ccedabf9b973858826b52ca27"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -76,10 +85,17 @@
       "twPath": "4_Portrait/portrait_scene0_kyoko_1/portrait_scene0_kyoko_1.json",
       "twSha256": "91738382ac168f038fa89800d9a71eeec64fd84a0df157bfc6d38e00ecb57f09",
       "jpSha256": "91738382ac168f038fa89800d9a71eeec64fd84a0df157bfc6d38e00ecb57f09",
-      "cnSha256": "1f8dfe3f95b989bd4d1bdfe3cd96e137291f0b99699a42cc6bed097a05af4180",
-      "simplifiedJsonSha256": "1f8dfe3f95b989bd4d1bdfe3cd96e137291f0b99699a42cc6bed097a05af4180",
+      "cnSha256": "c839c2fc355659c79554ec43a3e3d79650cc208fc9d2dcbf2670e514d987dc6e",
+      "simplifiedJsonSha256": "c839c2fc355659c79554ec43a3e3d79650cc208fc9d2dcbf2670e514d987dc6e",
       "eventCount": 239,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 207,
+      "dictionaryFallbackSpeakerEvents": 25,
+      "narrationSpeakerEvents": 7,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_scene0_kyoko_2.json",
@@ -87,10 +103,17 @@
       "twPath": "4_Portrait/portrait_scene0_kyoko_2/portrait_scene0_kyoko_2.json",
       "twSha256": "b234b79809e07439fa864df566f234e197c6c1f954d6baf80bab31aae37f6e54",
       "jpSha256": "b234b79809e07439fa864df566f234e197c6c1f954d6baf80bab31aae37f6e54",
-      "cnSha256": "c48d08ea89808a78f280787f354e9f54bf090dc5c0503107bf8d517af7cefb53",
-      "simplifiedJsonSha256": "c48d08ea89808a78f280787f354e9f54bf090dc5c0503107bf8d517af7cefb53",
+      "cnSha256": "ece7ef739ee10f0c8df3cbd406154f213ca6ba49adc8f8c1a4ddc6e5be4d38e2",
+      "simplifiedJsonSha256": "ece7ef739ee10f0c8df3cbd406154f213ca6ba49adc8f8c1a4ddc6e5be4d38e2",
       "eventCount": 191,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 145,
+      "dictionaryFallbackSpeakerEvents": 41,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_scene0_kyoko_3.json",
@@ -98,10 +121,17 @@
       "twPath": "4_Portrait/portrait_scene0_kyoko_3/portrait_scene0_kyoko_3.json",
       "twSha256": "736626d59938ba37b4e931bc60acf9ed71119fa30cec748b02be9820b945ac75",
       "jpSha256": "736626d59938ba37b4e931bc60acf9ed71119fa30cec748b02be9820b945ac75",
-      "cnSha256": "73985aa21246d9ec3b279eb058bfa6485fedd70578fbfb1cc3bfb519e43ac2fd",
-      "simplifiedJsonSha256": "73985aa21246d9ec3b279eb058bfa6485fedd70578fbfb1cc3bfb519e43ac2fd",
+      "cnSha256": "8616f56e2a5d30dcafe212ae92bcbdfb3209eae9b306ef496482b5d67b5f2749",
+      "simplifiedJsonSha256": "8616f56e2a5d30dcafe212ae92bcbdfb3209eae9b306ef496482b5d67b5f2749",
       "eventCount": 165,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 135,
+      "dictionaryFallbackSpeakerEvents": 22,
+      "narrationSpeakerEvents": 8,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -187,5 +217,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "7fd62b0fefa79a0dcf75e15fa24cb5c857dff796547bfaef4c240aa60ee34c3c",
+    "cnSha256": "dc073b72b1bded88f63678cc316b056eddf82ce7435d5e96d369cb2815818604",
+    "sectionCount": 3,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 3,
+    "sectionCount": 3
   }
 }

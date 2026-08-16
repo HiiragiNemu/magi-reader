@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "4b867ee808c3283176b06972c42b8a7c469f6c80e813f05baea2dfd358d71421",
-  "cnSha256": "b5ff2b56fea8996a788a8c73220289f7a8e101022050b00f6c464a8624fa8bb2",
+  "cnSha256": "abd5f33c9b6c40091a6a5e78841fad8ff5b1c7c5ccd0afca0fed82cd0d1bb052",
   "chapterTitle": "中篇 · 爱生眩的记忆 中篇",
   "sections": [
     {
@@ -103,10 +106,17 @@
       "twPath": "1_Main/main_scene0_film08_1/main_scene0_film08_1.json",
       "twSha256": "dfbf0c3e878c1ee4a36c459267edd0fffbe96dbd3e04717441274a46377a52d2",
       "jpSha256": "7a79e37ba0919e296914265b96a1c339ad9e4cb23adab72e23484bd07aa6cf16",
-      "cnSha256": "c1c733f47709667ebb058baf754ac18e979613b9de645345fd034e5b8c3de049",
-      "simplifiedJsonSha256": "c1c733f47709667ebb058baf754ac18e979613b9de645345fd034e5b8c3de049",
+      "cnSha256": "53a819cb99c349f1d4a9453d9f890b2e582b2ce32ef886cf40f5f5f804e2f738",
+      "simplifiedJsonSha256": "53a819cb99c349f1d4a9453d9f890b2e582b2ce32ef886cf40f5f5f804e2f738",
       "eventCount": 76,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 71,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     },
     {
       "source": "main_scene0_film08_2.json",
@@ -114,10 +124,17 @@
       "twPath": "1_Main/main_scene0_film08_2/main_scene0_film08_2.json",
       "twSha256": "8291549d8155bae582841aa684462776b956c0cfcd1d25900b1f3b7a4fabb089",
       "jpSha256": "ea4e786fdbe2f5d1cd94ef0e17a7f2e98a5091277e61a3ad5d144c0a21ddef2e",
-      "cnSha256": "211daebd5db79201d613ec634673cd6f45cd83269af0cb48bcafbec4a3112d27",
-      "simplifiedJsonSha256": "211daebd5db79201d613ec634673cd6f45cd83269af0cb48bcafbec4a3112d27",
+      "cnSha256": "0cca34de6561e93189ae3be25d1268b9a111d15d7d4c69b9eb0a8df23109f77a",
+      "simplifiedJsonSha256": "0cca34de6561e93189ae3be25d1268b9a111d15d7d4c69b9eb0a8df23109f77a",
       "eventCount": 135,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 129,
+      "dictionaryFallbackSpeakerEvents": 3,
+      "narrationSpeakerEvents": 3,
+      "canonicalNameFields": true
     },
     {
       "source": "main_scene0_film08_3.json",
@@ -125,10 +142,24 @@
       "twPath": "1_Main/main_scene0_film08_3/main_scene0_film08_3.json",
       "twSha256": "7aa732425aecc24068a8ee77613085a13ee64bbef137d74a1f89815f5c7446dc",
       "jpSha256": "f93be1b29049deaedf9e80e20dc75db167e9c8ba3cbfaf2f877585d7fad45fc9",
-      "cnSha256": "04a18c21ad0a37fb1b9d4b202627667ef60b2e384f6e9e3bec2eb7f75fda9ae1",
-      "simplifiedJsonSha256": "04a18c21ad0a37fb1b9d4b202627667ef60b2e384f6e9e3bec2eb7f75fda9ae1",
+      "cnSha256": "ac20e2902891f2443e2e5c09283cfe0597cb23e2cf1ce9e564b60e2905a4d839",
+      "simplifiedJsonSha256": "ac20e2902891f2443e2e5c09283cfe0597cb23e2cf1ce9e564b60e2905a4d839",
       "eventCount": 214,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 205,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 9,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

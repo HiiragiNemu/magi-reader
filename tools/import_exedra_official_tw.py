@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""Import extracted official Taiwan Exedra scenario JSON directly.
+"""Import authentic official Taiwan Exedra scenario JSON directly.
 
-This tool never uses GitHub Actions. It mirrors the existing Japanese organizer
-manifest, preserves the Japanese JSON schema and speaker identities, replaces
-only text-event Comment cells with official Taiwan text converted to Simplified
-Chinese, and emits `<groupKey>_cn.txt`, source JSON, provenance metadata, and the
-schema-v1 proof required by `generate_story_index.py`.
+The official TW document is the Chinese JSON source of truth. The importer
+preserves its complete schema, simplifies only the localized Name/Comment
+columns, renders CN TXT from TW speaker names, and uses the JP corpus solely for
+deterministic event-position alignment.
 
 Install once:
     py -m pip install opencc-python-reimplemented
@@ -30,12 +29,20 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import generate_story_index as pipeline  # noqa: E402
+from tw_authentic_scenario import (  # noqa: E402
+    LocalizedEvent,
+    load_name_translation_map,
+    localize_events,
+    materialize_human_json,
+    materialize_tw_json,
+)
 
 JP_ROOT = ROOT / "magiraexedra-source-master/Scenarios_full"
 CN_ROOT = ROOT / "magiraexedra-translate-data-master/Scenarios_full"
 MANIFEST = JP_ROOT / "exedra_manifest.json"
 STAGING_ROOT = ROOT / "artifacts/.exedra-official-tw-staging"
 SOURCE_LABEL = "official-tw-scenario-json"
+DICTIONARY_PATH = ROOT / "website/app/config/dictionary.ts"
 TEXT_ACTIONS = {"talk", "narration", "charactertalk", "onlytext"}
 SECTION_RE = re.compile(
     r"^---\s*\[Section\s+(\d+)\]\s*"
@@ -258,121 +265,70 @@ def validate_row_alignment(
         # JP/TW ActionType plus sheet/row position and event count.
 
 
-def mutable_text_sheets(document: dict[str, Any]):
-    groups: list[
-        tuple[list[tuple[list[Any], int]], list[list[tuple[list[Any], int]]]]
-    ] = []
-    fingerprints: dict[str, int] = {}
-    sheets = document.get("sheetList")
-    if not isinstance(sheets, list):
-        raise RuntimeError("日文 JSON 缺少 sheetList")
-    for sheet in sheets:
-        if not isinstance(sheet, dict):
-            continue
-        header = sheet.get("headerRow")
-        contents = sheet.get("contentRowList")
-        if not isinstance(header, dict) or not isinstance(contents, list):
-            continue
-        header_cells = header.get("cellList")
-        if not isinstance(header_cells, list):
-            continue
-        names = [str(value).strip().casefold() for value in header_cells]
-        try:
-            action_index = names.index("actiontype")
-            comment_index = names.index("comment")
-            name_index = names.index("name")
-        except ValueError:
-            continue
-        refs: list[tuple[list[Any], int]] = []
-        fingerprint_rows: list[tuple[str, str, str]] = []
-        for row in contents:
-            cells = row.get("cellList") if isinstance(row, dict) else None
-            if not isinstance(cells, list):
-                continue
-            action = str(
-                cells[action_index] if action_index < len(cells) else ""
-            ).strip()
-            comment = cells[comment_index] if comment_index < len(cells) else ""
-            if (
-                action.casefold() not in TEXT_ACTIONS
-                or not isinstance(comment, str)
-                or not comment.strip()
-            ):
-                continue
-            speaker = str(
-                cells[name_index] if name_index < len(cells) else ""
-            ).strip()
-            refs.append((cells, comment_index))
-            fingerprint_rows.append((action, speaker, comment.strip()))
-        if not refs:
-            continue
-        fingerprint = json.dumps(
-            fingerprint_rows,
-            ensure_ascii=False,
-            separators=(",", ":"),
-        )
-        existing = fingerprints.get(fingerprint)
-        if existing is None:
-            fingerprints[fingerprint] = len(groups)
-            groups.append((refs, []))
-        else:
-            groups[existing][1].append(refs)
-    return groups
 
 
 def apply_translated_texts(
-    jp_json: Path,
-    texts: list[str],
-    destination: Path,
+    source_json: Path,
+    texts_or_destination,
+    destination_or_converter,
 ) -> str:
-    document = load_json(jp_json)
-    if not isinstance(document, dict):
-        raise RuntimeError(f"日文 JSON 顶层不是对象：{jp_json}")
-    groups = mutable_text_sheets(document)
-    flattened = [ref for refs, _duplicates in groups for ref in refs]
-    if len(flattened) != len(texts):
-        raise RuntimeError(
-            f"日文 JSON/聚合 TXT 文本事件数不同：{jp_json.name}: "
-            f"JSON={len(flattened)} TXT={len(texts)}"
+    """Support both authentic-TW and retained human/voice materialization.
+
+    Authentic TW calls pass ``(tw_json, destination, converter)``. Existing
+    human and voice importers pass ``(jp_json, translated_texts, destination)``.
+    The latter canonicalizes every Name through dictionary.ts while keeping all
+    remaining playback fields equivalent.
+    """
+
+    if (
+        isinstance(texts_or_destination, (list, tuple))
+        and isinstance(destination_or_converter, Path)
+    ):
+        result = materialize_human_json(
+            source_json,
+            [str(value) for value in texts_or_destination],
+            destination_or_converter,
         )
-    offset = 0
-    for refs, duplicates in groups:
-        segment = texts[offset : offset + len(refs)]
-        for target_refs in [refs, *duplicates]:
-            if len(target_refs) != len(segment):
-                raise RuntimeError(f"重复工作表结构不同：{jp_json.name}")
-            for (cells, comment_index), text in zip(target_refs, segment):
-                cells[comment_index] = text
-        offset += len(refs)
-    encoded = json_bytes(document)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_bytes(encoded)
-    return hashlib.sha256(encoded).hexdigest()
+    elif isinstance(texts_or_destination, Path) and callable(
+        destination_or_converter
+    ):
+        result = materialize_tw_json(
+            source_json,
+            texts_or_destination,
+            destination_or_converter,
+        )
+    else:
+        raise TypeError(
+            "apply_translated_texts expects either "
+            "(source, texts, destination) or (source, destination, converter)"
+        )
+    return str(result["sha256"])
 
 
-def render_cn(sections: tuple[Section, ...], translated: list[list[str]]) -> str:
-    if len(sections) != len(translated):
+def render_cn(
+    sections: tuple[Section, ...],
+    localized: list[list[LocalizedEvent]],
+) -> str:
+    if len(sections) != len(localized):
         raise RuntimeError("Section 数量不一致")
     lines: list[str] = []
-    for section, texts in zip(sections, translated):
-        if len(section.lines) != len(texts):
+    for section, events in zip(sections, localized):
+        if len(section.lines) != len(events):
             raise RuntimeError(f"Section {section.number} 文本事件数不一致")
         lines.append(f"--- [Section {section.number}] (Source: {section.source}) ---")
-        for jp_line, text in zip(section.lines, texts):
-            if not text.strip():
-                raise RuntimeError(f"Section {section.number} 含空台服正文")
-            # A reader TXT event must occupy exactly one physical line.  Game
-            # JSON keeps real newlines, while the established TXT convention
-            # represents them as the two visible characters ``\\n``.
+        for event in events:
             normalized_text = (
-                text.strip()
+                event.text.strip()
                 .replace("\r\n", "\n")
                 .replace("\r", "\n")
                 .replace("\n", r"\n")
             )
-            lines.append(f"{jp_line.speaker}：{normalized_text}")
+            if not normalized_text:
+                raise RuntimeError(f"Section {section.number} 含空台服正文")
+            lines.append(f"{event.speaker or '旁白'}：{normalized_text}")
         lines.append("")
     return "\n".join(lines).strip() + "\n"
+
 
 
 def build_report(
@@ -387,36 +343,55 @@ def build_report(
     cn_sections = pipeline._exedra_alignment_sections(cn_path)
     if len(jp_sections) != len(cn_sections):
         raise RuntimeError(f"导入后 Section 数量不一致：{group_key}")
+    authentic_tw = any(
+        item.get("schemaSource") == "official_tw_json"
+        for item in json_meta
+        if isinstance(item, dict)
+    )
     sections = []
     for jp, cn in zip(jp_sections, cn_sections):
-        if (
-            jp.number != cn.number
-            or jp.source_name != cn.source_name
-            or jp.reader_block_count != cn.reader_block_count
-            or jp.speaker_sequence_sha256 != cn.speaker_sequence_sha256
-        ):
+        same_event_structure = (
+            jp.number == cn.number
+            and jp.source_name == cn.source_name
+            and jp.reader_block_count == cn.reader_block_count
+        )
+        speaker_matches = (
+            jp.speaker_sequence_sha256 == cn.speaker_sequence_sha256
+        )
+        if not same_event_structure or (not authentic_tw and not speaker_matches):
             raise RuntimeError(
-                f"导入后结构证明失败：{group_key} Section {jp.number}"
+                "导入后逐事件结构或规范中文说话人证明失败："
+                f"{group_key} Section {jp.number}"
             )
         match = EPISODE_RE.search(jp.source_name)
-        sections.append({
-            "section": jp.number,
-            "source": jp.source_name,
-            "wikiEpisode": int(match.group(1)) if match else jp.number - 1,
-            "readerNormalizedBlocks": {
-                "jp": jp.reader_block_count,
-                "cn": cn.reader_block_count,
-                "matches": True,
-            },
-            "speakerSequenceSha256": {
-                "jp": jp.speaker_sequence_sha256,
-                "cn": cn.speaker_sequence_sha256,
-            },
-        })
+        sections.append(
+            {
+                "section": jp.number,
+                "source": jp.source_name,
+                "wikiEpisode": int(match.group(1)) if match else jp.number - 1,
+                "readerNormalizedBlocks": {
+                    "jp": jp.reader_block_count,
+                    "cn": cn.reader_block_count,
+                    "matches": True,
+                },
+                "speakerSequenceSha256": {
+                    "jp": jp.speaker_sequence_sha256,
+                    "cn": cn.speaker_sequence_sha256,
+                },
+                "speakerSequenceMatches": speaker_matches,
+            }
+        )
+    speaker_policy = (
+        "official_tw_name_column_tw2sp"
+        if authentic_tw
+        else "dictionary_canonicalized_jp_name"
+    )
     return {
         "schemaVersion": 1,
         "status": "validated",
-        "provenance": "official_tw_human",
+        "provenance": (
+            "official_tw_human" if authentic_tw else "trusted_human"
+        ),
         "sourceRoot": source_label,
         "group": {"category": category, "groupKey": group_key},
         "validation": {
@@ -425,6 +400,12 @@ def build_report(
             "usesLcs": False,
             "usesFuzzyMatching": False,
             "allowsReordering": False,
+            "alignmentLevel": "exact-json-text-event-order",
+            "structurePolicy": "same-section-source-event-count-action-row",
+            "speakerPolicy": speaker_policy,
+            "speakerSequencesMayDiffer": True,
+            "speakerSequencesCanonicalized": True,
+            "twSchemaPreserved": authentic_tw,
         },
         "mismatches": [],
         "jp": {
@@ -484,6 +465,7 @@ def main() -> int:
             "py -m pip install opencc-python-reimplemented"
         ) from exc
     converter = OpenCC("tw2sp")
+    speaker_map = load_name_translation_map(DICTIONARY_PATH)
     source_root = args.tw_json_root.resolve(strict=True)
     tw_index = TwSourceIndex(source_root)
     groups = load_groups()
@@ -543,7 +525,8 @@ def main() -> int:
                     f"manifest/Section 数量不同："
                     f"manifest={len(source_paths)} TXT={len(sections)}"
                 )
-            translated_sections: list[list[str]] = []
+            translated_sections: list[list[LocalizedEvent]] = []
+            localized_stats: list[dict[str, int]] = []
             resolved_sources: list[tuple[Section, str, Path, Path]] = []
             for section, raw_source_path in zip(sections, source_paths):
                 source_path = str(raw_source_path)
@@ -556,13 +539,14 @@ def main() -> int:
                 jp_rows = extract_rows(jp_json)
                 tw_rows = extract_rows(tw_path)
                 validate_row_alignment(section.source, jp_rows, tw_rows, section)
-                texts = [
-                    converter.convert(str(row.get("text") or "").strip())
-                    for row in tw_rows
-                ]
-                if any(not text for text in texts):
-                    raise RuntimeError(f"台服正文为空：{section.source}")
-                translated_sections.append(texts)
+                events, event_stats = localize_events(
+                    tw_rows,
+                    section.lines,
+                    converter.convert,
+                    speaker_map,
+                )
+                translated_sections.append(events)
+                localized_stats.append(event_stats)
                 resolved_sources.append((section, source_path, jp_json, tw_path))
 
             with tempfile.TemporaryDirectory(
@@ -571,12 +555,22 @@ def main() -> int:
             ) as temporary:
                 stage = Path(temporary)
                 json_meta: list[dict[str, Any]] = []
-                for (section, source_path, jp_json, tw_path), texts in zip(
+                for (
+                    section,
+                    source_path,
+                    jp_json,
+                    tw_path,
+                ), events, speaker_stats in zip(
                     resolved_sources,
                     translated_sections,
+                    localized_stats,
                 ):
                     destination = stage / section.source
-                    digest = apply_translated_texts(jp_json, texts, destination)
+                    digest = apply_translated_texts(
+                        tw_path,
+                        destination,
+                        converter.convert,
+                    )
                     json_meta.append({
                         "source": section.source,
                         "manifestSourcePath": source_path,
@@ -585,7 +579,11 @@ def main() -> int:
                         "jpSha256": pipeline._sha256_file(jp_json),
                         "cnSha256": digest,
                         "simplifiedJsonSha256": digest,
-                        "eventCount": len(texts),
+                        "eventCount": len(events),
+                        "schemaSource": "official_tw_json",
+                        "speakerPolicy": "official_tw_name_column_tw2sp",
+                        "twSchemaPreserved": True,
+                        **speaker_stats,
                     })
 
                 staged_cn = stage / f"{group_key}_cn.txt"

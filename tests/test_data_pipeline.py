@@ -321,7 +321,7 @@ class PipelineBuildTests(unittest.TestCase):
         write_json(
             path,
             exedra_json(
-                [["Talk", "鹿目まどか", "秀恩爱", "", ""]]
+                [["Talk", "鹿目圆", "秀恩爱", "", ""]]
             ),
         )
         self._write_valid_exedra_cn_report()
@@ -1860,7 +1860,40 @@ class PipelineBuildTests(unittest.TestCase):
 
         with self.assertRaisesRegex(
             generate.PipelineError,
-            "ActionType/说话人顺序",
+            "ActionType/工作表/行位置",
+        ):
+            generate.build_story_catalog(
+                staging_public_dir=self.stage,
+                jp_dir=self.jp,
+                cn_dir=self.cn,
+                exedra_jp_dir=self.exedra,
+                exedra_cn_dir=self.exedra_cn,
+                titles_path=self.titles,
+            )
+
+    def test_noncanonical_cn_json_name_is_rejected(self) -> None:
+        self._make_sources()
+        cn_json = self._write_main_cn_json()
+        data = json.loads(cn_json.read_text(encoding="utf-8"))
+        data["sheetList"][0]["contentRowList"][0]["cellList"][1] = (
+            "鹿目まどか"
+        )
+        write_json(cn_json, data)
+        report_path = (
+            self.exedra_cn
+            / "1_Main"
+            / "main_demo"
+            / "main_demo_cn.import-report.json"
+        )
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        report["sourceJson"][0]["cnSha256"] = generate._sha256_file(
+            cn_json
+        )
+        write_json(report_path, report)
+
+        with self.assertRaisesRegex(
+            generate.PipelineError,
+            "Name 未规范中文化",
         ):
             generate.build_story_catalog(
                 staging_public_dir=self.stage,

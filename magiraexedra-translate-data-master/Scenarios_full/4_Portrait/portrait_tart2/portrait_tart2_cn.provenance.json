@@ -5,12 +5,12 @@
   "machineTranslation": false,
   "generatedAt": "2026-07-29T11:19:41.182187+00:00",
   "jpSha256": "ad73d0d4f8b3e870a994bb4938b4226905cae97a408c4b6863e643dab977d1db",
-  "cnSha256": "e2dfec3f1ab4a705e9085709cef5b676a7420eac137473a6e1a31c00e2832184",
+  "cnSha256": "2deb0e9e0d6e393d32959d8d73aefe962cd5321b9f2b4f6d7ecd45c47fd66179",
   "episodes": [
     {
       "source": "portrait_tart2_1.json",
       "jpSha256": "2feeb77f962ddeb4ee688b38bdf28ef438c0abfa7228b261887485860a3b7aa9",
-      "cnSha256": "491a7f258e8f9928b7f85f917c7016388eafde78dadc14e1c3b26bac73bdc085",
+      "cnSha256": "908fa19af90cf7d27c09e3a7d3cf8d143944e461d5343109bd9e2ecab956b292",
       "provenance": "rounddora_0728_human",
       "sourceName": "TartMain3_Bonus.ass",
       "sourceUrl": "",
@@ -58,16 +58,19 @@
         "groupSection": 1
       },
       "mutationProof": {
-        "nonCommentFieldsMatch": true,
         "playableCommentSequenceMatches": true,
         "mutableCommentCellCount": 70,
-        "canonicalEventCount": 70
-      }
+        "canonicalEventCount": 70,
+        "nonLocalizedFieldsMatch": true,
+        "canonicalNameFields": true
+      },
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "portrait_tart2_2.json",
       "jpSha256": "8db7b53c6a05fdb16a775379912db3d329ec52eb4934edd5b6ec9568e9962f18",
-      "cnSha256": "d6d5d4d6604cf9fbf54d9574166353634bb32c25a1382f35fc6a782f42de68bc",
+      "cnSha256": "7e0511234ae4cdd661b5e3d03859fd816ab4e07fa0b8881004ddcc8cbd57212d",
       "provenance": "rounddora_0728_human",
       "sourceName": "TartMain3_Bonus.ass",
       "sourceUrl": "",
@@ -115,11 +118,21 @@
         "groupSection": 2
       },
       "mutationProof": {
-        "nonCommentFieldsMatch": true,
         "playableCommentSequenceMatches": true,
         "mutableCommentCellCount": 42,
-        "canonicalEventCount": 42
-      }
+        "canonicalEventCount": 42,
+        "nonLocalizedFieldsMatch": true,
+        "canonicalNameFields": true
+      },
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 112,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

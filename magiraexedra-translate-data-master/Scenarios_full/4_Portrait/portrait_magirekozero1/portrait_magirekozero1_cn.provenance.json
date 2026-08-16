@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "aa0e5e1e0eea6451bbed75499b79db4dcfc58707df143d05c265c6a71f098e7e",
-  "cnSha256": "d17d2525d02c722e214d649be7c3bd349b57e2e672da5626496823ac2cefb1d1",
+  "cnSha256": "fc47de4134e28f394af1a66b7286eda4648f168380d07b5ac6116ebc8c34a827",
   "chapterTitle": "前篇 · 十咎桃子的记忆",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_magirekozero1_1/portrait_magirekozero1_1.json",
       "twSha256": "53bd5513813fae534614306f041084daee01700f368597e47a019f6021396648",
       "jpSha256": "95d31531ad2c10918b49a95afb0a4b07c472e2c3ece95672a77493996bed1668",
-      "cnSha256": "b6a512bbfe2398ee45fc56da89fb99003b623346281ae9e21d54ab349e6d0d61",
-      "simplifiedJsonSha256": "b6a512bbfe2398ee45fc56da89fb99003b623346281ae9e21d54ab349e6d0d61",
+      "cnSha256": "dfb120628909ec47233ea107e1adbe1c1abc034517230e588d4c5cbb8208c5a0",
+      "simplifiedJsonSha256": "dfb120628909ec47233ea107e1adbe1c1abc034517230e588d4c5cbb8208c5a0",
       "eventCount": 52,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 52,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_magirekozero1_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_magirekozero1_2/portrait_magirekozero1_2.json",
       "twSha256": "ecb8d63d3542dc71461f0c0852983a1c31d306a57fef7179b350eaaf2c1af75e",
       "jpSha256": "48102239b23c907f730ca6cfd2ecdaa5cf987f250158b899cb10b69160474519",
-      "cnSha256": "275187f683570b79fb4a27d9a03473612484fa8b67953c4cc601681a0a937c3e",
-      "simplifiedJsonSha256": "275187f683570b79fb4a27d9a03473612484fa8b67953c4cc601681a0a937c3e",
+      "cnSha256": "9a1214aa359a5826c2cfd913f42afa1db7d7fa6bf5025de10f2b61d4e2fcbe0e",
+      "simplifiedJsonSha256": "9a1214aa359a5826c2cfd913f42afa1db7d7fa6bf5025de10f2b61d4e2fcbe0e",
       "eventCount": 67,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 65,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "5ecbcc83ffecb4f9018e2b431b50ac60fb8c45d793b3c247f4591e159a4479fe",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 83
+    "readerNormalizedBlockCount": 112
   },
   "cn": {
-    "renderedSha256": "b85efdd46ea7a0cafe422ddf93ba1149e5a935d8aa42444b3c045557653a9da2",
+    "renderedSha256": "d696f363ca2cd74b5b3dc41e06c844bd6e300b2bc8de58dee8ed06e13dc9729c",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 83
+    "readerNormalizedBlockCount": 112
   },
   "sections": [
     {
@@ -31,28 +37,30 @@
       "source": "portrait_nightmare_sayaka_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 36,
-        "cn": 36,
+        "jp": 50,
+        "cn": 50,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "cbc688cbbc272690b119da57c39b47af9c2b2927a96a970d10b0d203fb21b18e",
-        "cn": "cbc688cbbc272690b119da57c39b47af9c2b2927a96a970d10b0d203fb21b18e"
-      }
+        "jp": "5ab7319eaaee6c3f2b1422d3133ee292ae83bbb2d78186d58287afd2948deb2d",
+        "cn": "5ab7319eaaee6c3f2b1422d3133ee292ae83bbb2d78186d58287afd2948deb2d"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "portrait_nightmare_sayaka_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 47,
-        "cn": 47,
+        "jp": 62,
+        "cn": 62,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "e55f1db9622417edd35a970c953f9d7582f6f513b7b754d006a649901280ab34",
-        "cn": "e55f1db9622417edd35a970c953f9d7582f6f513b7b754d006a649901280ab34"
-      }
+        "jp": "5736640309b0eb59debc679312463ed1e29f97eecde689ebf4514a50e44fa387",
+        "cn": "5736640309b0eb59debc679312463ed1e29f97eecde689ebf4514a50e44fa387"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -62,10 +70,17 @@
       "twPath": "4_Portrait/portrait_nightmare_sayaka_1/portrait_nightmare_sayaka_1.json",
       "twSha256": "24861d392c61de49254d8af75fc6e2a000614e0d6be76ed78688c25f2ca5c61e",
       "jpSha256": "8e85b59925b96cee6c24a557ab30db7c2bbc21de3462f7285b242933c224f5f9",
-      "cnSha256": "6fc1b9fa462f44422552a55479847b442775b9b3ccefb15ece0be51ffd31f580",
-      "simplifiedJsonSha256": "6fc1b9fa462f44422552a55479847b442775b9b3ccefb15ece0be51ffd31f580",
+      "cnSha256": "580e46749dfffa4e6205fd6c8cdef0881910a5ba115b6db22e6874d25ecfe6f3",
+      "simplifiedJsonSha256": "580e46749dfffa4e6205fd6c8cdef0881910a5ba115b6db22e6874d25ecfe6f3",
       "eventCount": 50,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 47,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 3,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_nightmare_sayaka_2.json",
@@ -73,10 +88,17 @@
       "twPath": "4_Portrait/portrait_nightmare_sayaka_2/portrait_nightmare_sayaka_2.json",
       "twSha256": "d4693f2dda80f73caf9f5d3066ee98254edad036f6936ce2f8a99cd40fe1086a",
       "jpSha256": "8542a1ddf879f3627bfa0a15ea26a22ff8647f89d5e17943a2279189b000bd3e",
-      "cnSha256": "a442701197190dbe342b20d8fd5c186b0b1de1f311bafaf5ceef1cf6aa9e40ec",
-      "simplifiedJsonSha256": "a442701197190dbe342b20d8fd5c186b0b1de1f311bafaf5ceef1cf6aa9e40ec",
+      "cnSha256": "39d12d8e85c22ac70657d2ccab7474fb20b24ad716fefe7d81cfe20979a904ba",
+      "simplifiedJsonSha256": "39d12d8e85c22ac70657d2ccab7474fb20b24ad716fefe7d81cfe20979a904ba",
       "eventCount": 62,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 61,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -142,5 +164,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "5ecbcc83ffecb4f9018e2b431b50ac60fb8c45d793b3c247f4591e159a4479fe",
+    "cnSha256": "d696f363ca2cd74b5b3dc41e06c844bd6e300b2bc8de58dee8ed06e13dc9729c",
+    "sectionCount": 2,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 2,
+    "sectionCount": 2
   }
 }

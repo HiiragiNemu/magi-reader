@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "2953ecd11b2d5824a81466dd81fdf5fee6ebc582372bbfe68a808841ab5e5faf",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 73
+    "readerNormalizedBlockCount": 110
   },
   "cn": {
-    "renderedSha256": "ef591e524e0cfc205d24bb472f5ac7b15fa7c140ef3ae483dd4b3ded593ac4ba",
+    "renderedSha256": "4de864061bdd02e258bbc53b952189ead4d073f1a702aef0e0a0d7c1ca3e535f",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 73
+    "readerNormalizedBlockCount": 110
   },
   "sections": [
     {
@@ -31,28 +37,30 @@
       "source": "portrait_chelatebigferris_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 35,
-        "cn": 35,
+        "jp": 51,
+        "cn": 51,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "bbc5f6cc4af56d0733ecc79d66be8809ce7cb042b126e3fefb907b60bfa43d57",
-        "cn": "bbc5f6cc4af56d0733ecc79d66be8809ce7cb042b126e3fefb907b60bfa43d57"
-      }
+        "jp": "9ac090726a2d1076bbcd495bdbbe8ac0cac789ad0ae72973889ca5774fbfedfb",
+        "cn": "5ae6622959176e3c6aefc6e8d8503e99d4ee960f1afdd746c83ad1e365ee8bc5"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 2,
       "source": "portrait_chelatebigferris_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 38,
-        "cn": 38,
+        "jp": 59,
+        "cn": 59,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "5b4d51a62558c7497276b1e0ffc4bd4f37663827eaf8c704d5073857be5c8ba6",
-        "cn": "5b4d51a62558c7497276b1e0ffc4bd4f37663827eaf8c704d5073857be5c8ba6"
-      }
+        "jp": "dcf2dab58fbc3537e4d3574a532e136856f9490a27e36e718a762cbf8fc84ad3",
+        "cn": "09dfb42f49df905ffb5b3ca580d7be01a7dd5dbeddd7a49503a04a713c55e2b7"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -62,10 +70,17 @@
       "twPath": "4_Portrait/portrait_chelatebigferris_1/portrait_chelatebigferris_1.json",
       "twSha256": "ad2d169833c93559e5844addd809e6c12dee6bc6e4f294c0e641539014c1a0c0",
       "jpSha256": "c5abd9398fbf291519bdafd3b7fa28933e4816b363a363f94ad64dad8771f451",
-      "cnSha256": "6d46e975ba2a225e1539c2c9261c174f43d06e750a17676765c30f92c4f58bcd",
-      "simplifiedJsonSha256": "6d46e975ba2a225e1539c2c9261c174f43d06e750a17676765c30f92c4f58bcd",
+      "cnSha256": "e1b5b376fc0932fbf0b886c7c175c15a3c6b58ef6ed77fd4159a5b9fdc5fbe04",
+      "simplifiedJsonSha256": "e1b5b376fc0932fbf0b886c7c175c15a3c6b58ef6ed77fd4159a5b9fdc5fbe04",
       "eventCount": 51,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 49,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_chelatebigferris_2.json",
@@ -73,10 +88,17 @@
       "twPath": "4_Portrait/portrait_chelatebigferris_2/portrait_chelatebigferris_2.json",
       "twSha256": "52862b418a3de6142ba2a94d00ea15c6a172b2924eefcd9e337157d8b0f5ee90",
       "jpSha256": "7b7858f7cc7130f9d3e52c7ac8193ddc435c492232b65292fc1057819e562f6c",
-      "cnSha256": "63e23d87cef85d97f5d5799fc3c6dd24758284b56cf037350011958aa813a3fa",
-      "simplifiedJsonSha256": "63e23d87cef85d97f5d5799fc3c6dd24758284b56cf037350011958aa813a3fa",
+      "cnSha256": "3d7b4e8bead1156edc4b3fc63645cdd6b3f60615ef7c8b1a80f26fae5a344e4c",
+      "simplifiedJsonSha256": "3d7b4e8bead1156edc4b3fc63645cdd6b3f60615ef7c8b1a80f26fae5a344e4c",
       "eventCount": 59,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 59,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -142,5 +164,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "2953ecd11b2d5824a81466dd81fdf5fee6ebc582372bbfe68a808841ab5e5faf",
+    "cnSha256": "4de864061bdd02e258bbc53b952189ead4d073f1a702aef0e0a0d7c1ca3e535f",
+    "sectionCount": 2,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 2,
+    "sectionCount": 2
   }
 }

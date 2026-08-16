@@ -422,7 +422,7 @@ class MappingPolicyTests(unittest.TestCase):
 
 
 class JsonMutationProofTests(unittest.TestCase):
-    def test_localized_json_changes_only_playable_comment_cells(self) -> None:
+    def test_localized_json_changes_canonical_name_and_comment_cells(self) -> None:
         document = {
             "bookTitle": "fixture",
             "sheetList": [
@@ -438,7 +438,7 @@ class JsonMutationProofTests(unittest.TestCase):
                     "contentRowList": [
                         {
                             "rowNumber": 1,
-                            "cellList": ["Talk", "角色", "日本語", "voice_1"],
+                            "cellList": ["Talk", "鹿目まどか", "日本語", "voice_1"],
                         },
                         {
                             "rowNumber": 2,
@@ -463,7 +463,13 @@ class JsonMutationProofTests(unittest.TestCase):
                 cn_path,
                 ["中文"],
             )
-            self.assertTrue(proof["nonCommentFieldsMatch"])
+            self.assertTrue(proof["nonLocalizedFieldsMatch"])
+            self.assertTrue(proof["canonicalNameSequenceMatches"])
+            localized = json.loads(cn_path.read_text(encoding="utf-8"))
+            self.assertEqual(
+                localized["sheetList"][0]["contentRowList"][0]["cellList"][1],
+                "鹿目圆",
+            )
             self.assertTrue(proof["playableCommentSequenceMatches"])
 
             changed = json.loads(cn_path.read_text(encoding="utf-8"))

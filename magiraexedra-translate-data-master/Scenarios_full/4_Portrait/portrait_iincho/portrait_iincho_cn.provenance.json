@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "67b5cb4f3178a18dbdd20e24954a19a34f3ddd4b536c56c617c9af18f6f54fdd",
-  "cnSha256": "ba0ea6491cde29f5bb3bd82b97fb3bc7e2b1af1559622f9428f10b8665364e9e",
+  "cnSha256": "82ccf7c76cf4a92560c48448c25d2ca2f4417db9a785b91a1e366d1f25950e47",
   "chapterTitle": "第十二章 · 班长的魔女",
   "sections": [
     {
@@ -62,10 +65,24 @@
       "twPath": "4_Portrait/portrait_iincho_1/portrait_iincho_1.json",
       "twSha256": "3bc5a6a6d2cf9210a7d10d3d13958e4e25ccdadf5a99f9775f93ba95fb1e774b",
       "jpSha256": "ab9bf973d1e0677e7bcbc2cdb984a6bcf7a276fd46b45989c1c994b955407548",
-      "cnSha256": "285cc6c6b4867a5bf64c8c74815c6b9649c695dfbca1f59b949998edb99ff193",
-      "simplifiedJsonSha256": "285cc6c6b4867a5bf64c8c74815c6b9649c695dfbca1f59b949998edb99ff193",
+      "cnSha256": "4786d417808441b0b403c5ef3feca8efd13d018e7cad6378b67162ccd9d20725",
+      "simplifiedJsonSha256": "4786d417808441b0b403c5ef3feca8efd13d018e7cad6378b67162ccd9d20725",
       "eventCount": 108,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 96,
+      "dictionaryFallbackSpeakerEvents": 9,
+      "narrationSpeakerEvents": 3,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "b31d3f906abe2fd6a93ea0433847e4d39dd8effcf08b7b8f30c164f03321f409",
-  "cnSha256": "7efa2ea262b382629c2f4907d92f03bf37fa2bafa329ee3203acf4d5a49f8ae1",
+  "cnSha256": "8d15265fae0ab6f5e5b3f15e0c09f65301944bda7803d46c1f2ff798b6882170",
   "chapterTitle": "第一章 · 针之魔女",
   "sections": [
     {
@@ -84,10 +87,17 @@
       "twPath": "4_Portrait/portrait_hari_1/portrait_hari_1.json",
       "twSha256": "d3c194c63b3992a0872938a4950b5915e391707fc81d68d0da8d9cb56e36846d",
       "jpSha256": "c8780d5de503daff49062392cc3481e3ac9744363a0d4b2e430f9cb20fb358f8",
-      "cnSha256": "dc6293847cb22c0e13bc6874541c92c0aa4754e585ba97a21cf99a08c8e3cfc5",
-      "simplifiedJsonSha256": "dc6293847cb22c0e13bc6874541c92c0aa4754e585ba97a21cf99a08c8e3cfc5",
+      "cnSha256": "5d3325e8167961b79bb21a617c70de373a594866c46827240f36eb215f130414",
+      "simplifiedJsonSha256": "5d3325e8167961b79bb21a617c70de373a594866c46827240f36eb215f130414",
       "eventCount": 59,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 57,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_hari_2.json",
@@ -95,10 +105,24 @@
       "twPath": "4_Portrait/portrait_hari_2/portrait_hari_2.json",
       "twSha256": "a04bfec0a6652be67014c57707088c9dffcd1f01bc7c52231080be2de97edf5d",
       "jpSha256": "ca5380df8ae6cdccff8b7ba07eebde9c090435f28af6e447635078a31c6f46d0",
-      "cnSha256": "7f5740e51b41fbcad63551db5e638e247fdb7f8da8c654d03957b619017c9fd1",
-      "simplifiedJsonSha256": "7f5740e51b41fbcad63551db5e638e247fdb7f8da8c654d03957b619017c9fd1",
+      "cnSha256": "8972cab2a128e29534d0192c231a052111825838f77e1d8b5c224636edb9fa4a",
+      "simplifiedJsonSha256": "8972cab2a128e29534d0192c231a052111825838f77e1d8b5c224636edb9fa4a",
       "eventCount": 57,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 56,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

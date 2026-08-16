@@ -1,14 +1,4 @@
 #!/usr/bin/env python3
-"""Install permanent authentic-TW report certification and materializer hooks."""
-from __future__ import annotations
-
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-CERTIFIER = ROOT / "tools/certify_authentic_tw_reports.py"
-MATERIALIZER = ROOT / "tools/materialize_tw_official_cn.py"
-
-CERTIFIER_SOURCE = r'''#!/usr/bin/env python3
 """Bind every official-TW import report to authentic source and current bytes.
 
 This is a fail-closed certification pass. It never invents a TW source hash:
@@ -255,34 +245,6 @@ def main() -> int:
             f"reports={reports}, sources={sources}"
         )
     print(f"AUTHENTIC_TW_REPORTS_CERTIFIED reports={reports} sources={sources}")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
-'''
-
-
-def main() -> int:
-    if CERTIFIER.exists():
-        raise RuntimeError(f"certifier already exists: {CERTIFIER}")
-    CERTIFIER.write_text(CERTIFIER_SOURCE, encoding="utf-8", newline="\n")
-
-    source = MATERIALIZER.read_text(encoding="utf-8")
-    marker = '    run(sys.executable, "generate_story_index.py")\n'
-    if source.count(marker) != 1:
-        raise RuntimeError(
-            "materialize_tw_official_cn.py generate_story_index marker is not unique"
-        )
-    source = source.replace(
-        marker,
-        '    run(sys.executable, "tools/canonicalize_exedra_cn_speakers.py")\n'
-        '    run(sys.executable, "tools/certify_authentic_tw_reports.py")\n'
-        + marker,
-        1,
-    )
-    MATERIALIZER.write_text(source, encoding="utf-8", newline="\n")
-    print("AUTHENTIC_TW_REPORT_CERTIFICATION_REPAIR_APPLIED")
     return 0
 
 

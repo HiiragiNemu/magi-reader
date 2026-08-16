@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "b3c3fd7e16a921c4f2279aec6a09fb8b467b561a3fe01355ad554019ca477cf3",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 86
+    "readerNormalizedBlockCount": 208
   },
   "cn": {
-    "renderedSha256": "f65911492852690d2fec15ee81869cb73df1a1f300cfb4126cddd7dc367d4fe6",
+    "renderedSha256": "b2f74423309d518b91bd1beecbf61a48525979538295d69a70ee48925b5b25c2",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 86
+    "readerNormalizedBlockCount": 208
   },
   "sections": [
     {
@@ -31,42 +37,45 @@
       "source": "sub_scene0_film03_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 41,
-        "cn": 41,
+        "jp": 108,
+        "cn": 108,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "a73e598e1122f4ef42daf06095771886befbb503cfb97f07f8f661f8541e05ea",
-        "cn": "a73e598e1122f4ef42daf06095771886befbb503cfb97f07f8f661f8541e05ea"
-      }
+        "jp": "68662f8d432a82eaf21d2e3e0d503d233b97f02bf07c83f1405628c097409ad1",
+        "cn": "d2808ca90ff0a77603799d5198883b4c98e52b17a76a4e545056d2104062c21d"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 2,
       "source": "sub_scene0_film03_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 22,
-        "cn": 22,
+        "jp": 60,
+        "cn": 60,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "ab351a128d407c1a73b32cdca53f5b7e7eea3ab89ba4def8c9fb6b0878349e84",
-        "cn": "ab351a128d407c1a73b32cdca53f5b7e7eea3ab89ba4def8c9fb6b0878349e84"
-      }
+        "jp": "624885f50f0981362b266c347200fe60433709feb5b15ec4dc427ee8c7ed8dba",
+        "cn": "624885f50f0981362b266c347200fe60433709feb5b15ec4dc427ee8c7ed8dba"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "sub_scene0_film03_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 23,
-        "cn": 23,
+        "jp": 40,
+        "cn": 40,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "b69dfd241a50b188126ed64cfbb1e02a6b89d359db9b086ab2c6db204dc4794c",
-        "cn": "b69dfd241a50b188126ed64cfbb1e02a6b89d359db9b086ab2c6db204dc4794c"
-      }
+        "jp": "14ec3e02f7609d130237ae4a94ae752a3d30e67971b95922598301ecfccc87e2",
+        "cn": "14ec3e02f7609d130237ae4a94ae752a3d30e67971b95922598301ecfccc87e2"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -76,10 +85,17 @@
       "twPath": "2_Sub/sub_scene0_film03_1/sub_scene0_film03_1.json",
       "twSha256": "02c1cd14d772dbf05aa482714e19c06cd509c965e8ec1395e5eeea170c63341c",
       "jpSha256": "89270c7ee27059617d27e97d5b4605f209abee4d6cefbc54aad24b97a741f273",
-      "cnSha256": "fe15848ae5f6862e99cf3c40f69a1fad45bffe53b09414769e968f4594b58db1",
-      "simplifiedJsonSha256": "fe15848ae5f6862e99cf3c40f69a1fad45bffe53b09414769e968f4594b58db1",
+      "cnSha256": "e5e05a15b85ac953c0e1603584cc3fe9cc49d6dcfa8e9f2d3aff732c8f54df1f",
+      "simplifiedJsonSha256": "e5e05a15b85ac953c0e1603584cc3fe9cc49d6dcfa8e9f2d3aff732c8f54df1f",
       "eventCount": 108,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 107,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     },
     {
       "source": "sub_scene0_film03_2.json",
@@ -87,10 +103,17 @@
       "twPath": "2_Sub/sub_scene0_film03_2/sub_scene0_film03_2.json",
       "twSha256": "de474b0f3067813217de744a5bcfde858611e650106c551ffaf1ac935c0f4522",
       "jpSha256": "0cdac6bddc642f55da287ee58be28029ed88dfad4cf5e8d07ee8a16d1348c50e",
-      "cnSha256": "c51428bfe361c71cba06dd810b798992b6c228049b6f6fa5405181f8461edf4c",
-      "simplifiedJsonSha256": "c51428bfe361c71cba06dd810b798992b6c228049b6f6fa5405181f8461edf4c",
+      "cnSha256": "b4f6c015f14f230e92e008f439c2cfe6cd712d328e4d5827dcaa8b1ff902e22e",
+      "simplifiedJsonSha256": "b4f6c015f14f230e92e008f439c2cfe6cd712d328e4d5827dcaa8b1ff902e22e",
       "eventCount": 60,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 59,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     },
     {
       "source": "sub_scene0_film03_3.json",
@@ -98,10 +121,17 @@
       "twPath": "2_Sub/sub_scene0_film03_3/sub_scene0_film03_3.json",
       "twSha256": "0d841a0f8d2b52e0a065d9b2ffd440cbf873c6669025a8c10f1cf684773ccc3c",
       "jpSha256": "3d722897271135d6a253fc0a8bfbb6e7873f23869876f04ac3809ce2b2ad6ac2",
-      "cnSha256": "7cda9f90bb81a1d024114ba93657fd863f7c2ee779b9a7ae389d27aad927fa68",
-      "simplifiedJsonSha256": "7cda9f90bb81a1d024114ba93657fd863f7c2ee779b9a7ae389d27aad927fa68",
+      "cnSha256": "01ffdc2c76e40a9a41c7ee441a5956564a69eee80d38e51aded0ca6f876795e6",
+      "simplifiedJsonSha256": "01ffdc2c76e40a9a41c7ee441a5956564a69eee80d38e51aded0ca6f876795e6",
       "eventCount": 40,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 38,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -187,5 +217,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "b3c3fd7e16a921c4f2279aec6a09fb8b467b561a3fe01355ad554019ca477cf3",
+    "cnSha256": "b2f74423309d518b91bd1beecbf61a48525979538295d69a70ee48925b5b25c2",
+    "sectionCount": 3,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 3,
+    "sectionCount": 3
   }
 }

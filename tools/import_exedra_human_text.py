@@ -36,6 +36,14 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 import generate_story_index as pipeline  # noqa: E402
 import import_exedra_official_tw as common  # noqa: E402
+from tw_authentic_scenario import (  # noqa: E402
+    load_name_translation_map,
+    materialize_human_json,
+    render_human_cn,
+    validate_human_json,
+)
+
+SPEAKER_MAP = load_name_translation_map()
 
 JP_ROOT = ROOT / "magiraexedra-source-master/Scenarios_full"
 CN_ROOT = ROOT / "magiraexedra-translate-data-master/Scenarios_full"
@@ -2007,64 +2015,137 @@ def validate_only_comment_changed(
     cn_json: Path,
     expected_texts: list[str],
 ) -> dict[str, Any]:
-    """Prove that localized JSON differs only in playable text Comment cells."""
+    """Prove that only Name and playable Comment cells were localized.
+
+    Every non-empty Name cell, including Put/Disp rows, must equal the exact
+    dictionary.ts canonical Chinese form of the corresponding JP Name. Every
+    other playback field remains identical.
+    """
+
+    from tw_authentic_scenario import (
+        load_name_translation_map,
+        translate_speaker,
+    )
 
     jp_document = common.load_json(jp_json)
     cn_document = common.load_json(cn_json)
     if not isinstance(jp_document, dict) or not isinstance(cn_document, dict):
         raise RuntimeError(f"Exedra JSON 顶层不是对象：{jp_json.name}")
+    mapping = load_name_translation_map()
 
-    def redact_text_comments(document: dict[str, Any]) -> int:
-        count = 0
-        sheets = document.get("sheetList")
-        if not isinstance(sheets, list):
-            raise RuntimeError(f"Exedra JSON 缺少 sheetList：{jp_json.name}")
-        for sheet in sheets:
-            if not isinstance(sheet, dict):
-                continue
-            header = sheet.get("headerRow")
-            contents = sheet.get("contentRowList")
-            if not isinstance(header, dict) or not isinstance(contents, list):
-                continue
-            header_cells = header.get("cellList")
-            if not isinstance(header_cells, list):
-                continue
-            names = [str(value).strip().casefold() for value in header_cells]
-            try:
-                action_index = names.index("actiontype")
-                comment_index = names.index("comment")
-            except ValueError:
-                continue
-            for row in contents:
-                cells = row.get("cellList") if isinstance(row, dict) else None
-                if not isinstance(cells, list):
-                    continue
-                action = str(
-                    cells[action_index] if action_index < len(cells) else ""
-                ).strip()
-                comment = (
-                    cells[comment_index] if comment_index < len(cells) else ""
+    jp_sheets = jp_document.get("sheetList")
+    cn_sheets = cn_document.get("sheetList")
+    if not isinstance(jp_sheets, list) or not isinstance(cn_sheets, list):
+        raise RuntimeError(f"Exedra JSON 缺少 sheetList：{jp_json.name}")
+    if len(jp_sheets) != len(cn_sheets):
+        raise RuntimeError(f"本地化前后 sheetList 数量不同：{jp_json.name}")
+
+    mutable_comment_cells = 0
+    canonical_name_cells = 0
+    for sheet_index, (jp_sheet, cn_sheet) in enumerate(
+        zip(jp_sheets, cn_sheets),
+        start=1,
+    ):
+        if not isinstance(jp_sheet, dict) or not isinstance(cn_sheet, dict):
+            if jp_sheet != cn_sheet:
+                raise RuntimeError(
+                    f"本地化前后 Sheet 结构不同：{jp_json.name} #{sheet_index}"
                 )
-                if (
-                    action.casefold() not in common.TEXT_ACTIONS
-                    or not isinstance(comment, str)
-                    or not comment.strip()
-                ):
-                    continue
-                cells[comment_index] = "__MAGIREADER_LOCALIZED_COMMENT__"
-                count += 1
-        return count
+            continue
+        jp_header = jp_sheet.get("headerRow")
+        cn_header = cn_sheet.get("headerRow")
+        jp_rows = jp_sheet.get("contentRowList")
+        cn_rows = cn_sheet.get("contentRowList")
+        if (
+            not isinstance(jp_header, dict)
+            or not isinstance(cn_header, dict)
+            or not isinstance(jp_rows, list)
+            or not isinstance(cn_rows, list)
+        ):
+            if jp_sheet != cn_sheet:
+                raise RuntimeError(
+                    f"本地化前后 Sheet 元数据不同：{jp_json.name} #{sheet_index}"
+                )
+            continue
+        jp_headers = jp_header.get("cellList")
+        cn_headers = cn_header.get("cellList")
+        if not isinstance(jp_headers, list) or not isinstance(cn_headers, list):
+            raise RuntimeError(f"Exedra JSON Header 无效：{jp_json.name}")
+        if jp_headers != cn_headers or len(jp_rows) != len(cn_rows):
+            raise RuntimeError(
+                f"本地化前后 Header/Row 数量不同：{jp_json.name} #{sheet_index}"
+            )
+        names = [str(value).strip().casefold() for value in jp_headers]
+        action_index = names.index("actiontype") if "actiontype" in names else None
+        comment_index = names.index("comment") if "comment" in names else None
+        name_index = names.index("name") if "name" in names else None
 
-    jp_comment_cells = redact_text_comments(jp_document)
-    cn_comment_cells = redact_text_comments(cn_document)
-    if jp_comment_cells != cn_comment_cells:
-        raise RuntimeError(
-            f"本地化前后可变 Comment 单元格数不同：{jp_json.name}: "
-            f"JP={jp_comment_cells} CN={cn_comment_cells}"
-        )
+        for row_index, (jp_row, cn_row) in enumerate(
+            zip(jp_rows, cn_rows),
+            start=1,
+        ):
+            jp_cells = jp_row.get("cellList") if isinstance(jp_row, dict) else None
+            cn_cells = cn_row.get("cellList") if isinstance(cn_row, dict) else None
+            if not isinstance(jp_cells, list) or not isinstance(cn_cells, list):
+                if jp_row != cn_row:
+                    raise RuntimeError(
+                        f"本地化前后 Row 结构不同：{jp_json.name} "
+                        f"#{sheet_index}:{row_index}"
+                    )
+                continue
+            if len(jp_cells) != len(cn_cells):
+                raise RuntimeError(
+                    f"本地化前后 cellList 长度不同：{jp_json.name} "
+                    f"#{sheet_index}:{row_index}"
+                )
+
+            if name_index is not None and name_index < len(jp_cells):
+                jp_name = jp_cells[name_index]
+                cn_name = cn_cells[name_index]
+                if isinstance(jp_name, str):
+                    expected_name = (
+                        translate_speaker(jp_name, mapping)
+                        if jp_name.strip()
+                        else jp_name
+                    )
+                    if cn_name != expected_name:
+                        raise RuntimeError(
+                            "本地化 JSON 的 Name 未按 dictionary.ts 规范中文化："
+                            f"{jp_json.name} #{sheet_index}:{row_index}: "
+                            f"{jp_name!r} -> {cn_name!r}, expected {expected_name!r}"
+                        )
+                    if jp_name.strip():
+                        canonical_name_cells += 1
+                    jp_cells[name_index] = "__MAGIREADER_CANONICAL_NAME__"
+                    cn_cells[name_index] = "__MAGIREADER_CANONICAL_NAME__"
+                elif jp_name != cn_name:
+                    raise RuntimeError(
+                        f"本地化 JSON 修改了非字符串 Name：{jp_json.name}"
+                    )
+
+            if (
+                action_index is not None
+                and comment_index is not None
+                and max(action_index, comment_index) < len(jp_cells)
+            ):
+                action = str(jp_cells[action_index] or "").strip().casefold()
+                comment = jp_cells[comment_index]
+                if (
+                    action in common.TEXT_ACTIONS
+                    and isinstance(comment, str)
+                    and comment.strip()
+                ):
+                    if comment_index >= len(cn_cells):
+                        raise RuntimeError(
+                            f"本地化 JSON 缺少 Comment：{jp_json.name}"
+                        )
+                    jp_cells[comment_index] = "__MAGIREADER_LOCALIZED_COMMENT__"
+                    cn_cells[comment_index] = "__MAGIREADER_LOCALIZED_COMMENT__"
+                    mutable_comment_cells += 1
+
     if jp_document != cn_document:
         raise RuntimeError(
-            f"本地化 JSON 修改了 Comment 以外的字段：{jp_json.name}"
+            f"本地化 JSON 修改了 Name/Comment 以外的字段：{jp_json.name}"
         )
 
     cn_rows = common.extract_rows(cn_json)
@@ -2074,12 +2155,16 @@ def validate_only_comment_changed(
             f"本地化 JSON 的可播放 Comment 顺序错误：{jp_json.name}"
         )
     return {
+        # Compatibility key: all fields outside the declared localized
+        # Name/Comment contract match.
         "nonCommentFieldsMatch": True,
+        "nonLocalizedFieldsMatch": True,
+        "canonicalNameSequenceMatches": True,
         "playableCommentSequenceMatches": True,
-        "mutableCommentCellCount": cn_comment_cells,
+        "canonicalNameCellCount": canonical_name_cells,
+        "mutableCommentCellCount": mutable_comment_cells,
         "canonicalEventCount": len(actual_texts),
     }
-
 
 def import_group(
     group: dict[str, Any],
@@ -2259,11 +2344,12 @@ def import_group(
         ):
             jp_json = group_jp_json(group, str(raw_source))
             destination = stage / section.source
-            output_sha = common.apply_translated_texts(
+            output_sha = materialize_human_json(
                 jp_json,
                 texts,
                 destination,
-            )
+                SPEAKER_MAP,
+            )["sha256"]
             json.loads(destination.read_text(encoding="utf-8"))
             mutation_proof = validate_only_comment_changed(
                 jp_json,
@@ -2287,7 +2373,7 @@ def import_group(
 
         staged_cn = stage / f"{group_key}_cn.txt"
         staged_cn.write_text(
-            common.render_cn(sections, translations),
+            render_human_cn(sections, translations, SPEAKER_MAP),
             encoding="utf-8",
         )
         report = common.build_report(

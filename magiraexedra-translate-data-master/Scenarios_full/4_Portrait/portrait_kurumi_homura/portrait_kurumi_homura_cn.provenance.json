@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "b90218995f01b70160b415bf02826cb73a8a864a7f17acd468f70998023337b4",
-  "cnSha256": "f4e62db337804df6ee78cdd88d60790f432c0603bf4f7ea3989dd8e8aa033097",
+  "cnSha256": "95496f6cccd1e1e16af9b50676801fb27c3aca787822a8bfa9e34872a78d0c00",
   "chapterTitle": "后篇 · 胡桃钳的魔女",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_kurumi_homura_1/portrait_kurumi_homura_1.json",
       "twSha256": "ebd8f2279f9b38b9dca3d82e01accaadda5a7ec92e389a896b3db026cb4d8db8",
       "jpSha256": "200f18dabb174aa49ae2cf0e54b36513ce3cc59fcc1a22d48218d302e2770bfb",
-      "cnSha256": "23d2e16d55ea12fc2df35152dca39d9a71ccbc69ae6d989f5c4db1d5858c48a0",
-      "simplifiedJsonSha256": "23d2e16d55ea12fc2df35152dca39d9a71ccbc69ae6d989f5c4db1d5858c48a0",
+      "cnSha256": "2a112cae6e2a8c7c8006a63efa6719919099bc5e38cd4ab0f5c3dc42c446d66a",
+      "simplifiedJsonSha256": "2a112cae6e2a8c7c8006a63efa6719919099bc5e38cd4ab0f5c3dc42c446d66a",
       "eventCount": 60,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 53,
+      "dictionaryFallbackSpeakerEvents": 5,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_kurumi_homura_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_kurumi_homura_2/portrait_kurumi_homura_2.json",
       "twSha256": "6c76df4fb4ec614fc857a28b450008aa4a5c51566e39e4a5dedbcb7200c38bed",
       "jpSha256": "40b400c6a17d0a9ba14e06decedd605bf5c3ab551e32eeca05e1aabd004fd8de",
-      "cnSha256": "ad2d84d7173e71e17b1845061f4cfa44d9f8b60e940451595d3673f52e6e1992",
-      "simplifiedJsonSha256": "ad2d84d7173e71e17b1845061f4cfa44d9f8b60e940451595d3673f52e6e1992",
+      "cnSha256": "be05b22a58a9276700fbf0c8bc77cf01776a06e178d8db7970caacff10980e9d",
+      "simplifiedJsonSha256": "be05b22a58a9276700fbf0c8bc77cf01776a06e178d8db7970caacff10980e9d",
       "eventCount": 47,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 37,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 10,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

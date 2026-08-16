@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "642a46c705ed8690b22f2b717ba4a4ca9eb84d456ba67eaa23995f8867ac0854",
     "sectionCount": 4,
-    "readerNormalizedBlockCount": 42
+    "readerNormalizedBlockCount": 84
   },
   "cn": {
     "renderedSha256": "85bcb28a8af2d57833f48ffc8d007f1362bfbaa816d471fcaa95de4a690c57fa",
     "sectionCount": 4,
-    "readerNormalizedBlockCount": 42
+    "readerNormalizedBlockCount": 84
   },
   "sections": [
     {
@@ -31,56 +37,60 @@
       "source": "pp_monogatari_oriko_normal_01.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 9,
-        "cn": 9,
+        "jp": 20,
+        "cn": 20,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "82b347339909544d4fe3f4e36c5d8858c9fb63c169dff9d539c7022eba0010fd",
-        "cn": "82b347339909544d4fe3f4e36c5d8858c9fb63c169dff9d539c7022eba0010fd"
-      }
+        "jp": "063b1dc75d1f0239b10d7f663c705d738c0a86c4e7e66dbc111981d3b762cd33",
+        "cn": "063b1dc75d1f0239b10d7f663c705d738c0a86c4e7e66dbc111981d3b762cd33"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "pp_monogatari_oriko_normal_02.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 7,
-        "cn": 7,
+        "jp": 16,
+        "cn": 16,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "93ec02f471bc60d1bb3f09f1ba768ef7073f3f7e2cabd915a30d0ed593a2ecb9",
-        "cn": "93ec02f471bc60d1bb3f09f1ba768ef7073f3f7e2cabd915a30d0ed593a2ecb9"
-      }
+        "jp": "a0e457671692edbfa3af7a6362a81d608b730a4247b373dd33ac823348f780a0",
+        "cn": "a0e457671692edbfa3af7a6362a81d608b730a4247b373dd33ac823348f780a0"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "pp_monogatari_oriko_normal_03.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 11,
-        "cn": 11,
+        "jp": 19,
+        "cn": 19,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf",
-        "cn": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf"
-      }
+        "jp": "ce3393d34c7b67f1210fc73a9cc5befbeb12d6ae0d26acf5d8a7955b749ed34f",
+        "cn": "ce3393d34c7b67f1210fc73a9cc5befbeb12d6ae0d26acf5d8a7955b749ed34f"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
       "source": "pp_monogatari_oriko_normal_04.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 15,
-        "cn": 15,
+        "jp": 29,
+        "cn": 29,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "9c8abd58680cbfc47fa42bb053dd60d1d0e0f54e35aa8afbc03d55aee33723a0",
-        "cn": "9c8abd58680cbfc47fa42bb053dd60d1d0e0f54e35aa8afbc03d55aee33723a0"
-      }
+        "jp": "6a7a11bedf8f4cae5a14035e4c4f2f067e18b6e78aac44bc74aa4bd78bab95eb",
+        "cn": "6a7a11bedf8f4cae5a14035e4c4f2f067e18b6e78aac44bc74aa4bd78bab95eb"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -93,7 +103,14 @@
       "cnSha256": "dac93610d27d00b2ddf3de7e250ffeec44c84e714b241bae308b0b937ca3394c",
       "simplifiedJsonSha256": "dac93610d27d00b2ddf3de7e250ffeec44c84e714b241bae308b0b937ca3394c",
       "eventCount": 20,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 20,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_oriko_normal_02.json",
@@ -104,7 +121,14 @@
       "cnSha256": "4e1f05495a47f7ad1eff663a95f28857d2133c3cf368510acba03d46a2daf65f",
       "simplifiedJsonSha256": "4e1f05495a47f7ad1eff663a95f28857d2133c3cf368510acba03d46a2daf65f",
       "eventCount": 16,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 16,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_oriko_normal_03.json",
@@ -115,7 +139,14 @@
       "cnSha256": "74e9ef40a12a5e07604c5c5ccda173407d1500359babbd5051cd5ffd0dee287f",
       "simplifiedJsonSha256": "74e9ef40a12a5e07604c5c5ccda173407d1500359babbd5051cd5ffd0dee287f",
       "eventCount": 19,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 19,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_oriko_normal_04.json",
@@ -126,7 +157,14 @@
       "cnSha256": "dfbb20e5511a474f12543c017f560cc06221a23db56cad32c059aa32edafdbf5",
       "simplifiedJsonSha256": "dfbb20e5511a474f12543c017f560cc06221a23db56cad32c059aa32edafdbf5",
       "eventCount": 29,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 29,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -232,5 +270,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "642a46c705ed8690b22f2b717ba4a4ca9eb84d456ba67eaa23995f8867ac0854",
+    "cnSha256": "85bcb28a8af2d57833f48ffc8d007f1362bfbaa816d471fcaa95de4a690c57fa",
+    "sectionCount": 4,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 4,
+    "sectionCount": 4
   }
 }

@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "b8454b5a2b11202907c4228fc07dd0c2d4b5f5f991053f713383d8c4ca6f9736",
-  "cnSha256": "8c6a67f62876b54b839f9993c773b8d68184e7e47d0f63ddd0262372b998d19c",
+  "cnSha256": "c667cd4fde3834706ce6754d35752021e11e1c78d3696c067d5da93b19a84681",
   "chapterTitle": "第一章 · 沙地的魔女",
   "sections": [
     {
@@ -62,10 +65,24 @@
       "twPath": "4_Portrait/portrait_sunaba_1/portrait_sunaba_1.json",
       "twSha256": "fd1378e85d7a6b0b403afa37b19546c6f8ef0097fb91437eaaa6a272c120e3f8",
       "jpSha256": "f1eb4720e7789b849263c4d0d62b293388c78ddce3bc0ec3f1fb524b457967aa",
-      "cnSha256": "c0d021c5befdb9afeb8f2f5609456d4e5a79d9e587cc3aafe86ac1280feab696",
-      "simplifiedJsonSha256": "c0d021c5befdb9afeb8f2f5609456d4e5a79d9e587cc3aafe86ac1280feab696",
+      "cnSha256": "40d997410c034ba604927875ffe5a82c2eb61246e76dca0538ca2ecd73ff6929",
+      "simplifiedJsonSha256": "40d997410c034ba604927875ffe5a82c2eb61246e76dca0538ca2ecd73ff6929",
       "eventCount": 106,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 102,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 4,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

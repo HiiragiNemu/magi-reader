@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "ed51c422432724bead5e0278dff8f72aeadc7aa4c2bc89c495c85d2a332246eb",
     "sectionCount": 14,
-    "readerNormalizedBlockCount": 14
+    "readerNormalizedBlockCount": 39
   },
   "cn": {
-    "renderedSha256": "12f1b1292dd7d634edb8808c78ec05d3c8ef09cf23ebfec05a7a614d8d5c5ab6",
+    "renderedSha256": "c2ccfce30f2f5485e355a983dd3983872d0cf34562f4c9b4e92b7fde20357274",
     "sectionCount": 14,
-    "readerNormalizedBlockCount": 14
+    "readerNormalizedBlockCount": 39
   },
   "sections": [
     {
@@ -31,14 +37,15 @@
       "source": "cv_107601_other_evo_fee_01.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 5,
+        "cn": 5,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "74ce0f67d69d8c3913ee24bd66a87e9c602fbc662bcae0a416409bc82ae043db",
+        "cn": "74ce0f67d69d8c3913ee24bd66a87e9c602fbc662bcae0a416409bc82ae043db"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
@@ -50,23 +57,25 @@
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c",
+        "cn": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "cv_107601_other_evo_fee_02.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 5,
+        "cn": 5,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "74ce0f67d69d8c3913ee24bd66a87e9c602fbc662bcae0a416409bc82ae043db",
+        "cn": "74ce0f67d69d8c3913ee24bd66a87e9c602fbc662bcae0a416409bc82ae043db"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
@@ -78,23 +87,25 @@
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c",
+        "cn": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 5,
       "source": "cv_107601_other_evo_fee_03.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 5,
+        "cn": 5,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "74ce0f67d69d8c3913ee24bd66a87e9c602fbc662bcae0a416409bc82ae043db",
+        "cn": "74ce0f67d69d8c3913ee24bd66a87e9c602fbc662bcae0a416409bc82ae043db"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 6,
@@ -106,23 +117,25 @@
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c",
+        "cn": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 7,
       "source": "cv_107601_other_evo_fee_04.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 4,
+        "cn": 4,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "15976d471e9f67bd60e5dd043e1516481fe97094804dfb4d47104bef21803c50",
+        "cn": "15976d471e9f67bd60e5dd043e1516481fe97094804dfb4d47104bef21803c50"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 8,
@@ -134,23 +147,25 @@
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c",
+        "cn": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 9,
       "source": "cv_107601_other_evo_fee_05.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 4,
+        "cn": 4,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "15976d471e9f67bd60e5dd043e1516481fe97094804dfb4d47104bef21803c50",
+        "cn": "15976d471e9f67bd60e5dd043e1516481fe97094804dfb4d47104bef21803c50"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 10,
@@ -162,23 +177,25 @@
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c",
+        "cn": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 11,
       "source": "cv_107601_other_evo_fee_06.json",
       "wikiEpisode": 6,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 5,
+        "cn": 5,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "74ce0f67d69d8c3913ee24bd66a87e9c602fbc662bcae0a416409bc82ae043db",
+        "cn": "74ce0f67d69d8c3913ee24bd66a87e9c602fbc662bcae0a416409bc82ae043db"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 12,
@@ -190,23 +207,25 @@
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c",
+        "cn": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 13,
       "source": "cv_107601_other_evo_fee_07.json",
       "wikiEpisode": 7,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 4,
+        "cn": 4,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "15976d471e9f67bd60e5dd043e1516481fe97094804dfb4d47104bef21803c50",
+        "cn": "15976d471e9f67bd60e5dd043e1516481fe97094804dfb4d47104bef21803c50"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 14,
@@ -218,9 +237,10 @@
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268",
-        "cn": "6ae3d0cb267088220551b038ad1f9e8d9762ea6b4162299bb3311d2e819c7268"
-      }
+        "jp": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c",
+        "cn": "805019efe55d117cd6ceb4bd99c1b77e3d24044aee2cc1ba38736b01dd06be7c"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -233,7 +253,14 @@
       "cnSha256": "d762224aed4cf59be09e5377cef2a73624a035272ec1f8230e0af4cf2b94291a",
       "simplifiedJsonSha256": "d762224aed4cf59be09e5377cef2a73624a035272ec1f8230e0af4cf2b94291a",
       "eventCount": 5,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 5,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_story_01.json",
@@ -244,7 +271,14 @@
       "cnSha256": "b173624e7fe03259917f8038d0566832507dcc4825d5390fb6b62561a1ca5057",
       "simplifiedJsonSha256": "b173624e7fe03259917f8038d0566832507dcc4825d5390fb6b62561a1ca5057",
       "eventCount": 1,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_evo_fee_02.json",
@@ -255,7 +289,14 @@
       "cnSha256": "313e558a2b89bc01018aaa1680b539df8c0065dc7d2633c84a9d12ecaad9abb1",
       "simplifiedJsonSha256": "313e558a2b89bc01018aaa1680b539df8c0065dc7d2633c84a9d12ecaad9abb1",
       "eventCount": 5,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 5,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_story_02.json",
@@ -266,7 +307,14 @@
       "cnSha256": "4e8ebc7c67d83e14e66b62c8750fb08cf28d6451378c77dcfe8812c25422e54d",
       "simplifiedJsonSha256": "4e8ebc7c67d83e14e66b62c8750fb08cf28d6451378c77dcfe8812c25422e54d",
       "eventCount": 1,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_evo_fee_03.json",
@@ -277,7 +325,14 @@
       "cnSha256": "1f48f5cc58228468407849507b352582a9440d2961b2ea7131d3a4b01b640cff",
       "simplifiedJsonSha256": "1f48f5cc58228468407849507b352582a9440d2961b2ea7131d3a4b01b640cff",
       "eventCount": 5,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 5,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_story_03.json",
@@ -288,7 +343,14 @@
       "cnSha256": "1824e360b275560326303aa05982bdc48a131f421390874ee4904161dffa9dea",
       "simplifiedJsonSha256": "1824e360b275560326303aa05982bdc48a131f421390874ee4904161dffa9dea",
       "eventCount": 1,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_evo_fee_04.json",
@@ -299,7 +361,14 @@
       "cnSha256": "37aca025f4489ca1171e8620c608ce4f3db3462341bfabc627b5a80f1619b393",
       "simplifiedJsonSha256": "37aca025f4489ca1171e8620c608ce4f3db3462341bfabc627b5a80f1619b393",
       "eventCount": 4,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 4,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_story_04.json",
@@ -310,7 +379,14 @@
       "cnSha256": "818429f5bf22ef40882e518e7e893ed21557d432291ba2b51077b330b14d7475",
       "simplifiedJsonSha256": "818429f5bf22ef40882e518e7e893ed21557d432291ba2b51077b330b14d7475",
       "eventCount": 1,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_evo_fee_05.json",
@@ -321,7 +397,14 @@
       "cnSha256": "4db210551eecf3dac5d7258e6dc4fc7fcc4c900113de5805a99c9dd7e9b61c83",
       "simplifiedJsonSha256": "4db210551eecf3dac5d7258e6dc4fc7fcc4c900113de5805a99c9dd7e9b61c83",
       "eventCount": 4,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 4,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_story_05.json",
@@ -332,7 +415,14 @@
       "cnSha256": "c059f5a4274aba1c2226e8c491c8708b36bcde83c03b3883535b540db719c776",
       "simplifiedJsonSha256": "c059f5a4274aba1c2226e8c491c8708b36bcde83c03b3883535b540db719c776",
       "eventCount": 1,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_evo_fee_06.json",
@@ -343,7 +433,14 @@
       "cnSha256": "2bbc488ccdc074e09838bab7b1b8b4a1efe6813127d30af5eaf4762841349862",
       "simplifiedJsonSha256": "2bbc488ccdc074e09838bab7b1b8b4a1efe6813127d30af5eaf4762841349862",
       "eventCount": 5,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 5,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_story_06.json",
@@ -354,7 +451,14 @@
       "cnSha256": "619433086927aa6cbbf5df8a447c795c1934dccfb89c21d9760ad29f62ccdb06",
       "simplifiedJsonSha256": "619433086927aa6cbbf5df8a447c795c1934dccfb89c21d9760ad29f62ccdb06",
       "eventCount": 1,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_evo_fee_07.json",
@@ -365,7 +469,14 @@
       "cnSha256": "049e08749fba972691f14a4904c7a0c6af1b0326e3aab965c6f3f996b187acaf",
       "simplifiedJsonSha256": "049e08749fba972691f14a4904c7a0c6af1b0326e3aab965c6f3f996b187acaf",
       "eventCount": 4,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 4,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "cv_107601_other_story_07.json",
@@ -376,7 +487,14 @@
       "cnSha256": "8f00a86c085361fd4618368e5a178a99c36fff4cf2138c99f5ffe2efba237b6e",
       "simplifiedJsonSha256": "8f00a86c085361fd4618368e5a178a99c36fff4cf2138c99f5ffe2efba237b6e",
       "eventCount": 1,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -472,5 +590,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "ed51c422432724bead5e0278dff8f72aeadc7aa4c2bc89c495c85d2a332246eb",
+    "cnSha256": "c2ccfce30f2f5485e355a983dd3983872d0cf34562f4c9b4e92b7fde20357274",
+    "sectionCount": 14,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 14,
+    "sectionCount": 14
   }
 }

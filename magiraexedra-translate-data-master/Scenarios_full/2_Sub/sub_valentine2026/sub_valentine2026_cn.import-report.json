@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "dacbc583af9cfb7ccca600fb92d3607f4ed2972a878bc16146f6d0a16a8a1f28",
     "sectionCount": 5,
-    "readerNormalizedBlockCount": 148
+    "readerNormalizedBlockCount": 217
   },
   "cn": {
-    "renderedSha256": "17c1e781e6d1d068a49b04030110c4b97ca8114c4747f9d837fcb95adadda43a",
+    "renderedSha256": "56f4ff205f660aa509a8019936d28af84c59169fbe4f307db9fbe8effba51e4e",
     "sectionCount": 5,
-    "readerNormalizedBlockCount": 148
+    "readerNormalizedBlockCount": 217
   },
   "sections": [
     {
@@ -31,70 +37,75 @@
       "source": "sub_valentine2026_01.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 22,
-        "cn": 22,
+        "jp": 41,
+        "cn": 41,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "e23d6f3b8aa64a7795547d96d0eb6fbf13c247e6e24ed546512eda212a46ba57",
-        "cn": "e23d6f3b8aa64a7795547d96d0eb6fbf13c247e6e24ed546512eda212a46ba57"
-      }
+        "jp": "76a6fab21d05a1c84577a9a712e82d173a287d742af584d8dcdd19ebcec33289",
+        "cn": "76a6fab21d05a1c84577a9a712e82d173a287d742af584d8dcdd19ebcec33289"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "sub_valentine2026_02.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 23,
-        "cn": 23,
+        "jp": 40,
+        "cn": 40,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "52e75effe28512cdf66d2920736d848336099f895f5744e59bb3daf13e520cac",
-        "cn": "52e75effe28512cdf66d2920736d848336099f895f5744e59bb3daf13e520cac"
-      }
+        "jp": "a87b26ed3fcebc39ba532eaa4e42832e67c4b7b0e7efd02853b62b86f6ad302a",
+        "cn": "a87b26ed3fcebc39ba532eaa4e42832e67c4b7b0e7efd02853b62b86f6ad302a"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "sub_valentine2026_03.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 43,
-        "cn": 43,
+        "jp": 48,
+        "cn": 48,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "250296354f08c6b2d1a82cb1afbe9f0c7cc7f0e0b6658119e2725513493cbc09",
-        "cn": "250296354f08c6b2d1a82cb1afbe9f0c7cc7f0e0b6658119e2725513493cbc09"
-      }
+        "jp": "c414bd1f33bbd9c14a1d1228406bcb0c2d5d47ada5a0232b60e9ecaba61dfdb6",
+        "cn": "c414bd1f33bbd9c14a1d1228406bcb0c2d5d47ada5a0232b60e9ecaba61dfdb6"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
       "source": "sub_valentine2026_04.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 24,
-        "cn": 24,
+        "jp": 37,
+        "cn": 37,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "5efde8756bad2312dffdf62eb64fda8004bb61eb59fc9e211ad19e3330565414",
-        "cn": "5efde8756bad2312dffdf62eb64fda8004bb61eb59fc9e211ad19e3330565414"
-      }
+        "jp": "a5d1c5a322f7907cbf97defb95fc7d581b7253376cd9c9afcaeaab28ec4d72c6",
+        "cn": "69365f1786737939a05fe74d52171da0b13a8eeba10a0c6be1a3ebdd180351ca"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 5,
       "source": "sub_valentine2026_05.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 36,
-        "cn": 36,
+        "jp": 51,
+        "cn": 51,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "e638fe34f0ee934f2292bb7bf938ed284125e70f99062b662f1b258fa7dd2817",
-        "cn": "e638fe34f0ee934f2292bb7bf938ed284125e70f99062b662f1b258fa7dd2817"
-      }
+        "jp": "0fb8314dfc22bcb432306d9b811dcdc02249f5b2cf6df9c50e91178bb92ead0f",
+        "cn": "ea767a12522f64120824b467bbce64a9286588813f7c4f70e219347993790e80"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -104,10 +115,17 @@
       "twPath": "2_Sub/sub_valentine2026_01/sub_valentine2026_01.json",
       "twSha256": "324868e46da9c81109d6ae314dd38d5f587796b39f8aeacb2f2b8ab6bd47309d",
       "jpSha256": "34a47dde7e3cf614235c8750324fe5e97cf2d91f45a34de9f085e5dd09f8c0d3",
-      "cnSha256": "de28176c36ecba1003db3f8059711366efcf6811d6a3910215e54b714332452e",
-      "simplifiedJsonSha256": "de28176c36ecba1003db3f8059711366efcf6811d6a3910215e54b714332452e",
+      "cnSha256": "b9f5a5d79d4a068714395ea2fd557f2c03b7d73769373e1cbeac4e1c6de83a8d",
+      "simplifiedJsonSha256": "b9f5a5d79d4a068714395ea2fd557f2c03b7d73769373e1cbeac4e1c6de83a8d",
       "eventCount": 41,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 40,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     },
     {
       "source": "sub_valentine2026_02.json",
@@ -115,10 +133,17 @@
       "twPath": "2_Sub/sub_valentine2026_02/sub_valentine2026_02.json",
       "twSha256": "056f391aa87df7c7113936bf6f1bf8c55798c5d6698ba32629ffce64522fea85",
       "jpSha256": "9caeb31b7200568e5038b13bc2f1712447bc58f1fd2dd2eb077eb7bb8377d12b",
-      "cnSha256": "a0c7468de7e286c57c020f7425d29b33fb4ecbe9c1a01fadf25cd43f53da5ab6",
-      "simplifiedJsonSha256": "a0c7468de7e286c57c020f7425d29b33fb4ecbe9c1a01fadf25cd43f53da5ab6",
+      "cnSha256": "13b5bcca3d7d3e59a80204f1c0cda981bbf610134fc34f060c745bdee65ee6d9",
+      "simplifiedJsonSha256": "13b5bcca3d7d3e59a80204f1c0cda981bbf610134fc34f060c745bdee65ee6d9",
       "eventCount": 40,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 39,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     },
     {
       "source": "sub_valentine2026_03.json",
@@ -126,10 +151,17 @@
       "twPath": "2_Sub/sub_valentine2026_03/sub_valentine2026_03.json",
       "twSha256": "a930d29222b59357679f21ee2f4db7e0693636e088c3e7fff088fece88fe2ac7",
       "jpSha256": "761624c9962143c6dd1a513dea196a0d9fe62b7911ea8d46dbd8cb6b4ef01e56",
-      "cnSha256": "6d2e3de551903b3e0f1b5c1702822a1321d8ee3b6a809a259899f66ce80565ad",
-      "simplifiedJsonSha256": "6d2e3de551903b3e0f1b5c1702822a1321d8ee3b6a809a259899f66ce80565ad",
+      "cnSha256": "451af294242559e472bd9f4039630faf3f68c7d98086d41135d5dbbc992a8457",
+      "simplifiedJsonSha256": "451af294242559e472bd9f4039630faf3f68c7d98086d41135d5dbbc992a8457",
       "eventCount": 48,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 43,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     },
     {
       "source": "sub_valentine2026_04.json",
@@ -137,10 +169,17 @@
       "twPath": "2_Sub/sub_valentine2026_04/sub_valentine2026_04.json",
       "twSha256": "f0d830951a4477eea215d5f6e6c7d8f4feb8ae99ef55d54a62e0dc3c3e7356a5",
       "jpSha256": "e1910e5ab39e97a603478b311af8c21cfcb8bf3fdb85f1900d6189c68e63d31d",
-      "cnSha256": "9906168c20f0aaa993836be3a6434d846a939c1f791dc900a3107e383a3fdd31",
-      "simplifiedJsonSha256": "9906168c20f0aaa993836be3a6434d846a939c1f791dc900a3107e383a3fdd31",
+      "cnSha256": "630f302bf1a9e6d1e70ba56fa4d04f3d01a35de033a3f8bcb37961bfe5e2a768",
+      "simplifiedJsonSha256": "630f302bf1a9e6d1e70ba56fa4d04f3d01a35de033a3f8bcb37961bfe5e2a768",
       "eventCount": 37,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 37,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "sub_valentine2026_05.json",
@@ -148,10 +187,17 @@
       "twPath": "2_Sub/sub_valentine2026_05/sub_valentine2026_05.json",
       "twSha256": "b60662c65e56eab0b97b85f5c292ac1999c95736d1f2d70cd37061489f23209e",
       "jpSha256": "489fb779b6b9b69c3235124fb869ffd2b5bcedffc08596ca11e45b98d4095188",
-      "cnSha256": "89fc62a354a7ab238bac0c5fd7d94f6541e4ead254cc8c1b3dfcc52efe697da8",
-      "simplifiedJsonSha256": "89fc62a354a7ab238bac0c5fd7d94f6541e4ead254cc8c1b3dfcc52efe697da8",
+      "cnSha256": "f3f8d9a3696dd3cbac003a4ae023297e76d17b315919dd7942bd18f0ff3f66b3",
+      "simplifiedJsonSha256": "f3f8d9a3696dd3cbac003a4ae023297e76d17b315919dd7942bd18f0ff3f66b3",
       "eventCount": 51,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 38,
+      "dictionaryFallbackSpeakerEvents": 11,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -277,5 +323,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "dacbc583af9cfb7ccca600fb92d3607f4ed2972a878bc16146f6d0a16a8a1f28",
+    "cnSha256": "56f4ff205f660aa509a8019936d28af84c59169fbe4f307db9fbe8effba51e4e",
+    "sectionCount": 5,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 5,
+    "sectionCount": 5
   }
 }

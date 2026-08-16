@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "b0b93e0700c047325b7763fcbd2b2acc01d5d9f25446a06096996fa138bbdebb",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 54
+    "readerNormalizedBlockCount": 89
   },
   "cn": {
-    "renderedSha256": "213bfa52623f9ff8ea079d5d69ac600edde8c4eead49687f4d16ce6fc4daf299",
+    "renderedSha256": "aeec08effda151b9b97b41eb5f905ff725d171f54fe1b96adb336470a9fa0344",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 54
+    "readerNormalizedBlockCount": 89
   },
   "sections": [
     {
@@ -31,28 +37,30 @@
       "source": "portrait_swimwear2025_mami_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 30,
-        "cn": 30,
+        "jp": 46,
+        "cn": 46,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "cabf2186fc2173662f1ba6602eb71cb445c3dcb51c676ef5f86eecc99b6f2a8a",
-        "cn": "cabf2186fc2173662f1ba6602eb71cb445c3dcb51c676ef5f86eecc99b6f2a8a"
-      }
+        "jp": "cd580cd1503d18c91195fb61ee79a4a5ee75fa7e6dd2eb6a1ab28d5673884ecd",
+        "cn": "0cd3365bbd465a4c902f3c22510ec0c21aa955742d9cd31ed83a1e90d8b2d2d8"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 2,
       "source": "portrait_swimwear2025_mami_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 24,
-        "cn": 24,
+        "jp": 43,
+        "cn": 43,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "831dd4f50d38be04d996e6920bd0bd567d4a7bcac258329036b29dac28b4f982",
-        "cn": "831dd4f50d38be04d996e6920bd0bd567d4a7bcac258329036b29dac28b4f982"
-      }
+        "jp": "0d52e64f3c34b6528481b75d7154a91ccd19383822f2019d3f6c77583575bb07",
+        "cn": "ee809a6c0c936c73b272b3dfd83d4d33bc3f2f7ae9cbb3bc18453a324d55cde2"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -62,10 +70,17 @@
       "twPath": "4_Portrait/portrait_swimwear2025_mami_1/portrait_swimwear2025_mami_1.json",
       "twSha256": "89fea143eb662bfa1c4edbb00e7ad7b233ddae28d6132905967fd2a7c2f4d1d1",
       "jpSha256": "573a5a9d84577e432b8d6a66836143e9c405b7d76971ec23a44b09c36abcb9cd",
-      "cnSha256": "5cea4e94fd27310b1aa3e7f1ba7c786dcccfdd88375119b1420cac8036c17251",
-      "simplifiedJsonSha256": "5cea4e94fd27310b1aa3e7f1ba7c786dcccfdd88375119b1420cac8036c17251",
+      "cnSha256": "c442a905b8a97f6b3b7713d11f71da775d903f77a22b44bd8ed2534a84670835",
+      "simplifiedJsonSha256": "c442a905b8a97f6b3b7713d11f71da775d903f77a22b44bd8ed2534a84670835",
       "eventCount": 46,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 42,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 4,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_swimwear2025_mami_2.json",
@@ -73,10 +88,17 @@
       "twPath": "4_Portrait/portrait_swimwear2025_mami_2/portrait_swimwear2025_mami_2.json",
       "twSha256": "946a3914e95fbb8dfe607a24812845b824c557a118d258c710181eccceed3f30",
       "jpSha256": "ccbb990921cedfe5ee68324da1c03438a97f19efc2f41acc8a27c79128acf38f",
-      "cnSha256": "591dad0cff3e4079cd08ce474d4055ff291c3c7c5169da358cca09786096051a",
-      "simplifiedJsonSha256": "591dad0cff3e4079cd08ce474d4055ff291c3c7c5169da358cca09786096051a",
+      "cnSha256": "067369aa992f5dba7788a1fad8d8bb2a135f425a8a94f3ea5dee0911874114db",
+      "simplifiedJsonSha256": "067369aa992f5dba7788a1fad8d8bb2a135f425a8a94f3ea5dee0911874114db",
       "eventCount": 43,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 38,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -142,5 +164,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "b0b93e0700c047325b7763fcbd2b2acc01d5d9f25446a06096996fa138bbdebb",
+    "cnSha256": "aeec08effda151b9b97b41eb5f905ff725d171f54fe1b96adb336470a9fa0344",
+    "sectionCount": 2,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 2,
+    "sectionCount": 2
   }
 }

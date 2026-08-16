@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "bf65998e3d559ac53168949cda7eb49dc8a30ab22873580d900a0ba6f6cdb9e1",
-  "cnSha256": "1bef51f448795d2ffac9c3b9bb6ebbafbab8e972b797ed1ab5f786f876e0a588",
+  "cnSha256": "5ceb3e16f58c4407c2e6566a34b4f727efc4c5c61eb791b27b583d612ec9fdd4",
   "chapterTitle": "",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_Newyear2026_madoka_1/portrait_Newyear2026_madoka_1.json",
       "twSha256": "1676583ccf5b24b22696a286667b357640f0bb1c1b72606ce2df28c0a5b44cc4",
       "jpSha256": "1333e9981aa164c005fd3bb1bc31800eec27535061470b3bbb40fc1a05701aaf",
-      "cnSha256": "624a3619f0603d9ffed1a4b5252d22e9b5b7d223119083e912452872d237ee07",
-      "simplifiedJsonSha256": "624a3619f0603d9ffed1a4b5252d22e9b5b7d223119083e912452872d237ee07",
+      "cnSha256": "5738fdd338834c23cd370805cc27898dfa316121323e9deee6a21e868947f55f",
+      "simplifiedJsonSha256": "5738fdd338834c23cd370805cc27898dfa316121323e9deee6a21e868947f55f",
       "eventCount": 73,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 68,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_Newyear2026_madoka_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_Newyear2026_madoka_2/portrait_Newyear2026_madoka_2.json",
       "twSha256": "b6135b3c1ee644ffd449f3587150f9a59e02214504ec136dbd73a984d49db40e",
       "jpSha256": "95332501eea274a1a9ffb5b19e1f7c76108633106732d193c950bca95081d02f",
-      "cnSha256": "35bbe419e7e06d71b6288a01560f839f1a597f7584d34e586f0850eed36cbdd2",
-      "simplifiedJsonSha256": "35bbe419e7e06d71b6288a01560f839f1a597f7584d34e586f0850eed36cbdd2",
+      "cnSha256": "b143f04058d8f61994f442bdb674150276d4c170a8a62e067fe68840f47f1654",
+      "simplifiedJsonSha256": "b143f04058d8f61994f442bdb674150276d4c170a8a62e067fe68840f47f1654",
       "eventCount": 56,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 56,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "e961d28da6abfc7d60ff34fe04d2d54dddad6d3413332d1713ecfcc7c7c24c5f",
-  "cnSha256": "d85def82a410519e23f3773b6399b0177349cf8e9f08b10ac830a8925fd461fe",
+  "cnSha256": "a44caf8fb2292955de343bb24c9c412c873ea07abb2f48fe11735e37f3a7cf8a",
   "chapterTitle": "",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_tsukuyo_1/portrait_tsukuyo_1.json",
       "twSha256": "f27e0aaabbc2eba3e774b1aca4100aa63aed4449788b18ae4ab2534dc16eeb06",
       "jpSha256": "cd5115eaa35feb5272cb96f937e4bfdbca3b27390be514b1c5bbea6b3f28e0ee",
-      "cnSha256": "17846ed8e14ae94096832beed100013e0d9c55d0c99f2b3dde1e3ee4e958d57d",
-      "simplifiedJsonSha256": "17846ed8e14ae94096832beed100013e0d9c55d0c99f2b3dde1e3ee4e958d57d",
+      "cnSha256": "101c57e9f8f256b4e63b13d325d27181d0eee5efd91dad3c8a0f4e5fa4a44bdc",
+      "simplifiedJsonSha256": "101c57e9f8f256b4e63b13d325d27181d0eee5efd91dad3c8a0f4e5fa4a44bdc",
       "eventCount": 51,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 45,
+      "dictionaryFallbackSpeakerEvents": 2,
+      "narrationSpeakerEvents": 4,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_tsukuyo_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_tsukuyo_2/portrait_tsukuyo_2.json",
       "twSha256": "0d6841ce5cc0fd76d97b41aefb8c14f21063aac98fc60927034c8e5ade317202",
       "jpSha256": "234e2a107854b9a85cbd9d662ac82298733b008b4b94ae9f6c0bfc3509d9859b",
-      "cnSha256": "d9b31791bf86a7d00a152fa419227ff3c212f126f350f281c84f0d007749adb7",
-      "simplifiedJsonSha256": "d9b31791bf86a7d00a152fa419227ff3c212f126f350f281c84f0d007749adb7",
+      "cnSha256": "d3c15dfba49368c6a03707368c3fddb8495b70d1067f19504d1ad39c9ad3ad8b",
+      "simplifiedJsonSha256": "d3c15dfba49368c6a03707368c3fddb8495b70d1067f19504d1ad39c9ad3ad8b",
       "eventCount": 58,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 54,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 4,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

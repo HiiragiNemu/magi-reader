@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -60,10 +63,24 @@
       "twPath": "7_Namae/pp_complete_hangyaku/pp_complete_hangyaku.json",
       "twSha256": "025ad462e8fa2225af7a6ad3772c04f07ac126d7bf9e8a42615d5ab0cbce4542",
       "jpSha256": "94c64b0c0165fa8819f3d5556684509f99f7668aaaab5f64e8c8b373c47c9225",
-      "cnSha256": "75c365a40037b46b9c218853d9b4025bb056e484d7b54b211138322bc6b3e51c",
-      "simplifiedJsonSha256": "75c365a40037b46b9c218853d9b4025bb056e484d7b54b211138322bc6b3e51c",
+      "cnSha256": "2a5765db66aa461b8437487a8ba158092ce2dbb3f865f874c47afda274d4e4f0",
+      "simplifiedJsonSha256": "2a5765db66aa461b8437487a8ba158092ce2dbb3f865f874c47afda274d4e4f0",
       "eventCount": 19,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 19,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

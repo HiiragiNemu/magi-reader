@@ -3,6 +3,7 @@ import {
   safeDownloadFilename,
   triggerUtf8Download,
 } from './browser-download.ts';
+import { translateSpeakerName } from '../app/config/dictionary.ts';
 import {
   parseStoryContent,
   type StoryFormat,
@@ -553,7 +554,8 @@ const applyMagirecoEdits = (
 };
 
 type ExedraEvent = {
-  references: MutableStringReference[];
+  commentReferences: MutableStringReference[];
+  nameReferences: MutableStringReference[];
 };
 
 const exedraEvents = (document: JsonRecord): ExedraEvent[] => {
@@ -589,24 +591,35 @@ const exedraEvents = (document: JsonRecord): ExedraEvent[] => {
       const speaker = nameIndex >= 0
         ? asString(rowValue.cellList[nameIndex]).trim()
         : '';
+      const cellListPath = appendPath(
+        appendPath(
+          appendPath(
+            appendPath('/sheetList', sheetIndex),
+            'contentRowList',
+          ),
+          rowIndex,
+        ),
+        'cellList',
+      );
+      const nameReferences: MutableStringReference[] = [];
+      if (
+        nameIndex >= 0 &&
+        nameIndex < rowValue.cellList.length &&
+        typeof rowValue.cellList[nameIndex] === 'string'
+      ) {
+        nameReferences.push({
+          container: rowValue.cellList,
+          key: nameIndex,
+          path: appendPath(cellListPath, nameIndex),
+        });
+      }
       events.push({
-        references: [{
+        commentReferences: [{
           container: rowValue.cellList,
           key: commentIndex,
-          path: appendPath(
-            appendPath(
-              appendPath(
-                appendPath(
-                  appendPath('/sheetList', sheetIndex),
-                  'contentRowList',
-                ),
-                rowIndex,
-              ),
-              'cellList',
-            ),
-            commentIndex,
-          ),
+          path: appendPath(cellListPath, commentIndex),
         }],
+        nameReferences,
       });
       fingerprintRows.push([action, speaker, comment.trim()]);
     });
@@ -624,12 +637,74 @@ const exedraEvents = (document: JsonRecord): ExedraEvent[] => {
       throw new ScenarioJsonDownloadError('Exedra 重复工作表事件数量不同。');
     }
     primary.forEach((event, eventIndex) => {
-      event.references.push(...events[eventIndex].references);
+      event.commentReferences.push(
+        ...events[eventIndex].commentReferences,
+      );
+      event.nameReferences.push(
+        ...events[eventIndex].nameReferences,
+      );
     });
   });
 
   return unique.flatMap(item => item.events);
 };
+
+const canonicalizeExedraNameCells = (
+  document: JsonRecord,
+  allowedPaths: Set<string>,
+): number => {
+  if (!Array.isArray(document.sheetList)) {
+    throw new ScenarioJsonDownloadError('Exedra JSON 缺少 sheetList。');
+  }
+  let changed = 0;
+  document.sheetList.forEach((sheetValue, sheetIndex) => {
+    if (!isRecord(sheetValue) || !isRecord(sheetValue.headerRow) ||
+        !Array.isArray(sheetValue.headerRow.cellList) ||
+        !Array.isArray(sheetValue.contentRowList)) {
+      return;
+    }
+    const headers = sheetValue.headerRow.cellList
+      .map(value => asString(value).trim().toLowerCase());
+    const nameIndex = headers.indexOf('name');
+    if (nameIndex < 0) return;
+    sheetValue.contentRowList.forEach((rowValue, rowIndex) => {
+      if (!isRecord(rowValue) || !Array.isArray(rowValue.cellList) ||
+          nameIndex >= rowValue.cellList.length ||
+          typeof rowValue.cellList[nameIndex] !== 'string') {
+        return;
+      }
+      const current = rowValue.cellList[nameIndex] as string;
+      if (!current.trim()) return;
+      changed += setReference(
+        {
+          container: rowValue.cellList,
+          key: nameIndex,
+          path: appendPath(
+            appendPath(
+              appendPath(
+                appendPath(
+                  appendPath('/sheetList', sheetIndex),
+                  'contentRowList',
+                ),
+                rowIndex,
+              ),
+              'cellList',
+            ),
+            nameIndex,
+          ),
+        },
+        translateSpeakerName(current),
+        allowedPaths,
+      );
+    });
+  });
+  return changed;
+};
+
+const canonicalEditableSpeaker = (speaker: string): string =>
+  NARRATION_SPEAKERS.has(speaker.trim())
+    ? ''
+    : translateSpeakerName(speaker.trim());
 
 const applyExedraEdits = (
   document: JsonRecord,
@@ -643,19 +718,32 @@ const applyExedraEdits = (
       `Exedra 文本事件结构不匹配：JSON=${events.length}，解析=${originalLines.length}。`,
     );
   }
-  let changed = 0;
+  let changed = canonicalizeExedraNameCells(document, allowedPaths);
   events.forEach((event, index) => {
     const source = originalLines[index];
     const edited = editedLines[index];
-    if (edited.speaker !== source.speaker) {
-      throw new ScenarioJsonDownloadError(
-        `第 ${index + 1} 行 Exedra 说话人身份不可修改。`,
-      );
-    }
-    event.references.forEach(reference => {
+    event.commentReferences.forEach(reference => {
       changed += setReference(
         reference,
         edited.text,
+        allowedPaths,
+      );
+    });
+
+    const nextSpeaker = canonicalEditableSpeaker(edited.speaker);
+    const baselineSpeaker = canonicalEditableSpeaker(source.speaker);
+    if (event.nameReferences.length === 0) {
+      if (nextSpeaker !== baselineSpeaker) {
+        throw new ScenarioJsonDownloadError(
+          `第 ${index + 1} 行 Exedra JSON 没有可写回的 Name 字段。`,
+        );
+      }
+      return;
+    }
+    event.nameReferences.forEach(reference => {
+      changed += setReference(
+        reference,
+        nextSpeaker,
         allowedPaths,
       );
     });
@@ -893,9 +981,32 @@ const comparableLine = (line: StoryLine): string =>
     choiceLabel: line.choiceLabel || '',
   });
 
+const canonicalRoundTripSpeaker = (
+  line: StoryLine,
+  format: ScenarioFormat,
+): string => {
+  if (format !== 'exedra-json' || line.isHeader) return line.speaker;
+  const speaker = line.speaker.trim();
+  return NARRATION_SPEAKERS.has(speaker)
+    ? '旁白'
+    : translateSpeakerName(speaker);
+};
+
+const comparableRoundTripLine = (
+  line: StoryLine,
+  format: ScenarioFormat,
+): string =>
+  JSON.stringify({
+    structure: lineStructure(line),
+    speaker: canonicalRoundTripSpeaker(line, format),
+    text: line.text,
+    choiceLabel: line.choiceLabel || '',
+  });
+
 const assertJsonRoundTrip = (
   json: string,
   sourceFilename: string,
+  format: ScenarioFormat,
   expected: readonly StoryLine[],
 ): void => {
   const rendered = parseStoryContent(json, {
@@ -905,7 +1016,8 @@ const assertJsonRoundTrip = (
   if (
     rendered.length !== expected.length ||
     rendered.some((line, index) =>
-      comparableLine(line) !== comparableLine(expected[index]))
+      comparableRoundTripLine(line, format) !==
+      comparableRoundTripLine(expected[index], format))
   ) {
     throw new ScenarioJsonDownloadError(
       '编辑 JSON 回生后与校对行不一致，已停止下载。',
@@ -980,7 +1092,12 @@ export const createEditedScenarioJsonDownload = (options: {
     changedTextFields,
   );
   if (!generalVoice) {
-    assertJsonRoundTrip(result.json, options.sourceFilename, options.editedLines);
+    assertJsonRoundTrip(
+      result.json,
+      options.sourceFilename,
+      parsed.format,
+      options.editedLines,
+    );
   }
   return result;
 };

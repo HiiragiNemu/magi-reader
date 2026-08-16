@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-event-count-action-row",
+    "speakerPolicy": "dictionary_canonicalized_jp_name",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": false
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "97c0e6cd9c3ef89d4e036ea81fc98e82bec66df81934a2dce840deb8447522d7",
     "sectionCount": 4,
-    "readerNormalizedBlockCount": 139
+    "readerNormalizedBlockCount": 236
   },
   "cn": {
-    "renderedSha256": "be852c34de235ff2149bacab3bfb02919a9c700c744c8979271db7c17adcd421",
+    "renderedSha256": "b2e38253e978eef6791cefa89039cab8d980406e166cbfb89c67708cf815ef5b",
     "sectionCount": 4,
-    "readerNormalizedBlockCount": 139
+    "readerNormalizedBlockCount": 236
   },
   "sections": [
     {
@@ -31,56 +37,60 @@
       "source": "sub_1stanniv_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 3,
-        "cn": 3,
+        "jp": 23,
+        "cn": 23,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "0b2a2deab524a73a24fe34cb3d1f84188fa98ab44c8b7b7a2848a82e9fee6ab4",
-        "cn": "0b2a2deab524a73a24fe34cb3d1f84188fa98ab44c8b7b7a2848a82e9fee6ab4"
-      }
+        "jp": "fa5c418e5013acd12d4a517e20e9e1049e46e7cbd6eae2d87ec647a9a866bc88",
+        "cn": "fa5c418e5013acd12d4a517e20e9e1049e46e7cbd6eae2d87ec647a9a866bc88"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "sub_1stanniv_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 48,
-        "cn": 48,
+        "jp": 87,
+        "cn": 87,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "1ed295674ad0b410ae63f1dac721135a539478654abf6b13dee773669de05389",
-        "cn": "1ed295674ad0b410ae63f1dac721135a539478654abf6b13dee773669de05389"
-      }
+        "jp": "ce6eabaf0c9a74c81804e1830975800a84e6a3af4af043385d514bfd9fc57ba2",
+        "cn": "ce6eabaf0c9a74c81804e1830975800a84e6a3af4af043385d514bfd9fc57ba2"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "sub_1stanniv_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 62,
-        "cn": 62,
+        "jp": 85,
+        "cn": 85,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "f8263872502a267088a4688c1964716ad1a38a59a1417cc9dfec620d388a5531",
-        "cn": "f8263872502a267088a4688c1964716ad1a38a59a1417cc9dfec620d388a5531"
-      }
+        "jp": "68ddb4c6664a82e94345d8de00f169bddacff95cfff3036da91956c01b003fb5",
+        "cn": "68ddb4c6664a82e94345d8de00f169bddacff95cfff3036da91956c01b003fb5"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
       "source": "sub_1stanniv_4.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 26,
-        "cn": 26,
+        "jp": 41,
+        "cn": 41,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "f976ba2858ed7422da90905aa373fdc94823d24419128d9109da1d7f52932c89",
-        "cn": "f976ba2858ed7422da90905aa373fdc94823d24419128d9109da1d7f52932c89"
-      }
+        "jp": "6667674ec55e07debb97b06dd6d5995b7bbee4710d0f33817f62d849d55f5220",
+        "cn": "6667674ec55e07debb97b06dd6d5995b7bbee4710d0f33817f62d849d55f5220"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -185,16 +195,19 @@
         "groupSection": 1
       },
       "mutationProof": {
-        "nonCommentFieldsMatch": true,
         "playableCommentSequenceMatches": true,
         "mutableCommentCellCount": 23,
-        "canonicalEventCount": 23
-      }
+        "canonicalEventCount": 23,
+        "nonLocalizedFieldsMatch": true,
+        "canonicalNameFields": true
+      },
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "sub_1stanniv_2.json",
       "jpSha256": "3c022d1f0d918457553c518f8a2a147995ee0a3683cfbd543a2048b6cc805d25",
-      "cnSha256": "309a8474596c2de645aa2385919305f7fdcf2ac18bf0a27a24113b80600a5fc7",
+      "cnSha256": "d594390b9eca79ab28fd3e5a1c30d7f122c1333f2141793939295b6609c05bb4",
       "provenance": "rounddora_0728_human",
       "sourceName": "Anniversary1-1.ass + Anniversary1-2.ass + Anniversary1-3.ass + Anniversary1-4.ass",
       "sourceUrl": "",
@@ -292,16 +305,19 @@
         "groupSection": 2
       },
       "mutationProof": {
-        "nonCommentFieldsMatch": true,
         "playableCommentSequenceMatches": true,
         "mutableCommentCellCount": 87,
-        "canonicalEventCount": 87
-      }
+        "canonicalEventCount": 87,
+        "nonLocalizedFieldsMatch": true,
+        "canonicalNameFields": true
+      },
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "sub_1stanniv_3.json",
       "jpSha256": "dfc1a2c524eb75ad8d955276defa7a183757c244c1aa66756dbfb1f777fd872b",
-      "cnSha256": "536f714374977fbeaeb3ef0c2527c9e7b34be0a465168c28fd32a5f632fc8a39",
+      "cnSha256": "7ee57a233bc3ac68a37b5075dac774daa55b92c1061878b8a40fe12ef58f2279",
       "provenance": "rounddora_0728_human",
       "sourceName": "Anniversary1-1.ass + Anniversary1-2.ass + Anniversary1-3.ass + Anniversary1-4.ass",
       "sourceUrl": "",
@@ -399,11 +415,14 @@
         "groupSection": 3
       },
       "mutationProof": {
-        "nonCommentFieldsMatch": true,
         "playableCommentSequenceMatches": true,
         "mutableCommentCellCount": 85,
-        "canonicalEventCount": 85
-      }
+        "canonicalEventCount": 85,
+        "nonLocalizedFieldsMatch": true,
+        "canonicalNameFields": true
+      },
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     },
     {
       "source": "sub_1stanniv_4.json",
@@ -506,16 +525,26 @@
         "groupSection": 4
       },
       "mutationProof": {
-        "nonCommentFieldsMatch": true,
         "playableCommentSequenceMatches": true,
         "mutableCommentCellCount": 41,
-        "canonicalEventCount": 41
-      }
+        "canonicalEventCount": 41,
+        "nonLocalizedFieldsMatch": true,
+        "canonicalNameFields": true
+      },
+      "canonicalNameFields": true,
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese"
     }
   ],
   "sourcePriority": [
     "repository_existing_chinese",
     "exedra_wiki_human",
     "rounddora_0728_human"
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 116,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

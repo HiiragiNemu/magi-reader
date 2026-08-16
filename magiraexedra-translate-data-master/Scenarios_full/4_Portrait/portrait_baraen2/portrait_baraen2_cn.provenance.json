@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "2f23ae45f8def84d53b7ecc69add34ae966e6d35338b9a703c89ce0eec913f23",
-  "cnSha256": "92395b3dd85dabfc0150ebcf33208e8024903c9038dc56db6301c2000f44c64e",
+  "cnSha256": "344fa18a065502c25b06f1d2e02bec59ef3ce7efeb8af641ff14f563228bc848",
   "chapterTitle": "第二章 · 蔷薇园的魔女 后篇",
   "sections": [
     {
@@ -62,10 +65,24 @@
       "twPath": "4_Portrait/portrait_baraen2_1/portrait_baraen2_1.json",
       "twSha256": "988b0ff32613325f4e285a256192f25451cdb12edbdce36b0577df0673f54ba6",
       "jpSha256": "5a7a7fe8ef5a9466e9fb16ecd073ab5505ff7a00b6ee3c130f880c53a6c26d7e",
-      "cnSha256": "1fe22d718cbb9334023d1ee07616bc9acb102249a8d0fabccaac7e4504087f4f",
-      "simplifiedJsonSha256": "1fe22d718cbb9334023d1ee07616bc9acb102249a8d0fabccaac7e4504087f4f",
+      "cnSha256": "5e13b06cd5d9fdbf39e64e3f87339192ba4cf84b6ba35ded059a58c843933650",
+      "simplifiedJsonSha256": "5e13b06cd5d9fdbf39e64e3f87339192ba4cf84b6ba35ded059a58c843933650",
       "eventCount": 133,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 113,
+      "dictionaryFallbackSpeakerEvents": 16,
+      "narrationSpeakerEvents": 4,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

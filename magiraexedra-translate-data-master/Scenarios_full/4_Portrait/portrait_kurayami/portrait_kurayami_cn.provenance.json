@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "6f2866d12ec72313707b5562d0c5c601cef3ac72f3a6ed2ec2811ae2f58e1e23",
-  "cnSha256": "a143bac40659ed624df644014cf3518d99f7c5bec39f92bb1959ed36c51152b9",
+  "cnSha256": "e37b81c6c61133ef33f49e59f44d0cfbc6597aef4ac230bbd68ab940e14eb3dd",
   "chapterTitle": "第三章 · 黑暗的魔女",
   "sections": [
     {
@@ -62,10 +65,24 @@
       "twPath": "4_Portrait/portrait_kurayami_1/portrait_kurayami_1.json",
       "twSha256": "26dc8644cf7545ae683a8630513aec2a6abe2e3e750ecae0c7a92af6d1370a32",
       "jpSha256": "ac49c1dd37fa0815c8d620cf7546391effaa3a3816000fc12008e4d549da38dc",
-      "cnSha256": "1981b3c2725ab40486ecf763ab96fbbe23628a13b935c7cdddd5dadbefbbade5",
-      "simplifiedJsonSha256": "1981b3c2725ab40486ecf763ab96fbbe23628a13b935c7cdddd5dadbefbbade5",
+      "cnSha256": "43097c9edea2af987ca1a631d7007c3cc5845ded20d079cf74c35e8788fcc5a9",
+      "simplifiedJsonSha256": "43097c9edea2af987ca1a631d7007c3cc5845ded20d079cf74c35e8788fcc5a9",
       "eventCount": 137,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 131,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 6,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "2953ecd11b2d5824a81466dd81fdf5fee6ebc582372bbfe68a808841ab5e5faf",
-  "cnSha256": "ef591e524e0cfc205d24bb472f5ac7b15fa7c140ef3ae483dd4b3ded593ac4ba",
+  "cnSha256": "4de864061bdd02e258bbc53b952189ead4d073f1a702aef0e0a0d7c1ca3e535f",
   "chapterTitle": "第四章 · 螯合大摩天轮的谣言",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_chelatebigferris_1/portrait_chelatebigferris_1.json",
       "twSha256": "ad2d169833c93559e5844addd809e6c12dee6bc6e4f294c0e641539014c1a0c0",
       "jpSha256": "c5abd9398fbf291519bdafd3b7fa28933e4816b363a363f94ad64dad8771f451",
-      "cnSha256": "6d46e975ba2a225e1539c2c9261c174f43d06e750a17676765c30f92c4f58bcd",
-      "simplifiedJsonSha256": "6d46e975ba2a225e1539c2c9261c174f43d06e750a17676765c30f92c4f58bcd",
+      "cnSha256": "e1b5b376fc0932fbf0b886c7c175c15a3c6b58ef6ed77fd4159a5b9fdc5fbe04",
+      "simplifiedJsonSha256": "e1b5b376fc0932fbf0b886c7c175c15a3c6b58ef6ed77fd4159a5b9fdc5fbe04",
       "eventCount": 51,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 49,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_chelatebigferris_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_chelatebigferris_2/portrait_chelatebigferris_2.json",
       "twSha256": "52862b418a3de6142ba2a94d00ea15c6a172b2924eefcd9e337157d8b0f5ee90",
       "jpSha256": "7b7858f7cc7130f9d3e52c7ac8193ddc435c492232b65292fc1057819e562f6c",
-      "cnSha256": "63e23d87cef85d97f5d5799fc3c6dd24758284b56cf037350011958aa813a3fa",
-      "simplifiedJsonSha256": "63e23d87cef85d97f5d5799fc3c6dd24758284b56cf037350011958aa813a3fa",
+      "cnSha256": "3d7b4e8bead1156edc4b3fc63645cdd6b3f60615ef7c8b1a80f26fae5a344e4c",
+      "simplifiedJsonSha256": "3d7b4e8bead1156edc4b3fc63645cdd6b3f60615ef7c8b1a80f26fae5a344e4c",
       "eventCount": 59,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 59,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

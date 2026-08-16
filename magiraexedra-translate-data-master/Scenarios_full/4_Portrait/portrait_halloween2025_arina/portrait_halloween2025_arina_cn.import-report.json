@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "3a2e4b92e1b077f2c6ce03503b68db48737f1035714868bcf59ab069986a7541",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 48
+    "readerNormalizedBlockCount": 114
   },
   "cn": {
-    "renderedSha256": "152997a5bb5610ebe95dd0666d93217273405c3bb7574ff742a75dc1915d91e5",
+    "renderedSha256": "d0332bd0895cb5bb9a6a2c75ef1ced707fc12a57b533fdd9f44170d8e8db40c0",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 48
+    "readerNormalizedBlockCount": 114
   },
   "sections": [
     {
@@ -31,28 +37,30 @@
       "source": "portrait_halloween2025_arina_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 19,
-        "cn": 19,
+        "jp": 53,
+        "cn": 53,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "21888ff38ff788cc7730235dd1307ad60e31818b8fe13d7afaad4b03bec443e8",
-        "cn": "21888ff38ff788cc7730235dd1307ad60e31818b8fe13d7afaad4b03bec443e8"
-      }
+        "jp": "bb15ac2d8afd1b6bb122a1993ff92bb57094147214d9aae1c9ddc782c956d273",
+        "cn": "bb15ac2d8afd1b6bb122a1993ff92bb57094147214d9aae1c9ddc782c956d273"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "portrait_halloween2025_arina_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 29,
-        "cn": 29,
+        "jp": 61,
+        "cn": 61,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "17b6aba06c028ba3956f411b5ccd71d1a78eb2cb52725cec05dac9ca7bb848f8",
-        "cn": "17b6aba06c028ba3956f411b5ccd71d1a78eb2cb52725cec05dac9ca7bb848f8"
-      }
+        "jp": "e0a3170f53fca83f9799245ba08e081a5ee01697c0d1e4a9cbe5fdbafdaeed69",
+        "cn": "e0a3170f53fca83f9799245ba08e081a5ee01697c0d1e4a9cbe5fdbafdaeed69"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -62,10 +70,17 @@
       "twPath": "4_Portrait/portrait_halloween2025_arina_1/portrait_halloween2025_arina_1.json",
       "twSha256": "14fcb612040a655458eaac1a2026d21e8c7609b2b5e6404c6c8a59b0a7db8be1",
       "jpSha256": "69f3cf3b76fb35a7d0da549caa7239516db92d8b71975534c9812a1cb53c9c67",
-      "cnSha256": "65b2d17f3ce54f0bc0331df85931d37713bc89ec78a1b8bdc3930a3112ae7173",
-      "simplifiedJsonSha256": "65b2d17f3ce54f0bc0331df85931d37713bc89ec78a1b8bdc3930a3112ae7173",
+      "cnSha256": "85bcc7038af6954d6fe9ccfce578ff8c702dc9707406e8fce3bd1609239ef488",
+      "simplifiedJsonSha256": "85bcc7038af6954d6fe9ccfce578ff8c702dc9707406e8fce3bd1609239ef488",
       "eventCount": 53,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 36,
+      "dictionaryFallbackSpeakerEvents": 15,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_halloween2025_arina_2.json",
@@ -73,10 +88,17 @@
       "twPath": "4_Portrait/portrait_halloween2025_arina_2/portrait_halloween2025_arina_2.json",
       "twSha256": "9f7e0746543ca9ba51155a6ee7b9f8f6af1eb2990f16392bce161ed25efbf608",
       "jpSha256": "3e61afa6046a2b5047b0bf9f377b1a09667009f24155ecbcda02c96513825dcd",
-      "cnSha256": "e15594c81625d83187c82566f325f9a52a4dceb556a2b128c584eef34423b45a",
-      "simplifiedJsonSha256": "e15594c81625d83187c82566f325f9a52a4dceb556a2b128c584eef34423b45a",
+      "cnSha256": "c290dd0d914be9a8129aef9d726f68baec398b2797b3149cc26df6d04b8d1932",
+      "simplifiedJsonSha256": "c290dd0d914be9a8129aef9d726f68baec398b2797b3149cc26df6d04b8d1932",
       "eventCount": 61,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 43,
+      "dictionaryFallbackSpeakerEvents": 16,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -142,5 +164,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "3a2e4b92e1b077f2c6ce03503b68db48737f1035714868bcf59ab069986a7541",
+    "cnSha256": "d0332bd0895cb5bb9a6a2c75ef1ced707fc12a57b533fdd9f44170d8e8db40c0",
+    "sectionCount": 2,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 2,
+    "sectionCount": 2
   }
 }

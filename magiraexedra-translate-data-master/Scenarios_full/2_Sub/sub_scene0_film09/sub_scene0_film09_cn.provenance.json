@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "5aa445d2d7c45cd22a5367acc348bfe916e171aca9a6f6897ad6b4675aded057",
-  "cnSha256": "55858eab577845eda9fb14738f13f1c01c67fcdad526475a19e266104bc508b3",
+  "cnSha256": "f6638c9a40f9512fdcc451ee5035c438f5222288b6b16efdf8d18c6d99d4f794",
   "chapterTitle": "后篇 · 爱生眩的记忆 后篇",
   "sections": [
     {
@@ -60,10 +63,24 @@
       "twPath": "2_Sub/sub_scene0_film09_1/sub_scene0_film09_1.json",
       "twSha256": "746e0b46b57f7e3c2e71db310d1dc5f20abfd6ce75639c196f282e56bbe5b065",
       "jpSha256": "746e0b46b57f7e3c2e71db310d1dc5f20abfd6ce75639c196f282e56bbe5b065",
-      "cnSha256": "a89ef0a45476d7bd442882aef0be3492d6485c2c407147098013a02f7ad0711c",
-      "simplifiedJsonSha256": "a89ef0a45476d7bd442882aef0be3492d6485c2c407147098013a02f7ad0711c",
+      "cnSha256": "6f67f1607ce672bbed7127e79a6baac24698337a8cd003f94700d935491f4270",
+      "simplifiedJsonSha256": "6f67f1607ce672bbed7127e79a6baac24698337a8cd003f94700d935491f4270",
       "eventCount": 42,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 41,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "6f1a843df5ade208b93d4d2c124e527b400606a1b4d2e59503d9163584e5aeb9",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 183
+    "readerNormalizedBlockCount": 420
   },
   "cn": {
-    "renderedSha256": "68f6369424780a1d956d066c8b3bcc4be4e88857eea5345a2a07790342f15d02",
+    "renderedSha256": "529093a902b085190af7c600fffc5090abb75ddbf7fc5ee0c3a3bae6b3d489ab",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 183
+    "readerNormalizedBlockCount": 420
   },
   "sections": [
     {
@@ -31,112 +37,120 @@
       "source": "character_tsukasa_0.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 3,
+        "cn": 3,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "acf637b635b22449647542f126af6ea9d7a1ad8525b8f24d39b7ff184cc7792e",
-        "cn": "acf637b635b22449647542f126af6ea9d7a1ad8525b8f24d39b7ff184cc7792e"
-      }
+        "jp": "43327a88f530c27d1369ed19f8166e43b832bf301d4c741d43bf59265fba85b0",
+        "cn": "43327a88f530c27d1369ed19f8166e43b832bf301d4c741d43bf59265fba85b0"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "character_tsukasa_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 16,
-        "cn": 16,
+        "jp": 56,
+        "cn": 56,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "d1421b41f945269304dd6fab13b294c78a98deddaae19b769596e1381f8a4bcc",
-        "cn": "d1421b41f945269304dd6fab13b294c78a98deddaae19b769596e1381f8a4bcc"
-      }
+        "jp": "7c38d33e019c3f99afc49a815b7bde39036377e0bfbafe0539b2acae021bed7e",
+        "cn": "7c38d33e019c3f99afc49a815b7bde39036377e0bfbafe0539b2acae021bed7e"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "character_tsukasa_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 15,
-        "cn": 15,
+        "jp": 52,
+        "cn": 52,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "b86fccdc5b49953d56daf863fa20c2ed6748dec9a059f2de14065f486436334d",
-        "cn": "b86fccdc5b49953d56daf863fa20c2ed6748dec9a059f2de14065f486436334d"
-      }
+        "jp": "cf68af8d41a0a820b38bcd03912cb149780d82a2eb4d84311aae6c35ec49a390",
+        "cn": "cf68af8d41a0a820b38bcd03912cb149780d82a2eb4d84311aae6c35ec49a390"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
       "source": "character_tsukasa_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 38,
-        "cn": 38,
+        "jp": 78,
+        "cn": 78,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "dffb01a2934ddee9af757b9615c79d61674614f7e9501e02d8c4a4e77978636c",
-        "cn": "dffb01a2934ddee9af757b9615c79d61674614f7e9501e02d8c4a4e77978636c"
-      }
+        "jp": "7c5e836819a04d38ceb71a2ec0e7c9170216e068f78546524f2e73c15f241d95",
+        "cn": "7c5e836819a04d38ceb71a2ec0e7c9170216e068f78546524f2e73c15f241d95"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 5,
       "source": "character_tsukasa_4.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 40,
-        "cn": 40,
+        "jp": 65,
+        "cn": 65,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "5196623ed703264502c96355be379bcff9638248c1ef9b231cec6a8b811f9d4b",
-        "cn": "5196623ed703264502c96355be379bcff9638248c1ef9b231cec6a8b811f9d4b"
-      }
+        "jp": "9cd45831028f6c2227da5ee6b73bee96635988984977bd5db96adad164862923",
+        "cn": "9cd45831028f6c2227da5ee6b73bee96635988984977bd5db96adad164862923"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 6,
       "source": "character_tsukasa_5.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 15,
-        "cn": 15,
+        "jp": 45,
+        "cn": 45,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "08402490387cd4e14269f72d97c62b1af886908a53b5ce1c0e179d5628edb8ba",
-        "cn": "08402490387cd4e14269f72d97c62b1af886908a53b5ce1c0e179d5628edb8ba"
-      }
+        "jp": "1ac00b6c8c6ae660138737948f74cefff9d16aa114dfa03d43f128323d5aa811",
+        "cn": "1ac00b6c8c6ae660138737948f74cefff9d16aa114dfa03d43f128323d5aa811"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 7,
       "source": "character_tsukasa_6.json",
       "wikiEpisode": 6,
       "readerNormalizedBlocks": {
-        "jp": 18,
-        "cn": 18,
+        "jp": 49,
+        "cn": 49,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "3cce02dd1b49c9e766459d94c407e22bd273f056c58833820d398eefff2fa27f",
-        "cn": "3cce02dd1b49c9e766459d94c407e22bd273f056c58833820d398eefff2fa27f"
-      }
+        "jp": "5aa08253fe4baf6d2b98a2bb80a74708130996b29a5d13b22b286141112218af",
+        "cn": "b3c4c72940cc6a507b5c56af4134012ce86873f356e45deb91d9214fa704770d"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 8,
       "source": "character_tsukasa_7.json",
       "wikiEpisode": 7,
       "readerNormalizedBlocks": {
-        "jp": 40,
-        "cn": 40,
+        "jp": 72,
+        "cn": 72,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "258d404f124f2c497566023048ab1831cbd1e5c8fd9f913909cfc09362363b34",
-        "cn": "258d404f124f2c497566023048ab1831cbd1e5c8fd9f913909cfc09362363b34"
-      }
+        "jp": "b97ef2f430598d09594e435f3293fd9997e5f7e361304dde2a6799d7cd6f1731",
+        "cn": "b97ef2f430598d09594e435f3293fd9997e5f7e361304dde2a6799d7cd6f1731"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -146,10 +160,17 @@
       "twPath": "3_Character/character_tsukasa_0/character_tsukasa_0.json",
       "twSha256": "1218f01e88a4052204f1e5ee24ff527010f858c485f847fb8f6131a208322bfb",
       "jpSha256": "426628e6609bb5b35db47ea3a2336e6d9157f6e7cb418eff4561c1e4aea0d9b8",
-      "cnSha256": "429492442ec5a4125eebdec9829a5692671a1439a2c9749fef86b34169d316d7",
-      "simplifiedJsonSha256": "429492442ec5a4125eebdec9829a5692671a1439a2c9749fef86b34169d316d7",
+      "cnSha256": "15e6ea5e65b2a7f7518258e9880effce55935fd3aed90154fd437d30c2a792ac",
+      "simplifiedJsonSha256": "15e6ea5e65b2a7f7518258e9880effce55935fd3aed90154fd437d30c2a792ac",
       "eventCount": 3,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 3,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_tsukasa_1.json",
@@ -160,7 +181,14 @@
       "cnSha256": "4ece2ffdcd506051db6d061bdb7efc68137c844498ee74bd663d006a75ba37f5",
       "simplifiedJsonSha256": "4ece2ffdcd506051db6d061bdb7efc68137c844498ee74bd663d006a75ba37f5",
       "eventCount": 56,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 46,
+      "dictionaryFallbackSpeakerEvents": 8,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "character_tsukasa_2.json",
@@ -168,10 +196,17 @@
       "twPath": "3_Character/character_tsukasa_2/character_tsukasa_2.json",
       "twSha256": "85c31e9f14c84854afea58f171845a6be8f9e4e5ba75869be7f11b79d06f5350",
       "jpSha256": "3d9da9727d9bb4234f51be3da97b1dab396abae881ba273173384d9bed4422af",
-      "cnSha256": "90dcbf09ceb85ad3a46c1943ead866ba204ab83c09fe94846842ecf985469348",
-      "simplifiedJsonSha256": "90dcbf09ceb85ad3a46c1943ead866ba204ab83c09fe94846842ecf985469348",
+      "cnSha256": "d32f1c93f5ab7562f81fbbd580ccb6e9a497944f6256ac0a2af6c53176ed068c",
+      "simplifiedJsonSha256": "d32f1c93f5ab7562f81fbbd580ccb6e9a497944f6256ac0a2af6c53176ed068c",
       "eventCount": 52,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 50,
+      "dictionaryFallbackSpeakerEvents": 2,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_tsukasa_3.json",
@@ -179,10 +214,17 @@
       "twPath": "3_Character/character_tsukasa_3/character_tsukasa_3.json",
       "twSha256": "cb81497db9042cfe2c5a183cc09c8b51ffdd1f659ebd349ce1ae107d634fc551",
       "jpSha256": "bdfb786fd2d2b6641d51d4a7227973b6cfee4cbed92474398243669fd88495df",
-      "cnSha256": "91fa1a42262698b7f6345204187ea5f89ef6f97be1c6521a64ce671e8be70fae",
-      "simplifiedJsonSha256": "91fa1a42262698b7f6345204187ea5f89ef6f97be1c6521a64ce671e8be70fae",
+      "cnSha256": "302509e58abe32b9de601ccc7265fe678722f7e11adbe650e1891f6912dc6ef6",
+      "simplifiedJsonSha256": "302509e58abe32b9de601ccc7265fe678722f7e11adbe650e1891f6912dc6ef6",
       "eventCount": 78,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 73,
+      "dictionaryFallbackSpeakerEvents": 5,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_tsukasa_4.json",
@@ -190,10 +232,17 @@
       "twPath": "3_Character/character_tsukasa_4/character_tsukasa_4.json",
       "twSha256": "004c2adda9cad4ef2010e84191520656ecb3c6de09b69f4af20b042db59c74a8",
       "jpSha256": "5067415376f58363a3e97e935c58a82d95ef60f20d444d9c03e384afcd91a2d4",
-      "cnSha256": "5763696e0db96c7c3357f8007d8a47c220e4099c11660f154bfb09f9d07262fa",
-      "simplifiedJsonSha256": "5763696e0db96c7c3357f8007d8a47c220e4099c11660f154bfb09f9d07262fa",
+      "cnSha256": "baeb39dc53752a7bfcf153858f7b912f02cc9cf56f94d5921bf4eec0e99465a3",
+      "simplifiedJsonSha256": "baeb39dc53752a7bfcf153858f7b912f02cc9cf56f94d5921bf4eec0e99465a3",
       "eventCount": 65,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 62,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "character_tsukasa_5.json",
@@ -201,10 +250,17 @@
       "twPath": "3_Character/character_tsukasa_5/character_tsukasa_5.json",
       "twSha256": "7e51cc2d56e13ea3355c8f6ff9db43d9513deb5abf5ff11621c6d1a105de8007",
       "jpSha256": "1c55c97e6f2d195ce8756a3a22ce5952483f25f39986695d3e0d9d946b8a0e7a",
-      "cnSha256": "7a0e2b4537610141929c86ac9b1293c93447666eb4ad8559836fe7f74dd9be6c",
-      "simplifiedJsonSha256": "7a0e2b4537610141929c86ac9b1293c93447666eb4ad8559836fe7f74dd9be6c",
+      "cnSha256": "1ef53530fe71fd049bf06c38b683c3274a7824996d56616a9c852b5976c4fda2",
+      "simplifiedJsonSha256": "1ef53530fe71fd049bf06c38b683c3274a7824996d56616a9c852b5976c4fda2",
       "eventCount": 45,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 40,
+      "dictionaryFallbackSpeakerEvents": 4,
+      "narrationSpeakerEvents": 1,
+      "canonicalNameFields": true
     },
     {
       "source": "character_tsukasa_6.json",
@@ -212,10 +268,17 @@
       "twPath": "3_Character/character_tsukasa_6/character_tsukasa_6.json",
       "twSha256": "6621d0f6037aed379584e586626245a4493b00fb297706e55e286b593d1428a4",
       "jpSha256": "ef90739f7b55def35fdbf6c85f3b462de1672f11f8255f780e7dc45292314d81",
-      "cnSha256": "878d65716dc58fae1a2c459de915bb4687abb84c06558472aa58d20bb05df5fb",
-      "simplifiedJsonSha256": "878d65716dc58fae1a2c459de915bb4687abb84c06558472aa58d20bb05df5fb",
+      "cnSha256": "93dce7080767726fe78a753ac35658784ad2ecff1a2322df440ba26fd4d14046",
+      "simplifiedJsonSha256": "93dce7080767726fe78a753ac35658784ad2ecff1a2322df440ba26fd4d14046",
       "eventCount": 49,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 49,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_tsukasa_7.json",
@@ -223,10 +286,17 @@
       "twPath": "3_Character/character_tsukasa_7/character_tsukasa_7.json",
       "twSha256": "65b27c69b42eb9d2f2e42f799db305bf00719a083a410d247b68eb57599b4c5b",
       "jpSha256": "4b9fa734a6120ceaf7a7caca5402173dc089aa75df6effe27c1dce70c91d4bdf",
-      "cnSha256": "dc21efd0493a1841af66a95a14641ad4417beef5a5c44d9ae810da9818787e01",
-      "simplifiedJsonSha256": "dc21efd0493a1841af66a95a14641ad4417beef5a5c44d9ae810da9818787e01",
+      "cnSha256": "843c525da6aab660079062d5f9c45138fccf53842c85957dec0b6583b61ee205",
+      "simplifiedJsonSha256": "843c525da6aab660079062d5f9c45138fccf53842c85957dec0b6583b61ee205",
       "eventCount": 72,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 70,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -428,5 +498,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "6f1a843df5ade208b93d4d2c124e527b400606a1b4d2e59503d9163584e5aeb9",
+    "cnSha256": "529093a902b085190af7c600fffc5090abb75ddbf7fc5ee0c3a3bae6b3d489ab",
+    "sectionCount": 8,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 8,
+    "sectionCount": 8
   }
 }

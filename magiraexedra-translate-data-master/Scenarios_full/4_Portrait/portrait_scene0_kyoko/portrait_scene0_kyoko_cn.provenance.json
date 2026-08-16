@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "7fd62b0fefa79a0dcf75e15fa24cb5c857dff796547bfaef4c240aa60ee34c3c",
-  "cnSha256": "7364cf6f0f3f283a213a2cadffadedc6f8160eef7d474bf8b3ea75f6492cf51c",
+  "cnSha256": "dc073b72b1bded88f63678cc316b056eddf82ce7435d5e96d369cb2815818604",
   "chapterTitle": "后篇 · 爱生眩的记忆 后篇",
   "sections": [
     {
@@ -100,10 +103,17 @@
       "twPath": "4_Portrait/portrait_scene0_kyoko_1/portrait_scene0_kyoko_1.json",
       "twSha256": "91738382ac168f038fa89800d9a71eeec64fd84a0df157bfc6d38e00ecb57f09",
       "jpSha256": "91738382ac168f038fa89800d9a71eeec64fd84a0df157bfc6d38e00ecb57f09",
-      "cnSha256": "1f8dfe3f95b989bd4d1bdfe3cd96e137291f0b99699a42cc6bed097a05af4180",
-      "simplifiedJsonSha256": "1f8dfe3f95b989bd4d1bdfe3cd96e137291f0b99699a42cc6bed097a05af4180",
+      "cnSha256": "c839c2fc355659c79554ec43a3e3d79650cc208fc9d2dcbf2670e514d987dc6e",
+      "simplifiedJsonSha256": "c839c2fc355659c79554ec43a3e3d79650cc208fc9d2dcbf2670e514d987dc6e",
       "eventCount": 239,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 207,
+      "dictionaryFallbackSpeakerEvents": 25,
+      "narrationSpeakerEvents": 7,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_scene0_kyoko_2.json",
@@ -111,10 +121,17 @@
       "twPath": "4_Portrait/portrait_scene0_kyoko_2/portrait_scene0_kyoko_2.json",
       "twSha256": "b234b79809e07439fa864df566f234e197c6c1f954d6baf80bab31aae37f6e54",
       "jpSha256": "b234b79809e07439fa864df566f234e197c6c1f954d6baf80bab31aae37f6e54",
-      "cnSha256": "c48d08ea89808a78f280787f354e9f54bf090dc5c0503107bf8d517af7cefb53",
-      "simplifiedJsonSha256": "c48d08ea89808a78f280787f354e9f54bf090dc5c0503107bf8d517af7cefb53",
+      "cnSha256": "ece7ef739ee10f0c8df3cbd406154f213ca6ba49adc8f8c1a4ddc6e5be4d38e2",
+      "simplifiedJsonSha256": "ece7ef739ee10f0c8df3cbd406154f213ca6ba49adc8f8c1a4ddc6e5be4d38e2",
       "eventCount": 191,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 145,
+      "dictionaryFallbackSpeakerEvents": 41,
+      "narrationSpeakerEvents": 5,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_scene0_kyoko_3.json",
@@ -122,10 +139,24 @@
       "twPath": "4_Portrait/portrait_scene0_kyoko_3/portrait_scene0_kyoko_3.json",
       "twSha256": "736626d59938ba37b4e931bc60acf9ed71119fa30cec748b02be9820b945ac75",
       "jpSha256": "736626d59938ba37b4e931bc60acf9ed71119fa30cec748b02be9820b945ac75",
-      "cnSha256": "73985aa21246d9ec3b279eb058bfa6485fedd70578fbfb1cc3bfb519e43ac2fd",
-      "simplifiedJsonSha256": "73985aa21246d9ec3b279eb058bfa6485fedd70578fbfb1cc3bfb519e43ac2fd",
+      "cnSha256": "8616f56e2a5d30dcafe212ae92bcbdfb3209eae9b306ef496482b5d67b5f2749",
+      "simplifiedJsonSha256": "8616f56e2a5d30dcafe212ae92bcbdfb3209eae9b306ef496482b5d67b5f2749",
       "eventCount": 165,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 135,
+      "dictionaryFallbackSpeakerEvents": 22,
+      "narrationSpeakerEvents": 8,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

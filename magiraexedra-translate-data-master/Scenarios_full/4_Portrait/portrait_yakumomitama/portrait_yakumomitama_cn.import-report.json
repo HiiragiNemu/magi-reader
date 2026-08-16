@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "3f6fedc73c49944e85ae20b26b209e75615349d77f2343fef36b146d923818f6",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 70
+    "readerNormalizedBlockCount": 110
   },
   "cn": {
-    "renderedSha256": "9bbcca1a4a655d931376b814d0793cd979dc3053c74930ffbf358cd8c00b105b",
+    "renderedSha256": "a6e2260185c625a6d246d4f5a3f5da3583bff4dd5a6353128f1d58362cd993a4",
     "sectionCount": 2,
-    "readerNormalizedBlockCount": 70
+    "readerNormalizedBlockCount": 110
   },
   "sections": [
     {
@@ -31,28 +37,30 @@
       "source": "portrait_yakumomitama_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 27,
-        "cn": 27,
+        "jp": 49,
+        "cn": 49,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "154659a50d79019e7a940421900303644a121dae7279eced3589b61cc1c1ab82",
-        "cn": "154659a50d79019e7a940421900303644a121dae7279eced3589b61cc1c1ab82"
-      }
+        "jp": "8d3e3a9ff3abbfd7c4e619a1fcce43d65827260a7ade513f4455d561d6226c34",
+        "cn": "9c04d1a7f0c285fd6335874b6b15d7ef2d0b071b12c5af40bc497e7f16793ba3"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 2,
       "source": "portrait_yakumomitama_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 43,
-        "cn": 43,
+        "jp": 61,
+        "cn": 61,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "11d82bcf73e614fd20e3e97ae62a48c2fdf24eb325ccebe8b7bd8008931eb3ff",
-        "cn": "11d82bcf73e614fd20e3e97ae62a48c2fdf24eb325ccebe8b7bd8008931eb3ff"
-      }
+        "jp": "e71f8c750b37bf93957e70eb5150564d23986e6adb03596dd3b571f309d2b81e",
+        "cn": "6baa7d68a7cf71b9a1e73e7a2e844fdd3a8d9d5a8d091ac9da09b14315c6ed9e"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -62,10 +70,17 @@
       "twPath": "4_Portrait/portrait_yakumomitama_1/portrait_yakumomitama_1.json",
       "twSha256": "c0e01d56d3a4e911559d963f93d87a1a8eff8f2d13b4f34591c7a9a104f403b7",
       "jpSha256": "36a604c07b0e0ee553140206a0589bc4605e12957f108becb7f15bfd3e38be51",
-      "cnSha256": "4a8fd0b5cdc50a301937a2c3bfaab6e087447f77c91cfd7dafa3c9c134f4b460",
-      "simplifiedJsonSha256": "4a8fd0b5cdc50a301937a2c3bfaab6e087447f77c91cfd7dafa3c9c134f4b460",
+      "cnSha256": "35fa0440a28b13c76f279763b4ebe23506a54b7d9e687013f1bb1bc7e5c33b5e",
+      "simplifiedJsonSha256": "35fa0440a28b13c76f279763b4ebe23506a54b7d9e687013f1bb1bc7e5c33b5e",
       "eventCount": 49,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 47,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_yakumomitama_2.json",
@@ -73,10 +88,17 @@
       "twPath": "4_Portrait/portrait_yakumomitama_2/portrait_yakumomitama_2.json",
       "twSha256": "981a23b7c3841946dc7d4df4b44b3b04ef2a24bef3cfc11141f1f30bbd1427eb",
       "jpSha256": "83cb0f9dfee18d6c80cf08546586558ad8cd11fabf8d3ef0abb0aa7c80695703",
-      "cnSha256": "5b0fc774923bd17096efffcdbbe5c3f9e64e830af7fb9f238ee0ecf2277b2724",
-      "simplifiedJsonSha256": "5b0fc774923bd17096efffcdbbe5c3f9e64e830af7fb9f238ee0ecf2277b2724",
+      "cnSha256": "b4ce98f2c5ba15ccd539ea018b6c2b11c689381e2f60429959bad8b38044a24a",
+      "simplifiedJsonSha256": "b4ce98f2c5ba15ccd539ea018b6c2b11c689381e2f60429959bad8b38044a24a",
       "eventCount": 61,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 61,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -112,5 +134,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "3f6fedc73c49944e85ae20b26b209e75615349d77f2343fef36b146d923818f6",
+    "cnSha256": "a6e2260185c625a6d246d4f5a3f5da3583bff4dd5a6353128f1d58362cd993a4",
+    "sectionCount": 2,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 2,
+    "sectionCount": 2
   }
 }

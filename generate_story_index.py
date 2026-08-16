@@ -29,6 +29,11 @@ from dataclasses import dataclass, field
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable, Mapping, MutableMapping, Sequence
 
+from tools.tw_authentic_scenario import (
+    load_name_translation_map as _load_exedra_name_translation_map,
+    translate_speaker as _translate_exedra_speaker,
+)
+
 try:
     import natsort
 except ImportError:  # pragma: no cover - the repository already uses natsort
@@ -2207,10 +2212,26 @@ def _normalize_exedra_speaker(value: str) -> str:
     return re.sub(r"\s+", "", value.strip())
 
 
+_EXEDRA_NAME_TRANSLATION_MAP: dict[str, str] | None = None
+
+
+def _canonical_exedra_speaker(value: str) -> str:
+    global _EXEDRA_NAME_TRANSLATION_MAP
+    if _EXEDRA_NAME_TRANSLATION_MAP is None:
+        _EXEDRA_NAME_TRANSLATION_MAP = _load_exedra_name_translation_map(
+            SCRIPT_DIR / "website/app/config/dictionary.ts"
+        )
+    return _translate_exedra_speaker(
+        _normalize_exedra_speaker(value),
+        _EXEDRA_NAME_TRANSLATION_MAP,
+    )
+
+
 def _exedra_speaker_identity(speaker: str) -> tuple[str, ...]:
-    if speaker in EXEDRA_NARRATION_SPEAKERS:
+    canonical = _canonical_exedra_speaker(speaker)
+    if canonical in EXEDRA_NARRATION_SPEAKERS or canonical == "旁白":
         return ("@narration",)
-    return tuple(part for part in re.split(r"[＆&]", speaker) if part)
+    return tuple(part for part in re.split(r"[＆&]", canonical) if part)
 
 
 def _exedra_sequence_hash(
@@ -2306,16 +2327,20 @@ def _exedra_alignment_sections(path: Path) -> tuple[ExedraSectionAlignment, ...]
                     raise PipelineError(
                         f"Exedra TXT 含无效事件: {path}:{line_number}: {line}"
                     )
+                canonical_speaker = _canonical_exedra_speaker(speaker)
                 kind = (
                     "narration"
-                    if speaker in EXEDRA_NARRATION_SPEAKERS
+                    if canonical_speaker in EXEDRA_NARRATION_SPEAKERS
+                    or canonical_speaker == "旁白"
                     else "dialogue"
                 )
-                if speaker != previous_speaker:
-                    signatures.append(
-                        (kind, _exedra_speaker_identity(speaker))
-                    )
-                    previous_speaker = speaker
+                # Exedra bilingual alignment is exact JSON text-event order.
+                # Do not merge adjacent equal speakers: authentic TW Name fields can
+                # legitimately split or join runs differently from the JP release.
+                signatures.append(
+                    (kind, _exedra_speaker_identity(canonical_speaker))
+                )
+                previous_speaker = canonical_speaker
     except UnicodeDecodeError as error:
         raise PipelineError(f"Exedra TXT 无法按 UTF-8 读取: {path}: {error}") from error
 
@@ -2430,6 +2455,16 @@ def _validate_exedra_cn_import_report(
     if report.get("mismatches") != []:
         raise PipelineError(
             f"Exedra 中文导入报告 mismatches 必须为空: {report_path}"
+        )
+    authentic_tw = report.get("provenance") == "official_tw_human"
+    if authentic_tw and (
+        validation.get("speakerPolicy") != "official_tw_name_column_tw2sp"
+        or validation.get("speakerSequencesMayDiffer") is not True
+        or validation.get("twSchemaPreserved") is not True
+    ):
+        raise PipelineError(
+            "台服官方导入报告没有声明真实 TW Name/JSON 保留策略: "
+            f"{report_path}"
         )
 
     report_jp = _report_mapping(
@@ -2552,11 +2587,27 @@ def _validate_exedra_cn_import_report(
         if (
             not _valid_sha256(jp_sequence_sha256)
             or not _valid_sha256(cn_sequence_sha256)
-            or jp_sequence_sha256 != cn_sequence_sha256
+        ):
+            raise PipelineError(
+                "Exedra 中文导入报告的说话人哈希无效: "
+                f"{group.manifest_id} Section {index}: {report_path}"
+            )
+        if authentic_tw:
+            # The complete current JP/CN TXT SHA-256 values were already
+            # verified above. They bind every speaker and text byte. Keep the
+            # section hashes as diagnostics, while allowing the authentic TW
+            # Name sequence to differ from the JP release.
+            if report_section.get("speakerSequenceMatches") not in (True, False):
+                raise PipelineError(
+                    "台服官方报告缺少逐节说话人差异状态: "
+                    f"{group.manifest_id} Section {index}: {report_path}"
+                )
+        elif (
+            jp_sequence_sha256 != cn_sequence_sha256
             or cn_sequence_sha256 != cn_section.speaker_sequence_sha256
         ):
             raise PipelineError(
-                "Exedra 中文导入报告的说话人/旁白顺序哈希不匹配，"
+                "Exedra 中文导入报告的映射后说话人/旁白顺序哈希不匹配，"
                 "拒绝按数量放行: "
                 f"{group.manifest_id} Section {index}: {report_path}"
             )
@@ -2660,19 +2711,59 @@ def _validate_exedra_cn_json_sources(
                 f"不一致: {group.manifest_id} #{index}: "
                 f"JP {len(jp_rows)}, CN {len(cn_rows)}, report {event_count!r}"
             )
-        jp_structure = [
-            (str(row["action"]), str(row["speaker"]))
-            for row in jp_rows
-        ]
-        cn_structure = [
-            (str(row["action"]), str(row["speaker"]))
-            for row in cn_rows
-        ]
+        authentic_tw = report.get("provenance") == "official_tw_human"
+        if authentic_tw:
+            if (
+                report_source.get("schemaSource") != "official_tw_json"
+                or report_source.get("speakerPolicy")
+                != "official_tw_name_column_tw2sp"
+                or report_source.get("twSchemaPreserved") is not True
+                or not _valid_sha256(report_source.get("twSha256"))
+            ):
+                raise PipelineError(
+                    "Exedra 台服 JSON 缺少真实来源/说话人策略证明: "
+                    f"{group.manifest_id} #{index}"
+                )
+
+        def event_structure(
+            rows: Sequence[Mapping[str, Any]],
+        ) -> list[tuple[Any, ...]]:
+            return [
+                (
+                    int(row.get("sheet_index") or 0),
+                    row.get("row_number"),
+                    str(row["action"]).casefold(),
+                )
+                for row in rows
+            ]
+
+        # Language-specific Name placement is not event structure. Authentic TW
+        # owns its Chinese Name column, while retained human translations can
+        # legitimately use a Chinese Name where the JP row relied on contextual
+        # Put/position state. Exact source/report hashes and the importers prove
+        # Name/Comment-only localization; here we prove sheet/row/action order.
+        jp_structure = event_structure(jp_rows)
+        cn_structure = event_structure(cn_rows)
         if jp_structure != cn_structure:
             raise PipelineError(
-                "Exedra 中日 JSON 的 ActionType/说话人顺序不一致: "
+                "Exedra 中日 JSON 的 ActionType/工作表/行位置顺序不一致: "
                 f"{group.manifest_id} #{index}"
             )
+
+        # Every visible CN Name must nevertheless be the exact canonical form.
+        # Blank cells remain meaningful playback structure and are left blank.
+        for event_index, row in enumerate(cn_rows, start=1):
+            speaker = str(row.get("speaker") or "").strip()
+            if not speaker:
+                continue
+            canonical = _canonical_exedra_speaker(speaker)
+            if speaker != canonical or re.search(r"[぀-ヿ]", speaker):
+                raise PipelineError(
+                    "Exedra 中文 JSON 的 Name 未规范中文化: "
+                    f"{group.manifest_id} #{index} event {event_index}: "
+                    f"{speaker!r} -> {canonical!r}"
+                )
+
 
 
 def load_exedra_manifest(

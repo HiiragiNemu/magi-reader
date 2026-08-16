@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "13d785f35e38dc738026733b2334ff94ee092ef9e85fb99fab9b1d82d760c1e6",
     "sectionCount": 10,
-    "readerNormalizedBlockCount": 110
+    "readerNormalizedBlockCount": 208
   },
   "cn": {
     "renderedSha256": "e864aa4fb120dbd8eebc6e3bc599933023c884cc83e84030350fc909177b8fe8",
     "sectionCount": 10,
-    "readerNormalizedBlockCount": 110
+    "readerNormalizedBlockCount": 208
   },
   "sections": [
     {
@@ -31,140 +37,150 @@
       "source": "pp_monogatari_magireco_normal_01.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 11,
-        "cn": 11,
+        "jp": 18,
+        "cn": 18,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf",
-        "cn": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf"
-      }
+        "jp": "1dd43ef4ce34564d795a7569e5079703b5e4eb9cb0cf69be4e531976473f4abb",
+        "cn": "1dd43ef4ce34564d795a7569e5079703b5e4eb9cb0cf69be4e531976473f4abb"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "pp_monogatari_magireco_normal_02.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 11,
-        "cn": 11,
+        "jp": 20,
+        "cn": 20,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf",
-        "cn": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf"
-      }
+        "jp": "a2737191e0f66b840bb601cfe4108819f553d62a28d80ac15630fe10d1561c38",
+        "cn": "a2737191e0f66b840bb601cfe4108819f553d62a28d80ac15630fe10d1561c38"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "pp_monogatari_magireco_normal_03.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 11,
-        "cn": 11,
+        "jp": 20,
+        "cn": 20,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf",
-        "cn": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf"
-      }
+        "jp": "d09623eaeaa2b13b3906621a7459dc6576de8856cde9ce3f752c842f70dd9577",
+        "cn": "d09623eaeaa2b13b3906621a7459dc6576de8856cde9ce3f752c842f70dd9577"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 4,
       "source": "pp_monogatari_magireco_normal_04.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 11,
-        "cn": 11,
+        "jp": 18,
+        "cn": 18,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf",
-        "cn": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf"
-      }
+        "jp": "412bb6dda26b31e6025ce87969dae90dbf39ef008173b60a3e4830e74867d1cc",
+        "cn": "412bb6dda26b31e6025ce87969dae90dbf39ef008173b60a3e4830e74867d1cc"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 5,
       "source": "pp_monogatari_magireco_normal_05.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 9,
-        "cn": 9,
+        "jp": 15,
+        "cn": 15,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "82b347339909544d4fe3f4e36c5d8858c9fb63c169dff9d539c7022eba0010fd",
-        "cn": "82b347339909544d4fe3f4e36c5d8858c9fb63c169dff9d539c7022eba0010fd"
-      }
+        "jp": "ebf1ad57114dc28785d2011e49a803711b644a21b4f4c37b200a340d9b8d459f",
+        "cn": "ebf1ad57114dc28785d2011e49a803711b644a21b4f4c37b200a340d9b8d459f"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 6,
       "source": "pp_monogatari_magireco_normal_06.json",
       "wikiEpisode": 6,
       "readerNormalizedBlocks": {
-        "jp": 7,
-        "cn": 7,
+        "jp": 15,
+        "cn": 15,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "93ec02f471bc60d1bb3f09f1ba768ef7073f3f7e2cabd915a30d0ed593a2ecb9",
-        "cn": "93ec02f471bc60d1bb3f09f1ba768ef7073f3f7e2cabd915a30d0ed593a2ecb9"
-      }
+        "jp": "99b007f1fa69601ca88a25629736d83c305b66400f70529ce6bf8af8a13aef89",
+        "cn": "99b007f1fa69601ca88a25629736d83c305b66400f70529ce6bf8af8a13aef89"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 7,
       "source": "pp_monogatari_magireco_normal_07.json",
       "wikiEpisode": 7,
       "readerNormalizedBlocks": {
-        "jp": 11,
-        "cn": 11,
+        "jp": 20,
+        "cn": 20,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf",
-        "cn": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf"
-      }
+        "jp": "c682adce84f2121d6ac776429eed84547ffba90e41c5c4adf3e340c9b5096d1f",
+        "cn": "c682adce84f2121d6ac776429eed84547ffba90e41c5c4adf3e340c9b5096d1f"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 8,
       "source": "pp_monogatari_magireco_normal_08.json",
       "wikiEpisode": 8,
       "readerNormalizedBlocks": {
-        "jp": 9,
-        "cn": 9,
+        "jp": 18,
+        "cn": 18,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "82b347339909544d4fe3f4e36c5d8858c9fb63c169dff9d539c7022eba0010fd",
-        "cn": "82b347339909544d4fe3f4e36c5d8858c9fb63c169dff9d539c7022eba0010fd"
-      }
+        "jp": "29dc84fe79df99d94e1020cd881985d89da9078a273aa22bfe5a9003128fd474",
+        "cn": "29dc84fe79df99d94e1020cd881985d89da9078a273aa22bfe5a9003128fd474"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 9,
       "source": "pp_monogatari_magireco_normal_09.json",
       "wikiEpisode": 9,
       "readerNormalizedBlocks": {
-        "jp": 11,
-        "cn": 11,
+        "jp": 24,
+        "cn": 24,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf",
-        "cn": "3e2ab14e83e082271390f9277559aeffe28265c9af4165eae91583158d7a97cf"
-      }
+        "jp": "52bbd7834f3e28c782d9876ff474b27a15696ca42aec41750dfb6c2de45ebf35",
+        "cn": "52bbd7834f3e28c782d9876ff474b27a15696ca42aec41750dfb6c2de45ebf35"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 10,
       "source": "pp_monogatari_magireco_normal_10.json",
       "wikiEpisode": 10,
       "readerNormalizedBlocks": {
-        "jp": 19,
-        "cn": 19,
+        "jp": 40,
+        "cn": 40,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "0b0ea5527618bc843f2c30ff680ba723e645ef2870c38922b0132ea56786951c",
-        "cn": "0b0ea5527618bc843f2c30ff680ba723e645ef2870c38922b0132ea56786951c"
-      }
+        "jp": "c3275948b434f113adee8b11e02da45defdc64b786d3be66c7a1dbd26a792ae9",
+        "cn": "c3275948b434f113adee8b11e02da45defdc64b786d3be66c7a1dbd26a792ae9"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -177,7 +193,14 @@
       "cnSha256": "58b671ad566caa1f64376009f5975f8000d6afa5e4714614fd78489b7f6b5cbe",
       "simplifiedJsonSha256": "58b671ad566caa1f64376009f5975f8000d6afa5e4714614fd78489b7f6b5cbe",
       "eventCount": 18,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 18,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_magireco_normal_02.json",
@@ -188,7 +211,14 @@
       "cnSha256": "82a4287afb8da578b0c69d92aa4134edfdb613692f4bd16f2db82cba8b1ca41e",
       "simplifiedJsonSha256": "82a4287afb8da578b0c69d92aa4134edfdb613692f4bd16f2db82cba8b1ca41e",
       "eventCount": 20,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 20,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_magireco_normal_03.json",
@@ -199,7 +229,14 @@
       "cnSha256": "9a0960eb79cb29aabd0c1e70c162bdd57fa83d4bf9a9061f76d7ff3dbce133e9",
       "simplifiedJsonSha256": "9a0960eb79cb29aabd0c1e70c162bdd57fa83d4bf9a9061f76d7ff3dbce133e9",
       "eventCount": 20,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 20,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_magireco_normal_04.json",
@@ -210,7 +247,14 @@
       "cnSha256": "b8cfad85db9c3a238b40591cbcdbc4ce8a366f220b6a128631222890305d6803",
       "simplifiedJsonSha256": "b8cfad85db9c3a238b40591cbcdbc4ce8a366f220b6a128631222890305d6803",
       "eventCount": 18,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 18,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_magireco_normal_05.json",
@@ -221,7 +265,14 @@
       "cnSha256": "b13768e158f7e4b22b740f0ebe4a69c38cb4d44bed899886be56219655d4b7cc",
       "simplifiedJsonSha256": "b13768e158f7e4b22b740f0ebe4a69c38cb4d44bed899886be56219655d4b7cc",
       "eventCount": 15,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 15,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_magireco_normal_06.json",
@@ -232,7 +283,14 @@
       "cnSha256": "9276ab77e85f251e83fa8d1d45c39676f179d861b86fbc0652b09fb429f26ad3",
       "simplifiedJsonSha256": "9276ab77e85f251e83fa8d1d45c39676f179d861b86fbc0652b09fb429f26ad3",
       "eventCount": 15,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 15,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_magireco_normal_07.json",
@@ -243,7 +301,14 @@
       "cnSha256": "65d13ea0c7b12ee72f324e96f31fca43f4d7de7dca6f2c9b8156b713e2f17428",
       "simplifiedJsonSha256": "65d13ea0c7b12ee72f324e96f31fca43f4d7de7dca6f2c9b8156b713e2f17428",
       "eventCount": 20,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 20,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_magireco_normal_08.json",
@@ -254,7 +319,14 @@
       "cnSha256": "25a275438f11d324cd658ca5fdaf3827483e5356be5f2a90d9e9a1101fb07f92",
       "simplifiedJsonSha256": "25a275438f11d324cd658ca5fdaf3827483e5356be5f2a90d9e9a1101fb07f92",
       "eventCount": 18,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 18,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_magireco_normal_09.json",
@@ -265,7 +337,14 @@
       "cnSha256": "911779a086dfe870d4ac3a581b3d84bac9e8fac1f805854db55819493f335f68",
       "simplifiedJsonSha256": "911779a086dfe870d4ac3a581b3d84bac9e8fac1f805854db55819493f335f68",
       "eventCount": 24,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 24,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_magireco_normal_10.json",
@@ -276,7 +355,14 @@
       "cnSha256": "c684f124ed222a5b32582c51b7b2f94272b7a83b15db5a9ff64d0405b144e25b",
       "simplifiedJsonSha256": "c684f124ed222a5b32582c51b7b2f94272b7a83b15db5a9ff64d0405b144e25b",
       "eventCount": 40,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 40,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -502,5 +588,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "13d785f35e38dc738026733b2334ff94ee092ef9e85fb99fab9b1d82d760c1e6",
+    "cnSha256": "e864aa4fb120dbd8eebc6e3bc599933023c884cc83e84030350fc909177b8fe8",
+    "sectionCount": 10,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 10,
+    "sectionCount": 10
   }
 }

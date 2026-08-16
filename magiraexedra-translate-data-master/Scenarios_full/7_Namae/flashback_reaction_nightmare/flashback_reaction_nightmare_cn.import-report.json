@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "5402f38e92065c84e7c1ff056feaa3997e98673ba207df396b8b874702b9ef21",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 16
+    "readerNormalizedBlockCount": 27
   },
   "cn": {
     "renderedSha256": "4d7c8cb658238bcb35be0ef148a1720a5fa63e36574380e77266c8fe1a114a86",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 16
+    "readerNormalizedBlockCount": 27
   },
   "sections": [
     {
@@ -31,42 +37,45 @@
       "source": "flashback_reaction_nightmare1.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 5,
-        "cn": 5,
+        "jp": 9,
+        "cn": 9,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "f776f4c6540f0d10fbbd59bacbc089314ba970b1e05c60952511126c27edc05d",
-        "cn": "f776f4c6540f0d10fbbd59bacbc089314ba970b1e05c60952511126c27edc05d"
-      }
+        "jp": "543ce3ed5c4674fd0f1c8719542f05a26c01522dca2c3e00a06752857d0bb3ea",
+        "cn": "543ce3ed5c4674fd0f1c8719542f05a26c01522dca2c3e00a06752857d0bb3ea"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "flashback_reaction_nightmare2.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 8,
-        "cn": 8,
+        "jp": 12,
+        "cn": 12,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "25be6c435a3523dcbe1289a89259ab923c4e5bea497531bb6bcb0251768fc5b5",
-        "cn": "25be6c435a3523dcbe1289a89259ab923c4e5bea497531bb6bcb0251768fc5b5"
-      }
+        "jp": "67ea7a69256e8f1cca3dcaed9c4589e356b108ab3aac55823d43bf0f1d7b09f4",
+        "cn": "67ea7a69256e8f1cca3dcaed9c4589e356b108ab3aac55823d43bf0f1d7b09f4"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "flashback_reaction_nightmare3.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 3,
-        "cn": 3,
+        "jp": 6,
+        "cn": 6,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "7d5240403135091085faf6174f58319515f2cec380806b30de24027d438b5d95",
-        "cn": "7d5240403135091085faf6174f58319515f2cec380806b30de24027d438b5d95"
-      }
+        "jp": "069f823bbe75d4fb3a5f98efa653800849e7e02d38655c6f0e92a754492699a7",
+        "cn": "069f823bbe75d4fb3a5f98efa653800849e7e02d38655c6f0e92a754492699a7"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -79,7 +88,14 @@
       "cnSha256": "ac2318ec74f6aa613ba0c06a156acc23e4abdb3296d9b69d748036bfec4c168b",
       "simplifiedJsonSha256": "ac2318ec74f6aa613ba0c06a156acc23e4abdb3296d9b69d748036bfec4c168b",
       "eventCount": 9,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 9,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "flashback_reaction_nightmare2.json",
@@ -90,7 +106,14 @@
       "cnSha256": "50a80da9a4ca10283448090821c889bea48691e36437bf53a1f22996be31bf56",
       "simplifiedJsonSha256": "50a80da9a4ca10283448090821c889bea48691e36437bf53a1f22996be31bf56",
       "eventCount": 12,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 12,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "flashback_reaction_nightmare3.json",
@@ -101,7 +124,14 @@
       "cnSha256": "9f5c2d18ae3960b4c581f00d15d03b86fa3997e4258e32b62b18b4e571b3b7b4",
       "simplifiedJsonSha256": "9f5c2d18ae3960b4c581f00d15d03b86fa3997e4258e32b62b18b4e571b3b7b4",
       "eventCount": 6,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 6,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -187,5 +217,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "5402f38e92065c84e7c1ff056feaa3997e98673ba207df396b8b874702b9ef21",
+    "cnSha256": "4d7c8cb658238bcb35be0ef148a1720a5fa63e36574380e77266c8fe1a114a86",
+    "sectionCount": 3,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 3,
+    "sectionCount": 3
   }
 }

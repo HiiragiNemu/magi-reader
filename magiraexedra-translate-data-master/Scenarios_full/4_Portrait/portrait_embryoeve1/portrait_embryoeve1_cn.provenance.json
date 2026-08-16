@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "9b9bbe19eb58c42174c4063688d75d2f387a34a78bca5da1e3391aa4794c9ed2",
-  "cnSha256": "d0125d117a213e5ef36338d581d0df4367ee9073a9b2cffe954491cd15f4f921",
+  "cnSha256": "d99843cca8b981414f42f92bbc15e47f869b1a5314528f07fb0a216ecd70634e",
   "chapterTitle": "第五章 · 幸福的魔女",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_embryoeve1_1/portrait_embryoeve1_1.json",
       "twSha256": "93a398d0d81b1f0122692531adaba5b2480e882266777f69309873e589d1e6e9",
       "jpSha256": "cffa714af73da64b231a16db679d62310fb1f917f6ea8d7067eca9cd2cce867b",
-      "cnSha256": "f91c8fb8a8012a5991cf1a35d3b69ff200d2eae853bbd4d0dab3165ff9889297",
-      "simplifiedJsonSha256": "f91c8fb8a8012a5991cf1a35d3b69ff200d2eae853bbd4d0dab3165ff9889297",
+      "cnSha256": "d9afbc8a77b9987dc4c1bba9fb543feb1b51357480a10cf8f5417f545f346eb6",
+      "simplifiedJsonSha256": "d9afbc8a77b9987dc4c1bba9fb543feb1b51357480a10cf8f5417f545f346eb6",
       "eventCount": 67,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 64,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 3,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_embryoeve1_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_embryoeve1_2/portrait_embryoeve1_2.json",
       "twSha256": "6689245eb432c53150ef090f31ce8936b69d65b87d78a8871cd3e25caf1bb868",
       "jpSha256": "ac557f31e1ba2805f530f07f7b7e76c471799b4fcce9dacdc626e4335329565c",
-      "cnSha256": "a56fd51a89fc60cc79fd46d6289c4490e543e43930f3a20daafbaba7634ad6bf",
-      "simplifiedJsonSha256": "a56fd51a89fc60cc79fd46d6289c4490e543e43930f3a20daafbaba7634ad6bf",
+      "cnSha256": "9088694813f55143d7b94d9d855560bcc1c18388e2a277d825c0f0172316d197",
+      "simplifiedJsonSha256": "9088694813f55143d7b94d9d855560bcc1c18388e2a277d825c0f0172316d197",
       "eventCount": 57,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 55,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

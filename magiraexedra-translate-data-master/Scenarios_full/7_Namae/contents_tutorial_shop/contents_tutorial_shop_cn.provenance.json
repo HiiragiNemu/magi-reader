@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "94e18c13b7808dcfaeed0d3d28e4547573df89fa3bc5a36d34f2fb4975bbcaa3",
-  "cnSha256": "b9cd8fa6d9cdb7b5491b71fe31b20e13d1936c760eee7dc8d5a4e04389e031dd",
+  "cnSha256": "0fae079712529ae5dd93c69e5100c8bb415cd4ed0ae8d86aad21f8bad666f7a4",
   "chapterTitle": "",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "7_Namae/contents_tutorial_shop_1/contents_tutorial_shop_1.json",
       "twSha256": "336e97c6ebe59576b2780f3b8f8896b88b047a9fde55972c5bb8281a756f275b",
       "jpSha256": "ba903c93cd37ef3399f3b60b0f87e4ba7473ac06047117566f24f6a49b501979",
-      "cnSha256": "57b8c9ec6fa158e89712fc5f30afd81257d2f30453b61e8b525a6f3f15521f3b",
-      "simplifiedJsonSha256": "57b8c9ec6fa158e89712fc5f30afd81257d2f30453b61e8b525a6f3f15521f3b",
+      "cnSha256": "610bbfa85bec925239a2016612df6d9e0c646f66148c6ebbde87bad646cbf293",
+      "simplifiedJsonSha256": "610bbfa85bec925239a2016612df6d9e0c646f66148c6ebbde87bad646cbf293",
       "eventCount": 2,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 2,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "contents_tutorial_shop_2.json",
@@ -91,10 +101,24 @@
       "twPath": "7_Namae/contents_tutorial_shop_2/contents_tutorial_shop_2.json",
       "twSha256": "2c1b25f1ed06e63bd6f4c7eca112395976d0cfc90babe0d8ad7ac5892bcfb057",
       "jpSha256": "d9d7639efbb0efdeac9492117b59e510dbca9d6bd8ac454f90662a8e83c13c62",
-      "cnSha256": "e458c0bb5e7f07991e51f67e7b8da345a2d0323c1a36dadda270a9a150986816",
-      "simplifiedJsonSha256": "e458c0bb5e7f07991e51f67e7b8da345a2d0323c1a36dadda270a9a150986816",
+      "cnSha256": "a6bb54bd96944d1b60b3e88a895fe6d77e1649ebfab80096e52bfef49beb4794",
+      "simplifiedJsonSha256": "a6bb54bd96944d1b60b3e88a895fe6d77e1649ebfab80096e52bfef49beb4794",
       "eventCount": 12,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 12,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

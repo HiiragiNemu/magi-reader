@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "7bb0e69c6cf047496a3bd1d405c45a010fadb5a16a363a20899c4be4bd8025ae",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 6
+    "readerNormalizedBlockCount": 12
   },
   "cn": {
     "renderedSha256": "87daceec5ef2871463681093ea392aaec8e93a88b6221b3f7245191bd2a9ddcb",
     "sectionCount": 3,
-    "readerNormalizedBlockCount": 6
+    "readerNormalizedBlockCount": 12
   },
   "sections": [
     {
@@ -31,42 +37,45 @@
       "source": "pp_monogatari_scene0_nightmare_01.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 2,
-        "cn": 2,
+        "jp": 4,
+        "cn": 4,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "4f43f6b52cbd7e12f671b19e8c6cce1929e616c9b0f3f79e270c0f649ce9d1ff",
-        "cn": "4f43f6b52cbd7e12f671b19e8c6cce1929e616c9b0f3f79e270c0f649ce9d1ff"
-      }
+        "jp": "cff086449b197b1c8aae4991ee725ede4f9e87619f0f8a42760b443b3fcb482b",
+        "cn": "cff086449b197b1c8aae4991ee725ede4f9e87619f0f8a42760b443b3fcb482b"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "pp_monogatari_scene0_nightmare_02.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 2,
-        "cn": 2,
+        "jp": 4,
+        "cn": 4,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "4f43f6b52cbd7e12f671b19e8c6cce1929e616c9b0f3f79e270c0f649ce9d1ff",
-        "cn": "4f43f6b52cbd7e12f671b19e8c6cce1929e616c9b0f3f79e270c0f649ce9d1ff"
-      }
+        "jp": "cff086449b197b1c8aae4991ee725ede4f9e87619f0f8a42760b443b3fcb482b",
+        "cn": "cff086449b197b1c8aae4991ee725ede4f9e87619f0f8a42760b443b3fcb482b"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 3,
       "source": "pp_monogatari_scene0_nightmare_03.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 2,
-        "cn": 2,
+        "jp": 4,
+        "cn": 4,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "4f43f6b52cbd7e12f671b19e8c6cce1929e616c9b0f3f79e270c0f649ce9d1ff",
-        "cn": "4f43f6b52cbd7e12f671b19e8c6cce1929e616c9b0f3f79e270c0f649ce9d1ff"
-      }
+        "jp": "cff086449b197b1c8aae4991ee725ede4f9e87619f0f8a42760b443b3fcb482b",
+        "cn": "cff086449b197b1c8aae4991ee725ede4f9e87619f0f8a42760b443b3fcb482b"
+      },
+      "speakerSequenceMatches": true
     }
   ],
   "sourceJson": [
@@ -79,7 +88,14 @@
       "cnSha256": "994fd6cd1dd4d767d5b02acad16e9c5cc60d0018a9ccece5abbe18ab5f5d4e16",
       "simplifiedJsonSha256": "994fd6cd1dd4d767d5b02acad16e9c5cc60d0018a9ccece5abbe18ab5f5d4e16",
       "eventCount": 4,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 4,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_scene0_nightmare_02.json",
@@ -90,7 +106,14 @@
       "cnSha256": "50496757099cbbb98db3857a0456991e35cb4544d90c222820bb98385106c323",
       "simplifiedJsonSha256": "50496757099cbbb98db3857a0456991e35cb4544d90c222820bb98385106c323",
       "eventCount": 4,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 4,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "pp_monogatari_scene0_nightmare_03.json",
@@ -101,7 +124,14 @@
       "cnSha256": "1340ced620208a81d1bfc59d3540b2923ed36fc1c1548fcb9f2e3d9f157abc76",
       "simplifiedJsonSha256": "1340ced620208a81d1bfc59d3540b2923ed36fc1c1548fcb9f2e3d9f157abc76",
       "eventCount": 4,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 4,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -187,5 +217,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "7bb0e69c6cf047496a3bd1d405c45a010fadb5a16a363a20899c4be4bd8025ae",
+    "cnSha256": "87daceec5ef2871463681093ea392aaec8e93a88b6221b3f7245191bd2a9ddcb",
+    "sectionCount": 3,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 3,
+    "sectionCount": 3
   }
 }

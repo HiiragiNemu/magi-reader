@@ -190,8 +190,6 @@ const seedEditableLines = (
     const basis = cn ?? jp;
     if (!basis) return [];
 
-    if (seed === 'current' && cn) return [{ ...cn }];
-
     const structural = Boolean(basis.isHeader || basis.isChoice);
     const text =
       structural
@@ -204,7 +202,9 @@ const seedEditableLines = (
 
     return [{
       ...basis,
-      speaker: cn?.speaker || translatedSpeaker((jp ?? basis).speaker),
+      speaker: translatedSpeaker(
+        cn?.speaker || (jp ?? basis).speaker || '旁白',
+      ),
       text,
     }];
   });
@@ -580,10 +580,17 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
         }
 
         if (!active) return;
-        const nextCnLines = parsedCn?.lines ?? [];
-        const nextJpLines = parsedJp?.lines ?? [];
         const nextCnEventLines = parsedCn?.eventLines ?? [];
         const nextJpEventLines = parsedJp?.eventLines ?? [];
+        // Exedra uses exact JSON text-event alignment. Display the same event
+        // sequence used by editing/JSON downloads instead of merging adjacent
+        // speakers independently in each language.
+        const nextCnLines = isExedraStory
+          ? nextCnEventLines
+          : parsedCn?.lines ?? [];
+        const nextJpLines = isExedraStory
+          ? nextJpEventLines
+          : parsedJp?.lines ?? [];
         if (nextCnLines.length === 0 && nextJpLines.length === 0) {
           throw new Error('文件中没有找到可显示的剧情文本。');
         }
@@ -626,6 +633,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     sourcePathCn,
     sourcePathJp,
     sourceReady,
+    isExedraStory,
   ]);
 
   const displayedCnLines =
@@ -1065,10 +1073,10 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
       }
       triggerScenarioJsonDownload(download);
       return sourceLanguage === 'cn'
-        ? `已按中文结构生成可播放编辑 JSON；仅改动 ${download.changedTextFields} 个文本字段。`
+        ? `已按中文结构生成可播放编辑 JSON；仅改动 ${download.changedTextFields} 个中文正文/角色名字段。`
         : `该 Section 没有中文 JSON；已明确使用日文 JSON 作为结构模板，`
           + `并用当前中文编辑行生成可播放 JSON。仅改动 `
-          + `${download.changedTextFields} 个文本字段。`;
+          + `${download.changedTextFields} 个中文正文/角色名字段。`;
     });
   };
 
@@ -2233,7 +2241,9 @@ function StoryRow({
 
   const cnSpeakerMatches =
     Boolean(normalizedQuery) &&
-    normalizeSearchText(row.cn?.speaker || '').includes(normalizedQuery);
+    normalizeSearchText(
+      translatedSpeaker(row.cn?.speaker || ''),
+    ).includes(normalizedQuery);
   const jpSpeakerMatches =
     Boolean(normalizedQuery) &&
     normalizeSearchText(row.jp?.speaker || '').includes(normalizedQuery);
@@ -2283,7 +2293,12 @@ function StoryRow({
                     ? 'border-gray-700 bg-gray-800 text-white'
                     : 'border-gray-200 bg-white text-black'
                 }`}
-                value={editedLines[editIndex]?.speaker || row.jp?.speaker || '旁白'}
+                value={
+                  editedLines[editIndex]?.speaker
+                  || translatedSpeaker(
+                    row.cn?.speaker || row.jp?.speaker || '旁白',
+                  )
+                }
                 onChange={event => {
                   const value = event.target.value;
                   setEditedLines(previous => {
@@ -2420,14 +2435,18 @@ function SpeakerLabel({
   faded?: boolean;
   language: 'cn' | 'jp';
 }) {
+  const displayedSpeaker =
+    language === 'cn'
+      ? translateSpeakerName(line.speaker)
+      : line.speaker;
   return (
     <div
       className={`${language === 'cn' ? 'reader-font-cn-title' : 'reader-font-jp-title'} h-fit w-20 flex-shrink-0 break-words rounded px-1 pt-1 text-right text-[11px] font-bold leading-tight md:w-24 ${
         highlighted ? 'ring-2 ring-yellow-400' : faded ? 'opacity-50' : ''
       }`}
-      style={{ color: speakerColor(line.speaker) }}
+      style={{ color: speakerColor(displayedSpeaker) }}
     >
-      {line.speaker}
+      {displayedSpeaker}
     </div>
   );
 }

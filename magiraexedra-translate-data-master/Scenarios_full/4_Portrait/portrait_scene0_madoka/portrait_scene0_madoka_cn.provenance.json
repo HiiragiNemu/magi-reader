@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "9df477e27446a3c63680dd66ccbe3d8ccb435036d8fbee815fbf58862b84efdb",
-  "cnSha256": "25105fdc4557a7cf8dfc748c466cecc2f0764044626114078898081833f25bcb",
+  "cnSha256": "ac640c4a25d65d49522a5f96cb897e0c3b4d9549956966881d04685d5204d2d6",
   "chapterTitle": "前篇 · 爱生眩的记忆 前篇",
   "sections": [
     {
@@ -100,10 +103,17 @@
       "twPath": "4_Portrait/portrait_scene0_madoka_1/portrait_scene0_madoka_1.json",
       "twSha256": "4433fae51693cd1e091f9d6c98886ae40501200ed87b7d2a3c71f75c05f1b61d",
       "jpSha256": "5b2da6f3cb5fc83e1029f83782fdb37fc2b8e736be1531a15a04692cd51f6778",
-      "cnSha256": "79e9865437dbcc71f638240fa0c11fd9ed05438a22f8b96979b80635e360d201",
-      "simplifiedJsonSha256": "79e9865437dbcc71f638240fa0c11fd9ed05438a22f8b96979b80635e360d201",
+      "cnSha256": "c66396f82f699bd3b23a56424564ac25e24046ac35bb16a966de582e891fc215",
+      "simplifiedJsonSha256": "c66396f82f699bd3b23a56424564ac25e24046ac35bb16a966de582e891fc215",
       "eventCount": 203,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 185,
+      "dictionaryFallbackSpeakerEvents": 3,
+      "narrationSpeakerEvents": 15,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_scene0_madoka_2.json",
@@ -111,10 +121,17 @@
       "twPath": "4_Portrait/portrait_scene0_madoka_2/portrait_scene0_madoka_2.json",
       "twSha256": "a6f8846ae6e9fbc70a02205159aa7cfaaaed12c5af593612832017999bc3757b",
       "jpSha256": "9e37e206eafe583695b9fcf12c8a5663f1982c9f440d9714df95949e88eb1969",
-      "cnSha256": "e5f7857c10978911ce9e9485e9b4d9b403357f9b51f02fc22bd0ac4c90e82595",
-      "simplifiedJsonSha256": "e5f7857c10978911ce9e9485e9b4d9b403357f9b51f02fc22bd0ac4c90e82595",
+      "cnSha256": "6d2d0fa98dbf7ea3e81c7bcd123837b475ea3c3dfae1d5558ba3a3494381dd3f",
+      "simplifiedJsonSha256": "6d2d0fa98dbf7ea3e81c7bcd123837b475ea3c3dfae1d5558ba3a3494381dd3f",
       "eventCount": 201,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 194,
+      "dictionaryFallbackSpeakerEvents": 1,
+      "narrationSpeakerEvents": 6,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_scene0_madoka_3.json",
@@ -122,10 +139,24 @@
       "twPath": "4_Portrait/portrait_scene0_madoka_3/portrait_scene0_madoka_3.json",
       "twSha256": "e54d38c1e204809afe380eb7d1ee31c415ea2734d1c0e8abe321046fce7a959a",
       "jpSha256": "b70f97f334883f8199a25dc2623fbc960e89baccd0593191f401fc374723454f",
-      "cnSha256": "5cacc96dcacde6d9968497d35482ca0e5715024e73893d4be17241f5782265ff",
-      "simplifiedJsonSha256": "5cacc96dcacde6d9968497d35482ca0e5715024e73893d4be17241f5782265ff",
+      "cnSha256": "cd59effba517857adf718d32e88da44bcd9ebe18441fb345d6936d87819ce36f",
+      "simplifiedJsonSha256": "cd59effba517857adf718d32e88da44bcd9ebe18441fb345d6936d87819ce36f",
       "eventCount": 223,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 215,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 8,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

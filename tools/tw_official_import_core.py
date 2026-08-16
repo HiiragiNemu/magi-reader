@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inject already-simplified official Taiwan Exedra text into JP schemas."""
+"""Materialize authentic official TW Exedra JSON and simplified CN text."""
 from __future__ import annotations
 
 import hashlib
@@ -470,6 +470,7 @@ def import_corpus(
         }
 
     convert = simplified_converter()
+    speaker_map = tw.load_name_translation_map(tw.DICTIONARY_PATH)
     index = tw.TwSourceIndex(scenario_root)
     titles = title_catalog(manifest_root, convert)
     adv_titles = optional_adv_title_catalog(manifest_root, convert)
@@ -531,7 +532,8 @@ def import_corpus(
                 sections = tw.parse_txt(jp_txt)
                 if len(sections) != len(sources):
                     raise RuntimeError("manifest/Section 数量不同")
-                translated: list[list[str]] = []
+                translated: list[list[tw.LocalizedEvent]] = []
+                localized_stats: list[dict[str, int]] = []
                 resolved: list[tuple[tw.Section, str, Path, Path]] = []
                 official_sections: list[dict[str, Any]] = []
                 group_used_paths: set[str] = set()
@@ -548,15 +550,17 @@ def import_corpus(
                     jp_json = tw.JP_ROOT / category / key / section.source
                     jp_rows, tw_rows = tw.extract_rows(jp_json), tw.extract_rows(tw_json)
                     tw.validate_row_alignment(section.source, jp_rows, tw_rows, section)
-                    texts = [
-                        convert(str(row.get("text") or "").strip())
-                        for row in tw_rows
-                    ]
-                    if any(not text for text in texts):
-                        raise RuntimeError(f"台服正文为空：{section.source}")
-                    translated.append(texts)
+                    events, event_stats = tw.localize_events(
+                        tw_rows,
+                        section.lines,
+                        convert,
+                        speaker_map,
+                    )
+                    translated.append(events)
+                    localized_stats.append(event_stats)
                     resolved.append((section, source, jp_json, tw_json))
-                    for row, text in zip(tw_rows, texts):
+                    for row, event in zip(tw_rows, events):
+                        text = event.text
                         if (
                             category == "2_Sub"
                             and str(row.get("action") or "").casefold() == "narration"
@@ -594,14 +598,20 @@ def import_corpus(
                 group_stage = temporary_root / "groups" / category / key
                 group_stage.mkdir(parents=True, exist_ok=False)
                 json_meta: list[dict[str, Any]] = []
-                for (section, source, jp_json, tw_json), texts in zip(
+                for (
+                    section,
+                    source,
+                    jp_json,
+                    tw_json,
+                ), events, speaker_stats in zip(
                     resolved,
                     translated,
+                    localized_stats,
                 ):
                     digest = tw.apply_translated_texts(
-                        jp_json,
-                        texts,
+                        tw_json,
                         group_stage / section.source,
+                        convert,
                     )
                     json_meta.append(
                         {
@@ -612,8 +622,12 @@ def import_corpus(
                             "jpSha256": pipeline._sha256_file(jp_json),
                             "cnSha256": digest,
                             "simplifiedJsonSha256": digest,
-                            "eventCount": len(texts),
+                            "eventCount": len(events),
                             "provenance": "official_tw_human",
+                            "schemaSource": "official_tw_json",
+                            "speakerPolicy": "official_tw_name_column_tw2sp",
+                            "twSchemaPreserved": True,
+                            **speaker_stats,
                         }
                     )
                 cn_txt = group_stage / f"{key}_cn.txt"
@@ -660,6 +674,9 @@ def import_corpus(
                     "provenance": "official_tw_human",
                     "machineTranslation": False,
                     "officialTw": True,
+                    "schemaSource": "official_tw_json",
+                    "speakerPolicy": "official_tw_name_column_tw2sp",
+                    "twSchemaPreserved": True,
                     "sourceProvider": provider,
                     "sourceContract": contract_evidence,
                     "sourceTreeSha256": scenario_sha256,

@@ -4,7 +4,6 @@ import './ui-refinements.css';
 
 import { GlobalProvider } from '@/app/providers';
 import CategoryLabelNormalizer from '@/components/CategoryLabelNormalizer';
-import ExedraSpeakerNameLocalizer from '@/components/ExedraSpeakerNameLocalizer';
 
 export const metadata: Metadata = {
   title: 'MagiReader',
@@ -21,7 +20,6 @@ export default function RootLayout({
       <body className="antialiased font-serif">
         <GlobalProvider>
           <CategoryLabelNormalizer />
-          <ExedraSpeakerNameLocalizer />
           {children}
         </GlobalProvider>
       </body>

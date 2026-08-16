@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "d2417451c30669d12465cf740163ca0af1d4786915fb2cab69a2563de8d5071e",
-  "cnSha256": "8c6c1897d8b440ceb4d3fe17e50e0a18efc4927e0d163ca2a3f93a54d1e657d8",
+  "cnSha256": "61ad00af21462ac4817543633aa03c08de0467fa7c848fbc706f2abecc7afcb5",
   "chapterTitle": "第十章 · 人鱼的魔女",
   "sections": [
     {
@@ -62,10 +65,24 @@
       "twPath": "4_Portrait/portrait_ningyo_1/portrait_ningyo_1.json",
       "twSha256": "aadde1fdc78a6c61352afa1fb4ec707c44c71df5e5c44e8a761ccce05f909308",
       "jpSha256": "0bd43c8b52eb9a5957a7f24e3f81757e1d89c317e4afe8affd298aa615d0947c",
-      "cnSha256": "8a434ec2e1961ae32b2e40cc8b7a5a2df4d29e8b10e8121d5e4b0c950d2c3ea2",
-      "simplifiedJsonSha256": "8a434ec2e1961ae32b2e40cc8b7a5a2df4d29e8b10e8121d5e4b0c950d2c3ea2",
+      "cnSha256": "22b25ae9f2b740ba980608ebc372dfaee14e2b4da956029e4169ea00587e80bf",
+      "simplifiedJsonSha256": "22b25ae9f2b740ba980608ebc372dfaee14e2b4da956029e4169ea00587e80bf",
       "eventCount": 130,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 49,
+      "dictionaryFallbackSpeakerEvents": 6,
+      "narrationSpeakerEvents": 75,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

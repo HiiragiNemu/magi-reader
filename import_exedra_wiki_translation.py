@@ -773,7 +773,9 @@ def sequence_hash(items: Iterable[tuple[str, tuple[str, ...] | None]]) -> str:
 
 
 def render_translation(
-    sections: Sequence[StorySection], episodes: Sequence[WikiEpisode]
+    sections: Sequence[StorySection],
+    episodes: Sequence[WikiEpisode],
+    speaker_map: dict[str, str],
 ) -> str:
     if len(sections) != len(episodes):
         raise ImporterError("Cannot render translation with unmatched Section count")
@@ -782,7 +784,12 @@ def render_translation(
         lines = [section.header]
         for event in episode.events:
             lines.append(
-                f"{normalize_speaker(event.speaker)}: "
+                f"{normalize_speaker(
+                    speaker_map.get(
+                        normalize_speaker(event.speaker),
+                        event.speaker,
+                    )
+                )}: "
                 f"{escape_output_text(event.text)}"
             )
         rendered_sections.append("\n".join(lines))
@@ -951,7 +958,7 @@ def validate_translation(
         len(merge_reader_blocks(episode.events)) for episode in episodes
     )
     rendered = (
-        render_translation(sections, episodes)
+        render_translation(sections, episodes, speaker_map)
         if len(sections) == len(episodes)
         else ""
     )

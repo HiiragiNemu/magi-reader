@@ -12,18 +12,24 @@
     "mismatchCount": 0,
     "usesLcs": false,
     "usesFuzzyMatching": false,
-    "allowsReordering": false
+    "allowsReordering": false,
+    "alignmentLevel": "exact-json-text-event-order",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "speakerSequencesMayDiffer": true,
+    "speakerSequencesCanonicalized": true,
+    "twSchemaPreserved": true
   },
   "mismatches": [],
   "jp": {
     "contentSha256": "3c58fb26454708e53625b8440ad8924fc48bbe6dbb472e37861b8ccfec2d438f",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 298
+    "readerNormalizedBlockCount": 464
   },
   "cn": {
-    "renderedSha256": "d01fb94169eea97cab1b2b6465fd557025f99f0d4aef73999d50ab793715a8b7",
+    "renderedSha256": "265724a739a2e53dc41cf2863ed82e7f47fa57728d405fd59390f98d6354242b",
     "sectionCount": 8,
-    "readerNormalizedBlockCount": 298
+    "readerNormalizedBlockCount": 464
   },
   "sections": [
     {
@@ -31,112 +37,120 @@
       "source": "character_natsuki_0.json",
       "wikiEpisode": 0,
       "readerNormalizedBlocks": {
-        "jp": 1,
-        "cn": 1,
+        "jp": 3,
+        "cn": 3,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "f0bc9049de18b71fd034ab5fbde5159a0cf7e6c2ac476283cc6f07e4dc61e9c4",
-        "cn": "f0bc9049de18b71fd034ab5fbde5159a0cf7e6c2ac476283cc6f07e4dc61e9c4"
-      }
+        "jp": "6adcf78af6f3d1588e82c7cb3570855e01fa28fd860325b67dde54b4b4784cca",
+        "cn": "6adcf78af6f3d1588e82c7cb3570855e01fa28fd860325b67dde54b4b4784cca"
+      },
+      "speakerSequenceMatches": true
     },
     {
       "section": 2,
       "source": "character_natsuki_1.json",
       "wikiEpisode": 1,
       "readerNormalizedBlocks": {
-        "jp": 51,
-        "cn": 51,
+        "jp": 67,
+        "cn": 67,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "8b44f6d73c20970cf2efba43472b347a60b484f91802740cfe9ad040d452ed78",
-        "cn": "8b44f6d73c20970cf2efba43472b347a60b484f91802740cfe9ad040d452ed78"
-      }
+        "jp": "8f1fcdb9830b182e1453029e4851ea6c1e3734cc5b6132fd90266e8a0a64ccf2",
+        "cn": "8fb2fb5e39bf0dc5e1d23b46ce5b5aaa7a0787831ca557b76cdf5df1e2acb661"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 3,
       "source": "character_natsuki_2.json",
       "wikiEpisode": 2,
       "readerNormalizedBlocks": {
-        "jp": 43,
-        "cn": 43,
+        "jp": 76,
+        "cn": 76,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "fa39cf71dcafb0d6ac0ec5081b380d283f519f162d18e01b06f04a4b86aec616",
-        "cn": "fa39cf71dcafb0d6ac0ec5081b380d283f519f162d18e01b06f04a4b86aec616"
-      }
+        "jp": "0011235940d1c9122851939b16823ec70acab630fcae17337d15cac629125c84",
+        "cn": "6b73b0b474b03622565465a3fc8b68639bb74b6d4f7b04ca6fa28fbcf20d0c86"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 4,
       "source": "character_natsuki_3.json",
       "wikiEpisode": 3,
       "readerNormalizedBlocks": {
-        "jp": 39,
-        "cn": 39,
+        "jp": 66,
+        "cn": 66,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "2bfb0fca6965db2f2080e2ab37075a57ac415e7a1982c893ca7ae6b5057ecfad",
-        "cn": "2bfb0fca6965db2f2080e2ab37075a57ac415e7a1982c893ca7ae6b5057ecfad"
-      }
+        "jp": "ce29589a4213be540a7d8248414ca356746d2e5db727619671a0eeab37da317f",
+        "cn": "6ed14137400d97f1502f0672ba93eb7a8081da676a54d029e7b3e6c00b9a26eb"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 5,
       "source": "character_natsuki_4.json",
       "wikiEpisode": 4,
       "readerNormalizedBlocks": {
-        "jp": 25,
-        "cn": 25,
+        "jp": 48,
+        "cn": 48,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "bcda3fd38ab6ee531d68b892e56d51fbcf7f318522517230d78cfa7e182ec5da",
-        "cn": "bcda3fd38ab6ee531d68b892e56d51fbcf7f318522517230d78cfa7e182ec5da"
-      }
+        "jp": "1512f86a6485e6064ea709ccab8e99102e85ce1769d607b238746e372e84478d",
+        "cn": "39244f7bc932124338a98c16343e902d8a9b821e9b4acee846c9b564f2e3b150"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 6,
       "source": "character_natsuki_5.json",
       "wikiEpisode": 5,
       "readerNormalizedBlocks": {
-        "jp": 43,
-        "cn": 43,
+        "jp": 59,
+        "cn": 59,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "47058df5c755515d43006fc3baba7acffdd26dc0b8dfb4843d57245b286fa42c",
-        "cn": "47058df5c755515d43006fc3baba7acffdd26dc0b8dfb4843d57245b286fa42c"
-      }
+        "jp": "46cdfbf058cd1ae52f24063119159e5e7e08148efc629343a126d5328495e8ec",
+        "cn": "2a8d95b8e636726929357c9088ca97706b43808b78d6eb0e861878f21a88df04"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 7,
       "source": "character_natsuki_6.json",
       "wikiEpisode": 6,
       "readerNormalizedBlocks": {
-        "jp": 50,
-        "cn": 50,
+        "jp": 78,
+        "cn": 78,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "e1cb7c7c4799fef8b50d83a03fb8145b13db2d3650e24dddad4f07ff4a66ec5b",
-        "cn": "e1cb7c7c4799fef8b50d83a03fb8145b13db2d3650e24dddad4f07ff4a66ec5b"
-      }
+        "jp": "cdb4af5821ed47d771bfbe7e1bbdb3dec188d6e57660b02b38becb22367821d1",
+        "cn": "9978b7a74dc2f3685dbe3e062c793577ef9d95aaa0edb7f2bfbc3c819db47c8b"
+      },
+      "speakerSequenceMatches": false
     },
     {
       "section": 8,
       "source": "character_natsuki_7.json",
       "wikiEpisode": 7,
       "readerNormalizedBlocks": {
-        "jp": 46,
-        "cn": 46,
+        "jp": 67,
+        "cn": 67,
         "matches": true
       },
       "speakerSequenceSha256": {
-        "jp": "d1b44b91a9470eb5cb2493f4cfbfb315b3aa1293597827e0c1ec583229da8dd0",
-        "cn": "d1b44b91a9470eb5cb2493f4cfbfb315b3aa1293597827e0c1ec583229da8dd0"
-      }
+        "jp": "85dffa28b4008fb3d35b9130c71207630df733aa5c25f476c3689b297c772026",
+        "cn": "8bdcc453b74ec5c1e1cb1236af9eda58e16083d2e12fe2316859a900cbf65891"
+      },
+      "speakerSequenceMatches": false
     }
   ],
   "sourceJson": [
@@ -146,10 +160,17 @@
       "twPath": "3_Character/character_natsuki_0/character_natsuki_0.json",
       "twSha256": "9d338b48c7c9a72dc7ea1013055d0583b6475e91cecebd8868ae66396c474ff9",
       "jpSha256": "bdaba5434457c95c09f508e304d4cce14aaf633e27d6144d5dd384b92796e6a4",
-      "cnSha256": "282992f4e42c81db90f14d36737804ab3e6db4909179c144d8b2ac4cdc8cfaa5",
-      "simplifiedJsonSha256": "282992f4e42c81db90f14d36737804ab3e6db4909179c144d8b2ac4cdc8cfaa5",
+      "cnSha256": "146db5388c9fcb8a655ff241e74f7ee90ef3e454c7ae1fe32a2acac95081fcb0",
+      "simplifiedJsonSha256": "146db5388c9fcb8a655ff241e74f7ee90ef3e454c7ae1fe32a2acac95081fcb0",
       "eventCount": 3,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 3,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     },
     {
       "source": "character_natsuki_1.json",
@@ -157,10 +178,17 @@
       "twPath": "3_Character/character_natsuki_1/character_natsuki_1.json",
       "twSha256": "c86c6532364c7223ad354b81e5acd693f903da3d5df24e836fffc4ab819ed3ed",
       "jpSha256": "e9998671dc1b89a91852fc59cfe8ce4c559e9001de6ee5a46c31341bf5c4e6ef",
-      "cnSha256": "5d472e9f512cbcd0230629e6dbb02434b7aeb146c3cf71dd1a0ea6d25434063b",
-      "simplifiedJsonSha256": "5d472e9f512cbcd0230629e6dbb02434b7aeb146c3cf71dd1a0ea6d25434063b",
+      "cnSha256": "8bc7fd6c22a1e59ff9c12f379ba146d0b0754187c1e92d0ee7080f333e09bc24",
+      "simplifiedJsonSha256": "8bc7fd6c22a1e59ff9c12f379ba146d0b0754187c1e92d0ee7080f333e09bc24",
       "eventCount": 67,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 56,
+      "dictionaryFallbackSpeakerEvents": 8,
+      "narrationSpeakerEvents": 3,
+      "canonicalNameFields": true
     },
     {
       "source": "character_natsuki_2.json",
@@ -168,10 +196,17 @@
       "twPath": "3_Character/character_natsuki_2/character_natsuki_2.json",
       "twSha256": "ca0a8014d9639e472760e95ce3048168bf905e85386eae2726cdd5ed9c2c7b5b",
       "jpSha256": "b5e1ffac2536db266634c7d971c282adce8f16a7f1e2091e84a8ce696a4700d3",
-      "cnSha256": "5852b897c7235514856ee0010f404ffc571c1951c6211aa726d826ff6fe0134a",
-      "simplifiedJsonSha256": "5852b897c7235514856ee0010f404ffc571c1951c6211aa726d826ff6fe0134a",
+      "cnSha256": "2ae4d0bcfefc0e48d51896b17a4690d335405b044431a0c02e13da50cc426dfb",
+      "simplifiedJsonSha256": "2ae4d0bcfefc0e48d51896b17a4690d335405b044431a0c02e13da50cc426dfb",
       "eventCount": 76,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 69,
+      "dictionaryFallbackSpeakerEvents": 3,
+      "narrationSpeakerEvents": 4,
+      "canonicalNameFields": true
     },
     {
       "source": "character_natsuki_3.json",
@@ -179,10 +214,17 @@
       "twPath": "3_Character/character_natsuki_3/character_natsuki_3.json",
       "twSha256": "4d416084f5ac7aed516768bdbb0338ba4a398b769568dc4a6234b55a0480456e",
       "jpSha256": "bf1df1ac0c24ce3a5da8f7c2db571875529117c1e8aae7bc246f2b667c4666b4",
-      "cnSha256": "ec4b7167d8dbddda7522a6101ee1ca99b45a94fb26ced132a7a7d7373c2af80e",
-      "simplifiedJsonSha256": "ec4b7167d8dbddda7522a6101ee1ca99b45a94fb26ced132a7a7d7373c2af80e",
+      "cnSha256": "9ac2a4db0d92f7eb0f6a0cc7a2460fad60f6033dd4853bc90e31afd38d2e04fa",
+      "simplifiedJsonSha256": "9ac2a4db0d92f7eb0f6a0cc7a2460fad60f6033dd4853bc90e31afd38d2e04fa",
       "eventCount": 66,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 51,
+      "dictionaryFallbackSpeakerEvents": 9,
+      "narrationSpeakerEvents": 6,
+      "canonicalNameFields": true
     },
     {
       "source": "character_natsuki_4.json",
@@ -190,10 +232,17 @@
       "twPath": "3_Character/character_natsuki_4/character_natsuki_4.json",
       "twSha256": "d8bfda8667dbbe188a2f8ceecd02e5103ffbc4e1a1e2b3d7381baee20c4342d0",
       "jpSha256": "34db41655da57268dfd78ffe4bd78da6f41f29064a5a96c62641f5fbe9a5a6b4",
-      "cnSha256": "38dd345b03016e1921b762f00f6c90da4f42b3f2b7d02d5743ba6fb47dae74e2",
-      "simplifiedJsonSha256": "38dd345b03016e1921b762f00f6c90da4f42b3f2b7d02d5743ba6fb47dae74e2",
+      "cnSha256": "bc01110e94565198ba47e78a6c2b741b97542841214f88992882e44c5acb771a",
+      "simplifiedJsonSha256": "bc01110e94565198ba47e78a6c2b741b97542841214f88992882e44c5acb771a",
       "eventCount": 48,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 30,
+      "dictionaryFallbackSpeakerEvents": 14,
+      "narrationSpeakerEvents": 4,
+      "canonicalNameFields": true
     },
     {
       "source": "character_natsuki_5.json",
@@ -201,10 +250,17 @@
       "twPath": "3_Character/character_natsuki_5/character_natsuki_5.json",
       "twSha256": "ceba7555c4f56ae96b7cc1fd7b1fe1d9f6ce7795517ca9f1a442882f96c14843",
       "jpSha256": "bfcb87917af4f108673f62340f3a432dd96164fc45dd6c4e8b2b4abce732e4a1",
-      "cnSha256": "b5e141d8e0a66648327b8ee14120f5fde3a73580c2bebb457ce8ad56d450c2ed",
-      "simplifiedJsonSha256": "b5e141d8e0a66648327b8ee14120f5fde3a73580c2bebb457ce8ad56d450c2ed",
+      "cnSha256": "0254e0aa85dee686b93a4a505045762c4e78804247b4f20eeaaa7a16a267d357",
+      "simplifiedJsonSha256": "0254e0aa85dee686b93a4a505045762c4e78804247b4f20eeaaa7a16a267d357",
       "eventCount": 59,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 41,
+      "dictionaryFallbackSpeakerEvents": 10,
+      "narrationSpeakerEvents": 8,
+      "canonicalNameFields": true
     },
     {
       "source": "character_natsuki_6.json",
@@ -212,10 +268,17 @@
       "twPath": "3_Character/character_natsuki_6/character_natsuki_6.json",
       "twSha256": "799b9be4bbf93691474c09a6cbf9b9ea432005eb84c7a0265c2794503fb15977",
       "jpSha256": "325344fda6e58e9be39c65f19ba51301b38ce16cee825bda0b65a6a3fb9d3917",
-      "cnSha256": "fe73d3c388b1e779c2733307941860edfb8b12c2433907e1a7a4c9f64ebbf23d",
-      "simplifiedJsonSha256": "fe73d3c388b1e779c2733307941860edfb8b12c2433907e1a7a4c9f64ebbf23d",
+      "cnSha256": "463e04df95736a62f545c3d0f0f0e93dcb2b68267661744157cc97c4f130d5fa",
+      "simplifiedJsonSha256": "463e04df95736a62f545c3d0f0f0e93dcb2b68267661744157cc97c4f130d5fa",
       "eventCount": 78,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 56,
+      "dictionaryFallbackSpeakerEvents": 12,
+      "narrationSpeakerEvents": 10,
+      "canonicalNameFields": true
     },
     {
       "source": "character_natsuki_7.json",
@@ -223,10 +286,17 @@
       "twPath": "3_Character/character_natsuki_7/character_natsuki_7.json",
       "twSha256": "fbacf23a11622605ff0eeec53b7466f4056684eb27a9267357b7a11a99e1221f",
       "jpSha256": "a44247a96985f9c0916e2b900b27738e6624cf806b224b6bf62ff007c26b3e23",
-      "cnSha256": "eb639fe9067798d766964b25b8b49c8f2481f4fc0198c5869946030cc59a4a72",
-      "simplifiedJsonSha256": "eb639fe9067798d766964b25b8b49c8f2481f4fc0198c5869946030cc59a4a72",
+      "cnSha256": "c08a680335ab9a5d7d27b8b07ead689e01c980aa3353dbce10f6ca7b80348744",
+      "simplifiedJsonSha256": "c08a680335ab9a5d7d27b8b07ead689e01c980aa3353dbce10f6ca7b80348744",
       "eventCount": 67,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "official_tw_name_column_tw2sp",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 43,
+      "dictionaryFallbackSpeakerEvents": 15,
+      "narrationSpeakerEvents": 9,
+      "canonicalNameFields": true
     }
   ],
   "sourceTreeSha256": "b1bd110f693ea667702a7e1581162185c7bda926b1abca50db3eb2b6c0347826",
@@ -428,5 +498,28 @@
     "scenarioTreeSha256": "0b777d9ab140471e9a78cc6748137da3b835b35f8199f527791b864aaf725cbb",
     "manifestCatalogSha256": "69e85663946af90805c5c50914fa4a35362b806183622b4ff11759bdcdb691e7",
     "manifestTreeSha256": "cb842d11582ec9c6877d36c34d41c9be38567548c24f0e06bc149f15d6fd9985"
+  },
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  },
+  "currentTextCertification": {
+    "version": 1,
+    "jpSha256": "3c58fb26454708e53625b8440ad8924fc48bbe6dbb472e37861b8ccfec2d438f",
+    "cnSha256": "265724a739a2e53dc41cf2863ed82e7f47fa57728d405fd59390f98d6354242b",
+    "sectionCount": 8,
+    "speakerSequencesMayDiffer": true
+  },
+  "authenticTwCertification": {
+    "version": 1,
+    "schemaSource": "official_tw_json",
+    "structurePolicy": "same-section-source-count-action-row",
+    "speakerPolicy": "official_tw_name_column_tw2sp",
+    "twSchemaPreserved": true,
+    "sourceCount": 8,
+    "sectionCount": 8
   }
 }

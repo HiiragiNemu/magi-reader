@@ -155,10 +155,11 @@ test('edited Magia Record JSON changes only visible text/name cells', () => {
   assert.deepEqual(objectKeysShape(output), objectKeysShape(magirecoDocument));
 });
 
-test('edited Exedra JSON changes only Comment cells and preserves playback columns', () => {
+test('edited Exedra JSON localizes every Name cell and preserves playback columns', () => {
   const filename = 'character_iroha_1.json';
   const originalLines = linesFrom(exedraDocument, filename);
   const edited = cloneLines(originalLines);
+  edited[0].speaker = '环彩羽';
   edited[0].text = '你好';
   edited[1].text = '风吹过街道';
 
@@ -171,16 +172,18 @@ test('edited Exedra JSON changes only Comment cells and preserves playback colum
   const output = JSON.parse(result.json) as typeof exedraDocument;
   const rows = output.sheetList[0].contentRowList;
 
-  assert.equal(result.changedTextFields, 2);
+  assert.equal(result.changedTextFields, 4);
+  assert.equal(rows[0].cellList[1], '环彩羽');
+  assert.equal(rows[1].cellList[1], '环彩羽');
   assert.equal(rows[1].cellList[2], '你好');
+  assert.equal(rows[2].cellList[1], '');
   assert.equal(rows[2].cellList[2], '风吹过街道');
-  assert.deepEqual(rows[1].cellList.slice(0, 2), ['Talk', '環いろは']);
   assert.deepEqual(rows[1].cellList.slice(3), ['adv_1001', 'Left', 'Talk', 'cv_1']);
-  assert.deepEqual(rows[0], exedraDocument.sheetList[0].contentRowList[0]);
+  assert.deepEqual(rows[0].cellList.slice(2), ['', 'adv_1001', 'Left', 'Idle', '']);
   assert.deepEqual(objectKeysShape(output), objectKeysShape(exedraDocument));
 });
 
-test('edited JSON fails closed on count, branch, position and speaker mismatches', () => {
+test('edited JSON fails closed on count, branch and position mismatches', () => {
   const magiaFilename = '310011-1.json';
   const magiaLines = linesFrom(magirecoDocument, magiaFilename);
   assert.throws(
@@ -223,18 +226,6 @@ test('edited JSON fails closed on count, branch, position and speaker mismatches
     /动作、位置、分支或来源结构/u,
   );
 
-  const exedraFilename = 'character_iroha_1.json';
-  const changedSpeaker = cloneLines(linesFrom(exedraDocument, exedraFilename));
-  changedSpeaker[0].speaker = '错误角色';
-  assert.throws(
-    () => createEditedScenarioJsonDownload({
-      sourceJson: JSON.stringify(exedraDocument),
-      sourceFilename: exedraFilename,
-      storyId: 'character_iroha',
-      editedLines: changedSpeaker,
-    }),
-    /Exedra 说话人身份不可修改/u,
-  );
 });
 
 test('context-derived speaker edits are rejected instead of adding schema fields', () => {

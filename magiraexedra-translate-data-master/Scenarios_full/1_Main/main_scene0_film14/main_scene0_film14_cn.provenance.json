@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "c4415fc1412c77efd492bf768783ae0782345ef290cca224ac8995260f964985",
-  "cnSha256": "2e402c77f3860f8423d37f78851033719f96cefa5aa1fc620b5ca53a9b4b6ab0",
+  "cnSha256": "437f0498846bf1d98de48719e4f92ca9ae1eeab315ffbb900139c9a79c9c3f5e",
   "chapterTitle": "后篇 · 爱生眩的记忆 后篇",
   "sections": [
     {
@@ -104,10 +107,17 @@
       "twPath": "1_Main/main_scene0_film14_1/main_scene0_film14_1.json",
       "twSha256": "4e94c1cee104e390a66260a202765965c55afe0d25495f47a4a60bb541e1037e",
       "jpSha256": "4e94c1cee104e390a66260a202765965c55afe0d25495f47a4a60bb541e1037e",
-      "cnSha256": "0b20e82b6abd54521f9e16295ce8d47759a44704842379512a917b35e179a7c0",
-      "simplifiedJsonSha256": "0b20e82b6abd54521f9e16295ce8d47759a44704842379512a917b35e179a7c0",
+      "cnSha256": "cda7de95e75ab62a2a101e356f9960c8023ec214e5584cdbe32610aad6d792d8",
+      "simplifiedJsonSha256": "cda7de95e75ab62a2a101e356f9960c8023ec214e5584cdbe32610aad6d792d8",
       "eventCount": 86,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 78,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 8,
+      "canonicalNameFields": true
     },
     {
       "source": "main_scene0_film14_2.json",
@@ -115,10 +125,17 @@
       "twPath": "1_Main/main_scene0_film14_2/main_scene0_film14_2.json",
       "twSha256": "4510ab7fee33a2e02c844ac6fa49ddc9618d66037bbeabdac0dce0e58e4942ef",
       "jpSha256": "4510ab7fee33a2e02c844ac6fa49ddc9618d66037bbeabdac0dce0e58e4942ef",
-      "cnSha256": "39064edc68005f166a0e209281dc95a1dc523c3c8a86574dde4589374e2215e2",
-      "simplifiedJsonSha256": "39064edc68005f166a0e209281dc95a1dc523c3c8a86574dde4589374e2215e2",
+      "cnSha256": "781d0ce33f537bc1b4845a8b455019e37a4fe63dca20e565f94e1ea9234404a8",
+      "simplifiedJsonSha256": "781d0ce33f537bc1b4845a8b455019e37a4fe63dca20e565f94e1ea9234404a8",
       "eventCount": 137,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 133,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 4,
+      "canonicalNameFields": true
     },
     {
       "source": "main_scene0_film14_3.json",
@@ -129,7 +146,21 @@
       "cnSha256": "955a1d4d0a5b26a64d4ded62ae7d0dcd2d237d8d9791b80767338e6e59a157bc",
       "simplifiedJsonSha256": "955a1d4d0a5b26a64d4ded62ae7d0dcd2d237d8d9791b80767338e6e59a157bc",
       "eventCount": 0,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 0,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }

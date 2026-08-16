@@ -235,7 +235,7 @@ test('isolated Exedra V4 deployment verifies search chunks, revision, voice syst
   assert.match(workflow, /Smoke-test bounded voice playback assets/u);
   assert.match(workflow, /api\/audio\/magireco-voice\/vo_char_3031_00_01/u);
   assert.match(workflow, /Origin: \$site_url/u);
-  assert.match(workflow, /access-control-allow-origin/u);
+  assert.match(workflow, /cross-origin-resource-policy: same-origin/u);
   assert.match(workflow, /audio\/exedra-local\/cv_namae_call_01\.ogg/u);
   assert.match(workflow, /audio\/hca_wasm_bg\.wasm/u);
   assert.match(workflow, /VOICE_ASSETS_OK/u);

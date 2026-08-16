@@ -4,6 +4,9 @@
   "provenance": "official_tw_human",
   "machineTranslation": false,
   "officialTw": true,
+  "schemaSource": "official_tw_json",
+  "speakerPolicy": "official_tw_name_column_tw2sp",
+  "twSchemaPreserved": true,
   "sourceProvider": "exedra-wiki-sp",
   "sourceContract": {
     "schemaVersion": 1,
@@ -29,7 +32,7 @@
   "manifestTreeSha256": "96f14c07aa3026b5870b5fa06b0f220e53898ce906adbe80970bdf373dd39fae",
   "generatedAt": "2026-08-15T18:01:18.924446+00:00",
   "jpSha256": "6c1c5026e89aa03c71b2c3c8e02a42464f1655d73b7ee42b153f33dc50e37f1a",
-  "cnSha256": "131d862e1d62b4a27d8a1084fa3416a3c8cb26e636d2ea5c2ea7c550a15a5202",
+  "cnSha256": "3bd6b407ad2af0ad288076b4d87f97d28007867749c30cdd7c317f4b86a2b188",
   "chapterTitle": "",
   "sections": [
     {
@@ -80,10 +83,17 @@
       "twPath": "4_Portrait/portrait_swimwear2025_madoka_1/portrait_swimwear2025_madoka_1.json",
       "twSha256": "d39b55449dd25cd7316c7d06efc241f8157b4383cda3bb50cfd2ae44ca4158d7",
       "jpSha256": "ccf5e588578c11346a00ea6af994f540a7bd7124a356f9eadcc87e14e5beceb0",
-      "cnSha256": "3a6ba39c156ba54e89fd7fd728f6f876fdaf9b00d22a2dec74d5bd82e94513f9",
-      "simplifiedJsonSha256": "3a6ba39c156ba54e89fd7fd728f6f876fdaf9b00d22a2dec74d5bd82e94513f9",
+      "cnSha256": "2faac7d2e641cc3e72fac7b11590dfc38645410b671e99628fa081953b437b91",
+      "simplifiedJsonSha256": "2faac7d2e641cc3e72fac7b11590dfc38645410b671e99628fa081953b437b91",
       "eventCount": 36,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 34,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 2,
+      "canonicalNameFields": true
     },
     {
       "source": "portrait_swimwear2025_madoka_2.json",
@@ -91,10 +101,24 @@
       "twPath": "4_Portrait/portrait_swimwear2025_madoka_2/portrait_swimwear2025_madoka_2.json",
       "twSha256": "8cf455415c6139cfbab413bf58af26708edc0852899a0c6dae5e559acaf90ea5",
       "jpSha256": "f5cad9966fada047418527b33d57e72e10f06f2671783fafc3cdbbb1453917bd",
-      "cnSha256": "b8bd18797ed91fcc59ebf6e4bcc61d2080f0032c382e585bd1eb06cebcf8178f",
-      "simplifiedJsonSha256": "b8bd18797ed91fcc59ebf6e4bcc61d2080f0032c382e585bd1eb06cebcf8178f",
+      "cnSha256": "c0e652c7b1343987235a82fb4be2565831f887086873457b88ee46fce93d436a",
+      "simplifiedJsonSha256": "c0e652c7b1343987235a82fb4be2565831f887086873457b88ee46fce93d436a",
       "eventCount": 62,
-      "provenance": "official_tw_human"
+      "provenance": "official_tw_human",
+      "schemaSource": "official_tw_json",
+      "speakerPolicy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+      "twSchemaPreserved": true,
+      "officialTwSpeakerEvents": 62,
+      "dictionaryFallbackSpeakerEvents": 0,
+      "narrationSpeakerEvents": 0,
+      "canonicalNameFields": true
     }
-  ]
+  ],
+  "speakerCanonicalization": {
+    "policy": "dictionary.ts-exact-or-unambiguous-canonical-chinese",
+    "dictionarySha256": "68d0beaf9058068297e0a827899d3377842a3594a1205b1de84bcac9b9b62835",
+    "txtSpeakerLabelsChanged": 0,
+    "jsonNameCellsChanged": 0,
+    "allJsonNameColumnsCanonicalized": true
+  }
 }
