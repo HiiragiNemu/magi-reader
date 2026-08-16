@@ -75,6 +75,48 @@ def main() -> int:
         new_loop,
         "replace class loop",
     )
+
+    # V26 styles are deliberately appended to ui-refinements.css, which is
+    # imported after globals.css. Point only the new V26 assertions at that
+    # stylesheet; all pre-existing globals.css contracts remain unchanged.
+    reader_css_source = '''  const [reader, css] = await Promise.all([
+    readFile(readerPath, 'utf8'),
+    readFile(cssPath, 'utf8'),
+  ]);
+  assert.match(reader, /pageCount > 1'''
+    reader_css_refinements = '''  const [reader, css] = await Promise.all([
+    readFile(readerPath, 'utf8'),
+    readFile(new URL('../app/ui-refinements.css', import.meta.url), 'utf8'),
+  ]);
+  assert.match(reader, /pageCount > 1'''
+    source = replace_once(
+        source,
+        reader_css_source,
+        reader_css_refinements,
+        "point V26 Reader test at refinements stylesheet",
+    )
+
+    home_test_start = '''test('home search grows from a compact measured width before other mobile controls', () => {
+  assert.match(page, /compactSearchCharacters/u);'''
+    home_test_start_fixed = '''test('home search grows from a compact measured width before other mobile controls', () => {
+  const refinements = readFileSync(
+    path.resolve('app', 'ui-refinements.css'),
+    'utf8',
+  );
+  assert.match(page, /compactSearchCharacters/u);'''
+    source = replace_once(
+        source,
+        home_test_start,
+        home_test_start_fixed,
+        "load refinements stylesheet in V26 home test",
+    )
+    source = replace_once(
+        source,
+        r"  assert.match(css, /\\.magi-home-search-shell\\s*\\{[\\s\\S]*--magi-home-search-width/u);",
+        r"  assert.match(refinements, /\\.magi-home-search-shell\\s*\\{[\\s\\S]*--magi-home-search-width/u);",
+        "assert V26 home search against refinements stylesheet",
+    )
+
     TARGET.write_text(source, encoding="utf-8", newline="\n")
     print("READER_UI_V26_RUNNER_PATCHED")
     return 0
