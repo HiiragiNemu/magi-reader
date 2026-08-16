@@ -36,7 +36,11 @@ jobs:
           cache-dependency-path: website/package-lock.json
 
       - name: Apply fail-closed Reader UI migration
-        run: python tools/apply_reader_ui_v26.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/patch_reader_ui_v26_runner.py
+          python tools/apply_reader_ui_v26.py
 
       - name: Reject malformed patches
         run: git diff --check
@@ -63,6 +67,7 @@ jobs:
           set -euo pipefail
           rm -f \
             tools/apply_reader_ui_v26.py \
+            tools/patch_reader_ui_v26_runner.py \
             .github/workflows/apply-reader-ui-v26.yml
           git config user.name 'github-actions[bot]'
           git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
