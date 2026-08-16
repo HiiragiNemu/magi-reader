@@ -25,6 +25,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: work/main-only-v30-font-scope
+          token: ${{ secrets.TARGET_REPO_TOKEN || secrets.PROOFREADING_GITHUB_TOKEN || github.token }}
 
       - uses: actions/setup-python@v5
         with:
