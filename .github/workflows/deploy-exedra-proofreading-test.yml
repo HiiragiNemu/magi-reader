@@ -260,7 +260,7 @@ jobs:
           set -euo pipefail
           python tools/search_chunk_delivery.py verify-http --base-url "$SITE_URL"
 
-      - name: Smoke-test deployed revision and official TW story bytes
+      - name: Smoke-test deployed revision and canonical Chinese scenario data
         env:
           SITE_URL: https://${{ env.TEST_WORKER_HOSTNAME }}
         shell: bash
@@ -273,7 +273,7 @@ jobs:
             if [ "$home_code" = 200 ] && [ "$config_code" = 200 ]; then
               if python3 - "$RUNNER_TEMP/config.json" "$GITHUB_SHA" <<'PY'
           import json, sys
-          value = json.load(open(sys.argv[1], encoding="utf-8"))
+          value = json.load(open(sys.argv[1], encoding='utf-8'))
           if value.get('target_branch') != 'EXEDRA-TEST':
               raise SystemExit(1)
           if value.get('source_revision') != sys.argv[2]:
@@ -291,30 +291,53 @@ jobs:
             exit 1
           fi
 
-          sample_path="$(python3 - <<'PY'
-          import json
-          from pathlib import Path
-          stories = json.loads(Path('website/public/story_index.json').read_text(encoding='utf-8'))
-          public = Path('website/public')
-          for story in stories:
-              if not isinstance(story, dict) or story.get('official_tw') is not True:
-                  continue
-              path = story.get('path_cn')
-              if isinstance(path, str) and path.startswith('/data/') and (public / path.lstrip('/')).is_file():
-                  print(path)
-                  break
-          else:
-              raise SystemExit('No official TW public TXT sample was found')
-          PY
-          )"
-          local_sample="website/public/${sample_path#/}"
-          remote_sample="$RUNNER_TEMP/tw-sample.txt"
+          arina_path='/data/exedra_character/character_arina/character_arina_3.json'
+          liz_path='/data/exedra_character/character_liz/character_liz_cn.txt'
           curl --fail --location --silent --show-error \
-            -o "$remote_sample" \
-            "$SITE_URL$sample_path?__revision=$GITHUB_SHA"
-          test "$(sha256sum "$local_sample" | awk '{print $1}')" = \
-               "$(sha256sum "$remote_sample" | awk '{print $1}')"
-          echo "TW_DEPLOY_BYTES_OK revision=$GITHUB_SHA path=$sample_path"
+            -o "$RUNNER_TEMP/arina.json" \
+            "$SITE_URL$arina_path?__revision=$GITHUB_SHA"
+          curl --fail --location --silent --show-error \
+            -o "$RUNNER_TEMP/liz.txt" \
+            "$SITE_URL$liz_path?__revision=$GITHUB_SHA"
+          test "$(sha256sum "website/public${arina_path}" | awk '{print $1}')" = \
+               "$(sha256sum "$RUNNER_TEMP/arina.json" | awk '{print $1}')"
+          test "$(sha256sum "website/public${liz_path}" | awk '{print $1}')" = \
+               "$(sha256sum "$RUNNER_TEMP/liz.txt" | awk '{print $1}')"
+
+          python3 - "$RUNNER_TEMP/arina.json" "$RUNNER_TEMP/liz.txt" <<'PY'
+          import json
+          import re
+          import sys
+
+          arina = json.load(open(sys.argv[1], encoding='utf-8'))
+          names = []
+          for sheet in arina.get('sheetList', []):
+              headers = sheet.get('headerRow', {}).get('cellList', [])
+              if 'ActionType' not in headers or 'Name' not in headers:
+                  continue
+              action_index = headers.index('ActionType')
+              name_index = headers.index('Name')
+              for row in sheet.get('contentRowList', []):
+                  cells = row.get('cellList', [])
+                  if max(action_index, name_index) >= len(cells):
+                      continue
+                  action = str(cells[action_index] or '').casefold()
+                  if action not in {'talk', 'narration', 'charactertalk', 'onlytext'}:
+                      continue
+                  name = str(cells[name_index] or '').strip()
+                  if name:
+                      names.append(name)
+          if '阿莉娜·格雷' not in names:
+              raise SystemExit(f'Canonical authentic TW name missing: {names[:20]}')
+          if any(re.search(r'[\u3040-\u30ff]', name) for name in names):
+              raise SystemExit(f'Japanese speaker remains in TW JSON: {names[:20]}')
+          liz = open(sys.argv[2], encoding='utf-8').read()
+          if '莉兹·霍克伍德：' not in liz:
+              raise SystemExit('Canonical retained-human Liz speaker is missing')
+          if 'リズ・ホークウッド：' in liz:
+              raise SystemExit('Japanese speaker remains in retained-human Liz TXT')
+          print(f'CANONICAL_CN_DEPLOY_OK arina_names={len(names)}')
+          PY
 
       - name: Smoke-test bounded voice playback assets
         env:
@@ -333,7 +356,7 @@ jobs:
             echo "Magia Record voice endpoint returned $voice_code" >&2
             exit 1
           fi
-          grep -qi 'access-control-allow-origin' "$headers"
+          grep -qi '^cross-origin-resource-policy: same-origin' "$headers"
           curl --fail --location --silent --show-error \
             -o "$RUNNER_TEMP/exedra.ogg" \
             "$site_url/audio/exedra-local/cv_namae_call_01.ogg"
@@ -344,4 +367,4 @@ jobs:
           test -s "$RUNNER_TEMP/hca.wasm"
           echo "VOICE_ASSETS_OK"
 
-# TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V4
+# AUTHENTIC_TW_CANONICAL_CN_DEPLOY_V1
