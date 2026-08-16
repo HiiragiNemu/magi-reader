@@ -40,6 +40,25 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('tools/apply_main_only_v30.py')
+          source = path.read_text(encoding='utf-8')
+          old = '''    replace_once(
+                  HOME,
+                  'className="magi-home-search-snippet mt-0.5',
+                  'className="magi-home-search-snippet reader-font-cn-body mt-0.5',
+              )'''
+          new = '''    replace_once(
+                  HOME,
+                  'className={`px-2 py-1.5 text-xs font-serif border-t ${',
+                  'className={`magi-home-search-snippet reader-font-cn-body px-2 py-1.5 text-xs font-serif border-t ${',
+              )'''
+          if source.count(old) != 1:
+              raise SystemExit('V30 migration search-snippet patch anchor drifted')
+          path.write_text(source.replace(old, new, 1), encoding='utf-8', newline='\n')
+          PY
           python tools/apply_main_only_v30.py
           git diff --check
           git status --short
