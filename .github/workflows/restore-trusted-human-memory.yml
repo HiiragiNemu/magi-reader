@@ -1,0 +1,321 @@
+name: Restore trusted human translation memory inside the 507-story scope
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - .github/workflows/restore-trusted-human-memory.yml
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: robust-manual-retranslation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    env:
+      CORPUS_ARTIFACT_ID: '9252733254'
+      MEMORY_ARTIFACT_ID: '9252733892'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Download locked corpus and trusted human memory
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/downloads"
+          api="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts"
+          curl --fail --location --retry 4 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            "${api}/${CORPUS_ARTIFACT_ID}/zip" \
+            -o "$RUNNER_TEMP/downloads/corpus.zip"
+          curl --fail --location --retry 4 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            "${api}/${MEMORY_ARTIFACT_ID}/zip" \
+            -o "$RUNNER_TEMP/downloads/memory.zip"
+
+      - name: Apply only unambiguous human-memory entries to untouched machine text
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import copy
+          import gzip
+          import json
+          import re
+          import shutil
+          import tarfile
+          import zipfile
+          from collections import defaultdict
+          from pathlib import Path
+
+          ALLOWED = {
+              'textLeft', 'textRight', 'textCenter', 'narration',
+              'progressNarration', 'textSelect', 'nameLeft', 'nameRight',
+              'nameCenter', 'nameNarration',
+          }
+          TAG_RE = re.compile(r'\[[^\]\r\n]+\]')
+          BRACE_RE = re.compile(r'\{[^{}\r\n]+\}')
+          PRINTF_RE = re.compile(r'%(?:\d+\$)?[-+#0 .\d]*[A-Za-z]')
+          MANUAL_IDS = {
+              '317011','317012','317013','321071','321072','321073',
+              '322011','322012','322013','712011','712012','618501',
+              '627601','634801','635801','710351','710211','710212',
+              '325021','325022','325023','313022','313023','710201',
+              '710142','618901','322021','322022','322023',
+              '518801','518802','518803','518804','518805','518806',
+              '518807','518808','313032','313033',
+          }
+
+          temp = Path('${{ runner.temp }}')
+          downloads = temp / 'downloads'
+          corpus_root = temp / 'trusted-corpus'
+          memory_root = temp / 'trusted-memory'
+          target_root = Path('magireco-translate-data-master/Scenarios_full')
+          for root in (corpus_root, memory_root):
+              shutil.rmtree(root, ignore_errors=True)
+              root.mkdir(parents=True)
+
+          def unpack(source, destination):
+              queue = [(Path(source), Path(destination))]
+              seen = set()
+              while queue:
+                  path, out = queue.pop(0)
+                  key = (str(path), str(out))
+                  if key in seen or not path.is_file():
+                      continue
+                  seen.add(key)
+                  out.mkdir(parents=True, exist_ok=True)
+                  try:
+                      if zipfile.is_zipfile(path):
+                          with zipfile.ZipFile(path) as z:
+                              z.extractall(out)
+                      elif tarfile.is_tarfile(path):
+                          with tarfile.open(path, 'r:*') as t:
+                              t.extractall(out)
+                      elif path.suffix.lower() == '.gz' and not path.name.endswith(('.tar.gz', '.tgz')):
+                          name = path.name[:-3] or path.name + '.out'
+                          with gzip.open(path, 'rb') as src, (out / name).open('wb') as dst:
+                              shutil.copyfileobj(src, dst)
+                      else:
+                          continue
+                  except Exception:
+                      continue
+                  for child in out.rglob('*'):
+                      if child.is_file() and child.name.lower().endswith(('.zip','.tar','.tar.gz','.tgz','.json.gz')):
+                          queue.append((child, child.parent / (child.name.replace('.', '_') + '_unpacked')))
+
+          unpack(downloads / 'corpus.zip', corpus_root)
+          unpack(downloads / 'memory.zip', memory_root)
+
+          def load(path):
+              with path.open(encoding='utf-8-sig') as f:
+                  return json.load(f)
+
+          def strings(node):
+              if isinstance(node, str):
+                  yield node
+              elif isinstance(node, dict):
+                  for key, value in node.items():
+                      yield from strings(key)
+                      yield from strings(value)
+              elif isinstance(node, list):
+                  for value in node:
+                      yield from strings(value)
+
+          def normalize(value):
+              return '/'.join(part for part in str(value).replace('\\','/').lstrip('./').split('/') if part not in ('','.'))
+
+          def scope_rel(raw):
+              parts = normalize(raw).split('/')
+              found = []
+              for start in range(len(parts)):
+                  rel = Path(*parts[start:])
+                  if (target_root / rel).is_file():
+                      found.append(rel)
+              return max(found, key=lambda value: len(value.parts)) if found else None
+
+          scope = set()
+          for index_path in corpus_root.rglob('export-index.json'):
+              try:
+                  data = load(index_path)
+              except Exception:
+                  continue
+              for value in strings(data):
+                  if value.replace('\\','/').endswith('.json'):
+                      rel = scope_rel(value)
+                      if rel is not None:
+                          scope.add(rel)
+          if not 1000 <= len(scope) <= 3000:
+              raise AssertionError(f'invalid locked scope size: {len(scope)}')
+
+          scenario_roots = [p for p in corpus_root.rglob('Scenarios_full') if p.is_dir()]
+          jp_roots = [p for p in scenario_roots if 'source' in p.parent.as_posix().lower()]
+          machine_roots = [p for p in scenario_roots if 'translate' in p.parent.as_posix().lower()]
+          if not jp_roots or not machine_roots:
+              raise FileNotFoundError('corpus Japanese/current roots not found')
+
+          memory_paths = list(memory_root.rglob('trusted_translation_memory.json'))
+          if not memory_paths:
+              for gz_path in memory_root.rglob('trusted_translation_memory.json.gz'):
+                  out = gz_path.with_suffix('')
+                  with gzip.open(gz_path, 'rb') as src, out.open('wb') as dst:
+                      shutil.copyfileobj(src, dst)
+                  memory_paths.append(out)
+          if not memory_paths:
+              raise FileNotFoundError('trusted translation memory not found')
+          memory_data = load(memory_paths[0])
+          raw_mappings = memory_data.get('mappings', []) if isinstance(memory_data, dict) else []
+          grouped = defaultdict(set)
+          for item in raw_mappings:
+              if not isinstance(item, dict):
+                  continue
+              key = item.get('key') or item.get('field')
+              source = item.get('source') or item.get('jp')
+              target = item.get('target') or item.get('zh_cn') or item.get('translation')
+              if key in ALLOWED and isinstance(source, str) and isinstance(target, str):
+                  grouped[(key, source)].add(target)
+          memory = {key: next(iter(values)) for key, values in grouped.items() if len(values) == 1}
+          if len(memory) < 100:
+              raise AssertionError(f'trusted memory too small: {len(memory)}')
+
+          def find_in(roots, rel):
+              for root in roots:
+                  path = root / rel
+                  if path.is_file():
+                      return path
+              return None
+
+          def fields(node, path=()):
+              out = []
+              if isinstance(node, dict):
+                  for key, value in node.items():
+                      child = path + (key,)
+                      if key in ALLOWED:
+                          if not isinstance(value, str):
+                              raise AssertionError(f'non-string field at {child!r}')
+                          out.append((child, key, value))
+                      else:
+                          out.extend(fields(value, child))
+              elif isinstance(node, list):
+                  for index, value in enumerate(node):
+                      out.extend(fields(value, path + (index,)))
+              return out
+
+          def assign(node, path, value):
+              cur = node
+              for part in path[:-1]:
+                  cur = cur[part]
+              cur[path[-1]] = value
+
+          def compare_non_text(before, after, path=()):
+              if type(before) is not type(after):
+                  raise AssertionError(f'type changed at {path!r}')
+              if isinstance(before, dict):
+                  if list(before.keys()) != list(after.keys()):
+                      raise AssertionError(f'keys changed at {path!r}')
+                  for key in before:
+                      if key not in ALLOWED:
+                          compare_non_text(before[key], after[key], path + (key,))
+              elif isinstance(before, list):
+                  if len(before) != len(after):
+                      raise AssertionError(f'length changed at {path!r}')
+                  for index, (left, right) in enumerate(zip(before, after)):
+                      compare_non_text(left, right, path + (index,))
+              elif before != after:
+                  raise AssertionError(f'non-text value changed at {path!r}')
+
+          report = {
+              'schema_version': 1,
+              'scope_files': len(scope),
+              'trusted_memory_entries': len(memory),
+              'changed_files': 0,
+              'changed_fields': 0,
+              'skipped_manual_files': 0,
+              'skipped_already_modified_fields': 0,
+              'skipped_unsafe_fields': 0,
+          }
+
+          for rel in sorted(scope, key=lambda value: value.as_posix()):
+              if rel.stem in MANUAL_IDS:
+                  report['skipped_manual_files'] += 1
+                  continue
+              jp_path = find_in(jp_roots, rel)
+              original_path = find_in(machine_roots, rel)
+              current_path = target_root / rel
+              if jp_path is None or original_path is None or not current_path.is_file():
+                  continue
+              jp = load(jp_path)
+              original = load(original_path)
+              current = load(current_path)
+              before = copy.deepcopy(current)
+              jp_fields = fields(jp)
+              original_fields = fields(original)
+              current_fields = fields(current)
+              paths = [path for path, _, _ in jp_fields]
+              if paths != [path for path, _, _ in original_fields] or paths != [path for path, _, _ in current_fields]:
+                  continue
+              file_changes = 0
+              for (path, key, source), (_, _, old_machine), (_, _, current_value) in zip(jp_fields, original_fields, current_fields):
+                  target = memory.get((key, source))
+                  if target is None:
+                      continue
+                  if current_value != old_machine:
+                      report['skipped_already_modified_fields'] += 1
+                      continue
+                  if source.count('@') != target.count('@'):
+                      report['skipped_unsafe_fields'] += 1
+                      continue
+                  if TAG_RE.findall(source) != TAG_RE.findall(target):
+                      report['skipped_unsafe_fields'] += 1
+                      continue
+                  if BRACE_RE.findall(source) != BRACE_RE.findall(target):
+                      report['skipped_unsafe_fields'] += 1
+                      continue
+                  if PRINTF_RE.findall(source) != PRINTF_RE.findall(target):
+                      report['skipped_unsafe_fields'] += 1
+                      continue
+                  if current_value != target:
+                      assign(current, path, target)
+                      file_changes += 1
+              compare_non_text(before, current, (rel.as_posix(),))
+              if file_changes:
+                  current_path.write_text(json.dumps(current, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+                  load(current_path)
+                  report['changed_files'] += 1
+                  report['changed_fields'] += file_changes
+
+          Path('manual_retranslation/trusted_human_memory_restore_report.json').write_text(
+              json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8'
+          )
+          print(json.dumps(report, ensure_ascii=False))
+          PY
+
+      - name: Commit restored trusted human text
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'magi-reader translation bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add magireco-translate-data-master/Scenarios_full manual_retranslation/trusted_human_memory_restore_report.json
+          if git diff --cached --quiet; then
+            echo 'No untouched machine fields matched trusted human memory.'
+            exit 0
+          fi
+          git commit -m 'Restore exact trusted human translation memory'
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
