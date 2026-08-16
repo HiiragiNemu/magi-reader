@@ -2,7 +2,8 @@ name: Apply Reader UI V28
 
 on:
   push:
-    branches: [work/reader-ui-v28-floating-widgets]
+    branches:
+      - work/reader-ui-v28-floating-widgets
 
 permissions:
   contents: write
@@ -44,28 +45,26 @@ jobs:
 
           path = Path('tools/apply_reader_ui_v28.py')
           source = path.read_text(encoding='utf-8')
-          old = '''        <main
-'''
-          old += '''
-    replace_between(
-        READER,
-        "          {!loadError && utilityPanelOpen && (\\n",
-        "        <main\\n",
-        utility_widget,
-    )
-'''
-          new = '''
-    replace_between(
-        READER,
-        "          {!loadError && utilityPanelOpen && (\\n",
-        "        <main\\n          className={`magi-reader-main ",
-        utility_widget,
-    )
-'''
+          old = (
+              '    replace_between(\n'
+              '        READER,\n'
+              '        "          {!loadError && utilityPanelOpen && (\\n",\n'
+              '        "        <main\\n",\n'
+              '        utility_widget,\n'
+              '    )\n'
+          )
+          new = (
+              '    replace_between(\n'
+              '        READER,\n'
+              '        "          {!loadError && utilityPanelOpen && (\\n",\n'
+              '        "        <main\\n          className={`magi-reader-main ",\n'
+              '        utility_widget,\n'
+              '    )\n'
+          )
           if source.count(old) != 1:
               raise SystemExit(
-                  'V28 utility migration source anchor is not unique; refusing '
-                  'to guess the final Reader main element'
+                  'V28 utility migration source anchor is not unique; '
+                  'refusing to guess the final Reader main element'
               )
           path.write_text(
               source.replace(old, new, 1),
@@ -73,9 +72,43 @@ jobs:
               newline='\n',
           )
           PY
+
           python tools/apply_reader_ui_v28.py
+
           python - <<'PY'
           from pathlib import Path
+
+          def replace_once(path: Path, old: str, new: str) -> None:
+              source = path.read_text(encoding='utf-8')
+              count = source.count(old)
+              if count != 1:
+                  raise SystemExit(
+                      f'{path} replacement count={count}; expected 1 for {old!r}'
+                  )
+              path.write_text(
+                  source.replace(old, new, 1),
+                  encoding='utf-8',
+                  newline='\n',
+              )
+
+          bilingual = Path('website/tests/bilingual-layout.test.mjs')
+          replace_once(
+              bilingual,
+              '  assert.match(preferences, /DEFAULT_READER_TEXT_WIDTH = 768/u);\n',
+              '  assert.match(preferences, /DEFAULT_READER_TEXT_WIDTH = 1024/u);\n',
+          )
+          replace_once(
+              bilingual,
+              '  assert.match(preferences, /READER_TEXT_WIDTH_MIN = 640/u);\n',
+              '  assert.match(preferences, /READER_TEXT_WIDTH_MIN = 320/u);\n',
+          )
+
+          visual = Path('website/tests/reader-visual-controls.test.mjs')
+          replace_once(
+              visual,
+              '  assert.match(reader, /aria-label="关闭阅读导航栏"/);\n',
+              '  assert.match(reader, /aria-label="收起阅读导航"/);\n',
+          )
 
           reader = Path('website/app/reader/[id]/page.tsx')
           source = reader.read_text(encoding='utf-8')
@@ -83,8 +116,12 @@ jobs:
               raise SystemExit('V28 generated a duplicated Reader main marker')
           if source.count('className={`magi-reader-main ') != 1:
               raise SystemExit('V28 Reader main element count is not exactly one')
-          if source.index('const renderList = useMemo(') > source.index('magi-reader-utility-widget'):
-              raise SystemExit('V28 floating utility was emitted before render state declarations')
+          if source.index('const renderList = useMemo(') > source.index(
+              'magi-reader-utility-widget'
+          ):
+              raise SystemExit(
+                  'V28 floating utility was emitted before render state declarations'
+              )
 
           css = Path('website/app/ui-refinements.css')
           css.write_text(
@@ -93,6 +130,7 @@ jobs:
               newline='\n',
           )
           PY
+
           git diff --check
           git status --short
 
