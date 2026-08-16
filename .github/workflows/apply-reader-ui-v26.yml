@@ -57,6 +57,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
+          # A clean checkout intentionally does not contain the 70+ MiB search
+          # payloads. Rebuild them from the committed story_index, prove that the
+          # small publication manifests stay byte-identical, and only then
+          # materialize their content-addressed physical chunks.
+          for scope in magireco exedra; do
+            cp "website/public/search_index_manifest.$scope.json" \
+              "$RUNNER_TEMP/search_index_manifest.$scope.committed.json"
+          done
+          python tools/build_split_search_indexes.py
+          python tools/build_split_search_indexes.py --validate-only
+          for scope in magireco exedra; do
+            cmp \
+              "$RUNNER_TEMP/search_index_manifest.$scope.committed.json" \
+              "website/public/search_index_manifest.$scope.json"
+          done
+
           python tools/search_chunk_delivery.py materialize
           python tools/search_chunk_delivery.py verify-tree --root website/public
           npm --prefix website run build:worker
