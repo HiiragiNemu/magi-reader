@@ -1,0 +1,70 @@
+name: Patch Authentic TW Test Contract
+
+on:
+  push:
+    branches: [EXEDRA-TEST]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: patch-authentic-tw-test-contract
+  cancel-in-progress: true
+
+jobs:
+  patch:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(
+        github.event.head_commit.message,
+        '[tw-status] Patch authentic TW test contract'
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: EXEDRA-TEST
+
+      - name: Replace legacy deployment contract marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          old = "assert.match(workflow, /TW_SIMPLIFIED_SEARCH_ATOMIC_DEPLOY_V4/u);"
+          new = "assert.match(workflow, /AUTHENTIC_TW_CANONICAL_CN_DEPLOY_V1/u);"
+          paths = (
+              Path('website/tests/cloudflare-deployment.test.mjs'),
+              Path('website/tests/proofreading-workflow.test.mjs'),
+          )
+          for path in paths:
+              source = path.read_text(encoding='utf-8')
+              if source.count(old) != 1:
+                  raise SystemExit(
+                      f'{path}: expected exactly one legacy marker, found '
+                      f'{source.count(old)}'
+                  )
+              path.write_text(
+                  source.replace(old, new, 1),
+                  encoding='utf-8',
+                  newline='\n',
+              )
+          print('AUTHENTIC_TW_TEST_CONTRACT_PATCHED')
+          PY
+
+      - name: Commit and trigger isolated test deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
+          git add \
+            website/tests/cloudflare-deployment.test.mjs \
+            website/tests/proofreading-workflow.test.mjs
+          git diff --cached --check
+          git commit -m '[tw-materialized] Align tests with authentic TW deployment contract'
+          git push origin HEAD:EXEDRA-TEST
