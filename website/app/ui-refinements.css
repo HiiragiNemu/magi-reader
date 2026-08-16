@@ -1832,3 +1832,186 @@
     transition: none;
   }
 }
+
+
+/* =========================================
+   Reader UI V30 — global game-font scope and Exedra whole-UI font skin
+   ========================================= */
+
+/* 腾祥智黑 covers all site UI when the Chinese game-font bundle is active. */
+html[data-reader-font-chinese='ready'] .magi-site-font-scope,
+html[data-reader-font-chinese='ready'] .magi-site-font-scope :where(
+  button,
+  input,
+  textarea,
+  select,
+  option,
+  summary,
+  label,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-serif,
+  .font-sans,
+  .font-mono
+) {
+  font-family:
+    "MagiReaderGameChineseTitle",
+    "Microsoft YaHei",
+    "Noto Sans SC",
+    system-ui,
+    sans-serif !important;
+}
+
+/* 腾祥嘉丽大圆 remains the Chinese story/proofreading prose face. */
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-cn-body,
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-cn-body *,
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .magi-translation-textarea,
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .magi-translation-linebreak-overlay,
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .magi-home-search-snippet {
+  font-family:
+    "MagiReaderGameChineseBody",
+    "Microsoft YaHei",
+    "Noto Sans SC",
+    system-ui,
+    sans-serif !important;
+}
+
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-cn-title,
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-cn-title *,
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .magi-reader-speaker-label,
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .magi-translation-speaker-input {
+  font-family:
+    "MagiReaderGameChineseTitle",
+    "Microsoft YaHei",
+    "Noto Sans SC",
+    system-ui,
+    sans-serif !important;
+}
+
+/* Chinese UI fonts must not leak into Japanese story rows. */
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-jp-body,
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-jp-body * {
+  font-family:
+    "Yu Gothic",
+    "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP",
+    sans-serif !important;
+}
+
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-jp-title,
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-jp-title * {
+  font-family:
+    "Yu Gothic",
+    "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP",
+    sans-serif !important;
+}
+
+html[data-reader-font-japanese='ready'] .magi-site-font-scope .reader-font-jp-body,
+html[data-reader-font-japanese='ready'] .magi-site-font-scope .reader-font-jp-body * {
+  font-family:
+    "MagiReaderGameJapaneseBody",
+    "Yu Gothic",
+    "Noto Sans JP",
+    sans-serif !important;
+}
+
+html[data-reader-font-japanese='ready'] .magi-site-font-scope .reader-font-jp-title,
+html[data-reader-font-japanese='ready'] .magi-site-font-scope .reader-font-jp-title * {
+  font-family:
+    "MagiReaderGameJapaneseTitle",
+    "Yu Gothic",
+    "Noto Sans JP",
+    sans-serif !important;
+}
+
+/* 猫啃网糖圆体 is a whole-UI Exedra skin, including Chinese prose. */
+html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope,
+html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope :where(
+  button,
+  input,
+  textarea,
+  select,
+  option,
+  summary,
+  label,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-serif,
+  .font-sans,
+  .font-mono,
+  .reader-font-cn-body,
+  .reader-font-cn-title,
+  .magi-reader-speaker-label,
+  .magi-translation-speaker-input,
+  .magi-translation-textarea,
+  .magi-translation-linebreak-overlay,
+  .magi-home-search-snippet
+) {
+  font-family:
+    "MagiReaderExedraTangYuan",
+    "Resource Han Rounded CN",
+    "Noto Sans SC",
+    system-ui,
+    sans-serif !important;
+}
+
+/* Preserve Japanese language roles after the whole-Exedra UI override. */
+html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope .reader-font-jp-body,
+html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope .reader-font-jp-body *,
+html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope .reader-font-jp-title,
+html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope .reader-font-jp-title * {
+  font-family:
+    "Yu Gothic",
+    "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP",
+    sans-serif !important;
+}
+
+html[data-reader-font-japanese='ready'][data-exedra-font-tang-yuan='ready']
+  .magi-exedra-ui-scope .reader-font-jp-body,
+html[data-reader-font-japanese='ready'][data-exedra-font-tang-yuan='ready']
+  .magi-exedra-ui-scope .reader-font-jp-body * {
+  font-family:
+    "MagiReaderGameJapaneseBody",
+    "Yu Gothic",
+    "Noto Sans JP",
+    sans-serif !important;
+}
+
+html[data-reader-font-japanese='ready'][data-exedra-font-tang-yuan='ready']
+  .magi-exedra-ui-scope .reader-font-jp-title,
+html[data-reader-font-japanese='ready'][data-exedra-font-tang-yuan='ready']
+  .magi-exedra-ui-scope .reader-font-jp-title * {
+  font-family:
+    "MagiReaderGameJapaneseTitle",
+    "Yu Gothic",
+    "Noto Sans JP",
+    sans-serif !important;
+}
+
+html[data-exedra-font-tsuku='ready'] .magi-exedra-ui-scope .reader-font-jp-title,
+html[data-exedra-font-tsuku='ready'] .magi-exedra-ui-scope .reader-font-jp-title * {
+  font-family:
+    "MagiReaderExedraTsukuOldGothic",
+    "Yu Gothic",
+    "Noto Sans JP",
+    sans-serif !important;
+}
+
+html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-body,
+html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-body * {
+  font-family:
+    "MagiReaderExedraNewCinemaA",
+    "Yu Gothic",
+    "Noto Sans JP",
+    sans-serif !important;
+}

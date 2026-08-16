@@ -410,7 +410,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                     </div>
                     {snippet && (
                       <div
-                        className={`px-2 py-1.5 text-xs font-serif border-t ${
+                        className={`magi-home-search-snippet reader-font-cn-body px-2 py-1.5 text-xs font-serif border-t ${
                           isDark
                             ? 'border-white/10 text-gray-300'
                             : 'border-black/5 text-gray-600'
@@ -1032,7 +1032,7 @@ export default function Home() {
   }
 
   return (
-    <div className={`magi-home-shell flex h-screen h-[100dvh] overflow-hidden ${
+    <div className={`magi-home-shell ${storySystem === 'exedra' ? 'magi-exedra-ui-scope' : ''} flex h-screen h-[100dvh] overflow-hidden ${
       theme === 'light'
         ? 'magi-home-light-root'
         : theme === 'paper'

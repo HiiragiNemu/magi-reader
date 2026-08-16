@@ -49,7 +49,7 @@ export const EXEDRA_FONT_DEFINITIONS: Record<
     family: 'MagiReaderExedraTangYuan',
     label: '猫啃网糖圆体',
     description:
-      'Exedra 简体中文正文；生僻字继续使用 Resource Han Rounded CN / Noto Sans SC。',
+      'Exedra 全部 UI 与简体中文正文；日文剧情仍使用独立日文字体。',
     role: 'zh-Hans',
     url: '/fonts/exedra-zh-tangyuan.0901bb62ccd1.full.woff2',
     bytes: 1_386_160,

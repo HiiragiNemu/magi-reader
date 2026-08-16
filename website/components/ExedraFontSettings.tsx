@@ -170,8 +170,8 @@ export default function ExedraFontSettings({ theme }: { theme: string }) {
         Magia Exedra 字体（按需下载）
       </summary>
       <p className="mt-2 text-[11px] leading-relaxed opacity-70">
-        默认不请求、不启用这些字体。点击后才下载，并且只影响 Exedra
-        对应语言；魔法纪录与另一侧对照语言保持原样。
+        默认不请求、不启用这些字体。猫啃网糖圆体覆盖 Exedra 全部 UI 与简体中文正文；
+        日文剧情仍使用独立日文字体，魔法纪录页面保持原样。
       </p>
 
       <div className="mt-3 space-y-3">

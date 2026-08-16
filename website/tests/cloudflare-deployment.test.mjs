@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -9,12 +9,6 @@ import test from 'node:test';
 const configVerifier = path.resolve('scripts/verify-cloudflare-config.mjs');
 const outputVerifier = path.resolve('scripts/verify-cloudflare-output.mjs');
 const deploymentWorkflow = path.resolve('..', '.github', 'workflows', 'deploy.yml');
-const testDeploymentWorkflow = path.resolve(
-  '..',
-  '.github',
-  'workflows',
-  'deploy-exedra-proofreading-test.yml',
-);
 const placeholder = '00000000000000000000000000000000';
 const realNamespaceId = '0123456789abcdef0123456789abcdef';
 
@@ -214,29 +208,23 @@ test('Pages binding configuration uses the runtime GitHub repository variable', 
   assert.doesNotMatch(script, /PROOFREADING_GITHUB_REPOSITORY:/u);
 });
 
-test('isolated Exedra V4 deployment verifies search chunks, revision, voice systems and decoder', () => {
-  const workflow = readFileSync(testDeploymentWorkflow, 'utf8');
-  assert.match(workflow, /AUTHENTIC_TW_CANONICAL_CN_DEPLOY_V1/u);
-  assert.match(workflow, /startsWith\(github\.event\.head_commit\.message, '\[tw-materialized\]'\)/u);
-  assert.match(workflow, /\?__revision=\$\{GITHUB_SHA\}-\$\{attempt\}/u);
-  assert.match(workflow, /search_chunk_delivery\.py verify-http --base-url/u);
-  assert.match(workflow, /TW_DEPLOY_BYTES_OK/u);
-  assert.match(workflow, /pub-70a248f1a6fe4ca597e7a10f8b95dfd8\.r2\.dev/u);
-  assert.match(workflow, /discover-cloudflare-r2-bucket\.mjs/u);
-  assert.match(workflow, /"binding": "MAGIRECO_VOICE_R2"/u);
-  assert.match(workflow, /"bucket_name": "\$VOICE_R2_BUCKET_NAME"/u);
-  assert.match(
-    workflow,
-    /VOICE_R2_BUCKET_NAME: \$\{\{ steps\.voice_r2\.outputs\.bucket_name \}\}/u,
+test('main-only deployment retires the dedicated Exedra test environment', () => {
+  const retiredWorkflow = path.resolve(
+    '..',
+    '.github',
+    'workflows',
+    'deploy-exedra-proofreading-test.yml',
   );
-  assert.doesNotMatch(workflow, /steps\.voice_r2\.outputs\.bucket_name \|\|/u);
-  assert.match(workflow, /HTTP fallback/u);
-  assert.doesNotMatch(workflow, /wrangler r2 object put/u);
-  assert.match(workflow, /Smoke-test bounded voice playback assets/u);
-  assert.match(workflow, /api\/audio\/magireco-voice\/vo_char_3031_00_01/u);
-  assert.match(workflow, /Origin: \$site_url/u);
-  assert.match(workflow, /cross-origin-resource-policy: same-origin/u);
-  assert.match(workflow, /audio\/exedra-local\/cv_namae_call_01\.ogg/u);
-  assert.match(workflow, /audio\/hca_wasm_bg\.wasm/u);
-  assert.match(workflow, /VOICE_ASSETS_OK/u);
+  const cleanupWorkflow = path.resolve(
+    '..',
+    '.github',
+    'workflows',
+    'retire-exedra-test-environment.yml',
+  );
+  assert.equal(existsSync(retiredWorkflow), false);
+  const cleanup = readFileSync(cleanupWorkflow, 'utf8');
+  assert.match(cleanup, /magireader-exedra-cn-test/u);
+  assert.match(cleanup, /workers\/scripts\/\$TEST_WORKER_NAME/u);
+  assert.match(cleanup, /git push origin --delete/u);
+  assert.match(cleanup, /EXEDRA-TEST/u);
 });

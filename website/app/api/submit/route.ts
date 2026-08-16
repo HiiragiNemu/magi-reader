@@ -296,7 +296,7 @@ export async function POST(request: NextRequest) {
       source_path_jp: validation.submission.sourcePathJp,
       source_identity: validation.submission.sourceIdentity,
       source_revision: env.PROOFREADING_SOURCE_COMMIT?.trim() || 'unknown',
-      target_branch: env.PROOFREADING_TARGET_BRANCH?.trim() || 'EXEDRA-TEST',
+      target_branch: env.PROOFREADING_TARGET_BRANCH?.trim() || 'main',
       submitted_at: now,
       updated_at: now,
       status,

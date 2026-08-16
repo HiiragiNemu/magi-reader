@@ -247,9 +247,9 @@ export const createProofreadingPullRequest = async (
     throw new ProofreadingPullRequestError('缺少可创建 PR 的 GitHub 凭据');
   }
 
-  const targetBranch = record.target_branch || 'EXEDRA-TEST';
-  if (targetBranch !== 'EXEDRA-TEST') {
-    throw new ProofreadingPullRequestError('投稿目标分支不是 EXEDRA-TEST', 'invalid');
+  const targetBranch = record.target_branch || 'main';
+  if (targetBranch !== 'main') {
+    throw new ProofreadingPullRequestError('投稿目标分支不是 main', 'invalid');
   }
   const encodedBranch = encodeURIComponent(targetBranch);
   const reference = await githubRequest<GitReference>(

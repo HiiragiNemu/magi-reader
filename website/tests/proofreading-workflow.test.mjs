@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 
@@ -38,7 +38,7 @@ test('approved reviews create a scoped GitHub pull request', () => {
 
 test('community proofreading PR CI materializes playable JSON before TXT', () => {
   const workflow = read('../.github/workflows/community-proofreading-pr.yml');
-  assert.match(workflow, /branches:\s*\[EXEDRA-TEST\]/u);
+  assert.match(workflow, /branches:\s*\[main\]/u);
   assert.match(workflow, /exactly one canonical TXT/u);
   assert.match(workflow, /magireco-translate-data-master/u);
   assert.match(workflow, /magireco-voice-translate-data-master/u);
@@ -54,24 +54,24 @@ test('community proofreading PR CI materializes playable JSON before TXT', () =>
   assert.match(workflow, /npm run build:worker/u);
 });
 
-test('TW simplified test deployment is isolated, deterministic and chunk-verified', () => {
-  const workflow = read('../.github/workflows/deploy-exedra-proofreading-test.yml');
-  assert.match(workflow, /AUTHENTIC_TW_CANONICAL_CN_DEPLOY_V1/u);
-  assert.match(workflow, /branches:\s*\[EXEDRA-TEST\]/u);
-  assert.match(workflow, /startsWith\(github\.event\.head_commit\.message, '\[tw-materialized\]'\)/u);
-  assert.match(workflow, /magi-submissions-exedra-cn-test/u);
-  assert.match(workflow, /TURNSTILE_SITE_KEY/u);
-  assert.match(workflow, /TURNSTILE_SECRET_KEY/u);
-  assert.match(workflow, /PROOFREADING_TARGET_BRANCH/u);
-  assert.match(workflow, /PROOFREADING_SOURCE_COMMIT/u);
-  assert.match(workflow, /npm run check/u);
-  assert.match(workflow, /build_split_search_indexes\.py/u);
-  assert.match(workflow, /search_chunk_delivery\.py materialize/u);
-  assert.match(workflow, /search_chunk_delivery\.py verify-tree/u);
-  assert.match(workflow, /search_chunk_delivery\.py verify-http --base-url/u);
-  assert.match(workflow, /opennextjs-cloudflare deploy/u);
-  assert.match(workflow, /TW_DEPLOY_BYTES_OK/u);
-  assert.doesNotMatch(workflow, /wrangler r2 object put/u);
+test('main-only proofreading and TW materialization target production main', () => {
+  const retiredWorkflow = path.resolve(
+    '../.github/workflows/deploy-exedra-proofreading-test.yml',
+  );
+  const cleanup = read('../.github/workflows/retire-exedra-test-environment.yml');
+  const materialize = read('../.github/workflows/materialize-tw-official-cn.yml');
+  const configure = read('scripts/configure-pages-project.mjs');
+  assert.equal(existsSync(retiredWorkflow), false);
+  assert.match(cleanup, /magireader-exedra-cn-test/u);
+  assert.match(cleanup, /EXEDRA-TEST/u);
+  assert.match(cleanup, /git push origin --delete/u);
+  assert.match(materialize, /ref:\s*main/u);
+  assert.match(materialize, /git push origin HEAD:main/u);
+  assert.doesNotMatch(materialize, /branches:\s*\[EXEDRA-TEST\]/u);
+  assert.match(
+    configure,
+    /PROOFREADING_TARGET_BRANCH:\s*plainText\('main'\)/u,
+  );
 });
 
 test('review login presents shared team token as the simple default', () => {

@@ -14,7 +14,7 @@ export async function GET() {
         env.SUBMISSIONS_KV && siteKey && env.TURNSTILE_SECRET_KEY?.trim(),
       ),
       turnstile_site_key: siteKey,
-      target_branch: env.PROOFREADING_TARGET_BRANCH?.trim() || 'EXEDRA-TEST',
+      target_branch: env.PROOFREADING_TARGET_BRANCH?.trim() || 'main',
       source_revision: env.PROOFREADING_SOURCE_COMMIT?.trim() || 'unknown',
       github_admin_auth:
         env.PROOFREADING_ALLOW_GITHUB_ADMIN?.trim().toLowerCase() === 'true',

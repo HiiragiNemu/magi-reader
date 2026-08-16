@@ -2,6 +2,9 @@
 
 import { createContext, useContext, useEffect, useSyncExternalStore } from "react";
 
+import { initializeExedraFonts } from "@/lib/exedra-fonts";
+import { initializeReaderFonts } from "@/lib/reader-fonts";
+
 export type Theme = 'light' | 'dark' | 'paper' | 'green';
 
 interface GlobalState {
@@ -100,6 +103,11 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
 
+  useEffect(() => {
+    void initializeReaderFonts();
+    void initializeExedraFonts();
+  }, []);
+
   return (
     <GlobalContext.Provider value={{ theme, setTheme, lastCategory, setLastCategory: setLastCategoryWrapper }}>
       
@@ -110,7 +118,7 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
       <div className="magi-balloon-rain" />
 
       {/* 2. 内容层 */}
-      <div className={`min-h-screen transition-colors duration-300 relative z-0 bg-transparent
+      <div className={`magi-site-font-scope min-h-screen transition-colors duration-300 relative z-0 bg-transparent
         ${theme === 'dark' ? 'text-gray-200' : ''}
         ${theme === 'light' ? 'text-gray-900' : ''}
         ${theme === 'paper' ? 'text-[#4a3b2a]' : ''}

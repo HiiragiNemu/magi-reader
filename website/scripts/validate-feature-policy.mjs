@@ -255,9 +255,9 @@ if (packageJson) {
     '必须执行 Python 编译和回归测试',
   );
   requireCondition(
-    packageJson.scripts?.['deploy:test:direct'] ===
-      'node scripts/deploy-direct.mjs',
-    '必须保留隔离测试 Worker 的直接部署命令',
+    !Object.hasOwn(packageJson.scripts ?? {}, 'deploy:test:direct') &&
+      !Object.hasOwn(packageJson.scripts ?? {}, 'predeploy:test:direct'),
+    'main-only 仓库不得保留隔离测试 Worker 的直接部署命令',
   );
 }
 

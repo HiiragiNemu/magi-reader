@@ -1322,7 +1322,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     !loadError;
 
   return (
-    <div className={`magi-reader-root magi-reader-theme-${theme} flex h-screen h-[100dvh] overflow-hidden ${THEME_STYLES[theme]}`}>
+    <div className={`magi-reader-root ${isExedraStory ? 'magi-exedra-ui-scope' : ''} magi-reader-theme-${theme} flex h-screen h-[100dvh] overflow-hidden ${THEME_STYLES[theme]}`}>
       <Sidebar
         stories={allStories}
         currentId={currentStory?.id ?? id}

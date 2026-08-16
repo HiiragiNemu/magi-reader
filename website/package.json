@@ -23,9 +23,7 @@
     "build:pages": "python ../tools/search_chunk_delivery.py materialize && python ../tools/search_chunk_delivery.py verify-tree --root public && npm run build:worker && python ../tools/search_chunk_delivery.py verify-tree --root .open-next/assets && node scripts/prepare-pages.js",
     "preview": "npm run build:worker && opennextjs-cloudflare preview",
     "deploy:worker": "npm run verify:cloudflare-config && npm run build:worker && opennextjs-cloudflare deploy",
-    "deploy:pages": "npm run build:pages && wrangler pages deploy .pages-deploy",
-    "predeploy:test:direct": "npm run validate:feature && npm run test:python",
-    "deploy:test:direct": "node scripts/deploy-direct.mjs"
+    "deploy:pages": "npm run build:pages && wrangler pages deploy .pages-deploy"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.7",

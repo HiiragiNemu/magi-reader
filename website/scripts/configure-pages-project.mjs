@@ -27,7 +27,7 @@ const envVars = {
   TURNSTILE_ALLOWED_HOSTNAMES: plainText(
     required('TURNSTILE_ALLOWED_HOSTNAMES'),
   ),
-  PROOFREADING_TARGET_BRANCH: plainText('EXEDRA-TEST'),
+  PROOFREADING_TARGET_BRANCH: plainText('main'),
   PROOFREADING_SOURCE_COMMIT: plainText(required('GITHUB_SHA')),
   PROOFREADING_ALLOW_GITHUB_ADMIN: plainText('true'),
   PROOFREADING_GITHUB_REPO: plainText('HiiragiNemu/magi-reader'),

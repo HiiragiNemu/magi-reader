@@ -55,7 +55,7 @@ export const READER_FONT_BUNDLES: Record<
   chinese: {
     id: 'chinese',
     label: '游戏中文字体',
-    description: '正文使用腾祥嘉丽大圆，标题与角色名使用腾祥智黑。',
+    description: '正文使用腾祥嘉丽大圆；标题、角色名与站点 UI 使用腾祥智黑。',
     totalBytes: 11_713_216,
     faces: [
       {

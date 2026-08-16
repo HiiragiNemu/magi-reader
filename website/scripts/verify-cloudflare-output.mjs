@@ -147,7 +147,7 @@ const isValidSearchManifest = (manifest, scope) => {
 const verifyBuiltSearchChunks = (manifest, scope, errors) => {
   const directory = path.join(assetsRoot, 'search-chunks', scope, manifest.sha256);
   // Generic output verification remains backward-compatible with manifest-only
-  // fixtures and non-chunk deployments. The EXEDRA-TEST release pipeline calls
+  // fixtures and non-chunk deployments. The main production pipeline calls
   // search_chunk_delivery.py verify-tree immediately after the build, which is
   // the fail-closed authority that requires every physical chunk to exist.
   if (!existsSync(directory)) return;
