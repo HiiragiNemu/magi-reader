@@ -1,0 +1,427 @@
+name: Restore official TW human translations inside the 507-story scope
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - .github/workflows/restore-official-tw-human-translation.yml
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: robust-manual-retranslation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    env:
+      CORPUS_ARTIFACT_ID: '9252733254'
+      OFFICIAL_ARTIFACT_ID: '9254530236'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Download the locked 507 corpus and official TW zh-CN source
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/downloads"
+          api="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts"
+          curl --fail --location --retry 4 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            "${api}/${CORPUS_ARTIFACT_ID}/zip" \
+            -o "$RUNNER_TEMP/downloads/corpus-artifact.zip"
+
+          if ! curl --fail --location --retry 4 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            "${api}/${OFFICIAL_ARTIFACT_ID}/zip" \
+            -o "$RUNNER_TEMP/downloads/official-artifact.zip"; then
+            release_json="$RUNNER_TEMP/downloads/release.json"
+            curl --fail --location --retry 4 \
+              -H 'Accept: application/vnd.github+json' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/tw-source-zh-cn-2026-08-04" \
+              -o "$release_json"
+            asset_url="$(jq -r '.assets[] | select(.name | test("compact|zh-cn|official"; "i")) | .browser_download_url' "$release_json" | head -n1)"
+            test -n "$asset_url" -a "$asset_url" != null
+            curl --fail --location --retry 4 "$asset_url" -o "$RUNNER_TEMP/downloads/official-artifact.zip"
+          fi
+
+      - name: Restore only exact, structurally aligned official human text
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import copy
+          import gzip
+          import json
+          import re
+          import shutil
+          import tarfile
+          import zipfile
+          from collections import defaultdict
+          from pathlib import Path
+
+          ALLOWED = {
+              'textLeft', 'textRight', 'textCenter', 'narration',
+              'progressNarration', 'textSelect', 'nameLeft', 'nameRight',
+              'nameCenter', 'nameNarration',
+          }
+          TAG_RE = re.compile(r'\[[^\]\r\n]+\]')
+          BRACE_RE = re.compile(r'\{[^{}\r\n]+\}')
+          PRINTF_RE = re.compile(r'%(?:\d+\$)?[-+#0 .\d]*[A-Za-z]')
+          JSON_NAME_RE = re.compile(r'^[0-9]+(?:-[0-9]+)?\.json$')
+          MANUAL_IDS = {
+              '317011','317012','317013','321071','321072','321073',
+              '322011','322012','322013','712011','712012','618501',
+              '627601','634801','635801','710351','710211','710212',
+              '325021','325022','325023','313022','313023','710201',
+              '710142','618901','322021','322022','322023',
+              '518801','518802','518803','518804','518805','518806',
+              '518807','518808','313032','313033',
+          }
+
+          temp = Path('${{ runner.temp }}')
+          downloads = temp / 'downloads'
+          corpus_root = temp / 'corpus-unpacked'
+          official_root = temp / 'official-unpacked'
+          target_root = Path('magireco-translate-data-master/Scenarios_full')
+          for root in (corpus_root, official_root):
+              shutil.rmtree(root, ignore_errors=True)
+              root.mkdir(parents=True)
+
+          def recursively_unpack(source, destination):
+              queue = [(Path(source), Path(destination))]
+              processed = set()
+              while queue:
+                  path, out = queue.pop(0)
+                  key = (str(path.resolve()), str(out.resolve()))
+                  if key in processed or not path.is_file():
+                      continue
+                  processed.add(key)
+                  out.mkdir(parents=True, exist_ok=True)
+                  try:
+                      if zipfile.is_zipfile(path):
+                          with zipfile.ZipFile(path) as archive:
+                              archive.extractall(out)
+                      elif tarfile.is_tarfile(path):
+                          with tarfile.open(path, 'r:*') as archive:
+                              archive.extractall(out)
+                      elif path.suffix.lower() == '.gz' and not path.name.endswith(('.tar.gz', '.tgz')):
+                          name = path.name[:-3] or (path.name + '.out')
+                          with gzip.open(path, 'rb') as src, (out / name).open('wb') as dst:
+                              shutil.copyfileobj(src, dst)
+                      else:
+                          continue
+                  except (OSError, EOFError, tarfile.TarError, zipfile.BadZipFile):
+                      continue
+                  for child in out.rglob('*'):
+                      if not child.is_file():
+                          continue
+                      lower = child.name.lower()
+                      if lower.endswith(('.zip', '.tar', '.tar.gz', '.tgz', '.json.gz')) or child.suffix.lower() == '.gz':
+                          sub = child.parent / (child.name.replace('.', '_') + '_unpacked')
+                          queue.append((child, sub))
+
+          recursively_unpack(downloads / 'corpus-artifact.zip', corpus_root)
+          recursively_unpack(downloads / 'official-artifact.zip', official_root)
+
+          def load_json(path):
+              with path.open(encoding='utf-8-sig') as f:
+                  return json.load(f)
+
+          def walk_strings(node):
+              if isinstance(node, str):
+                  yield node
+              elif isinstance(node, dict):
+                  for key, value in node.items():
+                      yield from walk_strings(key)
+                      yield from walk_strings(value)
+              elif isinstance(node, list):
+                  for value in node:
+                      yield from walk_strings(value)
+
+          def normalize_rel(value):
+              value = str(value).replace('\\', '/').lstrip('./')
+              parts = [part for part in value.split('/') if part not in ('', '.')]
+              return '/'.join(parts)
+
+          def existing_scope_path(raw):
+              norm = normalize_rel(raw)
+              parts = norm.split('/')
+              candidates = []
+              for start in range(len(parts)):
+                  rel = Path(*parts[start:])
+                  if (target_root / rel).is_file():
+                      candidates.append(rel)
+              if not candidates:
+                  return None
+              return max(candidates, key=lambda p: len(p.parts))
+
+          scope = set()
+          for index_path in corpus_root.rglob('export-index.json'):
+              try:
+                  data = load_json(index_path)
+              except Exception:
+                  continue
+              for value in walk_strings(data):
+                  if value.replace('\\', '/').endswith('.json'):
+                      rel = existing_scope_path(value)
+                      if rel is not None:
+                          scope.add(rel)
+          if not 1000 <= len(scope) <= 3000:
+              raise AssertionError(f'locked candidate scope is invalid: {len(scope)} files')
+
+          jp_roots = [
+              p for p in corpus_root.rglob('Scenarios_full')
+              if p.is_dir() and 'source' in p.parent.as_posix().lower()
+          ]
+          if not jp_roots:
+              jp_roots = [p for p in corpus_root.rglob('Scenarios_full') if p.is_dir()]
+          if not jp_roots:
+              raise FileNotFoundError('Japanese Scenarios_full root not found in corpus')
+
+          def find_jp(rel):
+              for root in jp_roots:
+                  path = root / rel
+                  if path.is_file():
+                      return path
+              return None
+
+          records = defaultdict(list)
+
+          def register(key, payload, origin):
+              if not isinstance(payload, (dict, list)):
+                  return
+              norm = normalize_rel(key)
+              if not norm:
+                  return
+              records[norm].append((payload, str(origin)))
+
+          def harvest(node, origin, depth=0):
+              if depth > 12:
+                  return
+              if isinstance(node, dict):
+                  path_value = None
+                  for key in ('relative_path', 'path', 'file', 'filename', 'scenario_path', 'json_path'):
+                      value = node.get(key)
+                      if isinstance(value, str) and (value.endswith('.json') or JSON_NAME_RE.match(Path(value).name)):
+                          path_value = value
+                          break
+                  if path_value is not None:
+                      for key in ('content', 'data', 'json', 'scenario', 'payload', 'value', 'texts', 'translations'):
+                          payload = node.get(key)
+                          if isinstance(payload, (dict, list)):
+                              register(path_value, payload, origin)
+                              break
+                  for key, value in node.items():
+                      if isinstance(key, str) and (key.endswith('.json') or JSON_NAME_RE.match(Path(key).name)) and isinstance(value, (dict, list)):
+                          register(key, value, origin)
+                      if isinstance(value, (dict, list)):
+                          harvest(value, origin, depth + 1)
+              elif isinstance(node, list):
+                  for value in node:
+                      if isinstance(value, (dict, list)):
+                          harvest(value, origin, depth + 1)
+
+          for path in official_root.rglob('*'):
+              if not path.is_file():
+                  continue
+              if path.suffix.lower() not in ('.json', '.jsonl', '.ndjson'):
+                  continue
+              try:
+                  if path.suffix.lower() == '.json':
+                      data = load_json(path)
+                      harvest(data, path)
+                      if JSON_NAME_RE.match(path.name):
+                          marker = '/Scenarios_full/'
+                          posix = path.as_posix()
+                          key = posix.split(marker, 1)[1] if marker in posix else path.name
+                          register(key, data, path)
+                  else:
+                      for line in path.read_text(encoding='utf-8-sig').splitlines():
+                          line = line.strip()
+                          if line:
+                              harvest(json.loads(line), path)
+              except Exception:
+                  continue
+
+          if len(records) < 100:
+              raise AssertionError(f'official source yielded too few records: {len(records)}')
+
+          by_basename = defaultdict(list)
+          for key, payloads in records.items():
+              for payload in payloads:
+                  by_basename[Path(key).name].append((key, payload))
+
+          def collect_fields(node, path=()):
+              out = []
+              if isinstance(node, dict):
+                  for key, value in node.items():
+                      child = path + (key,)
+                      if key in ALLOWED and isinstance(value, str):
+                          out.append((child, value))
+                      elif isinstance(value, (dict, list)):
+                          out.extend(collect_fields(value, child))
+              elif isinstance(node, list):
+                  for index, value in enumerate(node):
+                      out.extend(collect_fields(value, path + (index,)))
+              return out
+
+          def compact_values(payload):
+              structured = collect_fields(payload)
+              if structured:
+                  return structured
+              if isinstance(payload, list) and all(isinstance(value, str) for value in payload):
+                  return [(('ordinal', index), value) for index, value in enumerate(payload)]
+              if isinstance(payload, dict):
+                  for key in ('texts', 'values', 'translations', 'zh_cn', 'zh-CN'):
+                      value = payload.get(key)
+                      if isinstance(value, list) and all(isinstance(item, str) for item in value):
+                          return [(('ordinal', index), item) for index, item in enumerate(value)]
+              return []
+
+          def choose_record(rel):
+              rel_norm = normalize_rel(rel.as_posix())
+              exact = []
+              for key, payloads in records.items():
+                  if key == rel_norm or key.endswith('/' + rel_norm):
+                      exact.extend(payloads)
+              if exact:
+                  return exact[0]
+              choices = by_basename.get(rel.name, [])
+              if len(choices) == 1:
+                  return choices[0][1]
+              parent_name = rel.parent.name
+              narrowed = [payload for key, payload in choices if parent_name and parent_name in key]
+              if len(narrowed) == 1:
+                  return narrowed[0]
+              return None
+
+          def set_path(node, path, value):
+              cur = node
+              for part in path[:-1]:
+                  cur = cur[part]
+              cur[path[-1]] = value
+
+          def compare_except_text(before, after, path=()):
+              if type(before) is not type(after):
+                  raise AssertionError(f'type changed at {path!r}')
+              if isinstance(before, dict):
+                  if list(before.keys()) != list(after.keys()):
+                      raise AssertionError(f'keys changed at {path!r}')
+                  for key in before:
+                      if key not in ALLOWED:
+                          compare_except_text(before[key], after[key], path + (key,))
+              elif isinstance(before, list):
+                  if len(before) != len(after):
+                      raise AssertionError(f'length changed at {path!r}')
+                  for index, (left, right) in enumerate(zip(before, after)):
+                      compare_except_text(left, right, path + (index,))
+              elif before != after:
+                  raise AssertionError(f'non-text value changed at {path!r}')
+
+          report = {
+              'schema_version': 1,
+              'scope_files': len(scope),
+              'official_record_keys': len(records),
+              'matched_files': 0,
+              'changed_files': 0,
+              'changed_fields': 0,
+              'skipped_manual_files': 0,
+              'skipped_unmatched_files': 0,
+              'skipped_misaligned_files': 0,
+              'skipped_unsafe_fields': 0,
+          }
+
+          for rel in sorted(scope, key=lambda value: value.as_posix()):
+              if rel.stem in MANUAL_IDS:
+                  report['skipped_manual_files'] += 1
+                  continue
+              target_path = target_root / rel
+              jp_path = find_jp(rel)
+              payload_pair = choose_record(rel)
+              if jp_path is None or payload_pair is None:
+                  report['skipped_unmatched_files'] += 1
+                  continue
+              payload = payload_pair[0] if isinstance(payload_pair, tuple) and len(payload_pair) == 2 and isinstance(payload_pair[0], (dict, list)) else payload_pair
+              target = load_json(target_path)
+              jp = load_json(jp_path)
+              before = copy.deepcopy(target)
+              target_fields = collect_fields(target)
+              jp_fields = collect_fields(jp)
+              official_fields = compact_values(payload)
+              if [path for path, _ in target_fields] != [path for path, _ in jp_fields]:
+                  report['skipped_misaligned_files'] += 1
+                  continue
+              if len(official_fields) != len(jp_fields):
+                  report['skipped_misaligned_files'] += 1
+                  continue
+              report['matched_files'] += 1
+              file_changes = 0
+              official_paths = [path for path, _ in official_fields]
+              use_structural_paths = official_paths == [path for path, _ in jp_fields]
+
+              for index, ((path, source_text), (_, old_cn), (_, official_text)) in enumerate(
+                  zip(jp_fields, target_fields, official_fields)
+              ):
+                  if not isinstance(official_text, str):
+                      report['skipped_unsafe_fields'] += 1
+                      continue
+                  if source_text and not official_text:
+                      report['skipped_unsafe_fields'] += 1
+                      continue
+                  if source_text.count('@') != official_text.count('@'):
+                      report['skipped_unsafe_fields'] += 1
+                      continue
+                  if TAG_RE.findall(source_text) != TAG_RE.findall(official_text):
+                      report['skipped_unsafe_fields'] += 1
+                      continue
+                  if BRACE_RE.findall(source_text) != BRACE_RE.findall(official_text):
+                      report['skipped_unsafe_fields'] += 1
+                      continue
+                  if PRINTF_RE.findall(source_text) != PRINTF_RE.findall(official_text):
+                      report['skipped_unsafe_fields'] += 1
+                      continue
+                  if old_cn != official_text:
+                      set_path(target, path, official_text)
+                      file_changes += 1
+
+              compare_except_text(before, target, (rel.as_posix(),))
+              if file_changes:
+                  target_path.write_text(json.dumps(target, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+                  load_json(target_path)
+                  report['changed_files'] += 1
+                  report['changed_fields'] += file_changes
+
+          Path('manual_retranslation/official_tw_restore_report.json').write_text(
+              json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8'
+          )
+          print(json.dumps(report, ensure_ascii=False))
+          PY
+
+      - name: Commit restored official human text
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'magi-reader translation bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add magireco-translate-data-master/Scenarios_full manual_retranslation/official_tw_restore_report.json
+          if git diff --cached --quiet; then
+            echo 'No structurally safe official human translations were available to restore.'
+            exit 0
+          fi
+          git commit -m 'Restore structurally verified official TW human translations'
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
