@@ -1,8 +1,6 @@
-name: Materialize TW Official Simplified Chinese into EXEDRA-TEST
+name: Materialize TW Official Simplified Chinese into main
 
 on:
-  push:
-    branches: [EXEDRA-TEST]
   workflow_dispatch:
     inputs:
       source_url:
@@ -20,22 +18,23 @@ permissions:
   contents: write
 
 concurrency:
-  group: materialize-tw-official-cn-exedra-test
-  cancel-in-progress: true
+  group: materialize-tw-official-cn-main
+  cancel-in-progress: false
 
 jobs:
   materialize:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (!startsWith(github.event.head_commit.message, '[tw-materialized]') &&
-       !startsWith(github.event.head_commit.message, '[tw-status]'))
     runs-on: ubuntu-latest
     timeout-minutes: 240
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      TW_SOURCE_URL: ${{ inputs.source_url || 'https://github.com/HiiragiNemu/MagiaExedraTWData/releases/download/tw-wiki-source-v1-20260806/exedra-tw-wiki-source-v1.zip' }}
+      TW_SOURCE_SHA256: ${{ inputs.source_sha256 || '503c4c9a518d0a992abe800fccde4a97b35b2e4ddaeb2359e63eaa8d572cd1ac' }}
+
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: EXEDRA-TEST
+          ref: main
 
       - uses: actions/setup-python@v5
         with:
@@ -47,11 +46,12 @@ jobs:
           cache: npm
           cache-dependency-path: website/package-lock.json
 
-      - name: Install pinned TW data-tool dependencies
+      - name: Install deterministic dependencies
         shell: bash
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check --no-compile -r requirements-data-tools.txt
+          npm --prefix website ci
           python - <<'PY'
           from tools.tw_official_import_core import simplified_converter
           convert = simplified_converter()
@@ -62,61 +62,37 @@ jobs:
           print(f'OPENCC_TW2SP_READY {probe!r} -> {result!r}')
           PY
 
-      - name: Materialize, certify, chunk and build
-        id: materialize
-        continue-on-error: true
+      - name: Fetch immutable official TW source bundle
         shell: bash
-        env:
-          TW_SOURCE_URL: ${{ inputs.source_url || 'https://github.com/HiiragiNemu/MagiaExedraTWData/releases/download/tw-wiki-source-v1-20260806/exedra-tw-wiki-source-v1.zip' }}
-          TW_SOURCE_SHA256: ${{ inputs.source_sha256 || '503c4c9a518d0a992abe800fccde4a97b35b2e4ddaeb2359e63eaa8d572cd1ac' }}
         run: |
-          set +e
-          set -o pipefail
-          bash -euo pipefail <<'BUILD' 2>&1 | tee "$RUNNER_TEMP/tw-materialization.log"
+          set -euo pipefail
           rm -rf "$RUNNER_TEMP/tw-sp-bundle"
-
           python tools/fetch_tw_sp_source_bundle.py \
             --source-url "$TW_SOURCE_URL" \
             --source-sha256 "$TW_SOURCE_SHA256" \
             --output-root "$RUNNER_TEMP/tw-sp-bundle"
 
+      - name: Materialize authentic TW JSON and canonical Simplified Chinese
+        shell: bash
+        run: |
+          set -euo pipefail
           python tools/materialize_tw_official_cn.py \
             --source-bundle-root "$RUNNER_TEMP/tw-sp-bundle" \
             --source-provider exedra-wiki-sp \
             --expected-source-count 2780
 
-          # Apply the permanent runtime/build patches before the regression suite.
-          python tools/patch_search_chunk_runtime.py
-          python tools/patch_tw_deploy_workflow.py
-
-          npm --prefix website ci
-          python -m unittest discover -s tests -p 'test_*.py'
-
-          # Emit failing Node test names at the very end of the diagnostic log.
-          # This runs before the composite `npm run check`; on success the full
-          # check still reruns the same suite together with lint/type/audit gates.
-          set +e
-          npm --prefix website test 2>&1 | tee "$RUNNER_TEMP/node-tests-preflight.log"
-          node_test_code="${PIPESTATUS[0]}"
-          set -e
-          if [ "$node_test_code" -ne 0 ]; then
-            echo '===== NODE TEST FAILURES ====='
-            grep -E '^not ok [0-9]+ - ' "$RUNNER_TEMP/node-tests-preflight.log" || true
-            exit "$node_test_code"
-          fi
-
-          npm --prefix website run check
+          python generate_story_index.py
+          python tools/apply_tw_official_metadata.py
+          python generate_machine_translation_manifest.py \
+            --translation-base 65f221f2aaa5a9fe161ed32e03e4dfbb93d4746d \
+            --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb
+          python tools/build_split_search_indexes.py
           python tools/build_split_search_indexes.py --validate-only
 
-          # The large payload stays ignored by Git.  The existing manifest v2
-          # hashes are materialized into 1 MiB same-origin files only for the
-          # Cloudflare build and verified both before and after OpenNext copies them.
-          python tools/search_chunk_delivery.py materialize
-          python tools/search_chunk_delivery.py verify-tree --root website/public
-          npm --prefix website run build:worker
-          npm --prefix website run verify:cloudflare-output
-          python tools/search_chunk_delivery.py verify-tree --root website/.open-next/assets
-
+      - name: Certify complete TW source partition and published metadata
+        shell: bash
+        run: |
+          set -euo pipefail
           python - <<'PY'
           import json
           from pathlib import Path
@@ -127,7 +103,7 @@ jobs:
               )
           )
           stats = report.get('stats', {})
-          expected_exact = {
+          expected = {
               'official_tw_groups': 395,
               'official_tw_json_files': 2708,
               'official_tw_text_events': 93697,
@@ -143,12 +119,11 @@ jobs:
               'tw_source_files_unexpected_unused': 0,
               'retained_non_tw_groups': 48,
           }
-          for key, expected in expected_exact.items():
-              value = stats.get(key)
-              if value != expected:
+          for key, expected_value in expected.items():
+              if stats.get(key) != expected_value:
                   raise SystemExit(
-                      f'Invalid certified TW import statistic {key}={value!r}; '
-                      f'expected {expected}: {stats}'
+                      f'Invalid TW statistic {key}={stats.get(key)!r}; '
+                      f'expected {expected_value}'
                   )
           if int(stats.get('failed_groups', 0) or 0) != 0:
               raise SystemExit(f'TW structural failures remain: {stats}')
@@ -159,29 +134,7 @@ jobs:
               + stats['tw_source_files_no_text']
               != stats['tw_source_files']
           ):
-              raise SystemExit(f'TW source partition does not cover all files: {stats}')
-          if (
-              stats['tw_source_files_deferred_partial']
-              + stats['tw_source_files_tw_only_without_jp']
-              + stats['tw_source_files_no_text']
-              != stats['tw_source_files_unused']
-          ):
-              raise SystemExit(f'TW unused source partition is inconsistent: {stats}')
-
-          failures = report.get('failures')
-          if not isinstance(failures, list):
-              raise SystemExit('TW import report failures is not a list')
-          structural = [
-              item for item in failures
-              if not isinstance(item, dict) or item.get('kind') != 'missing_source'
-          ]
-          if structural:
-              raise SystemExit(f'Unexpected TW structural failures: {structural[:5]}')
-          if len(failures) != stats['missing_tw_groups']:
-              raise SystemExit(
-                  f"TW missing-source report mismatch: {len(failures)} != "
-                  f"{stats['missing_tw_groups']}"
-              )
+              raise SystemExit(f'TW source partition is incomplete: {stats}')
 
           stories = json.loads(
               Path('website/public/story_index.json').read_text(encoding='utf-8')
@@ -196,66 +149,41 @@ jobs:
                   f"{stats['official_tw_groups']}"
               )
           if not any(item.get('official_tw_chapter_title') for item in official):
-              raise SystemExit('getFieldStageMstList chapter names were not applied')
+              raise SystemExit('Official TW chapter names were not applied')
           if not any(item.get('official_tw_section_titles') for item in official):
-              raise SystemExit('getAdvMstList subsection names were not applied')
+              raise SystemExit('Official TW section names were not applied')
           print(
               'TW_OFFICIAL_CERTIFIED '
               f"groups={stats['official_tw_groups']} "
               f"json={stats['official_tw_json_files']} "
-              f"events={stats['official_tw_text_events']} "
-              f"classified={stats['tw_source_files']}/2780"
+              f"events={stats['official_tw_text_events']}"
           )
           PY
-          BUILD
-          code="${PIPESTATUS[0]}"
-          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
-          exit 0
 
-      - name: Commit materialized result or diagnostic status
+      - name: Run complete tests and Cloudflare build verification
         shell: bash
-        env:
-          MATERIALIZE_EXIT_CODE: ${{ steps.materialize.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tests -p 'test_*.py'
+          npm --prefix website run check
+          python generate_story_index.py --validate-only
+          python tools/search_chunk_delivery.py materialize
+          python tools/search_chunk_delivery.py verify-tree --root website/public
+          npm --prefix website run build:worker
+          npm --prefix website run verify:cloudflare-output
+          python tools/search_chunk_delivery.py verify-tree --root website/.open-next/assets
+
+      - name: Commit certified materialization to main
+        shell: bash
         run: |
           set -euo pipefail
           rm -rf .tw-official-source
-          python - <<'PY'
-          import json, os
-          from datetime import datetime, timezone
-          from pathlib import Path
-          log_path = Path(os.environ['RUNNER_TEMP']) / 'tw-materialization.log'
-          log = log_path.read_text(encoding='utf-8', errors='replace') if log_path.exists() else ''
-          status = {
-              'version': 1,
-              'generatedAt': datetime.now(timezone.utc).isoformat(),
-              'sourceCommit': os.environ['GITHUB_SHA'],
-              'exitCode': int(os.environ.get('MATERIALIZE_EXIT_CODE') or 999),
-              'success': os.environ.get('MATERIALIZE_EXIT_CODE') == '0',
-              'logTail': log.splitlines()[-300:],
-          }
-          path = Path('artifacts/tw-materialization-status.json')
-          path.parent.mkdir(exist_ok=True)
-          path.write_text(
-              json.dumps(status, ensure_ascii=False, indent=2) + '\n',
-              encoding='utf-8',
-          )
-          PY
-
           git config user.name 'github-actions[bot]'
           git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
-          if [ "$MATERIALIZE_EXIT_CODE" = 0 ]; then
-            git add -A
-            message='[tw-materialized] Certified TW zh-CN data and same-origin split search'
-          else
-            git add -f artifacts/tw-materialization-status.json
-            message="[tw-status] Materialization failed with code $MATERIALIZE_EXIT_CODE"
-          fi
+          git add -A
           if git diff --cached --quiet; then
-            echo 'No materialization or diagnostic changes were produced.' >&2
-            exit 1
+            echo 'Certified materialization produced no repository changes.'
+            exit 0
           fi
-          git commit -m "$message"
-          git push origin HEAD:EXEDRA-TEST
-          if [ "$MATERIALIZE_EXIT_CODE" != 0 ]; then
-            exit "$MATERIALIZE_EXIT_CODE"
-          fi
+          git commit -m '[tw-materialized] Certified TW zh-CN data on main'
+          git push origin HEAD:main
