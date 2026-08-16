@@ -10,6 +10,7 @@ SUBMIT_ROUTE = ROOT / "website/app/api/submit/route.ts"
 CONFIG_ROUTE = ROOT / "website/app/api/proofreading/config/route.ts"
 GITHUB_PROOFREADING = ROOT / "website/lib/github-proofreading.ts"
 VERIFY_OUTPUT = ROOT / "website/scripts/verify-cloudflare-output.mjs"
+VALIDATE_POLICY = ROOT / "website/scripts/validate-feature-policy.mjs"
 PACKAGE = ROOT / "website/package.json"
 DIRECT_DEPLOY = ROOT / "website/scripts/deploy-direct.mjs"
 DIRECT_UTILS = ROOT / "website/scripts/cloudflare-direct-deploy-utils.mjs"
@@ -60,6 +61,11 @@ def main() -> int:
         VERIFY_OUTPUT,
         "  // fixtures and non-chunk deployments. The EXEDRA-TEST release pipeline calls\n",
         "  // fixtures and non-chunk deployments. The main production pipeline calls\n",
+    )
+    replace_once(
+        VALIDATE_POLICY,
+        "  requireCondition(\n    packageJson.scripts?.['deploy:test:direct'] ===\n      'node scripts/deploy-direct.mjs',\n    '必须保留隔离测试 Worker 的直接部署命令',\n  );",
+        "  requireCondition(\n    !Object.hasOwn(packageJson.scripts ?? {}, 'deploy:test:direct') &&\n      !Object.hasOwn(packageJson.scripts ?? {}, 'predeploy:test:direct'),\n    'main-only 仓库不得保留隔离测试 Worker 的直接部署命令',\n  );",
     )
 
     package = json.loads(read(PACKAGE))
