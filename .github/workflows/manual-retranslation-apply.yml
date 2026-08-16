@@ -10,7 +10,7 @@ on:
       - manual_retranslation/batches/**
       - manual_retranslation/bundles/**
       - manual_retranslation/exact_bundles/**
-      - manual_retranslation/exact_parts/**
+      - manual_retranslation/exact_parts/**/READY
       - .github/workflows/manual-retranslation-apply.yml
 
 permissions:
@@ -49,20 +49,25 @@ jobs:
 
           if [[ -d manual_retranslation/exact_parts ]]; then
             while IFS= read -r -d '' dir; do
+              if [[ ! -f "$dir/READY" ]]; then
+                echo "Skipping incomplete exact bundle directory: $dir"
+                continue
+              fi
+
               name="$(basename "$dir")"
               output="$bundle_root/${name}.json.gz.b64"
               mapfile -d '' -t parts < <(
                 find "$dir" -maxdepth 1 -type f -name '*.part' -print0 | sort -z
               )
               if (( ${#parts[@]} == 0 )); then
-                echo "No bundle parts found in $dir" >&2
+                echo "No bundle parts found in ready directory $dir" >&2
                 exit 1
               fi
               cat "${parts[@]}" > "$output"
 
               checksum_file="$dir/SHA256"
               if [[ ! -f "$checksum_file" ]]; then
-                echo "Missing checksum file: $checksum_file" >&2
+                echo "Missing checksum file in ready directory: $checksum_file" >&2
                 exit 1
               fi
               expected="$(awk 'NR == 1 { print $1 }' "$checksum_file")"
