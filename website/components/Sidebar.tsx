@@ -113,8 +113,6 @@ type SidebarProps = {
   currentId?: string;
   isOpen: boolean;
   onClose: () => void;
-  utilityPanelOpen: boolean;
-  onOpenUtilityPanel: () => void;
   className?: string;
 };
 
@@ -157,8 +155,6 @@ export default function Sidebar({
   currentId,
   isOpen,
   onClose,
-  utilityPanelOpen,
-  onOpenUtilityPanel,
   className = '',
 }: SidebarProps) {
   const { theme, lastCategory, setLastCategory } = useGlobal();
@@ -329,18 +325,6 @@ export default function Sidebar({
           >
             MagiReader
           </Link>
-          {!utilityPanelOpen && (
-            <button
-              type="button"
-              aria-label="展开阅读导航"
-              title="展开阅读导航"
-              onClick={onOpenUtilityPanel}
-              className="magi-reader-utility-dock magi-reader-utility-dock-desktop hidden md:inline-flex"
-            >
-              <span aria-hidden="true">⌂</span>
-              <span>导航</span>
-            </button>
-          )}
           <button
             type="button"
             aria-label="关闭剧情目录"

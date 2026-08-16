@@ -5,10 +5,10 @@ export type ReaderDisplayPreferences = {
   showLineBreaks: boolean;
 };
 
-export const READER_TEXT_WIDTH_MIN = 640;
+export const READER_TEXT_WIDTH_MIN = 320;
 export const READER_TEXT_WIDTH_MAX = 1280;
 export const READER_TEXT_WIDTH_STEP = 32;
-export const DEFAULT_READER_TEXT_WIDTH = 768;
+export const DEFAULT_READER_TEXT_WIDTH = 1024;
 export const READER_FONT_SIZE_MIN = 12;
 export const READER_FONT_SIZE_MAX = 22;
 export const DEFAULT_READER_FONT_SIZE = 15;

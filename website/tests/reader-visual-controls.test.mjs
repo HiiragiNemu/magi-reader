@@ -19,6 +19,8 @@ test('reader exposes desktop search and compact utility-panel mobile search', as
 test('reader offers a closable quick font ruler backed by persisted display preferences', async () => {
   const reader = await readFile(readerPath, 'utf8');
   assert.match(reader, /magi-reader-font-control-open/);
+  assert.match(reader, /FONT_WIDGET_POSITION_STORAGE_KEY/);
+  assert.match(reader, /className="magi-reader-font-widget"/);
   assert.match(reader, /role="group"\s+aria-label="快速字号调节"/);
   assert.match(reader, /aria-label="调整阅读字号"/);
   assert.match(reader, /aria-label="收起字号调节"/);
@@ -81,17 +83,19 @@ test('reader keeps edge pagination while merging page status into a closable uti
   assert.match(reader, /visiblePage > 0 && \([\s\S]*?aria-label="上一页"/);
   assert.match(reader, /visiblePage \+ 1 < pageCount && \([\s\S]*?aria-label="下一页"/);
   assert.match(reader, /magi-reader-utility-panel/);
-  assert.match(reader, /aria-label="关闭阅读导航栏"/);
+  assert.match(reader, /aria-label="收起阅读导航"/);
   assert.match(reader, /magi-reader-page-summary/);
   assert.match(reader, /第 \{visiblePage \+ 1\} \/ \{pageCount\} 页/);
-  assert.match(reader, /magi-reader-utility-reopen/);
+  assert.match(reader, /magi-reader-utility-fab/);
+  assert.match(reader, /magi-reader-utility-panel-floating/);
   assert.doesNotMatch(reader, /<StoryPagination/);
   assert.doesNotMatch(reader, /← 上一页/);
   assert.doesNotMatch(reader, /下一页 →/);
   assert.match(reader, /window\.addEventListener\('keydown', handlePageTurnKeyDown\)/);
   assert.match(reader, /onTouchStart=\{handlePageTouchStart\}/);
   assert.match(reader, /onTouchEnd=\{handlePageTouchEnd\}/);
-  assert.match(reader, /paddingInline: 'clamp\(3\.25rem, 6vw, 4rem\)'/);
+  assert.doesNotMatch(reader, /paddingInline: 'clamp\(3\.25rem, 6vw, 4rem\)'/);
+  assert.match(refinements, /\.magi-reader-main-paginated[\s\S]*padding-right: 0\.3rem !important/);
   assert.match(refinements, /\.magi-reader-utility-panel[\s\S]*backdrop-filter:/);
   assert.match(pageTurnCss, /\.magi-reader-page-turn[\s\S]*?min-width:\s*2\.8rem;/);
 });

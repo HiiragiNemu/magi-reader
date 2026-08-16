@@ -26,8 +26,8 @@ test('the selected layout is passed into normal and proofreading rows', () => {
 });
 
 test('reader width is bounded, persistent, and shared by reading and editing', () => {
-  assert.match(preferences, /DEFAULT_READER_TEXT_WIDTH = 768/u);
-  assert.match(preferences, /READER_TEXT_WIDTH_MIN = 640/u);
+  assert.match(preferences, /DEFAULT_READER_TEXT_WIDTH = 1024/u);
+  assert.match(preferences, /READER_TEXT_WIDTH_MIN = 320/u);
   assert.match(preferences, /READER_TEXT_WIDTH_MAX = 1280/u);
   assert.match(preferences, /magi-reader-display-preferences-v1/u);
   assert.match(preferences, /useSyncExternalStore|subscribeReaderDisplayPreferences/u);

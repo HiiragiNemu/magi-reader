@@ -25,6 +25,7 @@ import {
 
 import AboutModal from '@/components/AboutModal';
 import FloatingWindow from '@/components/FloatingWindow';
+import DraggableReaderWidget from '@/components/DraggableReaderWidget';
 import ReaderFontSettings from '@/components/ReaderFontSettings';
 import TurnstileWidget from '@/components/TurnstileWidget';
 import Sidebar, { type Story } from '@/components/Sidebar';
@@ -113,6 +114,10 @@ type ProofreadingConfig = {
 
 const MAX_STORY_SOURCE_BYTES = 8 * 1024 * 1024;
 const BILINGUAL_LAYOUT_STORAGE_KEY = 'magi-reader-bilingual-layout-v1';
+const UTILITY_WIDGET_POSITION_STORAGE_KEY =
+  'magi-reader-utility-widget-position-v1';
+const FONT_WIDGET_POSITION_STORAGE_KEY =
+  'magi-reader-font-widget-position-v1';
 const STORY_ROWS_PER_PAGE = 200;
 const PAGE_SWIPE_MIN_DISTANCE_PX = 64;
 
@@ -318,8 +323,6 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   } | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [utilityPanelOpen, setUtilityPanelOpen] = useState(true);
-  const [utilityPanelClosing, setUtilityPanelClosing] = useState(false);
-  const utilityPanelCloseTimerRef = useRef<number | null>(null);
   const [editMessage, setEditMessage] = useState('');
 
   useEffect(() => {
@@ -334,30 +337,9 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     window.localStorage.setItem(BILINGUAL_LAYOUT_STORAGE_KEY, layout);
   };
 
-  useEffect(() => () => {
-    if (utilityPanelCloseTimerRef.current !== null) {
-      window.clearTimeout(utilityPanelCloseTimerRef.current);
-    }
-  }, []);
+  const openUtilityPanel = () => setUtilityPanelOpen(true);
 
-  const openUtilityPanel = () => {
-    if (utilityPanelCloseTimerRef.current !== null) {
-      window.clearTimeout(utilityPanelCloseTimerRef.current);
-      utilityPanelCloseTimerRef.current = null;
-    }
-    setUtilityPanelClosing(false);
-    setUtilityPanelOpen(true);
-  };
-
-  const closeUtilityPanel = () => {
-    if (utilityPanelClosing) return;
-    setUtilityPanelClosing(true);
-    utilityPanelCloseTimerRef.current = window.setTimeout(() => {
-      setUtilityPanelOpen(false);
-      setUtilityPanelClosing(false);
-      utilityPanelCloseTimerRef.current = null;
-    }, 220);
-  };
+  const closeUtilityPanel = () => setUtilityPanelOpen(false);
 
   const directSourceResolution = useMemo(() => {
     try {
@@ -540,7 +522,6 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
     setTurnstileResetKey((value) => value + 1);
     setSearchQuery('');
     setCurrentMatchIndex(-1);
-    setUtilityPanelOpen(true);
 
     const fetchSource = async (
       path: string,
@@ -672,6 +653,10 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
   const renderList = useMemo(
     () => alignStoryLines(displayedCnLines, displayedJpLines),
     [displayedCnLines, displayedJpLines],
+  );
+  const firstStoryHeaderIndex = useMemo(
+    () => renderList.findIndex(row => row.cn?.isHeader || row.jp?.isHeader),
+    [renderList],
   );
   const pageCount = Math.max(1, Math.ceil(renderList.length / STORY_ROWS_PER_PAGE));
   const pageStart = visiblePage * STORY_ROWS_PER_PAGE;
@@ -1343,8 +1328,6 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
         currentId={currentStory?.id ?? id}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        utilityPanelOpen={utilityPanelOpen}
-        onOpenUtilityPanel={openUtilityPanel}
         className={sidebarOpen ? '' : 'hidden md:flex'}
       />
 
@@ -1406,18 +1389,6 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                     className="magi-reader-source-download flex items-center gap-1 rounded px-1.5 py-0.5 opacity-50 transition hover:text-blue-600 hover:opacity-100"
                   >
                     <Download size={14} /><span className="text-[10px]">JP</span>
-                  </button>
-                )}
-                {!utilityPanelOpen && (
-                  <button
-                    type="button"
-                    aria-label="展开阅读导航"
-                    title="展开阅读导航"
-                    onClick={openUtilityPanel}
-                    className="magi-reader-utility-dock magi-reader-utility-dock-mobile magi-reader-utility-reopen md:hidden"
-                  >
-                    <span aria-hidden="true">⌂</span>
-                    <span className="sr-only">导航</span>
                   </button>
                 )}
               </div>
@@ -1514,78 +1485,100 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
           </div>
         </header>
 
-          {!loadError && utilityPanelOpen && (
-            <section
-              className={`magi-reader-utility-panel magi-reader-utility-panel-overlay ${
-                utilityPanelClosing ? 'is-closing' : 'is-open'
-              }`}
-              aria-label="阅读导航与分页"
-            >
-              <button
-                type="button"
-                aria-label="关闭阅读导航栏"
-                title="关闭阅读导航栏"
-                onClick={closeUtilityPanel}
-                className="magi-reader-utility-close"
+        </div>
+
+        {!loadError && (
+          <DraggableReaderWidget
+            storageKey={UTILITY_WIDGET_POSITION_STORAGE_KEY}
+            defaultDock="top-right"
+            ariaLabel="阅读导航悬浮工具"
+            dragHandleLabel="拖动阅读导航悬浮工具"
+            className={`magi-reader-utility-widget ${
+              utilityPanelOpen ? 'is-expanded' : 'is-collapsed'
+            }`}
+          >
+            {utilityPanelOpen ? (
+              <section
+                className="magi-reader-utility-panel magi-reader-utility-panel-floating"
+                aria-label="阅读导航与分页"
               >
-                ×
-              </button>
-              <div className="magi-reader-utility-content">
-                <div className="magi-reader-utility-search lg:hidden">
-                  <Search
-                    size={16}
-                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 opacity-45"
-                  />
-                  <input
-                    type="search"
-                    aria-label="在当前剧情中搜索"
-                    placeholder="页内搜索"
-                    title="输入关键词后按 Enter 跳到下一处"
-                    value={searchQuery}
-                    onChange={event => changeSearch(event.target.value)}
-                    onKeyDown={event => {
-                      if (event.key === 'Enter') jumpToNextMatch();
-                    }}
-                    className="magi-reader-search-input h-9 w-full py-1.5 pl-9 pr-14 text-sm leading-5 outline-none"
-                  />
-                  {searchQuery && (
+                <button
+                  type="button"
+                  aria-label="收起阅读导航"
+                  title="收起为右上角悬浮按钮"
+                  onClick={closeUtilityPanel}
+                  className="magi-reader-utility-close"
+                >
+                  ×
+                </button>
+                <div className="magi-reader-utility-content">
+                  <div className="magi-reader-utility-search lg:hidden">
+                    <Search
+                      size={16}
+                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 opacity-45"
+                    />
+                    <input
+                      type="search"
+                      aria-label="在当前剧情中搜索"
+                      placeholder="页内搜索"
+                      title="输入关键词后按 Enter 跳到下一处"
+                      value={searchQuery}
+                      onChange={event => changeSearch(event.target.value)}
+                      onKeyDown={event => {
+                        if (event.key === 'Enter') jumpToNextMatch();
+                      }}
+                      className="magi-reader-search-input h-9 w-full py-1.5 pl-9 pr-14 text-sm leading-5 outline-none"
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={jumpToNextMatch}
+                        className="magi-reader-search-next"
+                      >
+                        {matchedIndices.length
+                          ? `${currentMatchIndex >= 0 ? currentMatchIndex + 1 : 0}/${matchedIndices.length} ↓`
+                          : '0'}
+                      </button>
+                    )}
+                  </div>
+                  <div className="magi-reader-utility-actions">
+                    <Link href="/" className="magi-reader-utility-button">
+                      🏠 返回首页
+                    </Link>
                     <button
                       type="button"
-                      onClick={jumpToNextMatch}
-                      className="magi-reader-search-next"
+                      onClick={() => setAboutOpen(true)}
+                      className="magi-reader-utility-button"
                     >
-                      {matchedIndices.length
-                        ? `${currentMatchIndex >= 0 ? currentMatchIndex + 1 : 0}/${matchedIndices.length} ↓`
-                        : '0'}
+                      🔗 我的工具与动态
                     </button>
-                  )}
+                    <span
+                      aria-live="polite"
+                      className="magi-reader-page-summary"
+                    >
+                      第 {visiblePage + 1} / {pageCount} 页 · 第 {pageStart + 1}–
+                      {Math.min(
+                        pageStart + visibleRenderList.length,
+                        renderList.length,
+                      )} 行，共 {renderList.length} 行
+                    </span>
+                  </div>
                 </div>
-                <div className="magi-reader-utility-actions">
-                  <Link href="/" className="magi-reader-utility-button">
-                    🏠 返回首页
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => setAboutOpen(true)}
-                    className="magi-reader-utility-button"
-                  >
-                    🔗 我的工具与动态
-                  </button>
-                  <span
-                    aria-live="polite"
-                    className="magi-reader-page-summary"
-                  >
-                    第 {visiblePage + 1} / {pageCount} 页 · 第 {pageStart + 1}–
-                    {Math.min(
-                      pageStart + visibleRenderList.length,
-                      renderList.length,
-                    )} 行，共 {renderList.length} 行
-                  </span>
-                </div>
-              </div>
-            </section>
-          )}
-        </div>
+              </section>
+            ) : (
+              <button
+                type="button"
+                aria-label="展开阅读导航"
+                title="展开返回首页、工具与分页信息"
+                onClick={openUtilityPanel}
+                className="magi-reader-utility-fab"
+              >
+                <span aria-hidden="true">⌂</span>
+                <span>导航</span>
+              </button>
+            )}
+          </DraggableReaderWidget>
+        )}
 
         <main
           className={`magi-reader-main z-10 flex-1 overflow-y-auto scroll-smooth p-2 md:p-6 ${
@@ -1599,9 +1592,6 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
           style={{
             fontSize: `${fontSize}px`,
             lineHeight,
-            ...(pageCount > 1
-              ? { paddingInline: 'clamp(3.25rem, 6vw, 4rem)' }
-              : {}),
           }}
         >
           <div
@@ -1894,6 +1884,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
                   theme={theme}
                    isExedra={isExedraStory}
                    officialSectionTitles={currentStory?.official_tw_section_titles}
+                  isFirstStoryHeader={index === firstStoryHeaderIndex}
                   isEditMode={isEditMode}
                   editedLines={editedCnLines}
                   setEditedLines={setEditedCnLines}
@@ -1939,6 +1930,13 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
           </nav>
         )}
 
+        <DraggableReaderWidget
+          storageKey={FONT_WIDGET_POSITION_STORAGE_KEY}
+          defaultDock="bottom-right"
+          ariaLabel="快速字号悬浮工具"
+          dragHandleLabel="拖动快速字号悬浮工具"
+          className="magi-reader-font-widget"
+        >
         <div
           className={`magi-reader-font-control magi-reader-font-control-${theme} ${
             fontControlOpen ? 'magi-reader-font-control-open' : 'magi-reader-font-control-closed'
@@ -1989,6 +1987,7 @@ export default function ReaderPage({ params }: { params: Promise<{ id: string }>
             </button>
           )}
         </div>
+        </DraggableReaderWidget>
 
         <FloatingWindow
           isOpen={showSettings}
@@ -2141,6 +2140,7 @@ type StoryRowProps = {
   theme: string;
   isExedra: boolean;
   officialSectionTitles?: string[];
+  isFirstStoryHeader: boolean;
   isEditMode: boolean;
   editedLines: StoryLine[];
   setEditedLines: React.Dispatch<React.SetStateAction<StoryLine[]>>;
@@ -2160,6 +2160,7 @@ function StoryRow({
   theme,
   isExedra,
   officialSectionTitles,
+  isFirstStoryHeader,
   isEditMode,
   editedLines,
   setEditedLines,
@@ -2193,7 +2194,12 @@ function StoryRow({
       <div
         id={header.headerId}
         lang={isExedra ? (header === row.jp ? 'ja' : 'zh-Hans') : undefined}
-        className={`mb-4 mt-6 border-t-2 pt-4 text-center ${
+        data-reader-first-header={isFirstStoryHeader || undefined}
+        className={`mb-4 text-center ${
+          isFirstStoryHeader
+            ? 'mt-0 pt-0'
+            : 'mt-6 border-t-2 pt-4'
+        } ${
           isExedra ? 'exedra-page ' : ''
         }${
           header === row.jp

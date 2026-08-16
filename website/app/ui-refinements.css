@@ -1344,3 +1344,333 @@
     animation: none !important;
   }
 }
+
+/* =========================================
+   Reader UI V28 — draggable floating navigation and full-width mobile reading
+   ========================================= */
+
+.magi-reader-floating-widget {
+  position: fixed;
+  z-index: 56;
+  display: flex;
+  max-width: calc(100vw - 1rem);
+  max-height: calc(100dvh - 1rem);
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid var(--magi-tool-border);
+  color: var(--magi-tool-text);
+  background:
+    linear-gradient(118deg, var(--magi-tool-inset), transparent 44%),
+    var(--magi-tool-surface);
+  box-shadow:
+    7px 9px 22px var(--magi-tool-shadow),
+    inset 1px 1px var(--magi-tool-inset);
+  backdrop-filter: blur(12px) saturate(0.84);
+  -webkit-backdrop-filter: blur(12px) saturate(0.84);
+  touch-action: none;
+}
+
+.magi-reader-floating-widget[data-default-dock='top-right'] {
+  top: max(4.35rem, calc(env(safe-area-inset-top) + 4rem));
+  right: max(0.7rem, env(safe-area-inset-right));
+}
+
+.magi-reader-floating-widget[data-default-dock='bottom-right'] {
+  right: max(0.7rem, env(safe-area-inset-right));
+  bottom: max(0.7rem, env(safe-area-inset-bottom));
+}
+
+.magi-reader-theme-paper .magi-reader-floating-widget {
+  border-color: rgba(74, 58, 35, 0.55);
+  border-radius: 1rem;
+  background:
+    linear-gradient(118deg, rgba(255, 249, 225, 0.74), transparent 44%),
+    rgba(225, 211, 171, 0.95);
+  box-shadow:
+    7px 9px 22px rgba(55, 42, 25, 0.22),
+    inset 1px 1px rgba(255, 250, 227, 0.72);
+}
+
+.magi-reader-theme-dark .magi-reader-floating-widget {
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.1), transparent 44%),
+    rgba(38, 45, 51, 0.96);
+}
+
+.magi-reader-theme-green .magi-reader-floating-widget {
+  background:
+    linear-gradient(118deg, rgba(247, 255, 249, 0.72), transparent 44%),
+    rgba(209, 230, 215, 0.96);
+}
+
+.magi-reader-floating-widget.is-dragging {
+  z-index: 80;
+  cursor: grabbing;
+  opacity: 0.94;
+  box-shadow:
+    14px 18px 36px var(--magi-tool-shadow),
+    inset 1px 1px var(--magi-tool-inset);
+}
+
+.magi-reader-floating-grip {
+  display: grid;
+  width: 1.35rem;
+  min-width: 1.35rem;
+  place-items: center;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--magi-tool-border) 62%, transparent);
+  border-radius: 0 !important;
+  color: var(--magi-tool-muted);
+  background: color-mix(in srgb, var(--magi-tool-control) 76%, transparent);
+  box-shadow: inset 1px 1px var(--magi-tool-inset);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.72rem;
+  line-height: 0.72;
+  letter-spacing: -0.22em;
+}
+
+.magi-reader-floating-grip:active {
+  cursor: grabbing;
+}
+
+.magi-reader-floating-grip:focus-visible {
+  outline: 2px solid var(--magi-tool-accent);
+  outline-offset: -3px;
+}
+
+.magi-reader-utility-widget {
+  width: min(44rem, calc(100vw - 1rem));
+}
+
+.magi-reader-utility-widget.is-collapsed {
+  width: auto;
+}
+
+.magi-reader-utility-panel-floating {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  max-height: min(10.5rem, calc(100dvh - 5.5rem));
+  margin: 0;
+  padding: 0.48rem 2.2rem 0.48rem 0.55rem;
+  overflow: auto;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  color: inherit;
+  background: transparent;
+  box-shadow: none;
+  clip-path: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.magi-reader-utility-panel-floating::before,
+.magi-reader-utility-panel-floating::after {
+  display: none;
+  content: none;
+}
+
+.magi-reader-utility-panel-floating .magi-reader-utility-content {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.magi-reader-utility-panel-floating .magi-reader-utility-actions {
+  min-width: 0;
+  flex: 1;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+}
+
+.magi-reader-utility-panel-floating .magi-reader-utility-button {
+  min-height: 1.9rem;
+  flex: none;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.66rem;
+}
+
+.magi-reader-utility-panel-floating .magi-reader-page-summary {
+  flex: 1 1 auto;
+  white-space: nowrap;
+  font-size: 0.66rem;
+}
+
+.magi-reader-utility-fab {
+  display: inline-flex;
+  min-height: 2.35rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.28rem;
+  padding: 0.35rem 0.68rem;
+  border: 0;
+  color: var(--magi-tool-text);
+  background: transparent;
+  font-size: 0.72rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.magi-reader-utility-fab:hover,
+.magi-reader-utility-fab:focus-visible {
+  color: var(--magi-tool-accent-text);
+  background: var(--magi-tool-accent);
+  outline: 2px solid var(--magi-tool-inset);
+  outline-offset: -3px;
+}
+
+.magi-reader-font-widget {
+  width: auto;
+}
+
+.magi-reader-font-widget .magi-reader-font-control {
+  position: static;
+  right: auto;
+  bottom: auto;
+  z-index: auto;
+  max-width: calc(100vw - 2.35rem);
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.magi-reader-theme-paper .magi-reader-font-widget .magi-reader-font-control {
+  background: transparent;
+  box-shadow: none;
+}
+
+.magi-reader-first-header,
+[data-reader-first-header='true'] {
+  border-top-width: 0 !important;
+}
+
+@media (min-width: 768px) {
+  .magi-reader-theme-light .magi-reader-document,
+  .magi-reader-theme-paper .magi-reader-document {
+    padding: 1rem clamp(1rem, 2vw, 2rem) 6rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .magi-reader-floating-widget[data-default-dock='top-right'] {
+    top: max(7.15rem, calc(env(safe-area-inset-top) + 6.8rem));
+    right: max(0.35rem, env(safe-area-inset-right));
+  }
+
+  .magi-reader-floating-widget[data-default-dock='bottom-right'] {
+    right: max(0.35rem, env(safe-area-inset-right));
+    bottom: max(0.35rem, env(safe-area-inset-bottom));
+  }
+
+  .magi-reader-utility-widget {
+    width: calc(100vw - 0.7rem);
+  }
+
+  .magi-reader-utility-widget.is-collapsed {
+    width: auto;
+  }
+
+  .magi-reader-utility-panel-floating {
+    max-height: min(9.5rem, calc(100dvh - 7.6rem));
+    padding: 0.42rem 1.95rem 0.42rem 0.42rem;
+  }
+
+  .magi-reader-utility-panel-floating .magi-reader-utility-content {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .magi-reader-utility-panel-floating .magi-reader-utility-search {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .magi-reader-utility-panel-floating .magi-reader-utility-actions {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    gap: 0.28rem;
+  }
+
+  .magi-reader-utility-panel-floating .magi-reader-utility-button {
+    min-height: 1.82rem;
+    padding: 0.26rem 0.46rem;
+    font-size: 0.62rem;
+  }
+
+  .magi-reader-utility-panel-floating .magi-reader-page-summary {
+    flex: 1 1 10rem;
+    white-space: normal;
+    text-align: left;
+    font-size: 0.62rem;
+  }
+
+  .magi-reader-main,
+  .magi-reader-main-paginated {
+    padding-right: 0.3rem !important;
+    padding-left: 0.3rem !important;
+  }
+
+  .magi-reader-document {
+    width: 100% !important;
+    padding-right: 0.18rem !important;
+    padding-left: 0.18rem !important;
+  }
+
+  .magi-reader-theme-paper .magi-reader-document {
+    border-radius: 0.72rem;
+  }
+
+  .magi-reader-page-turn {
+    width: 2.05rem;
+    min-width: 2.05rem;
+    height: 3rem;
+    opacity: 0.84;
+  }
+
+  .magi-reader-page-turn-prev {
+    left: -0.48rem;
+  }
+
+  .magi-reader-page-turn-next {
+    right: -0.48rem;
+  }
+
+  .magi-reader-page-turn-triangle {
+    scale: 0.82;
+  }
+
+  .magi-reader-speaker-label,
+  .magi-translation-speaker-input {
+    width: 4.1rem !important;
+    padding-right: 0.12rem !important;
+    padding-left: 0.12rem !important;
+  }
+
+  .reader-font-cn-body,
+  .reader-font-jp-body {
+    gap: 0.42rem !important;
+  }
+
+  .magi-bilingual-pair {
+    margin-bottom: 0.35rem;
+    padding-bottom: 0.55rem;
+  }
+
+  .magi-reader-font-control-open {
+    width: min(15rem, calc(100vw - 2.5rem));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .magi-reader-floating-widget {
+    transition: none;
+  }
+}

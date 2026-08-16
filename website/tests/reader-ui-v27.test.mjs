@@ -23,23 +23,21 @@ test('desktop sidebar expands and centers the active story without scrolling the
   assert.match(sidebar, /setFolderOverrides/u);
   assert.match(sidebar, /container\.scrollTo\(\{/u);
   assert.doesNotMatch(sidebar, /if \(!isOpen \|\| !currentId\) return/u);
-  assert.match(reader, /utilityPanelOpen=\{utilityPanelOpen\}/u);
-  assert.match(reader, /onOpenUtilityPanel=\{openUtilityPanel\}/u);
 });
 
-test('reader utility window leaves document flow and animates into desktop and mobile docks', () => {
-  assert.ok(
-    reader.indexOf('magi-reader-utility-panel-overlay')
-      < reader.indexOf('<main'),
-  );
-  assert.match(reader, /utilityPanelClosing/u);
-  assert.match(reader, /magi-reader-header-stack/u);
-  assert.match(reader, /magi-reader-utility-dock-mobile/u);
-  assert.match(sidebar, /magi-reader-utility-dock-desktop/u);
-  assert.match(css, /magi-reader-utility-open-desktop/u);
-  assert.match(css, /magi-reader-utility-close-mobile/u);
-  assert.match(css, /\.magi-reader-utility-dock::after/u);
-  assert.match(css, /\.magi-reader-source-download/u);
+test('reader navigation is an independent draggable floating widget, never a sidebar or header dock', () => {
+  assert.match(reader, /DraggableReaderWidget/u);
+  assert.match(reader, /UTILITY_WIDGET_POSITION_STORAGE_KEY/u);
+  assert.match(reader, /magi-reader-utility-widget/u);
+  assert.match(reader, /magi-reader-utility-panel-floating/u);
+  assert.match(reader, /magi-reader-utility-fab/u);
+  assert.doesNotMatch(reader, /magi-reader-utility-panel-overlay/u);
+  assert.doesNotMatch(reader, /magi-reader-utility-dock-mobile/u);
+  assert.doesNotMatch(sidebar, /utilityPanelOpen/u);
+  assert.doesNotMatch(sidebar, /onOpenUtilityPanel/u);
+  assert.doesNotMatch(sidebar, /magi-reader-utility-dock-desktop/u);
+  assert.match(css, /\.magi-reader-floating-widget/u);
+  assert.match(css, /\.magi-reader-utility-panel-floating/u);
 });
 
 test('mobile home toolbar packs controls and supports a draggable review button dock', () => {
