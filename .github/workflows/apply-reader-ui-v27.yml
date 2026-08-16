@@ -35,7 +35,7 @@ jobs:
           cache: npm
           cache-dependency-path: website/package-lock.json
 
-      - name: Apply fail-closed V27 migration
+      - name: Apply and preserve V27 candidate
         shell: bash
         run: |
           set -euo pipefail
@@ -62,41 +62,13 @@ jobs:
               encoding='utf-8',
               newline='\n',
           )
-
-          reader = Path('website/app/reader/[id]/page.tsx')
-          reader_value = reader.read_text(encoding='utf-8')
-          replacements = (
-              (
-                  'onClick={() => goToSection(previousSectionIndex)}',
-                  'onClick={() => previousSectionIndex !== undefined '
-                  '&& goToSection(previousSectionIndex)}',
-              ),
-              (
-                  'disabled={previousSectionIndex < 0}',
-                  'disabled={(previousSectionIndex ?? -1) < 0}',
-              ),
-              (
-                  'onClick={() => goToSection(nextSectionIndex)}',
-                  'onClick={() => nextSectionIndex !== undefined '
-                  '&& goToSection(nextSectionIndex)}',
-              ),
-              (
-                  'disabled={nextSectionIndex < 0}',
-                  'disabled={(nextSectionIndex ?? -1) < 0}',
-              ),
-          )
-          for target, replacement in replacements:
-              count = reader_value.count(target)
-              if count not in {1, 2}:
-                  raise SystemExit(
-                      f'section navigation expression count={count}; '
-                      f'expected 1 or 2: {target}'
-                  )
-              reader_value = reader_value.replace(target, replacement)
-          reader.write_text(reader_value, encoding='utf-8', newline='\n')
           PY
           git diff --check
-          git status --short
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m '[ui-v27-candidate] Preserve generated V27 tree for exact diagnostics'
+          git push origin HEAD:work/reader-ui-v27
 
       - name: Install deterministic dependencies
         shell: bash
@@ -126,13 +98,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git fetch origin work/reader-ui-v27
+          git reset --hard origin/work/reader-ui-v27
           rm -f tools/apply_reader_ui_v27.py .github/workflows/apply-reader-ui-v27.yml
-          git config user.name 'github-actions[bot]'
-          git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
           git add -A
-          if git diff --cached --quiet; then
-            echo 'V27 migration produced no durable changes.' >&2
-            exit 1
-          fi
           git commit -m '[tw-materialized] Reader UI V27 compact dock navigation and synchronized sidebar'
           git push origin HEAD:work/reader-ui-v27
