@@ -76,26 +76,38 @@ def main() -> int:
         "replace class loop",
     )
 
-    # The edge-turn button geometry remains in globals.css while the new V26
-    # utility/editor rules are appended to ui-refinements.css. Validate the
-    # effective cascade instead of pretending either stylesheet is standalone.
+    # The edge-turn geometry remains in globals.css while V26 utility/editor
+    # rules live in ui-refinements.css. Keep the assertions explicitly bound to
+    # their owning stylesheets; this avoids accepting a rule from the wrong
+    # cascade layer and makes failures immediately attributable.
     reader_css_source = '''  const [reader, css] = await Promise.all([
     readFile(readerPath, 'utf8'),
     readFile(cssPath, 'utf8'),
   ]);
   assert.match(reader, /pageCount > 1'''
-    reader_css_effective = '''  const [reader, globals, refinements] = await Promise.all([
+    reader_css_split = '''  const [reader, pageTurnCss, refinements] = await Promise.all([
     readFile(readerPath, 'utf8'),
     readFile(cssPath, 'utf8'),
     readFile(new URL('../app/ui-refinements.css', import.meta.url), 'utf8'),
   ]);
-  const css = `${globals}\\n${refinements}`;
   assert.match(reader, /pageCount > 1'''
     source = replace_once(
         source,
         reader_css_source,
-        reader_css_effective,
-        "validate V26 Reader against effective stylesheet cascade",
+        reader_css_split,
+        "bind V26 Reader assertions to owning stylesheets",
+    )
+    source = replace_once(
+        source,
+        r"  assert.match(css, /\\.magi-reader-utility-panel[\\s\\S]*backdrop-filter:/);",
+        r"  assert.match(refinements, /\\.magi-reader-utility-panel[\\s\\S]*backdrop-filter:/);",
+        "assert V26 utility panel against refinements stylesheet",
+    )
+    source = replace_once(
+        source,
+        r"  assert.match(css, /\\.magi-reader-page-turn[\\s\\S]*?min-width:\\s*2\\.8rem;/);",
+        r"  assert.match(pageTurnCss, /\\.magi-reader-page-turn[\\s\\S]*?min-width:\\s*2\\.8rem;/);",
+        "assert edge pagination against globals stylesheet",
     )
 
     home_test_start = '''test('home search grows from a compact measured width before other mobile controls', () => {
