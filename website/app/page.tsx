@@ -1015,7 +1015,7 @@ export default function Home() {
             }
           : undefined
       }
-      className={`magi-home-mobile-review-button md:hidden ${
+      className={`magi-home-mobile-review-button transition md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
         reviewDragPosition ? 'is-dragging' : ''
       }`}
     >
