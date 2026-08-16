@@ -1,0 +1,289 @@
+name: Master apply for all reviewed manual retranslation data
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - .github/workflows/manual-retranslation-master-apply.yml
+      - manual_retranslation/exact_parts/**
+      - manual_retranslation/exact_bundles/**
+      - manual_retranslation/manual_batches/*.json
+      - manual_retranslation/manual_batches_subset/*.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manual-retranslation-master-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Preserve pre-apply tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a magireco-translate-data-master/Scenarios_full "$RUNNER_TEMP/Scenarios_full.before"
+
+      - name: Reconstruct and apply every reviewed exact bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$RUNNER_TEMP/exact-bundles"
+          mkdir -p "$RUNNER_TEMP/exact-bundles"
+          find manual_retranslation/exact_bundles -maxdepth 1 -type f -name '*.json.gz.b64' -exec cp {} "$RUNNER_TEMP/exact-bundles/" \; 2>/dev/null || true
+          if test -d manual_retranslation/exact_parts; then
+            while IFS= read -r ready; do
+              dir="$(dirname "$ready")"
+              out="$(tr -d '\r\n' < "$ready")"
+              test -n "$out"
+              find "$dir" -maxdepth 1 -type f -name '*.part' -print0 | sort -z | xargs -0 cat > "$RUNNER_TEMP/exact-bundles/$out"
+              expected="$(awk 'NF {print $1; exit}' "$dir/SHA256")"
+              actual="$(sha256sum "$RUNNER_TEMP/exact-bundles/$out" | awk '{print $1}')"
+              test "$actual" = "$expected"
+            done < <(find manual_retranslation/exact_parts -mindepth 2 -maxdepth 2 -type f -name READY | sort)
+          fi
+          if test "$(find "$RUNNER_TEMP/exact-bundles" -type f -name '*.json.gz.b64' | wc -l)" -gt 0; then
+            python manual_retranslation/apply_exact_batches.py \
+              --bundle-dir "$RUNNER_TEMP/exact-bundles" \
+              --target-root magireco-translate-data-master/Scenarios_full
+          fi
+
+      - name: Apply complete and subset ordinal batches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          ALLOWED = {
+              'textLeft', 'textRight', 'textCenter', 'narration',
+              'progressNarration', 'textSelect', 'nameLeft', 'nameRight',
+              'nameCenter', 'nameNarration',
+          }
+          TAG_RE = re.compile(r'\[[^\]\r\n]+\]')
+          BRACE_RE = re.compile(r'\{[^{}\r\n]+\}')
+          PRINTF_RE = re.compile(r'%(?:\d+\$)?[-+#0 .\d]*[A-Za-z]')
+          target_root = Path('magireco-translate-data-master/Scenarios_full')
+          source_roots = [
+              Path('magireco-source-master/Scenarios_full'),
+              Path('magireco-source-master'),
+              Path('source/Scenarios_full'),
+          ]
+
+          def load(path):
+              with path.open(encoding='utf-8-sig') as f:
+                  return json.load(f)
+
+          def collect(node, path=()):
+              out = []
+              if isinstance(node, dict):
+                  for key, value in node.items():
+                      child = path + (key,)
+                      if key in ALLOWED:
+                          if not isinstance(value, str):
+                              raise AssertionError(f'non-string text field at {child!r}')
+                          out.append((child, value))
+                      else:
+                          out.extend(collect(value, child))
+              elif isinstance(node, list):
+                  for index, value in enumerate(node):
+                      out.extend(collect(value, path + (index,)))
+              return out
+
+          def assign(node, path, value):
+              cur = node
+              for part in path[:-1]:
+                  cur = cur[part]
+              cur[path[-1]] = value
+
+          def safe(jp, zh, label):
+              if not isinstance(jp, str) or not isinstance(zh, str):
+                  raise AssertionError(f'invalid text: {label}')
+              if jp.count('@') != zh.count('@'):
+                  raise AssertionError(f'@ count changed: {label}')
+              if TAG_RE.findall(jp) != TAG_RE.findall(zh):
+                  raise AssertionError(f'control tags changed: {label}')
+              if BRACE_RE.findall(jp) != BRACE_RE.findall(zh):
+                  raise AssertionError(f'brace tokens changed: {label}')
+              if PRINTF_RE.findall(jp) != PRINTF_RE.findall(zh):
+                  raise AssertionError(f'printf tokens changed: {label}')
+
+          report = {'complete_batches': [], 'subset_batches': [], 'changed_fields': 0}
+
+          for batch_path in sorted(Path('manual_retranslation/manual_batches').glob('*.json')):
+              batch = load(batch_path)
+              for story in batch.get('stories', []):
+                  rel = Path(story['relative_path'])
+                  target_path = target_root / rel
+                  target = load(target_path)
+                  fields = collect(target)
+                  entries = story['entries']
+                  if len(entries) != len(fields):
+                      raise AssertionError(f'complete field count mismatch for {rel}: {len(entries)} != {len(fields)}')
+                  source_path = next((root / rel for root in source_roots if (root / rel).is_file()), None)
+                  source_fields = collect(load(source_path)) if source_path else None
+                  if source_fields is not None and [p for p, _ in source_fields] != [p for p, _ in fields]:
+                      raise AssertionError(f'source paths differ for {rel}')
+                  changed = 0
+                  for ordinal, (entry, (path, old)) in enumerate(zip(entries, fields), 1):
+                      if entry.get('ordinal') != ordinal:
+                          raise AssertionError(f'ordinal mismatch for {rel} at {ordinal}')
+                      jp = entry['jp']
+                      zh = entry['zh_cn']
+                      if source_fields is not None and source_fields[ordinal - 1][1] != jp:
+                          raise AssertionError(f'Japanese mismatch for {rel} at {ordinal}')
+                      safe(jp, zh, f'{rel}:{ordinal}')
+                      if old != zh:
+                          assign(target, path, zh)
+                          changed += 1
+                  if changed:
+                      target_path.write_text(json.dumps(target, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+                      load(target_path)
+                  report['changed_fields'] += changed
+                  report['complete_batches'].append({'batch_id': batch['batch_id'], 'story_id': str(story['story_id']), 'changed_fields': changed})
+
+          for batch_path in sorted(Path('manual_retranslation/manual_batches_subset').glob('*.json')):
+              batch = load(batch_path)
+              for story in batch.get('stories', []):
+                  rel = Path(story['relative_path'])
+                  target_path = target_root / rel
+                  target = load(target_path)
+                  fields = collect(target)
+                  expected = story.get('field_count')
+                  if expected is not None and expected != len(fields):
+                      raise AssertionError(f'subset field count mismatch for {rel}: {expected} != {len(fields)}')
+                  source_path = next((root / rel for root in source_roots if (root / rel).is_file()), None)
+                  source_fields = collect(load(source_path)) if source_path else None
+                  if source_fields is not None and [p for p, _ in source_fields] != [p for p, _ in fields]:
+                      raise AssertionError(f'source paths differ for {rel}')
+                  changed = 0
+                  used = set()
+                  for entry in story.get('entries', []):
+                      ordinal = entry['ordinal']
+                      if ordinal in used or not 1 <= ordinal <= len(fields):
+                          raise AssertionError(f'invalid subset ordinal for {rel}: {ordinal}')
+                      used.add(ordinal)
+                      jp = entry['jp']
+                      zh = entry['zh_cn']
+                      if source_fields is not None and source_fields[ordinal - 1][1] != jp:
+                          raise AssertionError(f'Japanese mismatch for {rel} at {ordinal}')
+                      safe(jp, zh, f'{rel}:{ordinal}')
+                      path, old = fields[ordinal - 1]
+                      if old != zh:
+                          assign(target, path, zh)
+                          changed += 1
+                  if changed:
+                      target_path.write_text(json.dumps(target, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+                      load(target_path)
+                  report['changed_fields'] += changed
+                  report['subset_batches'].append({'batch_id': batch['batch_id'], 'story_id': str(story['story_id']), 'reviewed_ordinals': sorted(used), 'changed_fields': changed})
+
+          Path('manual_retranslation/master_apply_report.json').write_text(
+              json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8'
+          )
+          print(json.dumps(report, ensure_ascii=False))
+          PY
+
+      - name: Validate whole-tree functional invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          before = Path('${{ runner.temp }}/Scenarios_full.before')
+          after = Path('magireco-translate-data-master/Scenarios_full')
+          ALLOWED = {
+              'textLeft', 'textRight', 'textCenter', 'narration',
+              'progressNarration', 'textSelect', 'nameLeft', 'nameRight',
+              'nameCenter', 'nameNarration',
+          }
+          TAG_RE = re.compile(r'\[[^\]\r\n]+\]')
+          BRACE_RE = re.compile(r'\{[^{}\r\n]+\}')
+          PRINTF_RE = re.compile(r'%(?:\d+\$)?[-+#0 .\d]*[A-Za-z]')
+          before_files = {p.relative_to(before) for p in before.rglob('*.json')}
+          after_files = {p.relative_to(after) for p in after.rglob('*.json')}
+          if before_files != after_files:
+              raise AssertionError('JSON file set changed')
+          changed_files = 0
+          changed_fields = 0
+
+          def load(path):
+              with path.open(encoding='utf-8-sig') as f:
+                  return json.load(f)
+
+          def walk(left, right, path=()):
+              global changed_fields
+              if type(left) is not type(right):
+                  raise AssertionError(f'type changed at {path!r}')
+              if isinstance(left, dict):
+                  if list(left.keys()) != list(right.keys()):
+                      raise AssertionError(f'keys changed at {path!r}')
+                  for key in left:
+                      walk(left[key], right[key], path + (key,))
+              elif isinstance(left, list):
+                  if len(left) != len(right):
+                      raise AssertionError(f'list length changed at {path!r}')
+                  for index, (a, b) in enumerate(zip(left, right)):
+                      walk(a, b, path + (index,))
+              elif left != right:
+                  if not path or path[-1] not in ALLOWED:
+                      raise AssertionError(f'non-text value changed at {path!r}')
+                  if not isinstance(left, str) or not isinstance(right, str):
+                      raise AssertionError(f'non-string text change at {path!r}')
+                  if left.count('@') != right.count('@'):
+                      raise AssertionError(f'@ count changed at {path!r}')
+                  if TAG_RE.findall(left) != TAG_RE.findall(right):
+                      raise AssertionError(f'control tags changed at {path!r}')
+                  if BRACE_RE.findall(left) != BRACE_RE.findall(right):
+                      raise AssertionError(f'brace tokens changed at {path!r}')
+                  if PRINTF_RE.findall(left) != PRINTF_RE.findall(right):
+                      raise AssertionError(f'printf tokens changed at {path!r}')
+                  changed_fields += 1
+
+          for rel in sorted(before_files, key=lambda value: value.as_posix()):
+              bp = before / rel
+              ap = after / rel
+              if bp.read_bytes() == ap.read_bytes():
+                  continue
+              changed_files += 1
+              walk(load(bp), load(ap), (rel.as_posix(),))
+          print(json.dumps({'changed_files': changed_files, 'changed_fields': changed_fields}, ensure_ascii=False))
+          PY
+
+      - name: Commit and push all reviewed translations
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'magi-reader translation bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add magireco-translate-data-master/Scenarios_full manual_retranslation/master_apply_report.json
+          if git diff --cached --quiet; then
+            echo 'All reviewed data is already applied.'
+            exit 0
+          fi
+          git commit -m 'Apply all validated reviewed manual translations'
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+            sleep $((attempt * 5))
+          done
+          echo 'Failed to push after five attempts.' >&2
+          exit 1
