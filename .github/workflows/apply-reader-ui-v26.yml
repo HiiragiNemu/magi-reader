@@ -57,6 +57,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python tools/search_chunk_delivery.py materialize
+          python tools/search_chunk_delivery.py verify-tree --root website/public
           npm --prefix website run build:worker
           npm --prefix website run verify:cloudflare-output
           python tools/search_chunk_delivery.py verify-tree --root website/.open-next/assets
