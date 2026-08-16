@@ -150,6 +150,7 @@ jobs:
           set -euo pipefail
           npm --prefix website run check
           python generate_story_index.py --validate-only
+          python tools/build_split_search_indexes.py
           python tools/build_split_search_indexes.py --validate-only
           python tools/search_chunk_delivery.py verify-tree --root website/public
 
@@ -166,6 +167,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -f tools/apply_reader_ui_v28.py .github/workflows/apply-reader-ui-v28.yml
+          rm -rf artifacts/search-split
           git config user.name 'github-actions[bot]'
           git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
           git add -A
