@@ -35,40 +35,35 @@ jobs:
           cache: npm
           cache-dependency-path: website/package-lock.json
 
-      - name: Apply and preserve V27 candidate
+      - name: Apply final accessibility contract
         shell: bash
         run: |
           set -euo pipefail
-          python tools/apply_reader_ui_v27.py
           python - <<'PY'
           from pathlib import Path
 
-          css = Path('website/app/ui-refinements.css')
-          css_value = css.read_text(encoding='utf-8')
-          css.write_text(css_value.rstrip() + '\n', encoding='utf-8', newline='\n')
-
           page = Path('website/app/page.tsx')
-          page_value = page.read_text(encoding='utf-8')
-          hydration_target = '        setMobileReviewPlacement(stored);\n'
-          hydration_replacement = (
-              '        // This one-time client preference hydration intentionally runs after mount.\n'
-              '        // eslint-disable-next-line react-hooks/set-state-in-effect\n'
-              '        setMobileReviewPlacement(stored);\n'
+          value = page.read_text(encoding='utf-8')
+          target = (
+              '          className={`magi-home-mobile-review-button md:hidden ${\n'
           )
-          if page_value.count(hydration_target) != 1:
-              raise SystemExit('mobile review placement hydration marker is not unique')
+          replacement = (
+              '          className={`magi-home-mobile-review-button transition md:hidden '
+              'focus-visible:outline-none focus-visible:ring-2 '
+              'focus-visible:ring-amber-500 ${\n'
+          )
+          if value.count(target) != 1:
+              raise SystemExit(
+                  f'mobile review button class marker count={value.count(target)}; expected 1'
+              )
           page.write_text(
-              page_value.replace(hydration_target, hydration_replacement, 1),
+              value.replace(target, replacement, 1),
               encoding='utf-8',
               newline='\n',
           )
           PY
           git diff --check
-          git config user.name 'github-actions[bot]'
-          git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m '[ui-v27-candidate] Preserve generated V27 tree for exact diagnostics'
-          git push origin HEAD:work/reader-ui-v27
+          git status --short
 
       - name: Install deterministic dependencies
         shell: bash
@@ -98,9 +93,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin work/reader-ui-v27
-          git reset --hard origin/work/reader-ui-v27
           rm -f tools/apply_reader_ui_v27.py .github/workflows/apply-reader-ui-v27.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
           git add -A
+          if git diff --cached --quiet; then
+            echo 'Validated V27 tree produced no durable changes.' >&2
+            exit 1
+          fi
           git commit -m '[tw-materialized] Reader UI V27 compact dock navigation and synchronized sidebar'
           git push origin HEAD:work/reader-ui-v27
