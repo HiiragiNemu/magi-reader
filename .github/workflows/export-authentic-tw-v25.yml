@@ -1,0 +1,55 @@
+name: Export authentic TW v25 branch
+
+on:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - '.github/workflows/export-authentic-tw-v25.yml'
+      - '.translation-export-trigger/authentic-tw-v25.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out authentic TW v25
+        uses: actions/checkout@v4
+        with:
+          ref: work/authentic-tw-v25
+          fetch-depth: 0
+          path: source
+
+      - name: Build export
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p export
+          git -C source rev-parse HEAD > export/HEAD.txt
+          git -C source log -30 --date=iso-strict --pretty=format:'%H%x09%ad%x09%s' > export/log.tsv
+          git -C source ls-tree -r --long HEAD > export/tree.txt
+
+          if [ -d source/magireco-translate-data-master/Scenarios_full ]; then
+            tar -C source/magireco-translate-data-master -cJf export/Scenarios_full.tar.xz Scenarios_full
+          elif [ -d source/Scenarios_full ]; then
+            tar -C source -cJf export/Scenarios_full.tar.xz Scenarios_full
+          else
+            echo 'Scenarios_full directory not found' >&2
+            find source -maxdepth 4 -type d | sort >&2
+            exit 1
+          fi
+
+          find source -maxdepth 5 -type f \
+            \( -path '*/authentic*' -o -path '*/tw-*' -o -path '*/official*' -o -path '*/reports/*' \) \
+            -print0 | tar --null -T - -C / -cJf export/metadata-files.tar.xz || true
+
+      - name: Upload export
+        uses: actions/upload-artifact@v4
+        with:
+          name: authentic-tw-v25-export
+          path: export/
+          compression-level: 0
+          retention-days: 7
