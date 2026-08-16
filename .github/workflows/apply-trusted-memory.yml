@@ -1,0 +1,71 @@
+name: Apply trusted human translation memory
+
+on:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - manual_retranslation/apply_trusted_memory.py
+      - .github/workflows/apply-trusted-memory.yml
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: trusted-memory-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-and-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out translation branch with its starting commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Download trusted-memory artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: '9252733892'
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" \
+            --output "$RUNNER_TEMP/trusted-memory-artifact.zip"
+          mkdir -p "$RUNNER_TEMP/artifact" "$RUNNER_TEMP/trusted"
+          unzip -q "$RUNNER_TEMP/trusted-memory-artifact.zip" -d "$RUNNER_TEMP/artifact"
+          INNER="$(find "$RUNNER_TEMP/artifact" -type f -name 'trusted-memory-export.zip' -print -quit)"
+          test -n "$INNER"
+          unzip -q "$INNER" -d "$RUNNER_TEMP/trusted"
+          PATCH_ROOT="$(find "$RUNNER_TEMP/trusted" -type d -path '*/patches/magireco-translate-data-master/Scenarios_full' -print -quit)"
+          test -n "$PATCH_ROOT"
+          echo "PATCH_ROOT=$PATCH_ROOT" >> "$GITHUB_ENV"
+
+      - name: Apply exact trusted-human restorations
+        run: |
+          python manual_retranslation/apply_trusted_memory.py \
+            --patch-root "$PATCH_ROOT" \
+            --base-ref 365ee868107ffae44bd8263a5123a2853e30abd6 \
+            --report "$RUNNER_TEMP/trusted-memory-report.json"
+          cat "$RUNNER_TEMP/trusted-memory-report.json"
+
+      - name: Commit restored scenario fields
+        shell: bash
+        run: |
+          if git diff --quiet -- magireco-translate-data-master/Scenarios_full; then
+            echo "No trusted-memory changes are required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- magireco-translate-data-master/Scenarios_full
+          git commit -m "Restore trusted human scenario translations"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
