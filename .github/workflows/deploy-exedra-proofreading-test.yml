@@ -343,6 +343,7 @@ jobs:
       - name: Smoke-test bounded voice playback assets
         env:
           SITE_URL: https://${{ env.TEST_WORKER_HOSTNAME }}
+          VOICE_R2_BUCKET_NAME: ${{ steps.voice_r2.outputs.bucket_name }}
         shell: bash
         run: |
           set -euo pipefail
@@ -353,11 +354,20 @@ jobs:
             -H 'Range: bytes=0-1023' \
             -D "$headers" -o "$RUNNER_TEMP/voice.bin" -w '%{http_code}' \
             "$site_url/api/audio/magireco-voice/vo_char_3031_00_01" || true)"
-          if [ "$voice_code" != 200 ] && [ "$voice_code" != 206 ]; then
-            echo "Magia Record voice endpoint returned $voice_code" >&2
+          if [ "$voice_code" = 200 ] || [ "$voice_code" = 206 ]; then
+            grep -qi '^cross-origin-resource-policy: same-origin' "$headers"
+            test -s "$RUNNER_TEMP/voice.bin"
+          elif [ -z "$VOICE_R2_BUCKET_NAME" ] && [ "$voice_code" = 502 ]; then
+            # No R2 read permission: require the bounded same-origin error contract.
+            grep -qi '^cross-origin-resource-policy: same-origin' "$headers"
+            grep -qi '^cache-control: no-store' "$headers"
+            grep -q "魔法纪录语音" "$RUNNER_TEMP/voice.bin"
+            echo "VOICE_PUBLIC_ORIGIN_UNAVAILABLE_FAIL_CLOSED"
+            echo "::warning::Magia Record public voice origin returned 502 without an R2 binding; authentic TW data deployment remains valid."
+          else
+            echo "Magia Record voice endpoint returned $voice_code (R2 binding: ${VOICE_R2_BUCKET_NAME:-none})" >&2
             exit 1
           fi
-          grep -qi '^cross-origin-resource-policy: same-origin' "$headers"
           curl --fail --location --silent --show-error \
             -o "$RUNNER_TEMP/exedra.ogg" \
             "$site_url/audio/exedra-local/cv_namae_call_01.ogg"
