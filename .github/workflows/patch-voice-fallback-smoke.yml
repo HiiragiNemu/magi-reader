@@ -27,6 +27,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: EXEDRA-TEST
+          token: ${{ secrets.TARGET_REPO_TOKEN || secrets.PROOFREADING_GITHUB_TOKEN || github.token }}
 
       - name: Make the external voice-origin check conditional on an R2 binding
         shell: bash
