@@ -78,6 +78,7 @@ jobs:
           python generate_story_index.py --validate-only
           python tools/build_split_search_indexes.py
           python tools/build_split_search_indexes.py --validate-only
+          python tools/search_chunk_delivery.py materialize
           python tools/search_chunk_delivery.py verify-tree --root website/public
 
       - name: Build and verify Cloudflare output
