@@ -49,23 +49,65 @@ jobs:
 
           page = Path('website/app/page.tsx')
           page_value = page.read_text(encoding='utf-8')
-          target = '        setMobileReviewPlacement(stored);\n'
-          replacement = (
+          hydration_target = '        setMobileReviewPlacement(stored);\n'
+          hydration_replacement = (
               '        // This one-time client preference hydration intentionally runs after mount.\n'
               '        // eslint-disable-next-line react-hooks/set-state-in-effect\n'
               '        setMobileReviewPlacement(stored);\n'
           )
-          if page_value.count(target) != 1:
+          if page_value.count(hydration_target) != 1:
               raise SystemExit('mobile review placement hydration marker is not unique')
           page.write_text(
-              page_value.replace(target, replacement, 1),
+              page_value.replace(hydration_target, hydration_replacement, 1),
               encoding='utf-8',
               newline='\n',
           )
+
+          reader = Path('website/app/reader/[id]/page.tsx')
+          reader_value = reader.read_text(encoding='utf-8')
+          replacements = (
+              (
+                  '                onClick={() => goToSection(previousSectionIndex)}\n'
+                  '                disabled={previousSectionIndex < 0}\n',
+                  '                onClick={() => {\n'
+                  '                  if (\n'
+                  '                    previousSectionIndex !== undefined\n'
+                  '                    && previousSectionIndex >= 0\n'
+                  '                  ) {\n'
+                  '                    goToSection(previousSectionIndex);\n'
+                  '                  }\n'
+                  '                }}\n'
+                  '                disabled={\n'
+                  '                  previousSectionIndex === undefined\n'
+                  '                  || previousSectionIndex < 0\n'
+                  '                }\n',
+              ),
+              (
+                  '                onClick={() => goToSection(nextSectionIndex)}\n'
+                  '                disabled={nextSectionIndex < 0}\n',
+                  '                onClick={() => {\n'
+                  '                  if (\n'
+                  '                    nextSectionIndex !== undefined\n'
+                  '                    && nextSectionIndex >= 0\n'
+                  '                  ) {\n'
+                  '                    goToSection(nextSectionIndex);\n'
+                  '                  }\n'
+                  '                }}\n'
+                  '                disabled={\n'
+                  '                  nextSectionIndex === undefined\n'
+                  '                  || nextSectionIndex < 0\n'
+                  '                }\n',
+              ),
+          )
+          for target, replacement in replacements:
+              if reader_value.count(target) != 1:
+                  raise SystemExit(
+                      'section navigation index-guard marker is not unique: '
+                      + target.splitlines()[0]
+                  )
+              reader_value = reader_value.replace(target, replacement, 1)
+          reader.write_text(reader_value, encoding='utf-8', newline='\n')
           PY
-          echo '========== V27 READER TYPE-CHECK CONTEXT =========='
-          nl -ba 'website/app/reader/[id]/page.tsx' | sed -n '3238,3260p'
-          echo '===================================================='
           git diff --check
           git status --short
 
