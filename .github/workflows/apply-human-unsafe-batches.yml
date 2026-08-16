@@ -1,0 +1,73 @@
+name: Apply human unsafe translation batches
+
+on:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - '.github/workflows/apply-human-unsafe-batches.yml'
+      - 'manual_retranslation/apply_human_unsafe_batches.py'
+      - 'manual_retranslation/human_unsafe_batches/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: apply-human-unsafe-batches-reader-manual
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out retranslation branch
+        uses: actions/checkout@v4
+        with:
+          ref: reader/manual-gpt-retranslation-20260816
+          fetch-depth: 0
+
+      - name: Download frozen corpus and trusted-memory artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/manual-corpus /tmp/manual-trusted
+          curl -fsSL \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/9252733254/zip" \
+            -o /tmp/manual-corpus.zip
+          curl -fsSL \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/9252733892/zip" \
+            -o /tmp/manual-trusted.zip
+          unzip -q /tmp/manual-corpus.zip -d /tmp/manual-corpus
+          unzip -q /tmp/manual-trusted.zip -d /tmp/manual-trusted
+
+      - name: Apply and validate human batches
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 manual_retranslation/apply_human_unsafe_batches.py \
+            --repo . \
+            --corpus /tmp/manual-corpus \
+            --trusted /tmp/manual-trusted
+
+      - name: Commit validated scenario changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add magireco-translate-data-master/Scenarios_full
+          git add manual_retranslation/reports/human_unsafe_batches || true
+          if git diff --cached --quiet; then
+            echo 'No scenario changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Apply validated human unsafe translation batch'
+          git push origin HEAD:reader/manual-gpt-retranslation-20260816
