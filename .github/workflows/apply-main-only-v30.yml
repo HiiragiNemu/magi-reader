@@ -25,7 +25,6 @@ jobs:
         with:
           fetch-depth: 0
           ref: work/main-only-v30-font-scope
-          token: ${{ secrets.TARGET_REPO_TOKEN || secrets.PROOFREADING_GITHUB_TOKEN || github.token }}
 
       - uses: actions/setup-python@v5
         with:
@@ -119,20 +118,25 @@ jobs:
           npm --prefix website run verify:cloudflare-output
           python tools/search_chunk_delivery.py verify-tree --root website/.open-next/assets
 
-      - name: Commit validated main-only V30 tree
+      - name: Commit validated non-workflow V30 tree
         shell: bash
         run: |
           set -euo pipefail
-          rm -f \
-            tools/apply_main_only_v30.py \
-            tools/apply_main_only_v30_runtime.py \
-            .github/workflows/apply-main-only-v30.yml
+          # GitHub's ephemeral Actions token cannot push workflow-file changes.
+          # The exact workflow tree validated above is applied immediately after
+          # this run through the authenticated Git data API.
+          git restore --source=HEAD --staged --worktree .github/workflows
+          rm -f tools/apply_main_only_v30.py tools/apply_main_only_v30_runtime.py
           git config user.name 'github-actions[bot]'
           git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
           git add -A
           if git diff --cached --quiet; then
-            echo 'V30 migration produced no durable changes.' >&2
+            echo 'V30 migration produced no durable non-workflow changes.' >&2
             exit 1
           fi
-          git commit -m '[main-only-v30] Global game font scope and retire EXEDRA test'
+          if git diff --cached --name-only | grep -q '^\.github/workflows/'; then
+            echo 'Workflow files unexpectedly remain in the staged tree.' >&2
+            exit 1
+          fi
+          git commit -m '[main-only-v30-stage] Validated global game font runtime'
           git push origin HEAD:work/main-only-v30-font-scope
