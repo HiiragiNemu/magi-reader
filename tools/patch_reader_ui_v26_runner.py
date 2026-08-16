@@ -76,24 +76,26 @@ def main() -> int:
         "replace class loop",
     )
 
-    # V26 styles are deliberately appended to ui-refinements.css, which is
-    # imported after globals.css. Point only the new V26 assertions at that
-    # stylesheet; all pre-existing globals.css contracts remain unchanged.
+    # The edge-turn button geometry remains in globals.css while the new V26
+    # utility/editor rules are appended to ui-refinements.css. Validate the
+    # effective cascade instead of pretending either stylesheet is standalone.
     reader_css_source = '''  const [reader, css] = await Promise.all([
     readFile(readerPath, 'utf8'),
     readFile(cssPath, 'utf8'),
   ]);
   assert.match(reader, /pageCount > 1'''
-    reader_css_refinements = '''  const [reader, css] = await Promise.all([
+    reader_css_effective = '''  const [reader, globals, refinements] = await Promise.all([
     readFile(readerPath, 'utf8'),
+    readFile(cssPath, 'utf8'),
     readFile(new URL('../app/ui-refinements.css', import.meta.url), 'utf8'),
   ]);
+  const css = `${globals}\\n${refinements}`;
   assert.match(reader, /pageCount > 1'''
     source = replace_once(
         source,
         reader_css_source,
-        reader_css_refinements,
-        "point V26 Reader test at refinements stylesheet",
+        reader_css_effective,
+        "validate V26 Reader against effective stylesheet cascade",
     )
 
     home_test_start = '''test('home search grows from a compact measured width before other mobile controls', () => {
