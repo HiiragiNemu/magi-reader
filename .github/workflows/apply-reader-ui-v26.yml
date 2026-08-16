@@ -1,0 +1,75 @@
+name: Apply Reader UI V26
+
+on:
+  push:
+    branches: [work/reader-ui-v26]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-reader-ui-v26
+  cancel-in-progress: true
+
+jobs:
+  apply-and-validate:
+    if: startsWith(github.event.head_commit.message, '[ui-v26] bootstrap')
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work/reader-ui-v26
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Apply fail-closed Reader UI migration
+        run: python tools/apply_reader_ui_v26.py
+
+      - name: Reject malformed patches
+        run: git diff --check
+
+      - name: Install website dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Run complete repository checks
+        working-directory: website
+        run: npm run check
+
+      - name: Build and verify Cloudflare Worker output
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix website run build:worker
+          npm --prefix website run verify:cloudflare-output
+          python tools/search_chunk_delivery.py verify-tree --root website/.open-next/assets
+
+      - name: Commit validated implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f \
+            tools/apply_reader_ui_v26.py \
+            .github/workflows/apply-reader-ui-v26.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Reader UI migration produced no changes.' >&2
+            exit 1
+          fi
+          git commit -m '[tw-materialized] Reader UI V26 compact navigation and themed editor'
+          git push origin HEAD:work/reader-ui-v26
