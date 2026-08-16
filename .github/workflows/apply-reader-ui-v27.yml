@@ -43,9 +43,25 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          path = Path('website/app/ui-refinements.css')
-          value = path.read_text(encoding='utf-8')
-          path.write_text(value.rstrip() + '\n', encoding='utf-8', newline='\n')
+          css = Path('website/app/ui-refinements.css')
+          css_value = css.read_text(encoding='utf-8')
+          css.write_text(css_value.rstrip() + '\n', encoding='utf-8', newline='\n')
+
+          page = Path('website/app/page.tsx')
+          page_value = page.read_text(encoding='utf-8')
+          target = '        setMobileReviewPlacement(stored);\n'
+          replacement = (
+              '        // This one-time client preference hydration intentionally runs after mount.\n'
+              '        // eslint-disable-next-line react-hooks/set-state-in-effect\n'
+              '        setMobileReviewPlacement(stored);\n'
+          )
+          if page_value.count(target) != 1:
+              raise SystemExit('mobile review placement hydration marker is not unique')
+          page.write_text(
+              page_value.replace(target, replacement, 1),
+              encoding='utf-8',
+              newline='\n',
+          )
           PY
           git diff --check
           git status --short
