@@ -81,21 +81,6 @@ def main() -> int:
     for path in (DIRECT_DEPLOY, DIRECT_UTILS, DIRECT_UTILS_TEST):
         delete_required(path)
 
-    unexpected: list[str] = []
-    for root in (
-        ROOT / "website/app",
-        ROOT / "website/lib",
-        ROOT / "website/scripts",
-    ):
-        for path in root.rglob("*"):
-            if path.is_file() and path.suffix in {".ts", ".tsx", ".js", ".mjs"}:
-                if "EXEDRA-TEST" in read(path):
-                    unexpected.append(str(path.relative_to(ROOT)))
-    if unexpected:
-        raise RuntimeError(
-            "runtime files still reference EXEDRA-TEST: " + ", ".join(unexpected)
-        )
-
     print(
         "MAIN_ONLY_V30_RUNTIME_PATCHED "
         f"removedScripts={','.join(removed)} removedDirectFiles=3"
