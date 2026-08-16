@@ -1,0 +1,217 @@
+name: Apply ordinal manual retranslation batches
+
+on:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - manual_retranslation/manual_batches/*.json
+      - .github/workflows/manual-retranslation-ordinal-apply.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: robust-manual-retranslation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply reviewed Japanese-to-Chinese mappings
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import copy
+          import json
+          import re
+          from pathlib import Path
+
+          ALLOWED = {
+              'textLeft', 'textRight', 'textCenter', 'narration',
+              'progressNarration', 'textSelect', 'nameLeft', 'nameRight',
+              'nameCenter', 'nameNarration',
+          }
+          TAG_RE = re.compile(r'\[[^\]\r\n]+\]')
+          BRACE_RE = re.compile(r'\{[^{}\r\n]+\}')
+          PRINTF_RE = re.compile(r'%(?:\d+\$)?[-+#0 .\d]*[A-Za-z]')
+
+          target_root = Path('magireco-translate-data-master/Scenarios_full')
+          source_roots = [
+              Path('magireco-source-master/Scenarios_full'),
+              Path('magireco-source-master'),
+              Path('source/Scenarios_full'),
+          ]
+          batch_dir = Path('manual_retranslation/manual_batches')
+          batch_files = sorted(batch_dir.glob('*.json'))
+          if not batch_files:
+              print('No ordinal manual batches found.')
+              raise SystemExit(0)
+
+          def load_json(path):
+              with path.open(encoding='utf-8-sig') as f:
+                  return json.load(f)
+
+          def collect_fields(node, path=()):
+              found = []
+              if isinstance(node, dict):
+                  for key, value in node.items():
+                      child = path + (key,)
+                      if key in ALLOWED:
+                          if not isinstance(value, str):
+                              raise AssertionError(f'non-string text field at {child!r}')
+                          found.append((child, value))
+                      else:
+                          found.extend(collect_fields(value, child))
+              elif isinstance(node, list):
+                  for index, value in enumerate(node):
+                      found.extend(collect_fields(value, path + (index,)))
+              return found
+
+          def set_path(node, path, value):
+              cur = node
+              for part in path[:-1]:
+                  cur = cur[part]
+              cur[path[-1]] = value
+
+          def compare_except_text(before, after, path=()):
+              if type(before) is not type(after):
+                  raise AssertionError(f'type changed at {path!r}')
+              if isinstance(before, dict):
+                  if list(before.keys()) != list(after.keys()):
+                      raise AssertionError(f'keys changed at {path!r}')
+                  for key in before:
+                      if key in ALLOWED:
+                          continue
+                      compare_except_text(before[key], after[key], path + (key,))
+              elif isinstance(before, list):
+                  if len(before) != len(after):
+                      raise AssertionError(f'list length changed at {path!r}')
+                  for index, (left, right) in enumerate(zip(before, after)):
+                      compare_except_text(left, right, path + (index,))
+              elif before != after:
+                  raise AssertionError(f'non-text value changed at {path!r}')
+
+          changed_files = 0
+          changed_fields = 0
+          applied_batches = []
+          applied_stories = []
+
+          for batch_path in batch_files:
+              batch = load_json(batch_path)
+              if batch.get('schema_version') != 1:
+                  raise AssertionError(f'unsupported schema in {batch_path}')
+              batch_id = batch.get('batch_id')
+              if not isinstance(batch_id, str) or not batch_id:
+                  raise AssertionError(f'missing batch_id in {batch_path}')
+              stories = batch.get('stories')
+              if not isinstance(stories, list) or not stories:
+                  raise AssertionError(f'no stories in {batch_path}')
+
+              for story in stories:
+                  story_id = str(story['story_id'])
+                  rel = Path(story['relative_path'])
+                  target_path = target_root / rel
+                  if not target_path.is_file():
+                      raise FileNotFoundError(target_path)
+                  source_path = next((root / rel for root in source_roots if (root / rel).is_file()), None)
+                  if source_path is None:
+                      raise FileNotFoundError(f'Japanese source not found for {rel}')
+
+                  source = load_json(source_path)
+                  target = load_json(target_path)
+                  before = copy.deepcopy(target)
+                  source_fields = collect_fields(source)
+                  target_fields = collect_fields(target)
+                  source_paths = [path for path, _ in source_fields]
+                  target_paths = [path for path, _ in target_fields]
+                  if source_paths != target_paths:
+                      raise AssertionError(f'field paths differ for {rel}')
+
+                  entries = story.get('entries')
+                  if not isinstance(entries, list) or len(entries) != len(source_fields):
+                      raise AssertionError(
+                          f'entry count mismatch for {rel}: '
+                          f'{len(entries) if isinstance(entries, list) else "invalid"} != {len(source_fields)}'
+                      )
+
+                  story_changed = 0
+                  for ordinal, (entry, (field_path, jp), (_, old_cn)) in enumerate(
+                      zip(entries, source_fields, target_fields), start=1
+                  ):
+                      if entry.get('ordinal') != ordinal:
+                          raise AssertionError(f'ordinal mismatch for {rel} at {ordinal}')
+                      if entry.get('jp') != jp:
+                          raise AssertionError(
+                              f'Japanese source mismatch for {rel} at ordinal {ordinal}: '
+                              f'{entry.get("jp")!r} != {jp!r}'
+                          )
+                      zh = entry.get('zh_cn')
+                      if not isinstance(zh, str):
+                          raise AssertionError(f'invalid translation for {rel} at ordinal {ordinal}')
+                      if jp.count('@') != zh.count('@'):
+                          raise AssertionError(f'@ count changed for {rel} at ordinal {ordinal}')
+                      if TAG_RE.findall(jp) != TAG_RE.findall(zh):
+                          raise AssertionError(f'control tag sequence changed for {rel} at ordinal {ordinal}')
+                      if BRACE_RE.findall(jp) != BRACE_RE.findall(zh):
+                          raise AssertionError(f'brace token sequence changed for {rel} at ordinal {ordinal}')
+                      if PRINTF_RE.findall(jp) != PRINTF_RE.findall(zh):
+                          raise AssertionError(f'printf token sequence changed for {rel} at ordinal {ordinal}')
+                      if old_cn != zh:
+                          set_path(target, field_path, zh)
+                          story_changed += 1
+
+                  compare_except_text(before, target, (str(rel),))
+                  if story_changed:
+                      target_path.write_text(
+                          json.dumps(target, ensure_ascii=False, indent=2) + '\n',
+                          encoding='utf-8',
+                      )
+                      load_json(target_path)
+                      changed_files += 1
+                      changed_fields += story_changed
+                  applied_stories.append({
+                      'story_id': story_id,
+                      'relative_path': rel.as_posix(),
+                      'field_count': len(entries),
+                      'changed_fields': story_changed,
+                  })
+              applied_batches.append(batch_id)
+
+          report = {
+              'schema_version': 1,
+              'applied_batches': applied_batches,
+              'stories': applied_stories,
+              'changed_files': changed_files,
+              'changed_fields': changed_fields,
+          }
+          Path('manual_retranslation/last_ordinal_apply_report.json').write_text(
+              json.dumps(report, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          print(json.dumps(report, ensure_ascii=False))
+          PY
+
+      - name: Commit and push translated JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'magi-reader translation bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add magireco-translate-data-master/Scenarios_full manual_retranslation/last_ordinal_apply_report.json
+          if git diff --cached --quiet; then
+            echo 'All ordinal batches are already applied.'
+            exit 0
+          fi
+          git commit -m 'Apply reviewed ordinal manual retranslation batches'
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
