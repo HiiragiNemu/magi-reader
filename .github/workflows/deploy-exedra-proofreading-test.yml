@@ -338,6 +338,7 @@ jobs:
               raise SystemExit('Japanese speaker remains in retained-human Liz TXT')
           print(f'CANONICAL_CN_DEPLOY_OK arina_names={len(names)}')
           PY
+          echo "TW_DEPLOY_BYTES_OK revision=$GITHUB_SHA path=$arina_path"
 
       - name: Smoke-test bounded voice playback assets
         env:
