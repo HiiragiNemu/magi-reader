@@ -40,6 +40,13 @@ jobs:
         run: |
           set -euo pipefail
           python tools/apply_reader_ui_v27.py
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('website/app/ui-refinements.css')
+          value = path.read_text(encoding='utf-8')
+          path.write_text(value.rstrip() + '\n', encoding='utf-8', newline='\n')
+          PY
           git diff --check
           git status --short
 
