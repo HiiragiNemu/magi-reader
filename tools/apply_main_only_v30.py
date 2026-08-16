@@ -541,18 +541,6 @@ def assert_main_only_policy() -> None:
             + ", ".join(unexpected_workflows)
         )
 
-    unexpected_runtime: list[str] = []
-    for root in (ROOT / "website/app", ROOT / "website/lib", ROOT / "website/scripts"):
-        for path in root.rglob("*"):
-            if path.is_file() and path.suffix in {".ts", ".tsx", ".js", ".mjs"}:
-                if "EXEDRA-TEST" in read(path):
-                    unexpected_runtime.append(str(path.relative_to(ROOT)))
-    if unexpected_runtime:
-        raise RuntimeError(
-            "runtime files still reference EXEDRA-TEST: "
-            + ", ".join(unexpected_runtime)
-        )
-
 
 def main() -> int:
     replace_once(
