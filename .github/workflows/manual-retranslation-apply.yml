@@ -6,8 +6,10 @@ on:
       - reader/manual-gpt-retranslation-20260816
     paths:
       - manual_retranslation/apply_batches.py
+      - manual_retranslation/apply_exact_batches.py
       - manual_retranslation/batches/**
       - manual_retranslation/bundles/**
+      - manual_retranslation/exact_bundles/**
       - .github/workflows/manual-retranslation-apply.yml
 
 permissions:
@@ -27,11 +29,17 @@ jobs:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
 
-      - name: Apply reviewed translation maps and validate JSON
+      - name: Apply reviewed pointer translation maps
         run: |
           python manual_retranslation/apply_batches.py \
             --report "$RUNNER_TEMP/manual-retranslation-report.json"
           cat "$RUNNER_TEMP/manual-retranslation-report.json"
+
+      - name: Apply complete exact translation bundles
+        run: |
+          python manual_retranslation/apply_exact_batches.py \
+            --report "$RUNNER_TEMP/exact-manual-retranslation-report.json"
+          cat "$RUNNER_TEMP/exact-manual-retranslation-report.json"
 
       - name: Commit translated scenario JSON files
         shell: bash
