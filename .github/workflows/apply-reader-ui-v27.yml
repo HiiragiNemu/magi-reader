@@ -44,11 +44,9 @@ jobs:
 
           page = Path('website/app/page.tsx')
           value = page.read_text(encoding='utf-8')
-          target = (
-              '          className={`magi-home-mobile-review-button md:hidden ${\n'
-          )
+          target = 'className={`magi-home-mobile-review-button md:hidden ${\n'
           replacement = (
-              '          className={`magi-home-mobile-review-button transition md:hidden '
+              'className={`magi-home-mobile-review-button transition md:hidden '
               'focus-visible:outline-none focus-visible:ring-2 '
               'focus-visible:ring-amber-500 ${\n'
           )
