@@ -63,6 +63,9 @@ jobs:
               newline='\n',
           )
           PY
+          echo '========== V27 READER TYPE-CHECK CONTEXT =========='
+          nl -ba 'website/app/reader/[id]/page.tsx' | sed -n '3238,3260p'
+          echo '===================================================='
           git diff --check
           git status --short
 
