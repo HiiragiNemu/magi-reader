@@ -1,0 +1,110 @@
+name: Apply main-only V30 font scope
+
+on:
+  push:
+    branches:
+      - work/main-only-v30-font-scope
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-main-only-v30
+  cancel-in-progress: true
+
+jobs:
+  apply-and-verify:
+    if: startsWith(github.event.head_commit.message, '[main-only-v30-bootstrap]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: work/main-only-v30-font-scope
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Apply fail-closed main-only V30 migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/apply_main_only_v30.py
+          git diff --check
+          git status --short
+
+      - name: Install deterministic dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-compile -r requirements-data-tools.txt
+          npm --prefix website ci
+
+      - name: Rebuild committed data and materialize search chunks
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp website/public/story_index.json "$RUNNER_TEMP/story_index.committed.json"
+          for scope in magireco exedra; do
+            cp "website/public/search_index_manifest.$scope.json" \
+              "$RUNNER_TEMP/search_index_manifest.$scope.committed.json"
+          done
+
+          python generate_story_index.py
+          python tools/apply_tw_official_metadata.py
+          python generate_machine_translation_manifest.py \
+            --translation-base 65f221f2aaa5a9fe161ed32e03e4dfbb93d4746d \
+            --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb
+          python tools/build_split_search_indexes.py
+          python tools/build_split_search_indexes.py --validate-only
+
+          cmp "$RUNNER_TEMP/story_index.committed.json" website/public/story_index.json
+          for scope in magireco exedra; do
+            cmp \
+              "$RUNNER_TEMP/search_index_manifest.$scope.committed.json" \
+              "website/public/search_index_manifest.$scope.json"
+          done
+
+          python tools/search_chunk_delivery.py materialize
+          python tools/search_chunk_delivery.py verify-tree --root website/public
+
+      - name: Run complete repository checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix website run check
+          python generate_story_index.py --validate-only
+
+      - name: Build and verify Cloudflare output
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix website run build:worker
+          npm --prefix website run verify:cloudflare-output
+          python tools/search_chunk_delivery.py verify-tree --root website/.open-next/assets
+
+      - name: Commit validated main-only V30 tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f tools/apply_main_only_v30.py .github/workflows/apply-main-only-v30.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'V30 migration produced no durable changes.' >&2
+            exit 1
+          fi
+          git commit -m '[main-only-v30] Global game font scope and retire EXEDRA test'
+          git push origin HEAD:work/main-only-v30-font-scope
