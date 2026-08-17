@@ -16,7 +16,10 @@ test('Exedra bilingual rendering uses exact event lines', () => {
   assert.ok(reader.includes('? nextCnEventLines'));
   assert.ok(reader.includes('const nextJpLines = isExedraStory'));
   assert.ok(reader.includes('? nextJpEventLines'));
-  assert.ok(reader.includes('sourceReady,\n    isExedraStory,\n  ]);'));
+  assert.match(
+    reader,
+    /sourceReady,\r?\n\s+isExedraStory,\r?\n\s+\]\);/u,
+  );
 });
 
 test('pipeline separates event structure from localized speaker proof', () => {
