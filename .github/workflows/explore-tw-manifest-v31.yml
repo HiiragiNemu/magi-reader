@@ -6,19 +6,26 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: explore-tw-manifest-v31
+  cancel-in-progress: true
 
 jobs:
   inspect:
     if: startsWith(github.event.head_commit.message, '[v31-explore]') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: work/main-v31-manifest-titles-status-font-settings
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Inspect localized manifest schema and title candidates
+      - name: Generate compact relationship report
         shell: bash
         run: |
           set -euo pipefail
@@ -27,69 +34,139 @@ jobs:
           import re
           import urllib.request
           from collections import Counter, defaultdict
+          from pathlib import Path
 
           BASE='https://raw.githubusercontent.com/HiiragiNemu/MagiaExedraTWData/main/Manifests/'
+          NAMES=[
+              'getAdvMstList.json','getCharacterMstList.json',
+              'getCollectionConditionMstList.json','getFieldPointMstList.json',
+              'getFieldStageMstList.json','getStyleMstList.json',
+              'getCardMstList.json','getDioramaBackgroundMstList.json',
+              'getDollhouse2dBackgroundMstList.json',
+              'getDollhouse3dBackgroundMstList.json',
+              'getStyle3dCharacterMstList.json',
+              'getStyleLive2dCostumeMstList.json','getSoundMstList.json',
+          ]
           def load(name):
-              with urllib.request.urlopen(BASE+name, timeout=60) as r:
+              with urllib.request.urlopen(BASE+name, timeout=120) as r:
                   return json.load(r)
           def rows(name):
               value=load(name)
               return value.get('payload',{}).get('mstList',[])
           def cjk(value):
               return bool(re.search(r'[\u3400-\u9fff]', str(value)))
+          def compact(row):
+              return {k:v for k,v in row.items() if v not in ('',0,False,None,[],{})}
 
-          adv=rows('getAdvMstList.json')
-          chars=rows('getCharacterMstList.json')
-          fields=rows('getFieldPointMstList.json')
-          stages=rows('getFieldStageMstList.json')
-          styles=rows('getStyleMstList.json')
-          print('COUNTS', { 'adv':len(adv),'character':len(chars),'fieldPoint':len(fields),'fieldStage':len(stages),'style':len(styles) })
-          for label,data in [('ADV',adv),('CHAR',chars),('FIELD',fields),('STAGE',stages),('STYLE',styles)]:
-              keys=Counter(k for row in data for k in row)
-              print(label+'_KEYS', sorted(keys))
-              localized={k:sum(1 for row in data if cjk(row.get(k,''))) for k in keys}
-              print(label+'_CJK_FIELDS', {k:v for k,v in localized.items() if v})
+          data={name:rows(name) for name in NAMES}
+          adv=data['getAdvMstList.json']
+          report={
+              'schemaVersion':1,
+              'sourceRepository':'HiiragiNemu/MagiaExedraTWData',
+              'sourceRef':'main',
+              'manifests':{},
+              'knownResources':{},
+              'titleIds':{},
+              'namae':{},
+              'crossManifestMatches':{},
+          }
+          for name,items in data.items():
+              keys=sorted({k for row in items for k in row})
+              report['manifests'][name]={
+                  'count':len(items),
+                  'keys':keys,
+                  'cjkFieldCounts':{
+                      key:sum(1 for row in items if cjk(row.get(key,'')))
+                      for key in keys
+                      if any(cjk(row.get(key,'')) for row in items)
+                  },
+                  'localizedSamples':[
+                      compact(row) for row in items
+                      if any(cjk(v) for v in row.values() if isinstance(v,(str,int,float)))
+                  ][:12],
+              }
 
-          needles=[
-              '2_Sub/sub_birthday2025_iroha_1',
-              '2_Sub/sub_april2026',
-              '7_Namae/',
-              '7_Namae/act_lock_tart',
-              '7_Namae/map_hikarinoma_transition',
-              '7_Namae/contents_tutorial_camera',
-          ]
-          for needle in needles:
-              matches=[row for row in adv if needle.casefold() in str(row.get('advResourceName','')).casefold()]
-              print('ADV_MATCH', needle, json.dumps(matches[:20],ensure_ascii=False,indent=2))
+          needles={
+              'birthday2025_iroha':'2_Sub/sub_birthday2025_iroha',
+              'april2026':'2_Sub/sub_april2026',
+              'namae_lock':'7_Namae/act_lock_tart',
+              'namae_hikarinoma':'7_Namae/map_hikarinoma_transition',
+              'namae_camera':'7_Namae/contents_tutorial_camera',
+          }
+          for label,needle in needles.items():
+              matches=[compact(row) for row in adv if needle.casefold() in str(row.get('advResourceName','')).casefold()]
+              report['knownResources'][label]=matches[:50]
 
-          # Print representative localized rows from each manifest.
-          for label,data in [('ADV',adv),('CHAR',chars),('FIELD',fields),('STAGE',stages),('STYLE',styles)]:
-              localized=[]
-              for row in data:
-                  if any(cjk(v) for v in row.values() if isinstance(v,(str,int,float))):
-                      localized.append(row)
-              print(label+'_LOCALIZED_SAMPLES', json.dumps(localized[:30],ensure_ascii=False,indent=2))
-
-          # Correlate Adv title IDs to resource groups and localized fields.
           by_title=defaultdict(list)
           for row in adv:
-              by_title[row.get('advTitleMstId')].append(row)
-          for tid in [1,2,3,133]:
-              sample=by_title.get(tid,[])
-              print('TITLE_ID',tid,'COUNT',len(sample),'SAMPLE',json.dumps(sample[:10],ensure_ascii=False,indent=2))
+              by_title[str(row.get('advTitleMstId'))].append(compact(row))
+          target_title_ids={
+              str(row.get('advTitleMstId'))
+              for values in report['knownResources'].values()
+              for row in values
+              if row.get('advTitleMstId') is not None
+          }
+          for tid in sorted(target_title_ids, key=lambda value:int(value)):
+              report['titleIds'][tid]=by_title[tid][:80]
 
-          # Look for title-id-like links in every available small manifest.
-          manifest_names=[
-              'getCharacterMstList.json','getFieldPointMstList.json','getFieldStageMstList.json',
-              'getStyleMstList.json','getCardMstList.json','getDioramaBackgroundMstList.json',
-              'getDollhouse2dBackgroundMstList.json','getDollhouse3dBackgroundMstList.json',
-              'getStyle3dCharacterMstList.json','getStyleLive2dCostumeMstList.json',
+          namae_rows=[compact(row) for row in adv if str(row.get('advResourceName','')).startswith('7_Namae/')]
+          report['namae']={
+              'count':len(namae_rows),
+              'uniqueName':sorted({str(row.get('name','')) for row in namae_rows}),
+              'uniqueSubName':sorted({str(row.get('subName','')) for row in namae_rows}),
+              'titleIds':sorted({int(row.get('advTitleMstId',0)) for row in namae_rows}),
+              'rows':namae_rows,
+          }
+
+          target_values={20002201,133}
+          for row in namae_rows:
+              for key,value in row.items():
+                  if isinstance(value,int) and value:
+                      target_values.add(value)
+          target_strings=[
+              'birthday2025_iroha','april2026','act_lock_tart',
+              'map_hikarinoma_transition','contents_tutorial_camera',
           ]
-          for name in manifest_names:
-              data=rows(name)
-              hits=[]
-              for row in data:
-                  if any('title' in k.casefold() or 'name' in k.casefold() for k in row):
-                      hits.append(row)
-              print('NAME_TITLE_ROWS',name,'COUNT',len(hits),'SAMPLE',json.dumps(hits[:8],ensure_ascii=False,indent=2))
+          for name,items in data.items():
+              matches=[]
+              for row in items:
+                  serialized=json.dumps(row,ensure_ascii=False)
+                  numeric_hit=any(value in row.values() for value in target_values)
+                  text_hit=any(term.casefold() in serialized.casefold() for term in target_strings)
+                  field_hit=any(
+                      ('adv' in key.casefold() or 'title' in key.casefold() or 'scenario' in key.casefold())
+                      and value not in ('',0,False,None)
+                      for key,value in row.items()
+                  )
+                  if numeric_hit or text_hit:
+                      matches.append(compact(row))
+              report['crossManifestMatches'][name]=matches[:250]
+
+          # Make all CJK-bearing name/title-like rows directly inspectable.
+          report['nameTitleLocalizedRows']={}
+          for name,items in data.items():
+              rows_out=[]
+              for row in items:
+                  selected={
+                      k:v for k,v in row.items()
+                      if any(token in k.casefold() for token in ('name','title','text','description','label'))
+                      and v not in ('',0,False,None)
+                  }
+                  if selected and any(cjk(v) for v in selected.values()):
+                      rows_out.append({'identity':compact(row), 'selected':selected})
+              report['nameTitleLocalizedRows'][name]=rows_out[:300]
+
+          path=Path('artifacts/v31_tw_manifest_exploration.generated.json')
+          path.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('V31_MANIFEST_REPORT', path, path.stat().st_size)
           PY
+
+      - name: Commit compact report
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
+          git add artifacts/v31_tw_manifest_exploration.generated.json
+          git commit -m '[v31-exploration-result] compact TW manifest title relationships'
+          git push origin HEAD:work/main-v31-manifest-titles-status-font-settings
