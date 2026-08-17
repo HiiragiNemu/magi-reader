@@ -2196,7 +2196,7 @@ function StoryRow({
     return (
       <div
         id={header.headerId}
-        lang={isExedra ? (header === row.jp ? 'ja' : 'zh-Hans') : undefined}
+        lang={header === row.jp ? 'ja' : 'zh-Hans'}
         data-reader-first-header={isFirstStoryHeader || undefined}
         className={`mb-4 text-center ${
           isFirstStoryHeader
@@ -2253,7 +2253,7 @@ function StoryRow({
     return (
       <div id={`line-${index}`} className="my-3 flex justify-center">
         {isEditMode ? (
-          <label className="magi-translation-choice-shell reader-font-cn-title flex w-full max-w-xl items-center gap-2 p-2 text-xs font-bold">
+          <label lang="zh-Hans" className="magi-translation-choice-shell reader-font-cn-title flex w-full max-w-xl items-center gap-2 p-2 text-xs font-bold">
             选项
             <input
               aria-label={`第 ${index + 1} 行选项文本`}
@@ -2273,7 +2273,7 @@ function StoryRow({
         ) : (
           <button
             type="button"
-            lang={isExedra && choice === row.jp ? 'ja' : undefined}
+            lang={choice === row.jp ? 'ja' : 'zh-Hans'}
             onClick={() => onChoice(index, choice)}
             className={`${isExedra && choice === row.jp ? 'exedra-page ' : ''}${choice === row.jp ? 'reader-font-jp-title' : 'reader-font-cn-title'} cursor-pointer rounded-xl border-2 px-5 py-2.5 text-sm font-bold transition hover:scale-105 active:scale-95 ${
               theme === 'dark'
@@ -2320,7 +2320,7 @@ function StoryRow({
     >
       {mode !== 'jp' && (
         <div
-          lang={isExedra ? 'zh-Hans' : undefined}
+          lang="zh-Hans"
           className={`reader-font-cn-body ${isExedra ? 'exedra-page ' : ''}flex min-w-0 gap-3 ${
             mode === 'split' && bilingualLayout === 'side-by-side'
               ? 'md:w-1/2'
@@ -2431,7 +2431,7 @@ function StoryRow({
 
       {mode !== 'cn' && (
         <div
-          lang={isExedra ? 'ja' : undefined}
+          lang="ja"
           className={`reader-font-jp-body ${isExedra ? 'exedra-page ' : ''}flex min-w-0 gap-2 ${bilingualLanguagePaneClass(
             mode,
             bilingualLayout,
@@ -2483,6 +2483,7 @@ function SpeakerLabel({
       : line.speaker;
   return (
     <div
+      lang={language === 'jp' ? 'ja' : 'zh-Hans'}
       className={`magi-reader-speaker-label ${language === 'cn' ? 'reader-font-cn-title' : 'reader-font-jp-title'} h-fit w-20 flex-shrink-0 break-words rounded px-1 pt-1 text-right font-bold leading-tight md:w-24 ${
         highlighted ? 'ring-2 ring-yellow-400' : faded ? 'opacity-50' : ''
       }`}

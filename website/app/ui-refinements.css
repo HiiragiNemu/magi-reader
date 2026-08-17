@@ -115,6 +115,16 @@
   width: min(28rem, calc(100vw - 16px)) !important;
 }
 
+.magi-site-settings-window {
+  width: min(38rem, calc(100vw - 16px)) !important;
+  max-height: min(46rem, calc(100dvh - 16px)) !important;
+}
+
+.magi-site-settings-window .magi-floating-window-body {
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
 .magi-about-window .magi-floating-link {
   min-height: 4.6rem;
   align-items: center;
@@ -204,6 +214,11 @@
 
   .magi-about-window {
     width: calc(100vw - 12px) !important;
+  }
+
+  .magi-site-settings-window {
+    width: calc(100vw - 12px) !important;
+    max-height: calc(100dvh - 12px) !important;
   }
 }
 
@@ -1838,7 +1853,8 @@
    Reader UI V30 — global game-font scope and Exedra whole-UI font skin
    ========================================= */
 
-/* 腾祥智黑 covers all site UI when the Chinese game-font bundle is active. */
+/* 腾祥智黑 preserves the V30 whole-site UI skin. Explicit language boundaries
+   below keep every Japanese reading pane out of this inherited face. */
 html[data-reader-font-chinese='ready'] .magi-site-font-scope,
 html[data-reader-font-chinese='ready'] .magi-site-font-scope :where(
   button,
@@ -1882,7 +1898,6 @@ html[data-reader-font-chinese='ready'] .magi-site-font-scope .magi-home-search-s
 
 html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-cn-title,
 html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-cn-title *,
-html[data-reader-font-chinese='ready'] .magi-site-font-scope .magi-reader-speaker-label,
 html[data-reader-font-chinese='ready'] .magi-site-font-scope .magi-translation-speaker-input {
   font-family:
     "MagiReaderGameChineseTitle",
@@ -1894,7 +1909,9 @@ html[data-reader-font-chinese='ready'] .magi-site-font-scope .magi-translation-s
 
 /* Chinese UI fonts must not leak into Japanese story rows. */
 html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-jp-body,
-html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-jp-body * {
+html[data-reader-font-chinese='ready'] .magi-site-font-scope .reader-font-jp-body *,
+html[data-reader-font-chinese='ready'] .magi-site-font-scope [lang='ja'],
+html[data-reader-font-chinese='ready'] .magi-site-font-scope [lang='ja'] * {
   font-family:
     "Yu Gothic",
     "Hiragino Kaku Gothic ProN",
@@ -1968,7 +1985,9 @@ html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope :where(
 html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope .reader-font-jp-body,
 html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope .reader-font-jp-body *,
 html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope .reader-font-jp-title,
-html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope .reader-font-jp-title * {
+html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope .reader-font-jp-title *,
+html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope [lang='ja'],
+html[data-exedra-font-tang-yuan='ready'] .magi-exedra-ui-scope [lang='ja'] * {
   font-family:
     "Yu Gothic",
     "Hiragino Kaku Gothic ProN",
@@ -2014,4 +2033,85 @@ html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-
     "Yu Gothic",
     "Noto Sans JP",
     sans-serif !important;
+}
+
+/* =========================================
+   Reader UI V31 — source-provenance tinting
+   ========================================= */
+
+.magi-folder-source-card[data-source-status='exedra-official-tw'],
+.magi-folder-source-card[data-source-status='exedra-official-tw'] > button,
+.magi-story-source-link[data-source-status='exedra-official-tw'] {
+  border-color: rgba(8, 145, 178, 0.34) !important;
+  background-color: rgba(8, 145, 178, 0.085) !important;
+}
+
+.magi-folder-source-card[data-source-status='exedra-human-cn'],
+.magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-story-source-link[data-source-status='exedra-human-cn'] {
+  border-color: rgba(124, 58, 237, 0.28) !important;
+  background-color: rgba(124, 58, 237, 0.07) !important;
+}
+
+.magi-folder-source-card[data-source-status='magireco-source-unverified'],
+.magi-folder-source-card[data-source-status='magireco-source-unverified'] > button,
+.magi-story-source-link[data-source-status='magireco-source-unverified'] {
+  border-color: rgba(217, 119, 6, 0.34) !important;
+  background-color: rgba(217, 119, 6, 0.09) !important;
+}
+
+.magi-folder-source-card[data-source-status='magireco-human-cn'],
+.magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
+.magi-story-source-link[data-source-status='magireco-human-cn'] {
+  border-color: rgba(5, 150, 105, 0.28) !important;
+  background-color: rgba(5, 150, 105, 0.065) !important;
+}
+
+.dark .magi-folder-source-card[data-source-status='exedra-official-tw'],
+.dark .magi-folder-source-card[data-source-status='exedra-official-tw'] > button,
+.dark .magi-story-source-link[data-source-status='exedra-official-tw'] {
+  border-color: rgba(34, 211, 238, 0.32) !important;
+  background-color: rgba(8, 145, 178, 0.12) !important;
+}
+
+.dark .magi-folder-source-card[data-source-status='exedra-human-cn'],
+.dark .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.dark .magi-story-source-link[data-source-status='exedra-human-cn'] {
+  border-color: rgba(167, 139, 250, 0.3) !important;
+  background-color: rgba(124, 58, 237, 0.12) !important;
+}
+
+.dark .magi-folder-source-card[data-source-status='magireco-source-unverified'],
+.dark .magi-folder-source-card[data-source-status='magireco-source-unverified'] > button,
+.dark .magi-story-source-link[data-source-status='magireco-source-unverified'] {
+  border-color: rgba(251, 191, 36, 0.32) !important;
+  background-color: rgba(180, 83, 9, 0.13) !important;
+}
+
+.dark .magi-folder-source-card[data-source-status='magireco-human-cn'],
+.dark .magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
+.dark .magi-story-source-link[data-source-status='magireco-human-cn'] {
+  border-color: rgba(52, 211, 153, 0.28) !important;
+  background-color: rgba(5, 150, 105, 0.11) !important;
+}
+
+.magi-source-status-badge {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0.125rem 0.4rem;
+  font-size: 0.58rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.magi-source-status-badge-exedra-human {
+  color: rgb(109, 40, 217);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.dark .magi-source-status-badge-exedra-human {
+  color: rgb(196, 181, 253);
 }

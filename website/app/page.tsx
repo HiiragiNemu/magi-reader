@@ -28,12 +28,14 @@ import {
   Moon,
   BookOpen,
   Leaf,
+  Settings,
 } from 'lucide-react';
 import { useGlobal } from '@/app/providers';
 import { characterFolderColorFor } from '@/app/config/dictionary';
 import { type Story } from '@/components/Sidebar';
 import AboutModal from '@/components/AboutModal';
 import LocalStoryPicker from '@/components/LocalStoryPicker';
+import SiteSettingsWindow from '@/components/SiteSettingsWindow';
 import { normalizeSearchText } from '@/lib/search';
 import { loadStoryIndex } from '@/lib/story-index';
 import { categoryOrder } from '@/lib/category-order';
@@ -163,8 +165,46 @@ const storyProgress = (story: Story): number =>
 
 type TranslationProgressStatus = 'none' | 'partial' | 'complete';
 
+type SourceVisualStatus =
+  | 'exedra-official-tw'
+  | 'exedra-human-cn'
+  | 'magireco-source-unverified'
+  | 'magireco-human-cn'
+  | 'neutral';
+
 const translationProgressStatus = (percent: number): TranslationProgressStatus =>
   percent === 0 ? 'none' : percent === 100 ? 'complete' : 'partial';
+
+const storySourceVisualStatus = (story: Story): SourceVisualStatus => {
+  if (isExedraCategory(story.category)) {
+    if (story.official_tw) return 'exedra-official-tw';
+    if (story.has_cn && storyProgress(story) === 100) return 'exedra-human-cn';
+    return 'neutral';
+  }
+  if (story.source_unverified && !story.human_verified) {
+    return 'magireco-source-unverified';
+  }
+  if (
+    story.human_verified
+    || (story.has_cn && !story.source_unverified && storyProgress(story) === 100)
+  ) {
+    return 'magireco-human-cn';
+  }
+  return 'neutral';
+};
+
+const groupSourceVisualStatus = (stories: readonly Story[]): SourceVisualStatus => {
+  const statuses = new Set(stories.map(storySourceVisualStatus));
+  for (const status of [
+    'magireco-source-unverified',
+    'exedra-official-tw',
+    'exedra-human-cn',
+    'magireco-human-cn',
+  ] as const) {
+    if (statuses.has(status)) return status;
+  }
+  return 'neutral';
+};
 
 function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   const hasSearchMatches = Boolean(
@@ -190,6 +230,7 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
       group.items.length,
   );
   const groupProgressStatus = translationProgressStatus(avgPercent);
+  const groupSourceStatus = groupSourceVisualStatus(group.items);
 
   const isDark = theme === 'dark';
   const isDayArchive = isDayArchiveTheme(theme);
@@ -241,7 +282,8 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
   return (
     <div
       data-translation-status={groupProgressStatus}
-      className={`break-inside-avoid mb-3 rounded-lg border shadow-sm transition-all ${
+      data-source-status={groupSourceStatus}
+      className={`magi-folder-source-card break-inside-avoid mb-3 rounded-lg border shadow-sm transition-all ${
         sourceUnverifiedPending > 0
           ? isDark
             ? 'border-amber-700 ring-1 ring-amber-700/40'
@@ -308,6 +350,11 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
               {officialTwLabel}
             </span>
           )}
+          {groupSourceStatus === 'exedra-human-cn' && (
+            <span className="magi-source-status-badge magi-source-status-badge-exedra-human">
+              人工中文
+            </span>
+          )}
           <span className={`shrink-0 font-mono text-[10px] ${progressClass}`}>
             {avgPercent}%
           </span>
@@ -330,8 +377,14 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
               .sort((a, b) => NATURAL_COLLATOR.compare(a.id, b.id))
               .map(story => {
                 const label = getDisplayLabel(story);
+                const sectionTitles = (story.official_tw_section_titles ?? [])
+                  .map(title => title.trim())
+                  .filter(Boolean);
+                const showSectionTitles = sectionTitles.length > 0
+                  && !(sectionTitles.length === 1 && sectionTitles[0] === label);
                 const progress = storyProgress(story);
                 const itemProgressStatus = translationProgressStatus(progress);
+                const sourceVisualStatus = storySourceVisualStatus(story);
                 const snippet = group.matchSnippets?.[story.id];
                 const sourceUnverifiedPendingStory =
                   story.source_unverified && !story.human_verified;
@@ -363,11 +416,12 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                   <Link
                     key={`${story.id}:${story.path_cn ?? ''}:${story.path_jp ?? ''}`}
                     data-translation-status={itemProgressStatus}
+                    data-source-status={sourceVisualStatus}
                     href={`/reader/${encodeURIComponent(story.id)}?cn=${encodeURIComponent(
                       story.path_cn || '',
                     )}&jp=${encodeURIComponent(story.path_jp || '')}`}
                     prefetch={false}
-                    className={`max-w-full min-w-0 overflow-hidden rounded border transition-all hover:scale-[1.01] ${buttonClass} ${
+                    className={`magi-story-source-link max-w-full min-w-0 overflow-hidden rounded border transition-all hover:scale-[1.01] ${buttonClass} ${
                       snippet ? 'w-full' : ''
                     }`}
                   >
@@ -403,11 +457,21 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                             {story.official_tw_label?.trim() || '台服'}
                           </span>
                         )}
+                        {sourceVisualStatus === 'exedra-human-cn' && (
+                          <span className="magi-source-status-badge magi-source-status-badge-exedra-human">
+                            人工中文
+                          </span>
+                        )}
                         {progress < 100 && progress > 0 && (
                           <span className="text-[10px] opacity-60">{progress}%</span>
                         )}
                       </span>
                     </div>
+                    {showSectionTitles && (
+                      <div className="border-t border-current/10 px-2 py-1 text-[10px] leading-relaxed opacity-65">
+                        {sectionTitles.join(' · ')}
+                      </div>
+                    )}
                     {snippet && (
                       <div
                         className={`magi-home-search-snippet reader-font-cn-body px-2 py-1.5 text-xs font-serif border-t ${
@@ -501,6 +565,7 @@ export default function Home() {
   const [searchIndexBytes, setSearchIndexBytes] = useState(0);
   const [textMatches, setTextMatches] = useState<Record<string, string>>({});
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchJp, setSearchJp] = useState(false);
   const [searchMode, setSearchMode] = useState<SearchMode>('title');
   const [proofreadingStatus, setProofreadingStatus] = useState<ProofreadingStatus | null>(null);
@@ -1218,6 +1283,21 @@ export default function Home() {
               <LocalStoryPicker theme={theme} />
               <button
                 type="button"
+                aria-label="打开字体与站点设置"
+                title="字体与站点设置"
+                onClick={() => setSettingsOpen(true)}
+                className={`inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg border p-2 transition-all ${
+                  theme === 'dark'
+                    ? 'border-gray-700 bg-gray-800 text-gray-200 hover:bg-gray-700'
+                    : isDayArchiveTheme(theme)
+                      ? 'magi-home-light-button'
+                      : 'border-gray-200 bg-white/70 text-gray-700 hover:bg-white'
+                }`}
+              >
+                <Settings aria-hidden="true" size={16} />
+              </button>
+              <button
+                type="button"
                 onClick={() => setAboutOpen(true)}
                 className={`px-2.5 py-1 rounded cursor-pointer border text-xs font-bold whitespace-nowrap transition-all ${
                   theme === 'dark'
@@ -1480,6 +1560,13 @@ export default function Home() {
           </div>
         </div>
       </main>
+      <SiteSettingsWindow
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        theme={theme}
+        setTheme={setTheme}
+        isExedra={storySystem === 'exedra'}
+      />
       <AboutModal
         isOpen={aboutOpen}
         onClose={() => setAboutOpen(false)}

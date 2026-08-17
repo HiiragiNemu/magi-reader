@@ -55,6 +55,9 @@ DEFAULT_EXEDRA_VOICE_CATALOG = (
 DEFAULT_EXEDRA_PORTRAIT_TITLE_CATALOG = (
     SCRIPT_DIR / "artifacts" / "exedra_portrait_title_catalog.json"
 )
+DEFAULT_EXEDRA_TW_TITLE_CATALOG = (
+    SCRIPT_DIR / "artifacts" / "exedra_tw_manifest_titles.generated.json"
+)
 DEFAULT_GENERAL_VOICE_SOURCE_DIR = (
     SCRIPT_DIR
     / "magireco-voice-source-master"
@@ -116,6 +119,10 @@ MAX_EXEDRA_VOICE_CATALOG_BYTES = 4 * 1024 * 1024
 EXEDRA_PORTRAIT_GROUP_RE = re.compile(r"^portrait_[A-Za-z0-9_.-]{1,87}$")
 EXEDRA_PORTRAIT_EXPECTED_GROUPS = 54
 MAX_EXEDRA_PORTRAIT_TITLE_CATALOG_BYTES = 256 * 1024
+MAX_EXEDRA_TW_TITLE_CATALOG_BYTES = 12 * 1024 * 1024
+EXEDRA_TW_TITLE_CATALOG_POLICY = (
+    "exact_fieldpoint_collection_adv_stage_no_guessing"
+)
 EXEDRA_PORTRAIT_TITLE_POLICY = (
     "official_japanese_adv_title_then_human_simplified_chinese_"
     "display_title_no_official_cn_claim"
@@ -2178,6 +2185,201 @@ def load_exedra_portrait_titles(
     return titles
 
 
+def load_exedra_tw_title_catalog(
+    path: Path = DEFAULT_EXEDRA_TW_TITLE_CATALOG,
+) -> dict[str, Any]:
+    """Load the generated exact TW title catalogue without inferring gaps."""
+
+    try:
+        size = path.stat().st_size
+        if size <= 0 or size > MAX_EXEDRA_TW_TITLE_CATALOG_BYTES:
+            raise PipelineError(f"Exedra TW 标题目录大小无效: {size}")
+        value = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise PipelineError(f"Exedra TW 标题目录无法读取: {path}: {exc}") from exc
+    if (
+        not isinstance(value, dict)
+        or value.get("schemaVersion") != 1
+        or value.get("policy") != EXEDRA_TW_TITLE_CATALOG_POLICY
+        or not isinstance(value.get("source"), dict)
+        or not isinstance(value.get("summary"), dict)
+        or not isinstance(value.get("groups"), dict)
+    ):
+        raise PipelineError("Exedra TW 标题目录 schema/policy 无效")
+    master_revision = str(value["source"].get("masterRevision") or "")
+    manifest_sources = value["source"].get("manifests")
+    if not master_revision or not isinstance(manifest_sources, dict):
+        raise PipelineError("Exedra TW 标题目录缺少来源 revision/manifests")
+    for name in (
+        "getAdvMstList.json",
+        "getFieldStageMstList.json",
+        "getFieldPointMstList.json",
+        "getCollectionConditionMstList.json",
+    ):
+        source = manifest_sources.get(name)
+        if (
+            not isinstance(source, dict)
+            or re.fullmatch(
+                r"[0-9a-f]{64}",
+                str(source.get("sha256") or "").casefold(),
+            )
+            is None
+        ):
+            raise PipelineError(f"Exedra TW 标题目录来源哈希无效: {name}")
+
+    groups = value["groups"]
+    if value["summary"].get("groups") != len(groups):
+        raise PipelineError("Exedra TW 标题目录 group 计数不一致")
+    allowed_display_sources = {
+        "getAdvMstList",
+        "tw_scenario_title_card",
+        "tw_scenario_metadata",
+        "human_cn_scenario_metadata",
+        "fallback_group_id",
+    }
+    for identity, info in groups.items():
+        if (
+            not isinstance(identity, str)
+            or not isinstance(info, dict)
+            or info.get("sourceIdentity") != identity
+            or info.get("category") not in EXEDRA_CATEGORY_MAP
+            or not isinstance(info.get("groupKey"), str)
+            or not isinstance(info.get("sourceResources"), list)
+            or not isinstance(info.get("sourceCount"), int)
+            or info["sourceCount"] != len(info["sourceResources"])
+            or not isinstance(info.get("sectionTitles"), list)
+            or len(info["sectionTitles"]) != info["sourceCount"]
+            or not isinstance(info.get("sectionTitleSources"), list)
+            or len(info["sectionTitleSources"]) != info["sourceCount"]
+            or not isinstance(info.get("resolvedSectionTitles"), list)
+            or not isinstance(info.get("fieldStageMstIds"), list)
+            or not isinstance(info.get("chapterTitles"), list)
+            or not isinstance(info.get("chapterTitle"), str)
+            or not isinstance(info.get("storyTitles"), list)
+            or not isinstance(info.get("storyTitleSource"), str)
+            or info.get("displayTitleSource") not in allowed_display_sources
+            or not isinstance(info.get("displayTitle"), str)
+            or not isinstance(info.get("unresolved"), list)
+        ):
+            raise PipelineError(f"Exedra TW 标题目录 group 结构无效: {identity!r}")
+        unique_chapter_titles = list(
+            dict.fromkeys(str(value) for value in info["chapterTitles"] if str(value))
+        )
+        allowed_section_sources = {
+            "getAdvMstList.subName",
+            "getAdvMstList.name",
+            "getAdvMstList.subName_or_name",
+            "fallback_resource_id",
+        }
+        if any(
+            str(source) not in allowed_section_sources
+            for source in info["sectionTitleSources"]
+        ):
+            raise PipelineError(
+                f"Exedra TW 标题目录小节来源越界: {identity}"
+            )
+        exact_sections = [
+            str(title)
+            for title, source in zip(
+                info["sectionTitles"], info["sectionTitleSources"]
+            )
+            if str(source).startswith("getAdvMstList.")
+        ]
+        if list(dict.fromkeys(exact_sections)) != info["resolvedSectionTitles"]:
+            raise PipelineError(
+                f"Exedra TW 标题目录 resolvedSectionTitles 不一致: {identity}"
+            )
+        if (len(unique_chapter_titles) == 1) != bool(info["chapterTitle"]):
+            raise PipelineError(
+                f"Exedra TW 标题目录单章规则无效（禁止多数选章）: {identity}"
+            )
+    return value
+
+
+def _apply_exedra_tw_title_metadata(
+    *,
+    story: MutableMapping[str, Any],
+    group: OrganizedExedraGroup,
+    info: Mapping[str, Any],
+    master_revision: str,
+) -> None:
+    """Attach exact title fields; unknown and multi-stage groups keep IDs."""
+
+    if (
+        info.get("sourceIdentity") != group.manifest_id
+        or info.get("category") != group.raw_category
+        or info.get("groupKey") != group.group_key
+        or info.get("sourceCount") != len(group.source_paths)
+    ):
+        raise PipelineError(
+            f"Exedra TW 标题目录与 organizer group 不一致: {group.manifest_id}"
+        )
+    chapter_title = str(info.get("chapterTitle") or "")
+    chapter_titles = [str(value) for value in info.get("chapterTitles") or []]
+    section_titles = [str(value) for value in info.get("sectionTitles") or []]
+    story_titles = [str(value) for value in info.get("storyTitles") or []]
+    resolved_section_titles = [
+        str(value) for value in info.get("resolvedSectionTitles") or []
+    ]
+    display_title = str(info.get("displayTitle") or "")
+    display_source = str(info.get("displayTitleSource") or "")
+    unresolved = [str(value) for value in info.get("unresolved") or []]
+
+    # A folder is a chapter label and therefore changes only when exactly one
+    # FieldStage was proven by the catalogue. Multi-stage groups keep the
+    # existing organizer folder; no frequency/majority selection is permitted.
+    if chapter_title:
+        story["folder"] = chapter_title
+    current_title = str(story.get("title") or "").strip()
+    technical_title = (
+        not current_title
+        or current_title in {group.group_key, _humanize_exedra_title(group.group_key)}
+        or "_" in current_title
+        or re.match(
+            r"^(?:sub|main|character|portrait|reaction|act|contents|map|pp|play|flashback)[ _-]",
+            current_title,
+            flags=re.IGNORECASE,
+        )
+        is not None
+    )
+    display_allowed = display_source == "getAdvMstList" or (
+        display_source
+        in {
+            "tw_scenario_title_card",
+            "tw_scenario_metadata",
+            "human_cn_scenario_metadata",
+        }
+        and technical_title
+    )
+    if (
+        display_title
+        and display_allowed
+        and group.category not in {"exedra_portrait", "exedra_reaction"}
+    ):
+        story["title"] = display_title
+
+    story.update(
+        {
+            "official_tw_chapter_title": chapter_title,
+            "official_tw_chapter_titles": chapter_titles,
+            "official_tw_section_titles": section_titles,
+            "official_tw_story_titles": story_titles,
+            "official_tw_story_title_source": str(
+                info.get("storyTitleSource") or ""
+            ),
+            "official_tw_title_status": (
+                "resolved" if not unresolved else "partial" if (
+                    chapter_title or resolved_section_titles or story_titles
+                ) else "unresolved"
+            ),
+            "official_tw_title_unresolved": unresolved,
+            "official_tw_title_catalog_source": (
+                f"exedra_tw_manifest_titles.generated.json@{master_revision}"
+            ),
+        }
+    )
+
+
 def _read_exedra_section_sources(path: Path) -> list[str]:
     sources: list[str] = []
     with path.open("r", encoding="utf-8-sig", newline=None) as handle:
@@ -3317,6 +3519,27 @@ def scan_exedra_sources(
         _absolute_lexical(jp_dir)
         == _absolute_lexical(DEFAULT_EXEDRA_JP_DIR)
     )
+    tw_title_catalog_value = (
+        load_exedra_tw_title_catalog()
+        if uses_committed_exedra_source
+        else None
+    )
+    tw_title_groups = (
+        tw_title_catalog_value["groups"]
+        if tw_title_catalog_value is not None
+        else {}
+    )
+    if uses_committed_exedra_source:
+        expected_title_groups = {group.manifest_id for group in groups}
+        actual_title_groups = set(tw_title_groups)
+        if actual_title_groups != expected_title_groups:
+            missing = sorted(expected_title_groups - actual_title_groups)
+            extra = sorted(actual_title_groups - expected_title_groups)
+            raise PipelineError(
+                "Exedra TW 标题目录与 organizer groups 不完全一致: "
+                f"缺失 {len(missing)}，多余 {len(extra)}"
+            )
+        stats["exedra_tw_title_catalog_groups"] = len(tw_title_groups)
     voice_titles = (
         load_exedra_voice_titles()
         if uses_committed_exedra_source
@@ -3450,6 +3673,15 @@ def scan_exedra_sources(
                 ],
             }
         )
+        if tw_title_catalog_value is not None:
+            _apply_exedra_tw_title_metadata(
+                story=story,
+                group=group,
+                info=tw_title_groups[group.manifest_id],
+                master_revision=str(
+                    tw_title_catalog_value["source"]["masterRevision"]
+                ),
+            )
         destination_rel = Path(group.category, group.group_key)
 
         source_audit.expect(jp_path)
@@ -4120,6 +4352,14 @@ def finalize_story_list(
             "component_model_ids",
             "canonical_model_id",
             "voice_model_role",
+            "official_tw_chapter_title",
+            "official_tw_chapter_titles",
+            "official_tw_section_titles",
+            "official_tw_story_titles",
+            "official_tw_story_title_source",
+            "official_tw_title_status",
+            "official_tw_title_unresolved",
+            "official_tw_title_catalog_source",
         ):
             if extra_key in value:
                 entry[extra_key] = value[extra_key]

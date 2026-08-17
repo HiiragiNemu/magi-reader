@@ -10,10 +10,13 @@ import argparse
 import json
 from pathlib import Path
 import re
+import sys
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 DEFAULT_METADATA = ROOT / "artifacts/tw_official_metadata.generated.json"
+DEFAULT_TITLE_CATALOG = ROOT / "artifacts/exedra_tw_manifest_titles.generated.json"
 DEFAULT_STORY_INDEX = ROOT / "website/public/story_index.json"
 TW_FIELDS = (
     "official_tw",
@@ -24,6 +27,9 @@ TW_FIELDS = (
     "official_tw_section_titles",
     "official_tw_story_titles",
     "official_tw_story_title_source",
+    "official_tw_title_status",
+    "official_tw_title_unresolved",
+    "official_tw_title_catalog_source",
 )
 CHAPTER_FOLDER_CATEGORIES = frozenset({"exedra_main", "exedra_sub"})
 TECHNICAL_TITLE = re.compile(
@@ -35,6 +41,7 @@ TECHNICAL_TITLE = re.compile(
 def apply_metadata(
     stories: list[dict[str, Any]],
     metadata: dict[str, dict[str, Any]],
+    title_catalog: dict[str, Any] | None = None,
 ) -> int:
     applied = 0
     for story in stories:
@@ -86,12 +93,129 @@ def apply_metadata(
                 story["official_tw_original_folder"] = current_folder
             story["folder"] = chapter_title
         applied += 1
+
+    if title_catalog is not None:
+        source = title_catalog.get("source")
+        title_groups = title_catalog.get("groups")
+        if not isinstance(source, dict) or not isinstance(title_groups, dict):
+            raise RuntimeError("Exedra TW 标题目录缺少 source/groups")
+        master_revision = str(source.get("masterRevision") or "")
+        if not master_revision:
+            raise RuntimeError("Exedra TW 标题目录缺少 masterRevision")
+        title_applied = 0
+        for story in stories:
+            identity = story.get("source_identity")
+            info = title_groups.get(identity) if isinstance(identity, str) else None
+            if not isinstance(info, dict):
+                continue
+            category = str(story.get("category") or "")
+            group_key = str(info.get("groupKey") or "")
+            if (
+                not category.startswith("exedra_")
+                or info.get("sourceIdentity") != identity
+                or not group_key
+            ):
+                raise RuntimeError(f"Exedra TW 标题目录与 story 不一致：{identity}")
+            chapter_title = str(info.get("chapterTitle") or "")
+            chapter_titles = [str(value) for value in info.get("chapterTitles") or []]
+            section_titles = [str(value) for value in info.get("sectionTitles") or []]
+            section_sources = [
+                str(value) for value in info.get("sectionTitleSources") or []
+            ]
+            resolved_section_titles = [
+                str(value) for value in info.get("resolvedSectionTitles") or []
+            ]
+            story_titles = [str(value) for value in info.get("storyTitles") or []]
+            unresolved = [str(value) for value in info.get("unresolved") or []]
+            stage_ids = info.get("fieldStageMstIds")
+            unique_chapter_titles = list(dict.fromkeys(chapter_titles))
+            if (
+                not isinstance(stage_ids, list)
+                or (len(unique_chapter_titles) == 1) != bool(chapter_title)
+                or len(section_titles) != int(info.get("sourceCount") or -1)
+                or len(section_sources) != len(section_titles)
+                or list(
+                    dict.fromkeys(
+                        title
+                        for title, source_name in zip(
+                            section_titles, section_sources
+                        )
+                        if source_name.startswith("getAdvMstList.")
+                    )
+                )
+                != resolved_section_titles
+            ):
+                raise RuntimeError(
+                    f"Exedra TW 标题目录单章/小节规则无效：{identity}"
+                )
+
+            # This pass runs after the legacy TW metadata applicator in deploy.
+            # A unique exact FieldStage wins. Multi-stage/no-stage main and sub
+            # groups explicitly return to the organizer group ID so the legacy
+            # majority chapter cannot leak back into folder.
+            if chapter_title:
+                story["folder"] = chapter_title
+            elif category in CHAPTER_FOLDER_CATEGORIES:
+                story["folder"] = group_key
+
+            display_title = str(info.get("displayTitle") or "")
+            display_source = str(info.get("displayTitleSource") or "")
+            current_title = str(story.get("title") or "").strip()
+            technical_title = (
+                not current_title
+                or current_title in {group_key, group_key.replace("_", " ")}
+                or "_" in current_title
+                or bool(TECHNICAL_TITLE.match(current_title.replace("_", " ")))
+            )
+            if display_source == "getAdvMstList" and display_title:
+                story["title"] = display_title
+            elif (
+                display_source
+                in {
+                    "tw_scenario_title_card",
+                    "tw_scenario_metadata",
+                    "human_cn_scenario_metadata",
+                }
+                and display_title
+                and technical_title
+            ):
+                story["title"] = display_title
+
+            story.update(
+                {
+                    "official_tw_chapter_title": chapter_title,
+                    "official_tw_chapter_titles": chapter_titles,
+                    "official_tw_section_titles": section_titles,
+                    "official_tw_story_titles": story_titles,
+                    "official_tw_story_title_source": str(
+                        info.get("storyTitleSource") or ""
+                    ),
+                    "official_tw_title_status": (
+                        "resolved"
+                        if not unresolved
+                        else "partial"
+                        if chapter_title or resolved_section_titles or story_titles
+                        else "unresolved"
+                    ),
+                    "official_tw_title_unresolved": unresolved,
+                    "official_tw_title_catalog_source": (
+                        "exedra_tw_manifest_titles.generated.json@"
+                        + master_revision
+                    ),
+                }
+            )
+            title_applied += 1
+        if title_applied != len(title_groups):
+            raise RuntimeError(
+                f"Exedra TW 标题目录未完全映射：{title_applied}/{len(title_groups)}"
+            )
     return applied
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--metadata", type=Path, default=DEFAULT_METADATA)
+    parser.add_argument("--title-catalog", type=Path, default=DEFAULT_TITLE_CATALOG)
     parser.add_argument("--story-index", type=Path, default=DEFAULT_STORY_INDEX)
     args = parser.parse_args()
 
@@ -99,10 +223,13 @@ def main() -> int:
     metadata = metadata_value.get("stories") if isinstance(metadata_value, dict) else None
     if not isinstance(metadata, dict):
         raise RuntimeError("台服官方元数据缺少 stories")
+    from generate_story_index import load_exedra_tw_title_catalog
+
+    title_catalog = load_exedra_tw_title_catalog(args.title_catalog)
     stories = json.loads(args.story_index.read_text(encoding="utf-8-sig"))
     if not isinstance(stories, list) or not all(isinstance(item, dict) for item in stories):
         raise RuntimeError("story_index 顶层不是对象数组")
-    applied = apply_metadata(stories, metadata)
+    applied = apply_metadata(stories, metadata, title_catalog)
     if applied != len(metadata):
         raise RuntimeError(f"台服元数据未完全映射：{applied}/{len(metadata)}")
     temporary = args.story_index.with_suffix(args.story_index.suffix + ".tmp")

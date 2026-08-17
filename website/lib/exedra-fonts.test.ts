@@ -252,8 +252,8 @@ test('static assets, UI, and CSS keep Exedra language scopes isolated', () => {
   );
   assert.match(page, /exedra-jp-story-text/u);
   assert.doesNotMatch(css, /@font-face\s*\{/u);
-  assert.match(page, /lang=\{isExedra \? 'zh-Hans'/u);
-  assert.match(page, /lang=\{isExedra \? 'ja'/u);
+  assert.match(page, /lang="zh-Hans"\s+className=\{`reader-font-cn-body/u);
+  assert.match(page, /lang="ja"\s+className=\{`reader-font-jp-body/u);
   assert.match(page, /isExedra=\{isExedraStory\}/u);
   assert.match(
     page,
