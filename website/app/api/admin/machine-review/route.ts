@@ -3,6 +3,7 @@ import { getCloudflareContext } from '@opennextjs/cloudflare';
 
 import { authenticateProofreadingAdmin } from '@/lib/admin-auth';
 import {
+  MANUAL_HUMAN_VERIFIED_ID_SET,
   SOURCE_UNVERIFIED_ID_SET,
   SOURCE_UNVERIFIED_MANIFEST,
   listMachineTranslationReviewStates,
@@ -24,7 +25,9 @@ export async function GET(request: NextRequest) {
 
   const states = await listMachineTranslationReviewStates(env.SUBMISSIONS_KV);
   const verified = SOURCE_UNVERIFIED_MANIFEST.entries.filter(
-    entry => states[entry.story_id]?.verified === true,
+    entry =>
+      MANUAL_HUMAN_VERIFIED_ID_SET.has(entry.story_id) ||
+      states[entry.story_id]?.verified === true,
   ).length;
   return NextResponse.json(
     {
@@ -35,6 +38,7 @@ export async function GET(request: NextRequest) {
       total: SOURCE_UNVERIFIED_MANIFEST.total,
       verified,
       remaining: Math.max(0, SOURCE_UNVERIFIED_MANIFEST.total - verified),
+      manual_verified_ids: Array.from(MANUAL_HUMAN_VERIFIED_ID_SET).sort(),
       states,
       entries: SOURCE_UNVERIFIED_MANIFEST.entries,
     },

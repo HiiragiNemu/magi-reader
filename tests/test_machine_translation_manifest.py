@@ -54,6 +54,13 @@ class MachineTranslationManifestTests(unittest.TestCase):
         self.assertIn("source_unverified", manifest["definition"])
         self.assertEqual(manifest["total"], len(manifest["entries"]))
         self.assertTrue(manifest["entries"])
+        manual_ids = manifest["manual_human_verified_ids"]
+        self.assertEqual(manifest["manual_human_verified_total"], len(manual_ids))
+        self.assertEqual(
+            manifest["review_remaining"],
+            manifest["total"] - len(manual_ids),
+        )
+        self.assertEqual(len(manual_ids), len(set(manual_ids)))
         for entry in manifest["entries"]:
             self.assertEqual(entry["classification"], "SOURCE_UNVERIFIED")
             self.assertEqual(
@@ -67,6 +74,59 @@ class MachineTranslationManifestTests(unittest.TestCase):
             self.assertEqual(
                 entry["added_source_json_count"],
                 entry["machine_source_json_count"],
+            )
+            self.assertEqual(
+                entry["manual_human_verified"],
+                entry["story_id"] in manual_ids,
+            )
+
+    def test_closed_manual_ledger_uses_only_the_cumulative_section(self) -> None:
+        with tempfile.TemporaryDirectory() as raw_directory:
+            path = Path(raw_directory) / "PROCESSED_STORY_TITLES.md"
+            path.write_text(
+                "# 已处理剧情标题清单\n\n"
+                "- 当前已写入并通过现有 JSON 结构校验：**2 / 507**\n"
+                "- 当前剩余：**505**\n\n"
+                "## 本轮新增\n\n"
+                "- [x] `claim-only` — 此处不授予权限\n\n"
+                "## 累计已处理\n\n"
+                "- [x] `310001` — 已闭环一\n"
+                "- [x] `event_story_demo` — 已闭环二\n\n"
+                "## 问题文件与异常记录\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                MODULE.load_manual_retranslation_verified_ids(path),
+                {"310001", "event_story_demo"},
+            )
+
+    def test_closed_manual_ledger_count_mismatch_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as raw_directory:
+            path = Path(raw_directory) / "PROCESSED_STORY_TITLES.md"
+            path.write_text(
+                "- 当前已写入并通过现有 JSON 结构校验：**2 / 507**\n"
+                "- 当前剩余：**505**\n"
+                "## 累计已处理\n"
+                "- [x] `310001` — 只有一项\n"
+                "## 问题文件与异常记录\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(MODULE.ManifestError, "count mismatch"):
+                MODULE.load_manual_retranslation_verified_ids(path)
+
+    def test_only_closed_story_source_paths_may_overwrite_baseline(self) -> None:
+        allowed = {"source/closed.json"}
+        self.assertEqual(
+            MODULE.validate_manual_overwrite_boundary(
+                {"source/closed.json"},
+                allowed,
+            ),
+            {"source/closed.json"},
+        )
+        with self.assertRaisesRegex(MODULE.ManifestError, "without a closed"):
+            MODULE.validate_manual_overwrite_boundary(
+                {"source/closed.json", "source/claim-only.json"},
+                allowed,
             )
 
     def test_generated_artifacts_are_written_as_utf8_lf_on_windows(self) -> None:

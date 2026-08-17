@@ -3,14 +3,16 @@
 
 Trust rule:
 - Every Magia Record source file that exists in the trusted baseline must remain byte-for-byte
-  identical in the current working tree.
+  identical in the current working tree, except exact JSON sources belonging to a story recorded
+  in the closed manual-retranslation ledger.
 - Every trusted-baseline file must still exist.
 - Chinese TXT files that are present now but absent from the trusted baseline are source-unverified
   review candidates. Snapshot absence does not prove whether their translation was produced by a
   person or a machine.
 
 This deliberately rejects branch-history, release archives, and text-style heuristics as provenance
-classifiers. Runtime human-review state remains stored separately in Cloudflare KV.
+classifiers. Closed manual retranslations are additive to runtime Cloudflare KV review state; an
+unclosed claim, READY bundle, or queue entry never grants overwrite permission.
 """
 
 from __future__ import annotations
@@ -30,12 +32,24 @@ DEFAULT_MANIFEST = (
 DEFAULT_STORY_MAP = (
     ROOT / "website" / "public" / "data" / "proofreading_story_map.generated.json"
 )
+DEFAULT_MANUAL_RETRANSLATION_LEDGER = (
+    ROOT / "manual_retranslation" / "PROCESSED_STORY_TITLES.md"
+)
+MANUAL_RETRANSLATION_SCOPE_TOTAL = 507
 SOURCE_PREFIX = "magireco-translate-data-master/Scenarios_full/"
 SOURCE_ROOT = ROOT / SOURCE_PREFIX
 HUMAN_ONLY_CATEGORIES = {"main_story", "scene0_main"}
 SOURCE_HEADER_RE = re.compile(
     r"\(Source:\s*([^()\r\n]+?\.json)\s*\)",
     re.IGNORECASE,
+)
+MANUAL_RETRANSLATION_PROGRESS_RE = re.compile(
+    r"当前已写入并通过现有 JSON 结构校验：\*\*(\d+)\s*/\s*(\d+)\*\*"
+)
+MANUAL_RETRANSLATION_REMAINING_RE = re.compile(r"当前剩余：\*\*(\d+)\*\*")
+MANUAL_RETRANSLATION_ID_RE = re.compile(
+    r"^- \[x\] `([A-Za-z0-9_.-]+)`\s+—\s+.+$",
+    re.MULTILINE,
 )
 CANONICAL_RENAMES = {
     "event_story/5101 - 常夜之国的叛乱者 ~魔法少女贞德~":
@@ -201,6 +215,20 @@ def classify_trust_boundary(
     return added, overwritten, deleted
 
 
+def validate_manual_overwrite_boundary(
+    overwritten: set[str],
+    allowed_manual_overwrite_paths: set[str],
+) -> set[str]:
+    unauthorized = overwritten - allowed_manual_overwrite_paths
+    if unauthorized:
+        sample = "\n".join(sorted(unauthorized)[:20])
+        raise ManifestError(
+            "trusted main files were overwritten without a closed manual retranslation "
+            f"({len(unauthorized)}); restore them first:\n{sample}"
+        )
+    return overwritten & allowed_manual_overwrite_paths
+
+
 def canonicalize_identity(identity: str) -> str:
     result = identity.replace("\\", "/").lstrip("/")
     for old, new in CANONICAL_RENAMES.items():
@@ -217,6 +245,51 @@ def load_story_index(path: Path) -> list[dict[str, Any]]:
     if len(stories) != len(value):
         raise ManifestError("story_index.json contains non-object entries")
     return stories
+
+
+def load_manual_retranslation_verified_ids(path: Path) -> set[str]:
+    """Load only the closed cumulative ledger, never claims or READY bundles."""
+
+    try:
+        text = path.read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeError) as exc:
+        raise ManifestError(f"manual retranslation ledger is unreadable: {path}: {exc}") from exc
+
+    progress_match = MANUAL_RETRANSLATION_PROGRESS_RE.search(text)
+    remaining_match = MANUAL_RETRANSLATION_REMAINING_RE.search(text)
+    cumulative_marker = "## 累计已处理"
+    problems_marker = "## 问题文件与异常记录"
+    cumulative_start = text.find(cumulative_marker)
+    cumulative_end = text.find(problems_marker, cumulative_start + len(cumulative_marker))
+    if (
+        progress_match is None
+        or remaining_match is None
+        or cumulative_start < 0
+        or cumulative_end < 0
+    ):
+        raise ManifestError("manual retranslation ledger structure is invalid")
+
+    completed = int(progress_match.group(1))
+    scope_total = int(progress_match.group(2))
+    remaining = int(remaining_match.group(1))
+    if scope_total != MANUAL_RETRANSLATION_SCOPE_TOTAL:
+        raise ManifestError(
+            "manual retranslation ledger scope changed: "
+            f"{scope_total}/{MANUAL_RETRANSLATION_SCOPE_TOTAL}"
+        )
+    if completed < 0 or remaining < 0 or completed + remaining != scope_total:
+        raise ManifestError("manual retranslation ledger progress arithmetic is invalid")
+
+    cumulative = text[cumulative_start:cumulative_end]
+    ordered_ids = MANUAL_RETRANSLATION_ID_RE.findall(cumulative)
+    if len(ordered_ids) != len(set(ordered_ids)):
+        raise ManifestError("manual retranslation ledger contains duplicate cumulative IDs")
+    if len(ordered_ids) != completed:
+        raise ManifestError(
+            "manual retranslation ledger count mismatch: "
+            f"header={completed} cumulative={len(ordered_ids)}"
+        )
+    return set(ordered_ids)
 
 
 def identity_from_public_cn_path(path_cn: str) -> str:
@@ -293,17 +366,14 @@ def build_outputs(
     trusted_baseline: str,
     source_commit: str,
     stories: list[dict[str, Any]],
+    manual_verified_story_ids: set[str] | None = None,
     legacy_translation_commit: str | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
+    manual_verified_story_ids = set(manual_verified_story_ids or ())
     baseline_tree = git_tree(trusted_baseline)
     current_tree = working_tree()
     added, overwritten, deleted = classify_trust_boundary(baseline_tree, current_tree)
 
-    if overwritten:
-        sample = "\n".join(sorted(overwritten)[:20])
-        raise ManifestError(
-            f"trusted main files were overwritten ({len(overwritten)}); restore them first:\n{sample}"
-        )
     if deleted:
         sample = "\n".join(sorted(deleted)[:20])
         raise ManifestError(
@@ -326,6 +396,7 @@ def build_outputs(
     matched_added_json: set[str] = set()
     matched_added_txt_paths: set[str] = set()
     missing_repository_txt_paths: list[str] = []
+    allowed_manual_overwrite_paths: set[str] = set()
 
     for story in stories:
         if story.get("game") == "exedra" or not story.get("path_cn"):
@@ -349,13 +420,17 @@ def build_outputs(
         absolute_txt = ROOT / repository_path
         if not absolute_txt.is_file():
             missing_repository_txt_paths.append(repository_path)
+        references = referenced_json_sources(identity, absolute_txt)
+        if story_id in manual_verified_story_ids:
+            allowed_manual_overwrite_paths.update(
+                f"{SOURCE_PREFIX}{source_path}" for source_path in references
+            )
         if (
             repository_path not in added_txt_paths
             or str(story.get("category") or "") in HUMAN_ONLY_CATEGORIES
         ):
             continue
 
-        references = referenced_json_sources(identity, absolute_txt)
         added_source_json = sorted(references & added_json)
         source_unverified_entries.append(
             {
@@ -368,10 +443,27 @@ def build_outputs(
                 # added JSON sources, not evidence that those sources were machine translated.
                 "machine_source_json_count": len(added_source_json),
                 "direct_txt_changed": True,
+                "manual_human_verified": story_id in manual_verified_story_ids,
             }
         )
         matched_added_json.update(added_source_json)
         matched_added_txt_paths.add(repository_path)
+
+    source_unverified_ids = {
+        str(entry["story_id"]) for entry in source_unverified_entries
+    }
+    unknown_manual_ids = manual_verified_story_ids - set(source_map)
+    if unknown_manual_ids:
+        sample = ", ".join(sorted(unknown_manual_ids)[:20])
+        raise ManifestError(
+            "closed manual retranslation IDs are absent from the deployed story index "
+            f"({len(unknown_manual_ids)}): {sample}"
+        )
+    manual_review_verified_ids = manual_verified_story_ids & source_unverified_ids
+    accepted_manual_overwrites = validate_manual_overwrite_boundary(
+        overwritten,
+        allowed_manual_overwrite_paths,
+    )
 
     source_unverified_entries.sort(
         key=lambda item: (item["category"], item["folder"], item["story_id"])
@@ -395,6 +487,15 @@ def build_outputs(
         "referenced_changed_json_total": len(matched_added_json),
         "protected_human_overwrite_count": 0,
         "protected_human_deletion_count": 0,
+        "accepted_manual_overwrite_count": len(accepted_manual_overwrites),
+        "accepted_manual_overwrite_paths": sorted(accepted_manual_overwrites),
+        "manual_retranslation_closed_total": len(manual_verified_story_ids),
+        "manual_retranslation_closed_ids": sorted(manual_verified_story_ids),
+        "manual_human_verified_total": len(manual_review_verified_ids),
+        "manual_human_verified_ids": sorted(manual_review_verified_ids),
+        "review_remaining": max(
+            0, len(source_unverified_entries) - len(manual_review_verified_ids)
+        ),
         "total": len(source_unverified_entries),
         "entries": source_unverified_entries,
         "unreferenced_changed_json_count": len(unreferenced_json),
@@ -436,6 +537,11 @@ def main() -> int:
     parser.add_argument("--story-index", type=Path, default=DEFAULT_STORY_INDEX)
     parser.add_argument("--manifest-output", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--story-map-output", type=Path, default=DEFAULT_STORY_MAP)
+    parser.add_argument(
+        "--manual-retranslation-ledger",
+        type=Path,
+        default=DEFAULT_MANUAL_RETRANSLATION_LEDGER,
+    )
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
@@ -443,11 +549,15 @@ def main() -> int:
     baseline = run_git("rev-parse", baseline_arg).strip()
     source_commit = run_git("rev-parse", args.source_ref).strip()
     run_git("merge-base", "--is-ancestor", baseline, source_commit)
+    manual_verified_story_ids = load_manual_retranslation_verified_ids(
+        args.manual_retranslation_ledger.resolve()
+    )
 
     manifest, story_map = build_outputs(
         trusted_baseline=baseline,
         source_commit=source_commit,
         stories=load_story_index(args.story_index.resolve()),
+        manual_verified_story_ids=manual_verified_story_ids,
         legacy_translation_commit=args.translation_commit,
     )
     encoded_manifest = json.dumps(manifest, ensure_ascii=False, indent=2) + "\n"
@@ -466,6 +576,7 @@ def main() -> int:
         print(
             "manifest check passed: "
             f"stories={manifest['total']}, "
+            f"manual_verified={manifest['manual_human_verified_total']}, "
             f"added_txt={manifest['changed_txt_total']}, "
             f"protected_overwrites={manifest['protected_human_overwrite_count']}"
         )
