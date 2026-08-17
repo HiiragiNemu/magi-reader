@@ -1,0 +1,95 @@
+name: Explore TW manifest title sources V31
+
+on:
+  push:
+    branches: [work/main-v31-manifest-titles-status-font-settings]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    if: startsWith(github.event.head_commit.message, '[v31-explore]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Inspect localized manifest schema and title candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import re
+          import urllib.request
+          from collections import Counter, defaultdict
+
+          BASE='https://raw.githubusercontent.com/HiiragiNemu/MagiaExedraTWData/main/Manifests/'
+          def load(name):
+              with urllib.request.urlopen(BASE+name, timeout=60) as r:
+                  return json.load(r)
+          def rows(name):
+              value=load(name)
+              return value.get('payload',{}).get('mstList',[])
+          def cjk(value):
+              return bool(re.search(r'[\u3400-\u9fff]', str(value)))
+
+          adv=rows('getAdvMstList.json')
+          chars=rows('getCharacterMstList.json')
+          fields=rows('getFieldPointMstList.json')
+          stages=rows('getFieldStageMstList.json')
+          styles=rows('getStyleMstList.json')
+          print('COUNTS', { 'adv':len(adv),'character':len(chars),'fieldPoint':len(fields),'fieldStage':len(stages),'style':len(styles) })
+          for label,data in [('ADV',adv),('CHAR',chars),('FIELD',fields),('STAGE',stages),('STYLE',styles)]:
+              keys=Counter(k for row in data for k in row)
+              print(label+'_KEYS', sorted(keys))
+              localized={k:sum(1 for row in data if cjk(row.get(k,''))) for k in keys}
+              print(label+'_CJK_FIELDS', {k:v for k,v in localized.items() if v})
+
+          needles=[
+              '2_Sub/sub_birthday2025_iroha_1',
+              '2_Sub/sub_april2026',
+              '7_Namae/',
+              '7_Namae/act_lock_tart',
+              '7_Namae/map_hikarinoma_transition',
+              '7_Namae/contents_tutorial_camera',
+          ]
+          for needle in needles:
+              matches=[row for row in adv if needle.casefold() in str(row.get('advResourceName','')).casefold()]
+              print('ADV_MATCH', needle, json.dumps(matches[:20],ensure_ascii=False,indent=2))
+
+          # Print representative localized rows from each manifest.
+          for label,data in [('ADV',adv),('CHAR',chars),('FIELD',fields),('STAGE',stages),('STYLE',styles)]:
+              localized=[]
+              for row in data:
+                  if any(cjk(v) for v in row.values() if isinstance(v,(str,int,float))):
+                      localized.append(row)
+              print(label+'_LOCALIZED_SAMPLES', json.dumps(localized[:30],ensure_ascii=False,indent=2))
+
+          # Correlate Adv title IDs to resource groups and localized fields.
+          by_title=defaultdict(list)
+          for row in adv:
+              by_title[row.get('advTitleMstId')].append(row)
+          for tid in [1,2,3,133]:
+              sample=by_title.get(tid,[])
+              print('TITLE_ID',tid,'COUNT',len(sample),'SAMPLE',json.dumps(sample[:10],ensure_ascii=False,indent=2))
+
+          # Look for title-id-like links in every available small manifest.
+          manifest_names=[
+              'getCharacterMstList.json','getFieldPointMstList.json','getFieldStageMstList.json',
+              'getStyleMstList.json','getCardMstList.json','getDioramaBackgroundMstList.json',
+              'getDollhouse2dBackgroundMstList.json','getDollhouse3dBackgroundMstList.json',
+              'getStyle3dCharacterMstList.json','getStyleLive2dCostumeMstList.json',
+          ]
+          for name in manifest_names:
+              data=rows(name)
+              hits=[]
+              for row in data:
+                  if any('title' in k.casefold() or 'name' in k.casefold() for k in row):
+                      hits.append(row)
+              print('NAME_TITLE_ROWS',name,'COUNT',len(hits),'SAMPLE',json.dumps(hits[:8],ensure_ascii=False,indent=2))
+          PY
