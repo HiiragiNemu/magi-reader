@@ -1,0 +1,139 @@
+name: Analyze authentic TW v25 branch
+
+on:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - '.github/workflows/analyze-authentic-tw-v25.yml'
+      - '.translation-export-trigger/analyze-authentic-tw-v25.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current retranslation branch
+        uses: actions/checkout@v4
+        with:
+          ref: reader/manual-gpt-retranslation-20260816
+          fetch-depth: 0
+          path: current
+
+      - name: Check out authentic TW v25
+        uses: actions/checkout@v4
+        with:
+          ref: work/authentic-tw-v25
+          fetch-depth: 1
+          path: source
+
+      - name: Analyze scenario trees
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from collections import Counter
+
+          roots = {}
+          for label, base in [('current', Path('current')), ('source', Path('source'))]:
+              candidates = [
+                  base / 'magireco-translate-data-master' / 'Scenarios_full',
+                  base / 'Scenarios_full',
+              ]
+              root = next((p for p in candidates if p.is_dir()), None)
+              if root is None:
+                  raise SystemExit(f'{label} Scenarios_full not found')
+              roots[label] = root
+
+          text_fields = {
+              'textLeft','textRight','textCenter','narration','progressNarration','textSelect',
+              'nameLeft','nameRight','nameCenter','nameNarration'
+          }
+
+          def load_tree(root):
+              return {p.relative_to(root).as_posix(): p for p in root.rglob('*.json')}
+
+          def walk(a,b,path=()):
+              text_diffs=[]; nontext_diffs=[]
+              if type(a) is not type(b):
+                  nontext_diffs.append({'path':list(path),'kind':'type','a':type(a).__name__,'b':type(b).__name__})
+                  return text_diffs, nontext_diffs
+              if isinstance(a, dict):
+                  if set(a)!=set(b):
+                      nontext_diffs.append({'path':list(path),'kind':'keys','a_only':sorted(set(a)-set(b))[:20],'b_only':sorted(set(b)-set(a))[:20]})
+                      return text_diffs, nontext_diffs
+                  for k in a:
+                      if k in text_fields and isinstance(a[k],str) and isinstance(b[k],str):
+                          if a[k]!=b[k]: text_diffs.append({'path':list(path+(k,)),'current':a[k],'source':b[k]})
+                      else:
+                          t,n=walk(a[k],b[k],path+(k,)); text_diffs+=t; nontext_diffs+=n
+              elif isinstance(a,list):
+                  if len(a)!=len(b):
+                      nontext_diffs.append({'path':list(path),'kind':'length','a':len(a),'b':len(b)})
+                  else:
+                      for i,(x,y) in enumerate(zip(a,b)):
+                          t,n=walk(x,y,path+(i,)); text_diffs+=t; nontext_diffs+=n
+              elif a!=b:
+                  nontext_diffs.append({'path':list(path),'kind':'value','a':a,'b':b})
+              return text_diffs, nontext_diffs
+
+          cur=load_tree(roots['current']); src=load_tree(roots['source'])
+          common=sorted(set(cur)&set(src))
+          changed=[]; nontext_files=[]; total_text=0
+          field_counts=Counter()
+          for rel in common:
+              try:
+                  a=json.loads(cur[rel].read_text(encoding='utf-8'))
+                  b=json.loads(src[rel].read_text(encoding='utf-8'))
+              except Exception as e:
+                  nontext_files.append({'relative':rel,'error':repr(e)})
+                  continue
+              t,n=walk(a,b)
+              if t:
+                  total_text+=len(t)
+                  for d in t: field_counts[d['path'][-1]]+=1
+                  changed.append({'relative':rel,'text_diff_count':len(t),'sample':t[:5]})
+              if n:
+                  nontext_files.append({'relative':rel,'nontext_diff_count':len(n),'sample':n[:5]})
+
+          report={
+              'current_head': Path('current/.git/HEAD').read_text(errors='replace').strip() if Path('current/.git/HEAD').exists() else None,
+              'source_branch':'work/authentic-tw-v25',
+              'current_json_count':len(cur),
+              'source_json_count':len(src),
+              'common_json_count':len(common),
+              'current_only_count':len(set(cur)-set(src)),
+              'source_only_count':len(set(src)-set(cur)),
+              'files_with_text_differences':len(changed),
+              'text_leaf_difference_count':total_text,
+              'field_counts':dict(field_counts),
+              'files_with_nontext_differences':len(nontext_files),
+              'changed_files':changed,
+              'nontext_files':nontext_files[:100],
+              'current_only_sample':sorted(set(cur)-set(src))[:100],
+              'source_only_sample':sorted(set(src)-set(cur))[:100],
+          }
+          out=Path('current/manual_retranslation/reports/authentic-tw-v25-analysis.json')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          out.write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps({k:v for k,v in report.items() if k not in {'changed_files','nontext_files','current_only_sample','source_only_sample'}},ensure_ascii=False,indent=2))
+          PY
+
+      - name: Commit report
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd current
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add manual_retranslation/reports/authentic-tw-v25-analysis.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m 'Analyze authentic TW v25 scenario state'
+          git push origin HEAD:reader/manual-gpt-retranslation-20260816

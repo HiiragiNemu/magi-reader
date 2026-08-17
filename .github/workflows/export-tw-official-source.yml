@@ -1,0 +1,47 @@
+name: Export official TW zh-CN source for manual retranslation
+
+on:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - .github/workflows/export-tw-official-source.yml
+      - .translation-export-trigger/**
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out certified TW source branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/tw-official-cn-complete
+          fetch-depth: 1
+
+      - name: Package compact official source and extraction tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d sources/tw-official-zh-cn
+          test -f tools/extract_tw_compact_sources.py
+          mkdir -p official-tw-export/sources official-tw-export/tools
+          cp -a sources/tw-official-zh-cn official-tw-export/sources/
+          cp -a sources/tw-official-zh-cn-v3 official-tw-export/sources/
+          cp -a sources/tw-official-zh-cn-valid official-tw-export/sources/
+          cp tools/extract_tw_compact_sources.py official-tw-export/tools/
+          cp tools/materialize_tw_official_cn.py official-tw-export/tools/
+          cp tools/tw_official_import_core.py official-tw-export/tools/
+          find official-tw-export -type f -print0 | sort -z | xargs -0 sha256sum > official-tw-export/SHA256SUMS.txt
+          find official-tw-export -maxdepth 4 -type f -printf '%p %s bytes\n' | sort
+
+      - name: Upload compact official source
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-tw-zh-cn-compact-source
+          path: official-tw-export/
+          if-no-files-found: error
+          retention-days: 7

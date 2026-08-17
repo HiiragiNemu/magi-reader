@@ -1,0 +1,116 @@
+name: Apply reviewed manual scenario translations
+
+on:
+  push:
+    branches:
+      - reader/manual-gpt-retranslation-20260816
+    paths:
+      - manual_retranslation/apply_batches.py
+      - manual_retranslation/apply_exact_batches.py
+      - manual_retranslation/batches/**
+      - manual_retranslation/bundles/**
+      - manual_retranslation/exact_bundles/**
+      - manual_retranslation/exact_parts/**/READY
+      - .github/workflows/manual-retranslation-apply.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manual-retranslation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out translation branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Apply reviewed pointer translation maps
+        run: |
+          python manual_retranslation/apply_batches.py \
+            --report "$RUNNER_TEMP/manual-retranslation-report.json"
+          cat "$RUNNER_TEMP/manual-retranslation-report.json"
+
+      - name: Assemble and apply complete exact translation bundles
+        shell: bash
+        run: |
+          set -euo pipefail
+          bundle_root="$RUNNER_TEMP/exact-bundles"
+          mkdir -p "$bundle_root"
+
+          if [[ -d manual_retranslation/exact_bundles ]]; then
+            find manual_retranslation/exact_bundles \
+              -maxdepth 1 -type f -name '*.json.gz.b64' \
+              -exec cp '{}' "$bundle_root/" \;
+          fi
+
+          if [[ -d manual_retranslation/exact_parts ]]; then
+            while IFS= read -r -d '' dir; do
+              if [[ ! -f "$dir/READY" ]]; then
+                echo "Skipping incomplete exact bundle directory: $dir"
+                continue
+              fi
+
+              name="$(basename "$dir")"
+              output="$bundle_root/${name}.json.gz.b64"
+              mapfile -d '' -t parts < <(
+                find "$dir" -maxdepth 1 -type f -name '*.part' -print0 | sort -z
+              )
+              if (( ${#parts[@]} == 0 )); then
+                echo "No bundle parts found in ready directory $dir" >&2
+                exit 1
+              fi
+              cat "${parts[@]}" > "$output"
+
+              checksum_file="$dir/SHA256"
+              if [[ ! -f "$checksum_file" ]]; then
+                echo "Missing checksum file in ready directory: $checksum_file" >&2
+                exit 1
+              fi
+              expected="$(awk 'NR == 1 { print $1 }' "$checksum_file")"
+              actual="$(sha256sum "$output" | awk '{ print $1 }')"
+              if [[ "$actual" != "$expected" ]]; then
+                echo "Bundle checksum mismatch for $name: expected=$expected actual=$actual" >&2
+                exit 1
+              fi
+              echo "Assembled $name: ${#parts[@]} parts, sha256=$actual"
+            done < <(
+              find manual_retranslation/exact_parts \
+                -mindepth 1 -maxdepth 1 -type d -print0 | sort -z
+            )
+          fi
+
+          python manual_retranslation/apply_exact_batches.py \
+            --bundle-root "$bundle_root" \
+            --report "$RUNNER_TEMP/exact-manual-retranslation-report.json"
+          cat "$RUNNER_TEMP/exact-manual-retranslation-report.json"
+
+      - name: Commit translated scenario JSON files
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- magireco-translate-data-master/Scenarios_full; then
+            echo "No scenario JSON changes are required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- magireco-translate-data-master/Scenarios_full
+          git commit -m "Translate reviewed scenario JSON batches from Japanese"
+
+          for attempt in 1 2 3 4 5; do
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+            echo "Push attempt ${attempt} lost a race; rebasing onto the latest branch head."
+            git fetch origin "${GITHUB_REF_NAME}"
+            git rebase "origin/${GITHUB_REF_NAME}"
+          done
+
+          echo "Unable to push translated scenario JSON files after five attempts." >&2
+          exit 1
