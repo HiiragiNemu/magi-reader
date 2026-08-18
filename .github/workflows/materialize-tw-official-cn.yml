@@ -1,34 +1,57 @@
 name: Materialize TW Official Simplified Chinese into main
 
 on:
+  repository_dispatch:
+    types: [exedra_tw_source_v1]
   workflow_dispatch:
     inputs:
-      source_url:
-        description: Immutable TW SP Release ZIP URL
-        required: false
+      release_url:
+        description: Canonical immutable TW v1 Release page
+        required: true
         type: string
-        default: https://github.com/HiiragiNemu/MagiaExedraTWData/releases/download/tw-wiki-source-v1-20260806/exedra-tw-wiki-source-v1.zip
-      source_sha256:
-        description: Required SHA-256 for the complete Release ZIP
-        required: false
+      archive_url:
+        description: Canonical immutable TW v1 ZIP URL
+        required: true
         type: string
-        default: 503c4c9a518d0a992abe800fccde4a97b35b2e4ddaeb2359e63eaa8d572cd1ac
+      archive_sha256:
+        description: Required ZIP SHA-256
+        required: true
+        type: string
+      contract_url:
+        description: Canonical immutable TW v1 contract URL
+        required: true
+        type: string
+      contract_sha256:
+        description: Required contract SHA-256
+        required: true
+        type: string
+      sp_revision:
+        required: true
+        type: string
+      scenario_revision:
+        required: true
+        type: string
+      manifest_revision:
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 concurrency:
-  group: materialize-tw-official-cn-main
+  group: materialize-exedra-official-main
   cancel-in-progress: false
 
 jobs:
   materialize:
+    if: github.event_name == 'workflow_dispatch' || vars.EXEDRA_READER_AUTOMATION_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 240
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+      source_ref: ${{ steps.commit.outputs.source_ref }}
     env:
       NEXT_TELEMETRY_DISABLED: "1"
-      TW_SOURCE_URL: ${{ inputs.source_url || 'https://github.com/HiiragiNemu/MagiaExedraTWData/releases/download/tw-wiki-source-v1-20260806/exedra-tw-wiki-source-v1.zip' }}
-      TW_SOURCE_SHA256: ${{ inputs.source_sha256 || '503c4c9a518d0a992abe800fccde4a97b35b2e4ddaeb2359e63eaa8d572cd1ac' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -36,9 +59,47 @@ jobs:
           fetch-depth: 0
           ref: main
 
+      - name: Resolve and validate immutable producer event
+        id: source
+        env:
+          INPUT_RELEASE_URL: ${{ inputs.release_url }}
+          INPUT_ARCHIVE_URL: ${{ inputs.archive_url }}
+          INPUT_ARCHIVE_SHA256: ${{ inputs.archive_sha256 }}
+          INPUT_CONTRACT_URL: ${{ inputs.contract_url }}
+          INPUT_CONTRACT_SHA256: ${{ inputs.contract_sha256 }}
+          INPUT_SP_REVISION: ${{ inputs.sp_revision }}
+          INPUT_SCENARIO_REVISION: ${{ inputs.scenario_revision }}
+          INPUT_MANIFEST_REVISION: ${{ inputs.manifest_revision }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/resolve_reader_update_event.py tw \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --event-path "$GITHUB_EVENT_PATH" \
+            --github-output "$GITHUB_OUTPUT" \
+            --release-url "$INPUT_RELEASE_URL" \
+            --archive-url "$INPUT_ARCHIVE_URL" \
+            --archive-sha256 "$INPUT_ARCHIVE_SHA256" \
+            --contract-url "$INPUT_CONTRACT_URL" \
+            --contract-sha256 "$INPUT_CONTRACT_SHA256" \
+            --sp-revision "$INPUT_SP_REVISION" \
+            --scenario-revision "$INPUT_SCENARIO_REVISION" \
+            --manifest-revision "$INPUT_MANIFEST_REVISION"
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+
+      - name: Require private producer access token
+        env:
+          EXEDRA_WIKI_SOURCE_TOKEN: ${{ secrets.EXEDRA_WIKI_SOURCE_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EXEDRA_WIKI_SOURCE_TOKEN" || {
+            echo "::error::EXEDRA_WIKI_SOURCE_TOKEN is required for the private producer repository."
+            exit 1
+          }
 
       - uses: actions/setup-node@v4
         with:
@@ -62,15 +123,43 @@ jobs:
           print(f'OPENCC_TW2SP_READY {probe!r} -> {result!r}')
           PY
 
-      - name: Fetch immutable official TW source bundle
+      - name: Download authenticated immutable Release asset
+        env:
+          GH_TOKEN: ${{ secrets.EXEDRA_WIKI_SOURCE_TOKEN }}
+          SOURCE_REPOSITORY: ${{ steps.source.outputs.source_repository }}
+          RELEASE_TAG: ${{ steps.source.outputs.release_tag }}
+          ASSET_NAME: ${{ steps.source.outputs.asset_name }}
+          ARCHIVE_SHA256: ${{ steps.source.outputs.archive_sha256 }}
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf "$RUNNER_TEMP/tw-sp-bundle"
+          bundle="$RUNNER_TEMP/tw-sp-bundle"
+          archive="$RUNNER_TEMP/$ASSET_NAME"
+          rm -rf "$bundle" "$archive"
+          gh release download "$RELEASE_TAG" \
+            --repo "$SOURCE_REPOSITORY" \
+            --pattern "$ASSET_NAME" \
+            --dir "$RUNNER_TEMP"
           python tools/fetch_tw_sp_source_bundle.py \
-            --source-url "$TW_SOURCE_URL" \
-            --source-sha256 "$TW_SOURCE_SHA256" \
-            --output-root "$RUNNER_TEMP/tw-sp-bundle"
+            --archive "$archive" \
+            --source-sha256 "$ARCHIVE_SHA256" \
+            --output-root "$bundle"
+
+      - name: Verify contract and producer revision pins
+        env:
+          CONTRACT_SHA256: ${{ steps.source.outputs.contract_sha256 }}
+          SP_REVISION: ${{ steps.source.outputs.sp_revision }}
+          SCENARIO_REVISION: ${{ steps.source.outputs.scenario_revision }}
+          MANIFEST_REVISION: ${{ steps.source.outputs.manifest_revision }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/verify_tw_source_pin.py \
+            --bundle-root "$RUNNER_TEMP/tw-sp-bundle" \
+            --contract-sha256 "$CONTRACT_SHA256" \
+            --sp-revision "$SP_REVISION" \
+            --scenario-revision "$SCENARIO_REVISION" \
+            --manifest-revision "$MANIFEST_REVISION"
 
       - name: Materialize authentic TW JSON and canonical Simplified Chinese
         shell: bash
@@ -79,7 +168,7 @@ jobs:
           python tools/materialize_tw_official_cn.py \
             --source-bundle-root "$RUNNER_TEMP/tw-sp-bundle" \
             --source-provider exedra-wiki-sp \
-            --expected-source-count 2780
+            --skip-derived
 
           python generate_story_index.py
           python tools/apply_tw_official_metadata.py
@@ -89,76 +178,15 @@ jobs:
           python tools/build_split_search_indexes.py
           python tools/build_split_search_indexes.py --validate-only
 
-      - name: Certify complete TW source partition and published metadata
+      - name: Certify dynamic TW coverage and published metadata
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          report = json.loads(
-              Path('artifacts/exedra_official_tw_import_report.json').read_text(
-                  encoding='utf-8'
-              )
-          )
-          stats = report.get('stats', {})
-          expected = {
-              'official_tw_groups': 395,
-              'official_tw_json_files': 2708,
-              'official_tw_text_events': 93697,
-              'official_tw_no_text_groups': 4,
-              'official_tw_no_text_files': 7,
-              'missing_tw_groups': 44,
-              'tw_source_files': 2780,
-              'tw_source_files_used': 2708,
-              'tw_source_files_unused': 72,
-              'tw_source_files_deferred_partial': 37,
-              'tw_source_files_tw_only_without_jp': 28,
-              'tw_source_files_no_text': 7,
-              'tw_source_files_unexpected_unused': 0,
-              'retained_non_tw_groups': 48,
-          }
-          for key, expected_value in expected.items():
-              if stats.get(key) != expected_value:
-                  raise SystemExit(
-                      f'Invalid TW statistic {key}={stats.get(key)!r}; '
-                      f'expected {expected_value}'
-                  )
-          if int(stats.get('failed_groups', 0) or 0) != 0:
-              raise SystemExit(f'TW structural failures remain: {stats}')
-          if (
-              stats['tw_source_files_used']
-              + stats['tw_source_files_deferred_partial']
-              + stats['tw_source_files_tw_only_without_jp']
-              + stats['tw_source_files_no_text']
-              != stats['tw_source_files']
-          ):
-              raise SystemExit(f'TW source partition is incomplete: {stats}')
-
-          stories = json.loads(
-              Path('website/public/story_index.json').read_text(encoding='utf-8')
-          )
-          official = [
-              item for item in stories
-              if isinstance(item, dict) and item.get('official_tw') is True
-          ]
-          if len(official) != stats['official_tw_groups']:
-              raise SystemExit(
-                  f'Official story metadata mismatch: {len(official)} != '
-                  f"{stats['official_tw_groups']}"
-              )
-          if not any(item.get('official_tw_chapter_title') for item in official):
-              raise SystemExit('Official TW chapter names were not applied')
-          if not any(item.get('official_tw_section_titles') for item in official):
-              raise SystemExit('Official TW section names were not applied')
-          print(
-              'TW_OFFICIAL_CERTIFIED '
-              f"groups={stats['official_tw_groups']} "
-              f"json={stats['official_tw_json_files']} "
-              f"events={stats['official_tw_text_events']}"
-          )
-          PY
+          python tools/validate_tw_official_coverage.py \
+            --scenario-root "$RUNNER_TEMP/tw-sp-bundle/bundle/Resources/Scenarios"
+          python tools/certify_tw_materialization.py \
+            --report artifacts/exedra_official_tw_import_report.json \
+            --story-index website/public/story_index.json
 
       - name: Run complete tests and Cloudflare build verification
         shell: bash
@@ -174,16 +202,37 @@ jobs:
           python tools/search_chunk_delivery.py verify-tree --root website/.open-next/assets
 
       - name: Commit certified materialization to main
+        id: commit
         shell: bash
         run: |
           set -euo pipefail
           rm -rf .tw-official-source
-          git config user.name 'github-actions[bot]'
-          git config user.email '4189824+github-actions[bot]@users.noreply.github.com'
-          git add -A
+          rm -rf website/.magi-reader-generation-backups
+          git config user.name 'Hiiragi Nemu'
+          git config user.email '128921071+HiiragiNemu@users.noreply.github.com'
+          python tools/stage_reader_automation_update.py tw
           if git diff --cached --quiet; then
             echo 'Certified materialization produced no repository changes.'
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            echo "source_ref=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git commit -m '[tw-materialized] Certified TW zh-CN data on main'
+          git commit -m '[tw-materialized] Import immutable official TW v1 source'
+          source_ref="$(git rev-parse HEAD)"
           git push origin HEAD:main
+          remote_ref="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          test "$remote_ref" = "$source_ref" || {
+            echo "::error::origin/main $remote_ref differs from committed $source_ref"
+            exit 1
+          }
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+          echo "source_ref=$source_ref" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: materialize
+    if: needs.materialize.outputs.changed == 'true'
+    uses: ./.github/workflows/deploy.yml
+    with:
+      pages_branch: main
+      source_ref: ${{ needs.materialize.outputs.source_ref }}
+    secrets: inherit

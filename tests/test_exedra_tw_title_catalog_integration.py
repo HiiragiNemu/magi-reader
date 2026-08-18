@@ -31,6 +31,18 @@ def _catalog(group: dict[str, object]) -> dict[str, object]:
 
 
 class ExedraTwTitleCatalogIntegrationTests(unittest.TestCase):
+    def test_stale_catalog_is_not_selected_for_new_tw_manifest_revision(self) -> None:
+        catalog = _catalog({"sourceIdentity": "exedra:1_Main:main_demo"})
+        matching = {"sourceRevisions": {"manifests": "fixture-master"}}
+        stale = {"sourceRevisions": {"manifests": "new-master"}}
+        self.assertIs(
+            generate.select_compatible_exedra_tw_title_catalog(catalog, matching),
+            catalog,
+        )
+        self.assertIsNone(
+            generate.select_compatible_exedra_tw_title_catalog(catalog, stale)
+        )
+
     def test_committed_catalog_accepts_same_title_across_raw_stage_ids(self) -> None:
         catalog = generate.load_exedra_tw_title_catalog()
         group = catalog["groups"]["exedra:1_Main:main_embryoeve3"]

@@ -411,6 +411,79 @@ def replace_directory(staged: Path, target: Path) -> None:
     journal.unlink(missing_ok=True)
 
 
+def build_source_contract_evidence(
+    source_contract: dict[str, Any],
+    *,
+    scenario_count: int,
+    manifest_count: int,
+) -> dict[str, Any]:
+    """Preserve and validate the v1 fields required by downstream certification."""
+
+    catalogs = source_contract.get("catalogs")
+    revisions = source_contract.get("sourceRevisions")
+    if not isinstance(catalogs, dict) or not isinstance(revisions, dict):
+        raise RuntimeError("SP handoff contract 缺少 catalogs/sourceRevisions")
+    scenario_catalog = catalogs.get("scenarios")
+    manifest_catalog = catalogs.get("manifests")
+    if not isinstance(scenario_catalog, dict) or not isinstance(manifest_catalog, dict):
+        raise RuntimeError("SP handoff contract 缺少 Scenario/Manifest 目录")
+    if scenario_catalog.get("fileCount") != scenario_count:
+        raise RuntimeError("SP contract Scenario 数量与来源目录不一致")
+    if manifest_catalog.get("fileCount") != manifest_count:
+        raise RuntimeError("SP contract Manifest 数量与来源目录不一致")
+    if source_contract.get("complete") is not True:
+        raise RuntimeError("SP handoff contract complete 必须为 true")
+    expected_diagnostics = {"missing": 0, "failure": 0, "parseFailure": 0}
+    if source_contract.get("diagnostics") != expected_diagnostics:
+        raise RuntimeError("SP handoff contract diagnostics 必须全部为 0")
+    return {
+        "schemaVersion": source_contract.get("schemaVersion"),
+        "contractName": source_contract.get("contractName"),
+        "complete": True,
+        "diagnostics": dict(expected_diagnostics),
+        "provenance": source_contract.get("provenance"),
+        "sourceRevisions": revisions,
+        "scenarioCatalogSha256": scenario_catalog.get("catalogSha256"),
+        "scenarioTreeSha256": scenario_catalog.get("treeSha256"),
+        "manifestCatalogSha256": manifest_catalog.get("catalogSha256"),
+        "manifestTreeSha256": manifest_catalog.get("treeSha256"),
+    }
+
+
+TW_NON_REGRESSION_FIELDS = (
+    "official_tw_groups",
+    "official_tw_json_files",
+    "official_tw_text_events",
+    "tw_source_files",
+)
+
+
+def enforce_tw_non_regression(
+    stats: dict[str, Any], previous_report: dict[str, Any] | None
+) -> None:
+    """Reject a materialization that unexpectedly shrinks trusted TW coverage."""
+
+    if previous_report is None or previous_report.get("status") != "materialized":
+        return
+    previous_stats = previous_report.get("stats")
+    if not isinstance(previous_stats, dict):
+        return
+    for field in TW_NON_REGRESSION_FIELDS:
+        previous_value = previous_stats.get(field)
+        current_value = stats.get(field)
+        if (
+            isinstance(previous_value, int)
+            and not isinstance(previous_value, bool)
+            and isinstance(current_value, int)
+            and not isinstance(current_value, bool)
+            and current_value < previous_value
+        ):
+            raise RuntimeError(
+                "台服自动更新触发非回退门："
+                f"{field} {current_value} < {previous_value}"
+            )
+
+
 def import_corpus(
     scenario_root: Path,
     manifest_root: Path,
@@ -444,30 +517,11 @@ def import_corpus(
 
     contract_evidence: dict[str, Any] | None = None
     if source_contract is not None:
-        catalogs = source_contract.get("catalogs")
-        revisions = source_contract.get("sourceRevisions")
-        if not isinstance(catalogs, dict) or not isinstance(revisions, dict):
-            raise RuntimeError("SP handoff contract 缺少 catalogs/sourceRevisions")
-        scenario_catalog = catalogs.get("scenarios")
-        manifest_catalog = catalogs.get("manifests")
-        if not isinstance(scenario_catalog, dict) or not isinstance(
-            manifest_catalog, dict
-        ):
-            raise RuntimeError("SP handoff contract 缺少 Scenario/Manifest 目录")
-        if scenario_catalog.get("fileCount") != scenario_count:
-            raise RuntimeError("SP contract Scenario 数量与来源目录不一致")
-        if manifest_catalog.get("fileCount") != manifest_count:
-            raise RuntimeError("SP contract Manifest 数量与来源目录不一致")
-        contract_evidence = {
-            "schemaVersion": source_contract.get("schemaVersion"),
-            "contractName": source_contract.get("contractName"),
-            "provenance": source_contract.get("provenance"),
-            "sourceRevisions": revisions,
-            "scenarioCatalogSha256": scenario_catalog.get("catalogSha256"),
-            "scenarioTreeSha256": scenario_catalog.get("treeSha256"),
-            "manifestCatalogSha256": manifest_catalog.get("catalogSha256"),
-            "manifestTreeSha256": manifest_catalog.get("treeSha256"),
-        }
+        contract_evidence = build_source_contract_evidence(
+            source_contract,
+            scenario_count=scenario_count,
+            manifest_count=manifest_count,
+        )
 
     convert = simplified_converter()
     speaker_map = tw.load_name_translation_map(tw.DICTIONARY_PATH)
@@ -494,13 +548,17 @@ def import_corpus(
     artifacts = ROOT / "artifacts"
     existing_report_path = artifacts / "exedra_official_tw_import_report.json"
     generated_at = ""
+    previous_report: dict[str, Any] | None = None
     if existing_report_path.is_file():
         try:
-            previous_report = json.loads(
+            loaded_previous_report = json.loads(
                 existing_report_path.read_text(encoding="utf-8-sig")
             )
+            if isinstance(loaded_previous_report, dict):
+                previous_report = loaded_previous_report
             if (
-                previous_report.get("scenarioTreeSha256") == scenario_sha256
+                previous_report is not None
+                and previous_report.get("scenarioTreeSha256") == scenario_sha256
                 and previous_report.get("manifestTreeSha256") == manifest_sha256
             ):
                 generated_at = str(previous_report.get("generatedAt") or "")
@@ -827,6 +885,7 @@ def import_corpus(
                 "存在无法归类的台服 Scenario："
                 f"{stats['tw_source_files_unexpected_unused']}"
             )
+        enforce_tw_non_regression(stats, previous_report)
         if not dry_run:
             replace_directory(staged_root, tw.CN_ROOT)
             artifacts.mkdir(exist_ok=True)

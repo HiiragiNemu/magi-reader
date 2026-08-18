@@ -223,9 +223,28 @@ def main() -> int:
     metadata = metadata_value.get("stories") if isinstance(metadata_value, dict) else None
     if not isinstance(metadata, dict):
         raise RuntimeError("台服官方元数据缺少 stories")
-    from generate_story_index import load_exedra_tw_title_catalog
+    from generate_story_index import (
+        load_exedra_tw_title_catalog,
+        select_compatible_exedra_tw_title_catalog,
+    )
 
-    title_catalog = load_exedra_tw_title_catalog(args.title_catalog)
+    loaded_title_catalog = load_exedra_tw_title_catalog(args.title_catalog)
+    source_contract = metadata_value.get("sourceContract")
+    title_catalog = select_compatible_exedra_tw_title_catalog(
+        loaded_title_catalog,
+        source_contract if isinstance(source_contract, dict) else None,
+    )
+    if title_catalog is None:
+        expected = (
+            source_contract.get("sourceRevisions", {}).get("manifests")
+            if isinstance(source_contract, dict)
+            else None
+        )
+        actual = loaded_title_catalog["source"]["masterRevision"]
+        print(
+            "TW_TITLE_CATALOG_SKIPPED "
+            f"catalog_revision={actual} source_revision={expected}"
+        )
     stories = json.loads(args.story_index.read_text(encoding="utf-8-sig"))
     if not isinstance(stories, list) or not all(isinstance(item, dict) for item in stories):
         raise RuntimeError("story_index 顶层不是对象数组")

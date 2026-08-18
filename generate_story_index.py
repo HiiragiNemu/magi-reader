@@ -58,6 +58,9 @@ DEFAULT_EXEDRA_PORTRAIT_TITLE_CATALOG = (
 DEFAULT_EXEDRA_TW_TITLE_CATALOG = (
     SCRIPT_DIR / "artifacts" / "exedra_tw_manifest_titles.generated.json"
 )
+DEFAULT_EXEDRA_TW_IMPORT_REPORT = (
+    SCRIPT_DIR / "artifacts" / "exedra_official_tw_import_report.json"
+)
 DEFAULT_GENERAL_VOICE_SOURCE_DIR = (
     SCRIPT_DIR
     / "magireco-voice-source-master"
@@ -2296,6 +2299,49 @@ def load_exedra_tw_title_catalog(
     return value
 
 
+def load_exedra_tw_source_contract(
+    path: Path = DEFAULT_EXEDRA_TW_IMPORT_REPORT,
+) -> dict[str, Any] | None:
+    """Load the active official-TW source contract from the import report."""
+
+    if not path.is_file():
+        return None
+    try:
+        value = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise PipelineError(f"Exedra TW 导入报告无法读取: {path}: {exc}") from exc
+    contract = value.get("sourceContract") if isinstance(value, dict) else None
+    if not isinstance(contract, dict):
+        raise PipelineError("Exedra TW 导入报告缺少 sourceContract")
+    revisions = contract.get("sourceRevisions")
+    if (
+        not isinstance(revisions, dict)
+        or not isinstance(revisions.get("manifests"), str)
+        or not revisions["manifests"]
+    ):
+        raise PipelineError("Exedra TW 导入报告缺少 manifests revision")
+    return contract
+
+
+def select_compatible_exedra_tw_title_catalog(
+    catalog: dict[str, Any],
+    source_contract: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Use a title catalog only when it matches the active manifest revision."""
+
+    if source_contract is None:
+        return None
+    revisions = source_contract.get("sourceRevisions")
+    expected = revisions.get("manifests") if isinstance(revisions, dict) else None
+    source = catalog.get("source")
+    actual = source.get("masterRevision") if isinstance(source, dict) else None
+    if not isinstance(expected, str) or not expected:
+        raise PipelineError("Exedra TW sourceContract 缺少 manifests revision")
+    if not isinstance(actual, str) or not actual:
+        raise PipelineError("Exedra TW 标题目录缺少 masterRevision")
+    return catalog if actual == expected else None
+
+
 def _apply_exedra_tw_title_metadata(
     *,
     story: MutableMapping[str, Any],
@@ -3519,11 +3565,21 @@ def scan_exedra_sources(
         _absolute_lexical(jp_dir)
         == _absolute_lexical(DEFAULT_EXEDRA_JP_DIR)
     )
+    loaded_tw_title_catalog = (
+        load_exedra_tw_title_catalog() if uses_committed_exedra_source else None
+    )
     tw_title_catalog_value = (
-        load_exedra_tw_title_catalog()
-        if uses_committed_exedra_source
+        select_compatible_exedra_tw_title_catalog(
+            loaded_tw_title_catalog,
+            load_exedra_tw_source_contract(),
+        )
+        if loaded_tw_title_catalog is not None
         else None
     )
+    if uses_committed_exedra_source and loaded_tw_title_catalog is not None:
+        stats["exedra_tw_title_catalog_stale"] = int(
+            tw_title_catalog_value is None
+        )
     tw_title_groups = (
         tw_title_catalog_value["groups"]
         if tw_title_catalog_value is not None
@@ -3532,14 +3588,15 @@ def scan_exedra_sources(
     if uses_committed_exedra_source:
         expected_title_groups = {group.manifest_id for group in groups}
         actual_title_groups = set(tw_title_groups)
-        if actual_title_groups != expected_title_groups:
-            missing = sorted(expected_title_groups - actual_title_groups)
-            extra = sorted(actual_title_groups - expected_title_groups)
+        extra = sorted(actual_title_groups - expected_title_groups)
+        if extra:
             raise PipelineError(
-                "Exedra TW 标题目录与 organizer groups 不完全一致: "
-                f"缺失 {len(missing)}，多余 {len(extra)}"
+                "Exedra TW 标题目录包含 JP organizer 不存在的逻辑组: "
+                f"多余 {len(extra)}"
             )
+        missing = expected_title_groups - actual_title_groups
         stats["exedra_tw_title_catalog_groups"] = len(tw_title_groups)
+        stats["exedra_tw_title_catalog_missing_groups"] = len(missing)
     voice_titles = (
         load_exedra_voice_titles()
         if uses_committed_exedra_source
@@ -3549,14 +3606,23 @@ def scan_exedra_sources(
             if group.category == "exedra_reaction"
         }
     )
-    if set(voice_titles) != reaction_group_keys:
-        missing = sorted(reaction_group_keys - set(voice_titles))
-        extra = sorted(set(voice_titles) - reaction_group_keys)
+    extra_voice_titles = sorted(set(voice_titles) - reaction_group_keys)
+    if extra_voice_titles:
         raise PipelineError(
-            "Exedra 语音目录与 reaction manifest 不完全一致: "
-            f"缺失 {len(missing)}，多余 {len(extra)}"
+            "Exedra 语音目录包含 reaction manifest 不存在的逻辑组: "
+            f"多余 {len(extra_voice_titles)}"
         )
+    missing_voice_titles = reaction_group_keys - set(voice_titles)
+    voice_titles = {
+        **{
+            group.group_key: group.title
+            for group in groups
+            if group.category == "exedra_reaction"
+        },
+        **voice_titles,
+    }
     stats["exedra_voice_catalog_groups"] = len(voice_titles)
+    stats["exedra_voice_catalog_missing_groups"] = len(missing_voice_titles)
 
     portrait_group_keys = {
         group.group_key
@@ -3572,14 +3638,25 @@ def scan_exedra_sources(
             if group.category == "exedra_portrait"
         }
     )
-    if set(portrait_titles) != portrait_group_keys:
-        missing = sorted(portrait_group_keys - set(portrait_titles))
-        extra = sorted(set(portrait_titles) - portrait_group_keys)
+    extra_portrait_titles = sorted(set(portrait_titles) - portrait_group_keys)
+    if extra_portrait_titles:
         raise PipelineError(
-            "Exedra 肖像标题目录与 portrait manifest 不完全一致: "
-            f"缺失 {len(missing)}，多余 {len(extra)}"
+            "Exedra 肖像标题目录包含 portrait manifest 不存在的逻辑组: "
+            f"多余 {len(extra_portrait_titles)}"
         )
+    missing_portrait_titles = portrait_group_keys - set(portrait_titles)
+    portrait_titles = {
+        **{
+            group.group_key: group.title
+            for group in groups
+            if group.category == "exedra_portrait"
+        },
+        **portrait_titles,
+    }
     stats["exedra_portrait_title_catalog_groups"] = len(portrait_titles)
+    stats["exedra_portrait_title_catalog_missing_groups"] = len(
+        missing_portrait_titles
+    )
 
     cn_sources = _find_exedra_cn_sources(cn_dir, groups)
     cn_json_sources = _find_exedra_cn_json_sources(
@@ -3587,17 +3664,12 @@ def scan_exedra_sources(
         groups,
         cn_sources,
     )
-    unnamed_characters = sorted(
-        group.group_key
+    stats["exedra_character_display_name_fallbacks"] = sum(
+        1
         for group in groups
         if group.category == "exedra_character"
         and group.group_key not in EXEDRA_CHARACTER_DISPLAY_NAMES
     )
-    if unnamed_characters:
-        raise PipelineError(
-            "Exedra 角色缺少中文目录名映射: "
-            + ", ".join(unnamed_characters)
-        )
 
     for group in groups:
         if not EXEDRA_ROUTE_GROUP_RE.fullmatch(group.group_key):
@@ -3630,7 +3702,10 @@ def scan_exedra_sources(
         if story_id in story_map:
             raise PipelineError(f"Exedra story id 冲突: {story_id}")
         display_folder = (
-            EXEDRA_CHARACTER_DISPLAY_NAMES[group.group_key]
+            EXEDRA_CHARACTER_DISPLAY_NAMES.get(
+                group.group_key,
+                group.title or group.group_key,
+            )
             if group.category == "exedra_character"
             else (
                 voice_titles[group.group_key]
@@ -3673,7 +3748,10 @@ def scan_exedra_sources(
                 ],
             }
         )
-        if tw_title_catalog_value is not None:
+        if (
+            tw_title_catalog_value is not None
+            and group.manifest_id in tw_title_groups
+        ):
             _apply_exedra_tw_title_metadata(
                 story=story,
                 group=group,

@@ -28,7 +28,7 @@ const envVars = {
     required('TURNSTILE_ALLOWED_HOSTNAMES'),
   ),
   PROOFREADING_TARGET_BRANCH: plainText('main'),
-  PROOFREADING_SOURCE_COMMIT: plainText(required('GITHUB_SHA')),
+  PROOFREADING_SOURCE_COMMIT: plainText(required('DEPLOY_SOURCE_SHA')),
   PROOFREADING_ALLOW_GITHUB_ADMIN: plainText('true'),
   PROOFREADING_GITHUB_REPO: plainText('HiiragiNemu/magi-reader'),
   PROOFREADING_TURNSTILE_TEST_MODE: plainText(

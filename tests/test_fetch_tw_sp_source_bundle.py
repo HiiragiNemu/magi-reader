@@ -229,10 +229,12 @@ class TwSpSourceBundleTests(unittest.TestCase):
             ROOT / ".github/workflows/materialize-tw-official-cn.yml"
         ).read_text(encoding="utf-8")
         self.assertIn("tools/fetch_tw_sp_source_bundle.py", workflow)
+        self.assertIn("tools/resolve_reader_update_event.py tw", workflow)
+        self.assertIn("tools/verify_tw_source_pin.py", workflow)
+        self.assertIn("EXEDRA_READER_AUTOMATION_ENABLED", workflow)
         self.assertIn('--source-bundle-root "$RUNNER_TEMP/tw-sp-bundle"', workflow)
         self.assertIn("--source-provider exedra-wiki-sp", workflow)
-        self.assertIn(source_bundle.DEFAULT_SOURCE_URL, workflow)
-        self.assertIn(source_bundle.DEFAULT_SOURCE_SHA256, workflow)
+        self.assertNotIn("--expected-source-count", workflow)
         self.assertNotIn("--scenario-root .tw-official-source/scenarios", workflow)
         self.assertNotIn("tools/extract_tw_compact_sources.py", workflow)
 

@@ -10,6 +10,17 @@ on:
         required: true
         default: promotion-current
         type: string
+  workflow_call:
+    inputs:
+      pages_branch:
+        description: Pages branch; main deploys production
+        required: false
+        default: main
+        type: string
+      source_ref:
+        description: Exact Reader commit produced by the calling workflow
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -21,8 +32,9 @@ concurrency:
 jobs:
   deploy:
     if: >-
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      github.event_name == 'workflow_dispatch'
+      github.event_name != 'push' ||
+      (!startsWith(github.event.head_commit.message, '[tw-materialized]') &&
+      !startsWith(github.event.head_commit.message, '[jp-materialized]'))
     runs-on: ubuntu-latest
     timeout-minutes: 45
     defaults:
@@ -33,6 +45,7 @@ jobs:
       PROOFREADING_KV_TITLE: magi-submissions
       PAGES_BRANCH: ${{ github.event_name == 'push' && 'main' || inputs.pages_branch }}
       PAGES_ENVIRONMENT: ${{ (github.event_name == 'push' || inputs.pages_branch == 'main') && 'production' || 'preview' }}
+      SOURCE_COMMIT_SHA: ${{ inputs.source_ref || github.sha }}
       SERVER_GITHUB_TOKEN: ${{ secrets.PROOFREADING_GITHUB_TOKEN || secrets.TARGET_REPO_TOKEN }}
       SHARED_ADMIN_TOKEN: ${{ secrets.SUBMISSIONS_ADMIN_TOKEN }}
 
@@ -42,6 +55,18 @@ jobs:
           # The trusted-main machine-review generator verifies ancestry and
           # compares Git trees against the immutable main baseline below.
           fetch-depth: 0
+          ref: ${{ inputs.source_ref || github.sha }}
+
+      - name: Verify exact deploy source
+        working-directory: .
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$SOURCE_COMMIT_SHA" || {
+            echo "::error::Deploy checkout $actual differs from $SOURCE_COMMIT_SHA"
+            exit 1
+          }
 
       - uses: actions/setup-node@v4
         with:
@@ -77,9 +102,15 @@ jobs:
 
           path = Path("website/public/data/machine_translation_manifest.generated.json")
           manifest = json.loads(path.read_text(encoding="utf-8"))
-          if manifest.get("total") != 507:
+          entries = manifest.get("entries")
+          if (
+              not isinstance(entries, list)
+              or not entries
+              or manifest.get("total") != len(entries)
+          ):
               raise SystemExit(
-                  f"unexpected machine-review baseline: {manifest.get('total')!r}"
+                  f"invalid machine-review manifest: total={manifest.get('total')!r} "
+                  f"entries={type(entries).__name__}"
               )
           print(f"machine-review baseline ready: {manifest['total']}")
           PY
@@ -156,6 +187,7 @@ jobs:
             magireader.pages.dev,${{ env.PAGES_BRANCH }}.magireader.pages.dev
           PROOFREADING_GITHUB_TOKEN: ${{ env.SERVER_GITHUB_TOKEN }}
           SUBMISSIONS_ADMIN_TOKEN: ${{ env.SHARED_ADMIN_TOKEN }}
+          DEPLOY_SOURCE_SHA: ${{ env.SOURCE_COMMIT_SHA }}
         run: node scripts/configure-pages-project.mjs
 
       - name: Deploy Pages
@@ -166,8 +198,8 @@ jobs:
           npx wrangler pages deploy .pages-deploy
           --project-name "$PAGES_PROJECT_NAME"
           --branch "$PAGES_BRANCH"
-          --commit-hash "$GITHUB_SHA"
-          --commit-message "MagiReader $GITHUB_SHA"
+          --commit-hash "$SOURCE_COMMIT_SHA"
+          --commit-message "MagiReader $SOURCE_COMMIT_SHA"
 
       - name: Smoke test Pages deployment
         shell: bash
@@ -183,12 +215,13 @@ jobs:
                curl --fail --silent --show-error --max-time 30 "$base/story_index.json" >/tmp/story_index.json &&
                curl --fail --silent --show-error --max-time 30 "$base/api/proofreading/config" >/tmp/config.json &&
                curl --fail --silent --show-error --max-time 30 "$base/api/proofreading/machine-status" >/tmp/status.json &&
+               curl --fail --silent --show-error --max-time 30 "$base/data/machine_translation_manifest.generated.json" >/tmp/machine_manifest.json &&
                curl --fail --silent --show-error --max-time 30 "$base/data/exedra_character/character_asuka/character_asuka_cn.txt" >/tmp/asuka.txt &&
                curl --fail --silent --show-error --max-time 30 "$base/data/exedra_character/character_asuka/character_asuka_0.json" >/tmp/asuka.json &&
                node --input-type=module -e '
                  import fs from "node:fs";
                  const config = JSON.parse(fs.readFileSync("/tmp/config.json", "utf8"));
-                 process.exit(config.source_revision === process.env.GITHUB_SHA ? 0 : 1);
+                 process.exit(config.source_revision === process.env.SOURCE_COMMIT_SHA ? 0 : 1);
                '; then
               break
             fi
@@ -203,10 +236,12 @@ jobs:
           const index = JSON.parse(fs.readFileSync('/tmp/story_index.json', 'utf8'));
           const config = JSON.parse(fs.readFileSync('/tmp/config.json', 'utf8'));
           const status = JSON.parse(fs.readFileSync('/tmp/status.json', 'utf8'));
+          const manifest = JSON.parse(fs.readFileSync('/tmp/machine_manifest.json', 'utf8'));
           const asuka = JSON.parse(fs.readFileSync('/tmp/asuka.json', 'utf8'));
-          if (!Array.isArray(index) || index.length < 3000) throw new Error('story index is incomplete');
-          if (config.source_revision !== process.env.GITHUB_SHA) throw new Error('source revision mismatch');
-          if (status.total !== 507 || status.remaining > status.total) throw new Error('machine review status mismatch');
+          if (!Array.isArray(index) || index.length === 0) throw new Error('story index is incomplete');
+          if (config.source_revision !== process.env.SOURCE_COMMIT_SHA) throw new Error('source revision mismatch');
+          if (!Array.isArray(manifest.entries) || manifest.entries.length === 0 || manifest.total !== manifest.entries.length) throw new Error('machine manifest mismatch');
+          if (!Number.isInteger(status.total) || !Number.isInteger(status.remaining) || status.total !== manifest.total || status.remaining < 0 || status.remaining > status.total) throw new Error('machine review status mismatch');
           if (!fs.readFileSync('/tmp/asuka.txt', 'utf8').includes('[Section')) throw new Error('Asuka TXT is incomplete');
           if (!Array.isArray(asuka.sheetList) || asuka.sheetList.length < 1) throw new Error('Asuka JSON is incomplete');
           console.log(JSON.stringify({

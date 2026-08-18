@@ -1,0 +1,206 @@
+name: Materialize immutable Exedra JP source into main
+
+on:
+  repository_dispatch:
+    types: [exedra_jp_source_v1]
+  workflow_dispatch:
+    inputs:
+      commit_url:
+        description: Canonical immutable ma-ex-data commit page
+        required: true
+        type: string
+      archive_url:
+        description: Canonical immutable ma-ex-data commit archive URL
+        required: true
+        type: string
+      source_commit:
+        description: Full lowercase producer commit SHA
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: materialize-exedra-official-main
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: github.event_name == 'workflow_dispatch' || vars.EXEDRA_READER_AUTOMATION_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+      source_ref: ${{ steps.commit.outputs.source_ref }}
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Resolve and validate immutable producer event
+        id: source
+        env:
+          INPUT_COMMIT_URL: ${{ inputs.commit_url }}
+          INPUT_ARCHIVE_URL: ${{ inputs.archive_url }}
+          INPUT_SOURCE_COMMIT: ${{ inputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/resolve_reader_update_event.py jp \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --event-path "$GITHUB_EVENT_PATH" \
+            --github-output "$GITHUB_OUTPUT" \
+            --commit-url "$INPUT_COMMIT_URL" \
+            --archive-url "$INPUT_ARCHIVE_URL" \
+            --source-commit "$INPUT_SOURCE_COMMIT"
+
+      - name: Require private producer access token
+        env:
+          EXEDRA_WIKI_SOURCE_TOKEN: ${{ secrets.EXEDRA_WIKI_SOURCE_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EXEDRA_WIKI_SOURCE_TOKEN" || {
+            echo "::error::EXEDRA_WIKI_SOURCE_TOKEN is required for the private producer repository."
+            exit 1
+          }
+
+      - name: Checkout only the exact producer Scenario tree
+        env:
+          EXEDRA_WIKI_SOURCE_TOKEN: ${{ secrets.EXEDRA_WIKI_SOURCE_TOKEN }}
+          SOURCE_REPOSITORY: ${{ steps.source.outputs.source_repository }}
+          SOURCE_COMMIT: ${{ steps.source.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .producer-source
+          git init --quiet .producer-source
+          git -C .producer-source remote add origin \
+            "https://github.com/$SOURCE_REPOSITORY.git"
+          auth="$(printf 'x-access-token:%s' "$EXEDRA_WIKI_SOURCE_TOKEN" | base64 | tr -d '\n')"
+          header='http.https://github.com/.extraheader'
+          git -C .producer-source config "$header" "AUTHORIZATION: basic $auth"
+          cleanup_auth() {
+            git -C .producer-source config --unset-all "$header" 2>/dev/null || true
+          }
+          trap cleanup_auth EXIT
+          git -C .producer-source sparse-checkout init --cone
+          git -C .producer-source sparse-checkout set \
+            gamedata/Resources/Scenarios
+          git -C .producer-source -c protocol.version=2 fetch \
+            --filter=blob:none --no-tags --depth=1 origin "$SOURCE_COMMIT"
+          git -C .producer-source checkout --detach FETCH_HEAD
+
+      - name: Verify exact producer checkout
+        env:
+          SOURCE_COMMIT: ${{ steps.source.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git -C .producer-source rev-parse HEAD)"
+          test "$actual" = "$SOURCE_COMMIT" || {
+            echo "::error::Producer checkout $actual differs from the pinned commit."
+            exit 1
+          }
+          test -d .producer-source/gamedata/Resources/Scenarios || {
+            echo "::error::Pinned producer commit has no Scenario source tree."
+            exit 1
+          }
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install deterministic dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-compile -r requirements-data-tools.txt
+          npm --prefix website ci
+
+      - name: Materialize and publish immutable JP Scenario source
+        env:
+          SOURCE_REPOSITORY: ${{ steps.source.outputs.source_repository }}
+          SOURCE_COMMIT: ${{ steps.source.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/exedra-jp-organized"
+          rm -rf "$output"
+          python tools/materialize_exedra_jp_source.py \
+            --source-scenarios-root .producer-source/gamedata/Resources/Scenarios \
+            --output-root "$output" \
+            --receipt artifacts/exedra_jp_source_receipt.v1.json \
+            --source-repository "$SOURCE_REPOSITORY" \
+            --source-commit "$SOURCE_COMMIT" \
+            --current-root magiraexedra-source-master/Scenarios_full
+          rsync -a --checksum --delete "$output/" magiraexedra-source-master/Scenarios_full/
+          rm -rf .producer-source
+
+          python generate_story_index.py
+          python tools/apply_tw_official_metadata.py
+          python generate_machine_translation_manifest.py \
+            --translation-base 65f221f2aaa5a9fe161ed32e03e4dfbb93d4746d \
+            --translation-commit 3d463befe7a10d4cb72034378ce2a6f23c377abb
+          python tools/build_split_search_indexes.py
+          python tools/build_split_search_indexes.py --validate-only
+
+      - name: Run complete tests and Cloudflare build verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tests -p 'test_*.py'
+          npm --prefix website run check
+          python generate_story_index.py --validate-only
+          python tools/search_chunk_delivery.py materialize
+          python tools/search_chunk_delivery.py verify-tree --root website/public
+          npm --prefix website run build:worker
+          npm --prefix website run verify:cloudflare-output
+          python tools/search_chunk_delivery.py verify-tree --root website/.open-next/assets
+
+      - name: Commit certified JP materialization to main
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .producer-source
+          rm -rf website/.magi-reader-generation-backups
+          git config user.name 'Hiiragi Nemu'
+          git config user.email '128921071+HiiragiNemu@users.noreply.github.com'
+          python tools/stage_reader_automation_update.py jp
+          if git diff --cached --quiet; then
+            echo 'Certified JP materialization produced no repository changes.'
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            echo "source_ref=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m '[jp-materialized] Import immutable official JP source'
+          source_ref="$(git rev-parse HEAD)"
+          git push origin HEAD:main
+          remote_ref="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          test "$remote_ref" = "$source_ref" || {
+            echo "::error::origin/main $remote_ref differs from committed $source_ref"
+            exit 1
+          }
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+          echo "source_ref=$source_ref" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: materialize
+    if: needs.materialize.outputs.changed == 'true'
+    uses: ./.github/workflows/deploy.yml
+    with:
+      pages_branch: main
+      source_ref: ${{ needs.materialize.outputs.source_ref }}
+    secrets: inherit
