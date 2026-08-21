@@ -120,9 +120,385 @@
   max-height: min(46rem, calc(100dvh - 16px)) !important;
 }
 
+/* Keep the modeless windows translucent in character, but give their text a
+   solid enough surface that catalogue copy cannot show through it. */
+.magi-home-light-root:not(.magi-home-paper-root),
+.magi-reader-theme-light {
+  --magi-window-surface: rgba(242, 243, 238, 0.97);
+  --magi-window-body-surface: rgba(246, 247, 243, 0.94);
+  --magi-window-card-surface: rgba(255, 255, 255, 0.9);
+  --magi-window-card-hover-surface: rgba(255, 255, 255, 0.96);
+}
+
+.magi-home-paper-root,
+.magi-reader-theme-paper {
+  --magi-window-surface: rgba(242, 233, 209, 0.985);
+  --magi-window-body-surface: rgba(250, 245, 229, 0.95);
+  --magi-window-card-surface: rgba(253, 249, 235, 0.9);
+  --magi-window-card-hover-surface: rgba(255, 254, 246, 0.98);
+}
+
+.magi-home-green-root,
+.magi-reader-theme-green {
+  --magi-window-surface: rgba(225, 244, 225, 0.975);
+  --magi-window-body-surface: rgba(235, 249, 234, 0.94);
+  --magi-window-card-surface: rgba(242, 255, 241, 0.9);
+  --magi-window-card-hover-surface: rgba(248, 255, 247, 0.96);
+}
+
+.magi-home-dark-root,
+.magi-reader-theme-dark {
+  --magi-window-surface: rgba(13, 25, 47, 0.98);
+  --magi-window-body-surface: rgba(15, 29, 52, 0.95);
+  --magi-window-card-surface: rgba(255, 255, 255, 0.12);
+  --magi-window-card-hover-surface: rgba(255, 255, 255, 0.16);
+}
+
+:is(.magi-about-window, .magi-site-settings-window, .magi-settings-window).magi-floating-window {
+  background-color: var(--magi-window-surface) !important;
+}
+
+:is(.magi-about-window, .magi-site-settings-window, .magi-settings-window)
+  .magi-floating-window-body {
+  background-color: var(--magi-window-body-surface) !important;
+}
+
+.magi-about-window .magi-floating-link {
+  background: var(--magi-window-card-surface) !important;
+}
+
+.magi-about-window .magi-floating-link:hover,
+.magi-about-window .magi-floating-link:focus-visible {
+  background: var(--magi-window-card-hover-surface) !important;
+}
+
 .magi-site-settings-window .magi-floating-window-body {
   overflow: auto;
   overscroll-behavior: contain;
+}
+
+/* Reader UI V31 — the expanded dark settings window reads like an amber CRT
+   terminal.  The selector is deliberately bound to the window's own theme so
+   light, paper and eye-care settings keep their existing palettes. */
+.magi-site-settings-window[data-theme='dark'] {
+  --magi-terminal-amber: #f3c75f;
+  --magi-terminal-amber-bright: #ffe39a;
+  --magi-terminal-amber-muted: #cfa64d;
+  --magi-terminal-amber-line: rgba(243, 199, 95, 0.48);
+  --magi-terminal-amber-glow: rgba(243, 184, 60, 0.16);
+  --magi-window-surface: rgba(13, 25, 47, 0.98);
+  --magi-window-body-surface: rgba(15, 29, 52, 0.95);
+  color: var(--magi-terminal-amber);
+  border-color: rgba(243, 199, 95, 0.62) !important;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 216, 122, 0.018) 0 1px,
+    transparent 1px 4px
+  ) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 222, 139, 0.1),
+    0 0 20px var(--magi-terminal-amber-glow),
+    0 18px 44px rgba(0, 5, 15, 0.5) !important;
+  caret-color: var(--magi-terminal-amber-bright);
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    'Microsoft YaHei UI',
+    'Microsoft YaHei',
+    monospace;
+}
+
+.magi-site-settings-window[data-theme='dark'] .magi-floating-window-titlebar {
+  color: var(--magi-terminal-amber-bright) !important;
+  border-bottom-color: rgba(255, 215, 116, 0.64) !important;
+  background-color: rgba(17, 31, 53, 0.96) !important;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(255, 211, 105, 0.035) 3px 4px
+  ) !important;
+  box-shadow:
+    inset 0 -1px rgba(255, 227, 154, 0.08),
+    0 4px 14px rgba(229, 166, 43, 0.07);
+}
+
+.magi-site-settings-window[data-theme='dark']
+  :where(.magi-floating-window-system-label, .magi-floating-window-title) {
+  color: var(--magi-terminal-amber-bright) !important;
+  text-shadow: 0 0 5px rgba(255, 198, 75, 0.22);
+}
+
+.magi-site-settings-window[data-theme='dark'] .magi-floating-window-system-label {
+  opacity: 0.68;
+}
+
+.magi-site-settings-window[data-theme='dark'] .magi-floating-window-body {
+  color: var(--magi-terminal-amber) !important;
+  background-color: var(--magi-window-body-surface) !important;
+  background-image:
+    linear-gradient(rgba(255, 208, 92, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 208, 92, 0.012) 1px, transparent 1px) !important;
+  background-size: 4px 4px, 12px 12px !important;
+}
+
+.magi-site-settings-window[data-theme='dark']
+  .magi-floating-window-body
+  :where(h3, h4, summary, p, span, button, [role='status']) {
+  color: var(--magi-terminal-amber) !important;
+}
+
+.magi-site-settings-window[data-theme='dark']
+  .magi-floating-window-body
+  :where(h3, h4, summary) {
+  color: var(--magi-terminal-amber-bright) !important;
+  text-shadow: 0 0 4px rgba(255, 198, 75, 0.18);
+}
+
+.magi-site-settings-window[data-theme='dark']
+  .magi-floating-window-body
+  :where(p, [role='status']) {
+  text-shadow: 0 0 3px rgba(255, 190, 60, 0.11);
+}
+
+.magi-site-settings-window[data-theme='dark']
+  :where(
+    .magi-floating-window-body > section,
+    [data-reader-font-settings='true'],
+    [data-exedra-font-settings='true'],
+    [data-reader-font-bundle],
+    [data-exedra-font]
+  ) {
+  border-color: var(--magi-terminal-amber-line) !important;
+  background: rgba(7, 17, 34, 0.3) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 224, 145, 0.025),
+    0 0 9px rgba(227, 165, 45, 0.035);
+}
+
+.magi-site-settings-window[data-theme='dark']
+  :where([data-reader-font-settings='true'], [data-exedra-font-settings='true'])[open] {
+  border-color: rgba(255, 210, 105, 0.6) !important;
+  box-shadow:
+    inset 0 0 13px rgba(255, 191, 61, 0.035),
+    0 0 11px rgba(227, 165, 45, 0.065);
+}
+
+.magi-site-settings-window[data-theme='dark'] summary::marker {
+  color: var(--magi-terminal-amber-bright);
+}
+
+.magi-site-settings-window[data-theme='dark']
+  .magi-floating-window-body
+  button {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: rgba(243, 199, 95, 0.56) !important;
+  color: var(--magi-terminal-amber-bright) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 205, 91, 0.115),
+    rgba(5, 15, 31, 0.24)
+  ) !important;
+  box-shadow:
+    inset 0 0 8px rgba(255, 201, 77, 0.035),
+    0 0 7px rgba(231, 170, 50, 0.055) !important;
+  text-shadow: 0 0 4px rgba(255, 198, 75, 0.18);
+}
+
+.magi-site-settings-window[data-theme='dark']
+  .magi-floating-window-body
+  button:is(:hover, :focus-visible):not(:disabled) {
+  border-color: rgba(255, 225, 153, 0.82) !important;
+  color: #fff0bd !important;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 205, 91, 0.18),
+    rgba(75, 52, 16, 0.2)
+  ) !important;
+  box-shadow:
+    inset 0 0 10px rgba(255, 214, 116, 0.07),
+    0 0 10px rgba(244, 185, 66, 0.13) !important;
+  outline-color: var(--magi-terminal-amber-bright);
+}
+
+.magi-site-settings-window[data-theme='dark']
+  .magi-floating-window-body
+  button:is([aria-pressed='true'], [aria-checked='true']) {
+  border-color: var(--magi-terminal-amber-bright) !important;
+  color: #fff2c5 !important;
+  background: rgba(203, 139, 22, 0.25) !important;
+  box-shadow:
+    inset 0 0 12px rgba(255, 221, 139, 0.09),
+    0 0 10px rgba(244, 185, 66, 0.16) !important;
+}
+
+.magi-site-settings-window[data-theme='dark']
+  .magi-floating-window-body
+  button:disabled {
+  color: var(--magi-terminal-amber-muted) !important;
+  border-color: rgba(207, 166, 77, 0.28) !important;
+  background: rgba(9, 18, 34, 0.22) !important;
+  box-shadow: none !important;
+}
+
+.magi-site-settings-window[data-theme='dark']
+  :where(.magi-retro-window-minimize, .magi-retro-window-close) {
+  color: var(--magi-terminal-amber-bright) !important;
+  border-color: rgba(255, 222, 139, 0.68) !important;
+  background: rgba(79, 57, 17, 0.46) !important;
+  box-shadow:
+    inset 1px 1px rgba(255, 235, 182, 0.16),
+    inset -1px -1px rgba(91, 60, 10, 0.48),
+    0 0 7px rgba(232, 172, 52, 0.09) !important;
+}
+
+.magi-site-settings-window[data-theme='dark']
+  :where(.magi-retro-window-minimize, .magi-retro-window-close):is(:hover, :focus-visible) {
+  color: #fff4cf !important;
+  border-color: var(--magi-terminal-amber-bright) !important;
+  background: rgba(132, 91, 16, 0.58) !important;
+  outline-color: var(--magi-terminal-amber-bright) !important;
+}
+
+.magi-site-settings-window[data-theme='dark'] .magi-floating-window-footer {
+  color: var(--magi-terminal-amber-muted) !important;
+  border-top-color: rgba(243, 199, 95, 0.38) !important;
+  background: rgba(7, 17, 34, 0.24);
+  text-shadow: 0 0 3px rgba(255, 190, 60, 0.1);
+  opacity: 0.72;
+}
+
+/* The dark Links/About window uses the same amber CRT shell as Settings.
+   Service tiles keep their own gradient fills and white icon lettering. */
+.magi-about-window[data-theme='dark'] {
+  --magi-terminal-amber: #f3c75f;
+  --magi-terminal-amber-bright: #ffe39a;
+  --magi-terminal-amber-muted: #cfa64d;
+  --magi-window-surface: rgba(13, 25, 47, 0.98);
+  --magi-window-body-surface: rgba(15, 29, 52, 0.95);
+  color: var(--magi-terminal-amber);
+  border-color: rgba(243, 199, 95, 0.62) !important;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 216, 122, 0.018) 0 1px,
+    transparent 1px 4px
+  ) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 222, 139, 0.1),
+    0 0 20px rgba(243, 184, 60, 0.16),
+    0 18px 44px rgba(0, 5, 15, 0.5) !important;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    'Microsoft YaHei UI',
+    'Microsoft YaHei',
+    monospace;
+}
+
+.magi-about-window[data-theme='dark'] .magi-floating-window-titlebar {
+  color: var(--magi-terminal-amber-bright) !important;
+  border-bottom-color: rgba(255, 215, 116, 0.64) !important;
+  background-color: rgba(17, 31, 53, 0.96) !important;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(255, 211, 105, 0.035) 3px 4px
+  ) !important;
+  box-shadow:
+    inset 0 -1px rgba(255, 227, 154, 0.08),
+    0 4px 14px rgba(229, 166, 43, 0.07);
+}
+
+.magi-about-window[data-theme='dark']
+  :where(.magi-floating-window-system-label, .magi-floating-window-title) {
+  color: var(--magi-terminal-amber-bright) !important;
+  text-shadow: 0 0 5px rgba(255, 198, 75, 0.22);
+}
+
+.magi-about-window[data-theme='dark'] .magi-floating-window-system-label {
+  opacity: 0.68;
+}
+
+.magi-about-window[data-theme='dark'] .magi-floating-window-body {
+  color: var(--magi-terminal-amber) !important;
+  background-color: var(--magi-window-body-surface) !important;
+  background-image:
+    linear-gradient(rgba(255, 208, 92, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 208, 92, 0.012) 1px, transparent 1px) !important;
+  background-size: 4px 4px, 12px 12px !important;
+}
+
+.magi-about-window[data-theme='dark'] .magi-floating-link {
+  border-color: rgba(243, 199, 95, 0.48) !important;
+  color: var(--magi-terminal-amber) !important;
+  background-color: rgba(7, 17, 34, 0.38) !important;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(255, 211, 105, 0.024) 3px 4px
+  ) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 224, 145, 0.025),
+    0 0 8px rgba(227, 165, 45, 0.045) !important;
+}
+
+.magi-about-window[data-theme='dark'] .magi-floating-link:is(:hover, :focus-visible) {
+  border-color: rgba(255, 225, 153, 0.8) !important;
+  color: #fff0bd !important;
+  background-color: rgba(54, 42, 20, 0.46) !important;
+  box-shadow:
+    inset 0 0 10px rgba(255, 214, 116, 0.055),
+    0 0 10px rgba(244, 185, 66, 0.13) !important;
+  outline-color: var(--magi-terminal-amber-bright);
+}
+
+.magi-about-window[data-theme='dark']
+  :where(.magi-floating-link-title, .magi-floating-link-subtitle) {
+  color: var(--magi-terminal-amber) !important;
+  text-shadow: 0 0 4px rgba(255, 198, 75, 0.14);
+}
+
+.magi-about-window[data-theme='dark'] .magi-floating-link-title {
+  color: var(--magi-terminal-amber-bright) !important;
+}
+
+.magi-about-window[data-theme='dark'] .magi-floating-link > span:last-child {
+  color: var(--magi-terminal-amber-bright) !important;
+  text-shadow: 0 0 5px rgba(255, 198, 75, 0.2);
+}
+
+.magi-about-window[data-theme='dark'] .magi-floating-link > div:first-child {
+  color: #fff !important;
+  text-shadow: none;
+}
+
+.magi-about-window[data-theme='dark']
+  :where(.magi-retro-window-minimize, .magi-retro-window-close) {
+  color: var(--magi-terminal-amber-bright) !important;
+  border-color: rgba(255, 222, 139, 0.68) !important;
+  background: rgba(79, 57, 17, 0.46) !important;
+  box-shadow:
+    inset 1px 1px rgba(255, 235, 182, 0.16),
+    inset -1px -1px rgba(91, 60, 10, 0.48),
+    0 0 7px rgba(232, 172, 52, 0.09) !important;
+}
+
+.magi-about-window[data-theme='dark']
+  :where(.magi-retro-window-minimize, .magi-retro-window-close):is(:hover, :focus-visible) {
+  color: #fff4cf !important;
+  border-color: var(--magi-terminal-amber-bright) !important;
+  background: rgba(132, 91, 16, 0.58) !important;
+  outline-color: var(--magi-terminal-amber-bright) !important;
+}
+
+.magi-about-window[data-theme='dark'] .magi-floating-window-footer {
+  color: var(--magi-terminal-amber-muted) !important;
+  border-top-color: rgba(243, 199, 95, 0.38) !important;
+  background: rgba(7, 17, 34, 0.24);
+  text-shadow: 0 0 3px rgba(255, 190, 60, 0.1);
+  opacity: 0.72;
 }
 
 .magi-about-window .magi-floating-link {
@@ -170,24 +546,24 @@
 
 .magi-home-paper-root .magi-floating-window-paper,
 .magi-reader-theme-paper .magi-floating-window-paper {
-  background-color: rgba(239, 226, 187, 0.985) !important;
+  background-color: rgba(242, 233, 209, 0.985) !important;
   backdrop-filter: blur(7px) saturate(0.84) !important;
   -webkit-backdrop-filter: blur(7px) saturate(0.84) !important;
 }
 
 .magi-home-paper-root .magi-floating-window-paper .magi-floating-window-titlebar,
 .magi-reader-theme-paper .magi-floating-window-paper .magi-floating-window-titlebar {
-  background-color: rgba(224, 207, 160, 0.99) !important;
+  background-color: rgba(230, 216, 185, 0.99) !important;
 }
 
 .magi-home-paper-root .magi-floating-window-paper .magi-floating-window-body,
 .magi-reader-theme-paper .magi-floating-window-paper .magi-floating-window-body {
-  background: rgba(250, 243, 219, 0.95) !important;
+  background: rgba(250, 245, 229, 0.95) !important;
 }
 
 .magi-home-paper-root .magi-floating-window-paper .magi-floating-link,
 .magi-reader-theme-paper .magi-floating-window-paper .magi-floating-link {
-  background: rgba(255, 252, 237, 0.88) !important;
+  background: rgba(253, 249, 235, 0.9) !important;
 }
 
 .magi-home-paper-root .magi-floating-window-paper .magi-floating-link:hover,
@@ -388,6 +764,221 @@
   --magi-tool-accent-text: #182024;
   --magi-tool-shadow: rgba(0, 0, 0, 0.42);
   --magi-tool-alert: rgba(153, 112, 36, 0.3);
+}
+
+/* Dark proofreading is a dedicated Hacker-green terminal channel.  It stays
+   scoped to edit mode so the surrounding reading surface and other themes keep
+   their own palette. */
+.magi-reader-theme-dark .magi-reader-header-actions > button[aria-pressed] {
+  border: 1px solid rgba(71, 255, 190, 0.72) !important;
+  color: #baffdf !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(83, 255, 194, 0.045) 3px 4px
+    ),
+    linear-gradient(180deg, rgba(10, 56, 48, 0.96), rgba(5, 35, 34, 0.98)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(196, 255, 230, 0.16),
+    inset 0 0 0 1px rgba(51, 245, 176, 0.08),
+    0 0 12px rgba(34, 255, 174, 0.22) !important;
+  text-shadow: 0 0 6px rgba(80, 255, 195, 0.42);
+}
+
+.magi-reader-theme-dark .magi-reader-header-actions > button[aria-pressed='true'],
+.magi-reader-theme-dark .magi-reader-header-actions > button[aria-pressed]:hover,
+.magi-reader-theme-dark .magi-reader-header-actions > button[aria-pressed]:focus-visible {
+  border-color: #72ffd0 !important;
+  color: #e4fff3 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(158, 255, 217, 0.065) 3px 4px
+    ),
+    linear-gradient(180deg, rgba(12, 92, 70, 0.98), rgba(5, 56, 47, 0.99)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(218, 255, 239, 0.22),
+    0 0 0 1px rgba(75, 255, 190, 0.14),
+    0 0 17px rgba(41, 255, 178, 0.34) !important;
+}
+
+.magi-reader-theme-dark .magi-proofreading-panel {
+  --magi-tool-text: #b9ffdf;
+  --magi-tool-muted: #75bfa3;
+  --magi-tool-border: rgba(73, 240, 178, 0.64);
+  --magi-tool-inset: rgba(175, 255, 224, 0.1);
+  --magi-tool-surface: rgba(4, 23, 29, 0.97);
+  --magi-tool-surface-strong: rgba(5, 35, 37, 0.96);
+  --magi-tool-control: rgba(7, 42, 40, 0.92);
+  --magi-tool-accent: #42e8a7;
+  --magi-tool-accent-text: #021710;
+  --magi-tool-shadow: rgba(0, 5, 7, 0.72);
+  --magi-tool-alert: rgba(78, 57, 12, 0.44);
+  --magi-edge-diffusion: rgba(69, 242, 180, 0.34);
+  border-color: rgba(73, 240, 178, 0.7);
+  color: var(--magi-tool-text);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(51, 255, 179, 0.08), transparent 34%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(72, 255, 188, 0.032) 3px 4px
+    ),
+    linear-gradient(145deg, rgba(4, 31, 34, 0.98), rgba(3, 17, 25, 0.99));
+  box-shadow:
+    inset 0 0 0 1px rgba(119, 255, 207, 0.055),
+    inset 0 0 26px rgba(16, 105, 77, 0.1),
+    0 0 0 1px rgba(55, 229, 168, 0.08),
+    0 0 18px rgba(27, 233, 157, 0.14),
+    7px 10px 24px var(--magi-tool-shadow);
+  text-shadow: 0 0 5px rgba(74, 255, 190, 0.16);
+}
+
+.magi-reader-theme-dark .magi-proofreading-kicker {
+  color: #71e9bb;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.magi-reader-theme-dark :is(
+  .magi-proofreading-button,
+  .magi-proofreading-linebreak-toggle,
+  .magi-proofreading-json-tools,
+  .magi-proofreading-submit-panel
+) {
+  border-color: rgba(74, 232, 176, 0.55);
+  color: #aefbd5;
+  background-color: rgba(5, 37, 38, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(163, 255, 218, 0.08),
+    0 0 8px rgba(38, 229, 164, 0.08);
+}
+
+.magi-reader-theme-dark .magi-proofreading-button[data-variant='primary'] {
+  border-color: rgba(105, 255, 204, 0.9);
+  color: #00150e;
+  background: linear-gradient(180deg, #55f0b6, #27b982);
+  box-shadow:
+    inset 0 1px 0 rgba(224, 255, 242, 0.38),
+    0 0 13px rgba(45, 240, 170, 0.25);
+  text-shadow: 0 1px rgba(223, 255, 240, 0.25);
+}
+
+.magi-reader-theme-dark .magi-proofreading-json-button[data-variant='secondary'] {
+  border-color: rgba(104, 255, 211, 0.72);
+  color: #c8ffe8;
+  background: rgba(8, 61, 53, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(196, 255, 231, 0.1),
+    0 0 10px rgba(49, 235, 171, 0.13);
+}
+
+.magi-reader-theme-dark .magi-proofreading-button:hover,
+.magi-reader-theme-dark .magi-proofreading-button:focus-visible,
+.magi-reader-theme-dark .magi-proofreading-linebreak-toggle:hover,
+.magi-reader-theme-dark .magi-proofreading-linebreak-toggle:focus-within {
+  border-color: #75ffd1;
+  filter: brightness(1.08);
+  outline-color: rgba(91, 255, 201, 0.52);
+  box-shadow:
+    inset 0 1px 0 rgba(206, 255, 235, 0.13),
+    0 0 14px rgba(45, 245, 174, 0.22);
+}
+
+.magi-reader-theme-dark :is(
+  .magi-proofreading-select,
+  .magi-proofreading-input,
+  .magi-translation-speaker-input,
+  .magi-translation-textarea,
+  .magi-translation-choice-input
+) {
+  --magi-edge-diffusion: rgba(60, 235, 173, 0.28);
+  border-color: rgba(65, 215, 162, 0.55);
+  color: #c5ffe5;
+  background: rgba(2, 22, 27, 0.96);
+  caret-color: #55ffbc;
+  color-scheme: dark;
+  box-shadow:
+    inset 0 1px 7px rgba(0, 5, 8, 0.66),
+    0 0 0 1px rgba(44, 228, 161, 0.035);
+}
+
+.magi-reader-theme-dark :is(
+  .magi-proofreading-select,
+  .magi-proofreading-input,
+  .magi-translation-speaker-input,
+  .magi-translation-textarea,
+  .magi-translation-choice-input
+):focus {
+  border-color: #63ffc6;
+  box-shadow:
+    0 0 0 2px rgba(61, 240, 174, 0.2),
+    0 0 13px rgba(34, 235, 159, 0.19),
+    inset 0 1px 7px rgba(0, 5, 8, 0.58);
+}
+
+.magi-reader-theme-dark :is(
+  .magi-proofreading-input,
+  .magi-translation-speaker-input,
+  .magi-translation-textarea,
+  .magi-translation-choice-input
+)::placeholder {
+  color: #518f79;
+  opacity: 0.82;
+}
+
+.magi-reader-theme-dark .magi-translation-choice-shell {
+  --magi-tool-text: #b8ffdc;
+  --magi-tool-border: rgba(68, 229, 170, 0.62);
+  --magi-tool-surface: rgba(4, 30, 34, 0.96);
+  --magi-edge-diffusion: rgba(57, 231, 169, 0.3);
+  border-color: var(--magi-tool-border);
+  color: var(--magi-tool-text);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(70, 255, 188, 0.03) 3px 4px
+    ),
+    var(--magi-tool-surface);
+  box-shadow:
+    inset 0 1px 0 rgba(172, 255, 222, 0.08),
+    0 0 11px rgba(36, 232, 162, 0.12);
+}
+
+.magi-reader-theme-dark .magi-proofreading-alert {
+  border-color: rgba(245, 203, 95, 0.58);
+  color: #ffe19a;
+  background: rgba(67, 49, 10, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 233, 170, 0.08),
+    0 0 9px rgba(234, 176, 51, 0.1);
+  text-shadow: 0 0 4px rgba(255, 201, 73, 0.15);
+}
+
+.magi-reader-theme-dark .magi-proofreading-help,
+.magi-reader-theme-dark .magi-proofreading-linebreak-toggle small {
+  color: #70ae97;
+}
+
+.magi-reader-theme-dark .magi-proofreading-status {
+  border-color: rgba(95, 255, 201, 0.68);
+  color: #c9ffe9;
+  background: rgba(6, 55, 48, 0.84);
+  box-shadow:
+    inset 0 1px 0 rgba(199, 255, 233, 0.1),
+    0 0 11px rgba(36, 236, 164, 0.14);
+}
+
+.magi-reader-theme-dark .magi-proofreading-status-link {
+  color: #65ffc8;
+  text-shadow: 0 0 5px rgba(63, 255, 192, 0.32);
+}
+
+.magi-reader-theme-dark .magi-translation-linebreak-overlay {
+  border-color: rgba(68, 229, 170, 0.18);
 }
 
 /* The page counter now belongs to the Home/Tools glass window. */
@@ -1177,6 +1768,67 @@
   min-width: 0;
   flex: 1;
   margin: 0 !important;
+}
+
+.magi-home-section-heading-main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.magi-home-section-heading-main > h2 {
+  min-width: 0;
+  flex: 1;
+  margin: 0 !important;
+}
+
+.magi-home-section-statistics {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.22rem;
+  color: inherit;
+  font-size: 0.61rem;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.magi-home-section-statistics > span {
+  border: 1px solid color-mix(in srgb, currentColor 31%, transparent);
+  border-radius: 0.32rem;
+  padding: 0.24rem 0.38rem;
+  background: color-mix(in srgb, var(--magi-category-branch-surface, white) 83%, transparent);
+  box-shadow:
+    inset 0 0.5px 0 color-mix(in srgb, white 42%, transparent),
+    0 1.5px 4px color-mix(in srgb, var(--magi-child-shadow, rgba(34, 39, 40, 0.25)) 72%, transparent);
+  filter: drop-shadow(0 0 0.42px var(--magi-edge-diffusion, rgba(72, 78, 80, 0.24)));
+}
+
+.magi-home-section-statistics > [data-stat='human'] {
+  border-color: color-mix(in srgb, #a17a38 52%, currentColor);
+}
+
+.magi-home-section-statistics > [data-stat='pending'] {
+  border-color: color-mix(in srgb, #67859a 54%, currentColor);
+}
+
+.magi-home-section-statistics > [data-stat='verified'] {
+  border-color: color-mix(in srgb, #5e8b78 54%, currentColor);
+}
+
+@media (max-width: 58rem) {
+  .magi-home-section-heading-main {
+    flex-wrap: wrap;
+  }
+
+  .magi-home-section-statistics {
+    flex-basis: 100%;
+    overflow-x: auto;
+    padding-inline: 0.25rem;
+  }
 }
 
 .magi-home-mobile-review-button {
@@ -2027,7 +2679,8 @@ html[data-exedra-font-tsuku='ready'] .magi-exedra-ui-scope .reader-font-jp-title
 }
 
 html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-body,
-html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-body * {
+html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-body .exedra-jp-story-text,
+html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-body .exedra-jp-story-text * {
   font-family:
     "MagiReaderExedraNewCinemaA",
     "Yu Gothic",
@@ -2036,63 +2689,378 @@ html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-
 }
 
 /* =========================================
-   Reader UI V31 — source-provenance tinting
+   Reader UI V31 — equal-depth provenance palette
+
+   Each theme owns one perceptual lightness/chroma pair. Provenance changes
+   hue only: pending is warm, verified is cool, and the second human source
+   shifts to a third hue. Human frames also inherit the active theme instead
+   of carrying a universal green line.
    ========================================= */
 
-.magi-folder-source-card[data-source-status='exedra-official-tw'],
+.magi-home-light-root {
+  --magi-source-wash-l: 0.68;
+  --magi-source-wash-chroma: 0;
+  --magi-source-wash-alpha: 0;
+  --magi-source-human-progress-start: oklch(0.68 0.052 78 / 0.17);
+  --magi-source-human-progress-end: oklch(0.68 0.052 78 / 0.34);
+  --magi-source-human-progress-edge: oklch(0.48 0.045 76 / 0.62);
+  --magi-source-verified-progress-start: transparent;
+  --magi-source-verified-progress-end: transparent;
+  --magi-source-verified-progress-edge: rgba(45, 56, 61, 0.5);
+  --magi-source-unverified-progress-start: oklch(0.68 0.038 225 / 0.19);
+  --magi-source-unverified-progress-end: oklch(0.68 0.038 225 / 0.38);
+  --magi-source-unverified-progress-edge: oklch(0.48 0.038 225 / 0.62);
+}
+
+.magi-home-paper-root {
+  --magi-source-wash-l: 0.7;
+  --magi-source-wash-chroma: 0.035;
+  --magi-source-wash-alpha: 0;
+  --magi-source-human-progress-start: oklch(0.7 0.052 76 / 0.15);
+  --magi-source-human-progress-end: oklch(0.7 0.052 76 / 0.3);
+  --magi-source-human-progress-edge: oklch(0.5 0.055 74 / 0.65);
+  --magi-source-verified-progress-start: transparent;
+  --magi-source-verified-progress-end: transparent;
+  --magi-source-verified-progress-edge: rgba(75, 51, 22, 0.52);
+  --magi-source-unverified-progress-start: oklch(0.7 0.026 225 / 0.15);
+  --magi-source-unverified-progress-end: oklch(0.7 0.026 225 / 0.3);
+  --magi-source-unverified-progress-edge: oklch(0.5 0.035 225 / 0.58);
+}
+
+.magi-home-green-root {
+  --magi-source-wash-l: 0.62;
+  --magi-source-wash-chroma: 0.13;
+  --magi-source-wash-alpha: 0.72;
+  --magi-source-human-progress-start: oklch(0.62 0.13 140 / 0.36);
+  --magi-source-human-progress-end: oklch(0.62 0.13 140 / 0.72);
+  --magi-source-human-progress-edge: oklch(0.24 0.035 150 / 0.72);
+  --magi-source-verified-progress-start: oklch(0.62 0.13 175 / 0.36);
+  --magi-source-verified-progress-end: oklch(0.62 0.13 175 / 0.72);
+  --magi-source-verified-progress-edge: oklch(0.92 0.025 165 / 0.72);
+  --magi-source-unverified-progress-start: oklch(0.62 0.13 95 / 0.36);
+  --magi-source-unverified-progress-end: oklch(0.62 0.13 95 / 0.72);
+  --magi-source-unverified-progress-edge: oklch(0.42 0.13 95 / 0.72);
+}
+
+.magi-home-dark-root {
+  --magi-source-wash-l: 0.62;
+  --magi-source-wash-chroma: 0.105;
+  --magi-source-wash-alpha: 0.38;
+  --magi-source-human-progress-start: oklch(0.62 0.105 80 / 0.25);
+  --magi-source-human-progress-end: oklch(0.62 0.105 80 / 0.5);
+  --magi-source-human-progress-edge: rgba(243, 199, 95, 0.62);
+  --magi-source-verified-progress-start: oklch(0.62 0.105 210 / 0.19);
+  --magi-source-verified-progress-end: oklch(0.62 0.105 210 / 0.38);
+  --magi-source-verified-progress-edge: rgba(91, 255, 239, 0.88);
+  --magi-source-unverified-progress-start: oklch(0.62 0.12 326 / 0.275);
+  --magi-source-unverified-progress-end: oklch(0.62 0.12 326 / 0.55);
+  --magi-source-unverified-progress-edge: rgba(255, 79, 216, 0.66);
+}
+
 .magi-folder-source-card[data-source-status='exedra-official-tw'] > button,
-.magi-story-source-link[data-source-status='exedra-official-tw'] {
-  border-color: rgba(8, 145, 178, 0.34) !important;
-  background-color: rgba(8, 145, 178, 0.085) !important;
-}
-
-.magi-folder-source-card[data-source-status='exedra-human-cn'],
-.magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
-.magi-story-source-link[data-source-status='exedra-human-cn'] {
-  border-color: rgba(124, 58, 237, 0.28) !important;
-  background-color: rgba(124, 58, 237, 0.07) !important;
-}
-
-.magi-folder-source-card[data-source-status='magireco-source-unverified'],
+.magi-story-source-link[data-source-status='exedra-official-tw'],
 .magi-folder-source-card[data-source-status='magireco-source-unverified'] > button,
-.magi-story-source-link[data-source-status='magireco-source-unverified'] {
-  border-color: rgba(217, 119, 6, 0.34) !important;
-  background-color: rgba(217, 119, 6, 0.09) !important;
-}
-
-.magi-folder-source-card[data-source-status='magireco-human-cn'],
+.magi-story-source-link[data-source-status='magireco-source-unverified'],
+.magi-folder-source-card[data-source-status='magireco-human-verified'] > button,
+.magi-story-source-link[data-source-status='magireco-human-verified'],
+.magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-story-source-link[data-source-status='exedra-human-cn'],
 .magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
 .magi-story-source-link[data-source-status='magireco-human-cn'] {
-  border-color: rgba(5, 150, 105, 0.28) !important;
-  background-color: rgba(5, 150, 105, 0.065) !important;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
 }
 
-.dark .magi-folder-source-card[data-source-status='exedra-official-tw'],
-.dark .magi-folder-source-card[data-source-status='exedra-official-tw'] > button,
-.dark .magi-story-source-link[data-source-status='exedra-official-tw'] {
-  border-color: rgba(34, 211, 238, 0.32) !important;
-  background-color: rgba(8, 145, 178, 0.12) !important;
+.magi-folder-source-card[data-source-status] > button > *,
+.magi-story-source-link[data-source-status] > * {
+  position: relative;
+  z-index: 1;
 }
 
-.dark .magi-folder-source-card[data-source-status='exedra-human-cn'],
-.dark .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
-.dark .magi-story-source-link[data-source-status='exedra-human-cn'] {
-  border-color: rgba(167, 139, 250, 0.3) !important;
-  background-color: rgba(124, 58, 237, 0.12) !important;
+.magi-folder-source-card[data-source-status='exedra-official-tw'] > button,
+.magi-story-source-link[data-source-status='exedra-official-tw'] {
+  --magi-source-hue: 175;
 }
 
-.dark .magi-folder-source-card[data-source-status='magireco-source-unverified'],
-.dark .magi-folder-source-card[data-source-status='magireco-source-unverified'] > button,
-.dark .magi-story-source-link[data-source-status='magireco-source-unverified'] {
-  border-color: rgba(251, 191, 36, 0.32) !important;
-  background-color: rgba(180, 83, 9, 0.13) !important;
+.magi-folder-source-card[data-source-status='magireco-source-unverified'] > button,
+.magi-story-source-link[data-source-status='magireco-source-unverified'] {
+  --magi-source-hue: 78;
 }
 
-.dark .magi-folder-source-card[data-source-status='magireco-human-cn'],
-.dark .magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
-.dark .magi-story-source-link[data-source-status='magireco-human-cn'] {
-  border-color: rgba(52, 211, 153, 0.28) !important;
-  background-color: rgba(5, 150, 105, 0.11) !important;
+.magi-folder-source-card[data-source-status='magireco-human-verified'] > button,
+.magi-story-source-link[data-source-status='magireco-human-verified'] {
+  --magi-source-hue: 235;
+}
+
+.magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
+.magi-story-source-link[data-source-status='magireco-human-cn'],
+.magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-story-source-link[data-source-status='exedra-human-cn'] {
+  --magi-source-hue: 330;
+}
+
+/* Light and paper use restrained cold/warm provenance shifts.  Reviewed cards
+   retain the theme's unmodified base colour; pending cards cool down; existing
+   human Chinese cards receive a small warm shift. */
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-folder-source-card[data-source-status='magireco-source-unverified'] > button,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-story-source-link[data-source-status='magireco-source-unverified'] {
+  --magi-source-hue: 225;
+  --magi-source-wash-chroma: 0.038;
+  --magi-source-wash-alpha: 0.38;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-folder-source-card[data-source-status='magireco-human-verified'] > button,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-story-source-link[data-source-status='magireco-human-verified'] {
+  --magi-source-wash-alpha: 0;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-story-source-link[data-source-status='magireco-human-cn'],
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-story-source-link[data-source-status='exedra-human-cn'] {
+  --magi-source-hue: 78;
+  --magi-source-wash-chroma: 0.052;
+  --magi-source-wash-alpha: 0.34;
+}
+
+.magi-home-paper-root
+  .magi-folder-source-card[data-source-status='magireco-source-unverified'] > button,
+.magi-home-paper-root
+  .magi-story-source-link[data-source-status='magireco-source-unverified'] {
+  --magi-source-hue: 225;
+  --magi-source-wash-chroma: 0.026;
+  --magi-source-wash-alpha: 0.3;
+}
+
+.magi-home-paper-root
+  .magi-folder-source-card[data-source-status='magireco-human-verified'] > button,
+.magi-home-paper-root
+  .magi-story-source-link[data-source-status='magireco-human-verified'] {
+  --magi-source-wash-alpha: 0;
+}
+
+.magi-home-paper-root
+  .magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
+.magi-home-paper-root
+  .magi-story-source-link[data-source-status='magireco-human-cn'],
+.magi-home-paper-root
+  .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-home-paper-root
+  .magi-story-source-link[data-source-status='exedra-human-cn'] {
+  --magi-source-hue: 76;
+  --magi-source-wash-chroma: 0.052;
+  --magi-source-wash-alpha: 0.3;
+}
+
+/* Green stays inside green: olive pending, teal reviewed, forest human. */
+.magi-home-green-root .magi-folder-source-card[data-source-status='magireco-human-verified'] > button,
+.magi-home-green-root .magi-story-source-link[data-source-status='magireco-human-verified'] {
+  --magi-source-hue: 175;
+  --magi-human-frame-color: oklch(0.92 0.025 165);
+}
+
+.magi-home-dark-root .magi-folder-source-card[data-source-status='magireco-human-verified'] > button,
+.magi-home-dark-root .magi-story-source-link[data-source-status='magireco-human-verified'] {
+  --magi-source-hue: 210;
+  --magi-human-frame-color: oklch(0.88 0.04 210);
+}
+
+.magi-home-green-root .magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
+.magi-home-green-root .magi-story-source-link[data-source-status='magireco-human-cn'],
+.magi-home-green-root .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-home-green-root .magi-story-source-link[data-source-status='exedra-human-cn'] {
+  --magi-source-hue: 140;
+  --magi-human-frame-color: oklch(0.24 0.035 150);
+}
+
+.magi-home-dark-root .magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
+.magi-home-dark-root .magi-story-source-link[data-source-status='magireco-human-cn'],
+.magi-home-dark-root .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-home-dark-root .magi-story-source-link[data-source-status='exedra-human-cn'] {
+  --magi-source-hue: 125;
+  --magi-human-frame-color: oklch(0.72 0.1 125);
+}
+
+.magi-home-green-root .magi-folder-source-card[data-source-status='magireco-source-unverified'] > button,
+.magi-home-green-root .magi-story-source-link[data-source-status='magireco-source-unverified'] {
+  --magi-source-hue: 95;
+}
+
+.magi-home-dark-root .magi-folder-source-card[data-source-status='magireco-source-unverified'] > button,
+.magi-home-dark-root .magi-story-source-link[data-source-status='magireco-source-unverified'] {
+  --magi-source-hue: 88;
+}
+
+.magi-home-green-root .magi-folder-source-card[data-source-status='exedra-official-tw'] > button,
+.magi-home-green-root .magi-story-source-link[data-source-status='exedra-official-tw'] {
+  --magi-source-hue: 160;
+}
+
+/* One frame, one colour. Reviewed and human editions never combine a dark
+   line with a light line inside the same technical frame. */
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-folder-source-card[data-source-status='magireco-human-verified'] > button,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-story-source-link[data-source-status='magireco-human-verified'] {
+  --magi-human-frame-color: oklch(0.94 0.005 95);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-story-source-link[data-source-status='magireco-human-cn'],
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-story-source-link[data-source-status='exedra-human-cn'] {
+  --magi-human-frame-color: oklch(0.48 0.045 76);
+}
+
+.magi-home-paper-root .magi-folder-source-card[data-source-status='magireco-human-verified'] > button,
+.magi-home-paper-root .magi-story-source-link[data-source-status='magireco-human-verified'] {
+  --magi-human-frame-color: oklch(0.94 0.025 92);
+}
+
+.magi-home-paper-root .magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
+.magi-home-paper-root .magi-story-source-link[data-source-status='magireco-human-cn'],
+.magi-home-paper-root .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-home-paper-root .magi-story-source-link[data-source-status='exedra-human-cn'] {
+  --magi-human-frame-color: oklch(0.5 0.055 74);
+}
+
+/* Color-blend overlays preserve the card's existing luminosity. Within each
+   theme only hue changes; completion depth remains exactly the base style. */
+.magi-folder-source-card[data-source-status='exedra-official-tw'] > button::after,
+.magi-story-source-link[data-source-status='exedra-official-tw']::after,
+.magi-folder-source-card[data-source-status='magireco-human-verified'] > button::after,
+.magi-story-source-link[data-source-status='magireco-human-verified']::after,
+.magi-folder-source-card[data-source-status='magireco-human-cn'] > button::after,
+.magi-story-source-link[data-source-status='magireco-human-cn']::after,
+.magi-folder-source-card[data-source-status='exedra-human-cn'] > button::after,
+.magi-story-source-link[data-source-status='exedra-human-cn']::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  background: oklch(
+    var(--magi-source-wash-l)
+    var(--magi-source-wash-chroma)
+    var(--magi-source-hue)
+    / var(--magi-source-wash-alpha)
+  );
+  mix-blend-mode: color;
+  pointer-events: none;
+  content: '';
+}
+
+.magi-folder-source-card[data-source-status='magireco-source-unverified'] > button::before,
+.magi-story-source-link[data-source-status='magireco-source-unverified']::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: oklch(
+    var(--magi-source-wash-l)
+    var(--magi-source-wash-chroma)
+    var(--magi-source-hue)
+    / var(--magi-source-wash-alpha)
+  );
+  mix-blend-mode: color;
+  pointer-events: none;
+  content: '';
+}
+
+/* Reviewed and human editions share geometry, never the line colour. */
+.magi-folder-source-card[data-source-status='exedra-human-cn'] > button::before,
+.magi-story-source-link[data-source-status='exedra-human-cn']::before,
+.magi-folder-source-card[data-source-status='magireco-human-verified'] > button::before,
+.magi-story-source-link[data-source-status='magireco-human-verified']::before,
+.magi-folder-source-card[data-source-status='magireco-human-cn'] > button::before,
+.magi-story-source-link[data-source-status='magireco-human-cn']::before {
+  position: absolute;
+  inset: 0.28rem;
+  z-index: 3;
+  border: 1px solid var(--magi-human-frame-color);
+  background:
+    linear-gradient(var(--magi-human-frame-color), var(--magi-human-frame-color)) left top / 1.05rem 2px no-repeat,
+    linear-gradient(var(--magi-human-frame-color), var(--magi-human-frame-color)) right top / 1.05rem 2px no-repeat,
+    linear-gradient(var(--magi-human-frame-color), var(--magi-human-frame-color)) left bottom / 1.05rem 2px no-repeat,
+    linear-gradient(var(--magi-human-frame-color), var(--magi-human-frame-color)) right bottom / 1.05rem 2px no-repeat;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--magi-human-frame-color) 28%, transparent);
+  clip-path: polygon(
+    0 0.34rem,
+    0.34rem 0,
+    calc(100% - 0.34rem) 0,
+    100% 0.34rem,
+    100% calc(100% - 0.34rem),
+    calc(100% - 0.34rem) 100%,
+    0.34rem 100%,
+    0 calc(100% - 0.34rem)
+  );
+  pointer-events: none;
+  content: '';
+}
+
+/* Folder headers alone expose the aggregate human/reviewed split. Existing
+   story-card provenance, frame geometry, shadows and theme depth remain owned
+   by the selectors above. */
+.magi-folder-source-card[data-source-progress='true'] > button {
+  --magi-folder-human-fill: var(--magi-source-human-progress-end);
+  --magi-folder-verified-fill: var(--magi-source-verified-progress-end);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.magi-home-paper-root .magi-folder-source-card[data-source-progress='true'] > button {
+  --magi-folder-human-fill: var(--magi-source-human-progress-end);
+  --magi-folder-verified-fill: var(--magi-source-verified-progress-end);
+}
+
+.magi-home-green-root .magi-folder-source-card[data-source-progress='true'] > button {
+  --magi-folder-human-fill: var(--magi-source-human-progress-end);
+  --magi-folder-verified-fill: var(--magi-source-verified-progress-end);
+}
+
+.magi-home-dark-root .magi-folder-source-card[data-source-progress='true'] > button {
+  --magi-folder-human-fill: var(--magi-source-human-progress-end);
+  --magi-folder-verified-fill: var(--magi-source-verified-progress-end);
+}
+
+.magi-folder-source-card[data-source-progress='true'] > button::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  background: linear-gradient(
+    90deg,
+    var(--magi-folder-human-fill) 0,
+    var(--magi-folder-human-fill) var(--magi-folder-human-progress-end, 0%),
+    var(--magi-folder-verified-fill) var(--magi-folder-human-progress-end, 0%),
+    var(--magi-folder-verified-fill) var(--magi-folder-translated-progress-end, 0%),
+    transparent var(--magi-folder-translated-progress-end, 0%),
+    transparent 100%
+  );
+  mix-blend-mode: color;
+  pointer-events: none;
+  content: '';
+}
+
+/* Verification changes frame treatment, never apparent depth. */
+.magi-home-light-root .magi-home-light-story-verified {
+  box-shadow: none;
+}
+
+.magi-home-paper-root .magi-home-light-story-verified {
+  box-shadow: 0 5px 16px rgba(61, 54, 43, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.38);
 }
 
 .magi-source-status-badge {
@@ -2107,11 +3075,4044 @@ html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-
   line-height: 1;
 }
 
-.magi-source-status-badge-exedra-human {
-  color: rgb(109, 40, 217);
-  background: rgba(139, 92, 246, 0.08);
+/* Badges follow the same equal-depth hue rule as their cards. */
+.magi-home-light-root .magi-home-status-badge,
+.magi-home-light-root .magi-source-status-badge-exedra-human {
+  color: #f8f9f7;
+  background: oklch(0.32 0 0) !important;
 }
 
-.dark .magi-source-status-badge-exedra-human {
-  color: rgb(196, 181, 253);
+.magi-home-paper-root .magi-home-status-badge,
+.magi-home-paper-root .magi-source-status-badge-exedra-human {
+  color: #fff8e8;
+  background: oklch(0.35 0.055 82) !important;
+}
+
+.magi-home-green-root .magi-home-status-badge,
+.magi-home-green-root .magi-source-status-badge-exedra-human,
+.magi-home-dark-root .magi-home-status-badge,
+.magi-home-dark-root .magi-source-status-badge-exedra-human {
+  color: #f7fff9;
+  border-radius: 999px;
+  background: oklch(0.54 0.13 var(--magi-badge-hue)) !important;
+}
+
+.magi-home-status-badge-unverified {
+  --magi-badge-hue: 78;
+}
+
+.magi-home-status-badge-verified {
+  --magi-badge-hue: 235;
+}
+
+.magi-source-status-badge-exedra-human {
+  --magi-badge-hue: 330;
+}
+
+.magi-home-green-root .magi-home-status-badge-unverified {
+  --magi-badge-hue: 95;
+}
+
+.magi-home-dark-root .magi-home-status-badge-unverified {
+  --magi-badge-hue: 88;
+}
+
+.magi-home-green-root .magi-home-status-badge-verified {
+  --magi-badge-hue: 175;
+}
+
+.magi-home-dark-root .magi-home-status-badge-verified {
+  --magi-badge-hue: 210;
+}
+
+.magi-home-green-root .magi-source-status-badge-exedra-human {
+  --magi-badge-hue: 140;
+}
+
+.magi-home-dark-root .magi-source-status-badge-exedra-human {
+  --magi-badge-hue: 125;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-sidebar {
+  border-color: rgba(59, 63, 64, 0.34) !important;
+  background: rgba(238, 239, 235, 0.94) !important;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-toolbar {
+  border-color: rgba(55, 59, 60, 0.38) !important;
+  background: rgba(229, 231, 228, 0.96) !important;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-card {
+  border-color: rgba(58, 62, 63, 0.32);
+  background: rgba(248, 248, 244, 0.9);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-control,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-button,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-button-active,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-nav-active,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-sidebar,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-toolbar,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-card,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-card:hover,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-card:focus-within,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-header,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-folder-body,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-story-link,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-light-story-verified,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-status-badge,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-source-status-badge,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-review-panel,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-theme-switcher,
+.magi-home-light-root:not(.magi-home-paper-root) .magi-floating-window-light {
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-reader-brand-day-archive,
+.magi-home-light-root:not(.magi-home-paper-root)
+  [data-translation-status='complete'] > .magi-home-light-folder-header,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-home-light-story-link[data-translation-status='complete'] {
+  text-shadow: none !important;
+}
+
+.magi-home-light-root .magi-official-tw-badge {
+  border-color: rgba(35, 38, 39, 0.7);
+  color: #303334;
+  background: rgba(252, 252, 250, 0.94);
+  box-shadow: none;
+}
+
+.magi-home-paper-root .magi-official-tw-badge {
+  border-color: rgba(70, 52, 30, 0.72);
+  color: #4c3922;
+  background: rgba(242, 237, 224, 0.94);
+}
+
+/* Preserve the established paper texture. Only its yellow concentration and
+   shadow softness change here. */
+[data-bg-theme='paper'] {
+  background-color: #f4ecd4;
+}
+
+.magi-home-paper-root {
+  color: #514939;
+  background-color: rgba(229, 220, 197, 0.8);
+}
+
+.magi-home-paper-root .magi-home-light-sidebar,
+.magi-home-paper-root .magi-home-light-toolbar {
+  border-color: rgba(75, 69, 57, 0.3) !important;
+  color: #4a4234;
+  background: rgba(238, 229, 203, 0.94) !important;
+}
+
+.magi-home-paper-root .magi-home-light-sidebar {
+  box-shadow: 0 10px 32px rgba(61, 50, 34, 0.14), inset -1px 0 0 rgba(255, 252, 232, 0.5) !important;
+}
+
+.magi-home-paper-root .magi-home-light-toolbar {
+  box-shadow: 0 8px 24px rgba(61, 50, 34, 0.12), inset 0 -1px 0 rgba(74, 61, 41, 0.12) !important;
+}
+
+.magi-home-paper-root .magi-home-light-folder-card {
+  border-color: rgba(73, 66, 53, 0.3);
+  background: rgba(240, 229, 202, 0.86);
+  box-shadow: 0 10px 26px rgba(61, 50, 34, 0.14) !important;
+}
+
+.magi-home-paper-root .magi-home-light-folder-header,
+.magi-home-paper-root .magi-home-light-folder-header-empty,
+.magi-home-paper-root .magi-home-light-folder-header-partial,
+.magi-home-paper-root .magi-home-light-folder-header-complete {
+  border-color: rgba(69, 63, 52, 0.34);
+  background: linear-gradient(105deg, rgba(228, 216, 184, 0.96), rgba(243, 235, 211, 0.94));
+  box-shadow: inset 0 -1px 0 rgba(73, 61, 42, 0.12), inset 0 1px 0 rgba(255, 252, 232, 0.58);
+}
+
+.magi-home-paper-root .magi-home-light-folder-body {
+  background: rgba(246, 238, 218, 0.92);
+}
+
+.magi-home-paper-root .magi-home-light-story-link,
+.magi-home-paper-root .magi-home-light-control,
+.magi-home-paper-root .magi-home-light-button,
+.magi-home-paper-root .magi-home-light-button-active {
+  border-color: rgba(73, 66, 53, 0.32);
+  color: #4a4234;
+  background: rgba(243, 234, 210, 0.92);
+  box-shadow: 0 6px 18px rgba(61, 50, 34, 0.13), inset 0 1px 0 rgba(255, 252, 232, 0.5);
+}
+
+.magi-home-paper-root .magi-home-review-panel {
+  border-color: rgba(73, 66, 53, 0.36);
+  color: #4a4234;
+  background: rgba(243, 234, 210, 0.94);
+  box-shadow: 0 12px 34px rgba(61, 50, 34, 0.14);
+}
+
+.magi-home-paper-root .magi-floating-window-paper {
+  background-color: rgba(242, 233, 209, 0.985) !important;
+  box-shadow: 0 18px 48px rgba(61, 50, 34, 0.2) !important;
+}
+
+.magi-home-paper-root .magi-floating-window-paper .magi-floating-window-titlebar {
+  background-color: rgba(230, 216, 185, 0.99) !important;
+}
+
+.magi-home-paper-root .magi-floating-window-paper .magi-floating-window-body {
+  background: rgba(250, 245, 229, 0.95) !important;
+}
+
+.magi-home-paper-root .magi-home-status-badge,
+.magi-home-paper-root .magi-source-status-badge-exedra-human {
+  box-shadow: 0 5px 15px rgba(61, 50, 34, 0.12) !important;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-status-badge-unverified {
+  border-color: #59666c;
+  color: #f5f7f7;
+  background: #5c696f !important;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-status-badge-verified {
+  border-color: rgba(34, 37, 38, 0.42);
+  color: #2f3435;
+  background: rgba(210, 213, 211, 0.96) !important;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-source-status-badge-exedra-human {
+  border-color: #62563f;
+  color: #fffaf0;
+  background: #665a43 !important;
+}
+
+.magi-home-paper-root .magi-home-status-badge-unverified {
+  border-color: #657077;
+  color: #f7f8f7;
+  background: #68737a !important;
+}
+
+.magi-home-paper-root .magi-home-status-badge-verified {
+  border-color: rgba(67, 62, 52, 0.44);
+  color: #39362f;
+  background: rgba(220, 217, 207, 0.97) !important;
+}
+
+.magi-home-paper-root .magi-source-status-badge-exedra-human {
+  border-color: #6f5b35;
+  color: #fffaf0;
+  background: #77623a !important;
+}
+
+/* V31 top chrome: light-family toolbars are a stronger tonal plane with soft
+   bevelled edges. No page/background texture is changed by these rules. */
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-toolbar-shell {
+  border-color: rgba(48, 53, 54, 0.46) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(214, 218, 216, 0.99),
+    rgba(196, 201, 199, 0.985)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.76),
+    inset 0 -2px 0 rgba(49, 54, 55, 0.16),
+    0 9px 26px rgba(28, 31, 32, 0.15) !important;
+}
+
+.magi-home-paper-root .magi-home-toolbar-shell {
+  border-color: rgba(70, 57, 37, 0.52) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(229, 219, 190, 0.99),
+    rgba(213, 200, 166, 0.985)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 253, 238, 0.72),
+    inset 0 -2px 0 rgba(76, 60, 37, 0.16),
+    0 11px 32px rgba(61, 50, 34, 0.17) !important;
+}
+
+.magi-home-green-root .magi-home-toolbar-shell {
+  border-color: rgba(43, 91, 62, 0.42) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(184, 218, 190, 0.99),
+    rgba(164, 205, 174, 0.985)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(244, 255, 246, 0.68),
+    inset 0 -2px 0 rgba(35, 82, 54, 0.14),
+    0 10px 28px rgba(28, 73, 46, 0.15) !important;
+}
+
+.magi-home-dark-root .magi-home-toolbar-shell {
+  border-color: rgba(164, 181, 204, 0.42) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(39, 52, 75, 0.985),
+    rgba(30, 42, 63, 0.985)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(216, 228, 244, 0.12),
+    inset 0 -1px 0 rgba(4, 10, 20, 0.42),
+    0 9px 26px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Dark home chrome shares the settings window's restrained amber-terminal
+   language.  Everything is scoped to the dark root; control geometry and the
+   MadeInMagius neon wordmark stay untouched. */
+.magi-home-dark-root .magi-home-toolbar-shell {
+  --magi-toolbar-amber: #f3c75f;
+  --magi-toolbar-amber-bright: #ffe39a;
+  --magi-toolbar-amber-muted: #cfa64d;
+  border-color: rgba(243, 199, 95, 0.48) !important;
+  background-color: rgba(17, 31, 53, 0.975) !important;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(255, 211, 105, 0.026) 3px 4px
+    ),
+    linear-gradient(180deg, rgba(31, 48, 73, 0.98), rgba(17, 31, 53, 0.98)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 227, 154, 0.08),
+    inset 0 -1px 0 rgba(243, 199, 95, 0.16),
+    0 9px 26px rgba(0, 0, 0, 0.32) !important;
+}
+
+.magi-home-dark-root
+  .magi-home-toolbar-controls
+  :where(.magi-home-search-input, button, label),
+.magi-home-dark-root .magi-home-theme-switcher button {
+  color: var(--magi-toolbar-amber) !important;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    'Microsoft YaHei UI',
+    'Microsoft YaHei',
+    monospace;
+  text-shadow: 0 0 4px rgba(255, 198, 75, 0.14);
+}
+
+.magi-home-dark-root .magi-home-search-shell .magi-home-search-input,
+.magi-home-dark-root .magi-home-search-shell + div,
+.magi-home-dark-root .magi-home-toolbar-controls > label,
+.magi-home-dark-root
+  .magi-home-toolbar-controls
+  button:not(.magi-home-review-trigger):not(.magi-home-mobile-review-button) {
+  border-color: rgba(243, 199, 95, 0.5) !important;
+  background-color: rgba(8, 20, 39, 0.76) !important;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(255, 211, 105, 0.024) 3px 4px
+  ) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 226, 149, 0.025),
+    0 0 7px rgba(232, 172, 52, 0.055) !important;
+}
+
+.magi-home-dark-root .magi-home-search-shell > div:first-child {
+  color: var(--magi-toolbar-amber) !important;
+}
+
+.magi-home-dark-root .magi-home-search-input::placeholder {
+  color: var(--magi-toolbar-amber-muted) !important;
+  opacity: 0.72;
+}
+
+.magi-home-dark-root .magi-home-toolbar-controls input[type='checkbox'] {
+  accent-color: var(--magi-toolbar-amber);
+}
+
+.magi-home-dark-root
+  .magi-home-toolbar-controls
+  button:not(.magi-home-review-trigger):not(.magi-home-mobile-review-button):is(:hover, :focus-visible):not(:disabled),
+.magi-home-dark-root .magi-home-toolbar-controls > label:is(:hover, :focus-within),
+.magi-home-dark-root .magi-home-search-input:focus {
+  border-color: rgba(255, 227, 157, 0.8) !important;
+  color: var(--magi-toolbar-amber-bright) !important;
+  background-color: rgba(35, 42, 48, 0.82) !important;
+  box-shadow:
+    inset 0 0 8px rgba(255, 214, 116, 0.045),
+    0 0 9px rgba(244, 185, 66, 0.12) !important;
+  outline-color: var(--magi-toolbar-amber-bright) !important;
+}
+
+.magi-home-dark-root
+  .magi-home-toolbar-controls
+  button[aria-pressed='true']:not(.magi-home-review-trigger):not(.magi-home-mobile-review-button),
+.magi-home-dark-root .magi-home-toolbar-controls > label:has(input:checked) {
+  border-color: var(--magi-toolbar-amber-bright) !important;
+  color: #fff0bd !important;
+  background-color: rgba(151, 101, 15, 0.28) !important;
+  box-shadow:
+    inset 0 0 10px rgba(255, 221, 139, 0.07),
+    0 0 9px rgba(244, 185, 66, 0.13) !important;
+}
+
+.magi-home-dark-root .magi-home-toolbar-controls button:disabled {
+  color: var(--magi-toolbar-amber-muted) !important;
+  border-color: rgba(207, 166, 77, 0.28) !important;
+  box-shadow: none !important;
+}
+
+.magi-home-dark-root .magi-home-theme-switcher {
+  color: var(--magi-toolbar-amber);
+  background-color: rgba(8, 20, 39, 0.76) !important;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(255, 211, 105, 0.024) 3px 4px
+  ) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(243, 199, 95, 0.46),
+    0 0 7px rgba(232, 172, 52, 0.055) !important;
+}
+
+.magi-home-dark-root .magi-home-theme-switcher button {
+  background: transparent !important;
+  box-shadow: none !important;
+  opacity: 0.56 !important;
+}
+
+.magi-home-dark-root .magi-home-theme-switcher button:is(:hover, :focus-visible) {
+  color: var(--magi-toolbar-amber-bright) !important;
+  opacity: 0.88 !important;
+  outline-color: var(--magi-toolbar-amber-bright);
+}
+
+.magi-home-dark-root .magi-home-theme-switcher button[aria-pressed='true'] {
+  color: #fff0bd !important;
+  background: rgba(151, 101, 15, 0.3) !important;
+  box-shadow:
+    inset 0 0 8px rgba(255, 221, 139, 0.08),
+    0 0 7px rgba(244, 185, 66, 0.12) !important;
+  opacity: 1 !important;
+}
+
+/* The story-system switch keeps one Hacker-green channel in both states; all
+   neighbouring controls, including local story and About, remain amber. */
+.magi-home-dark-root
+  .magi-home-toolbar-shell
+  .magi-home-toolbar-row
+  .magi-home-toolbar-controls
+  > button[aria-label^='切换到 Magia'] {
+  border-color: rgba(72, 238, 177, 0.68) !important;
+  color: #8fffd1 !important;
+  background-color: rgba(7, 58, 46, 0.68) !important;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(116, 255, 205, 0.035) 3px 4px
+  ) !important;
+  box-shadow:
+    inset 0 0 8px rgba(121, 255, 208, 0.045),
+    0 0 8px rgba(43, 231, 166, 0.13) !important;
+  text-shadow: 0 0 5px rgba(70, 244, 182, 0.2);
+}
+
+.magi-home-dark-root
+  .magi-home-toolbar-shell
+  .magi-home-toolbar-row
+  .magi-home-toolbar-controls
+  > button[aria-label^='切换到 Magia']:is(:hover, :focus-visible),
+.magi-home-dark-root
+  .magi-home-toolbar-shell
+  .magi-home-toolbar-row
+  .magi-home-toolbar-controls
+  > button[aria-label^='切换到 Magia'][aria-pressed='true'] {
+  border-color: rgba(151, 255, 216, 0.9) !important;
+  color: #c7ffe9 !important;
+  background-color: rgba(8, 83, 62, 0.78) !important;
+  box-shadow:
+    inset 0 0 10px rgba(161, 255, 221, 0.075),
+    0 0 10px rgba(43, 231, 166, 0.2) !important;
+  outline-color: #9effd9 !important;
+}
+
+/* Night sidebar surfaces use the same low-energy scanline material. Selected
+   category sockets, plaques and connectors are excluded so their cyan-green
+   connection state remains authoritative. */
+.magi-home-dark-root .magi-brand-panel {
+  border-color: rgba(243, 199, 95, 0.38) !important;
+  background-color: var(--magi-brand-panel-bottom) !important;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(255, 211, 105, 0.024) 3px 4px
+    ),
+    linear-gradient(180deg, var(--magi-brand-panel-top), var(--magi-brand-panel-bottom)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 227, 154, 0.07),
+    inset 0 -1px 0 rgba(243, 199, 95, 0.13),
+    0 7px 15px var(--magi-brand-shadow) !important;
+}
+
+.magi-home-dark-root .magi-brand-panel::before {
+  border-color: rgba(243, 199, 95, 0.31);
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 227, 154, 0.06),
+    inset -1px -1px 0 rgba(243, 199, 95, 0.12),
+    0 0 7px rgba(232, 172, 52, 0.045);
+}
+
+.magi-home-dark-root
+  .magi-home-category-node:not([data-active='true'])
+  > .magi-home-category-trigger[data-selected='false'] {
+  border-color: rgba(243, 199, 95, 0.3) !important;
+  color: #d7b866 !important;
+  background-color: rgba(13, 29, 50, 0.74) !important;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(255, 211, 105, 0.022) 3px 4px
+  ) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 226, 149, 0.018),
+    0 0 6px rgba(232, 172, 52, 0.035);
+}
+
+.magi-home-dark-root
+  .magi-home-category-node:not([data-active='true'])
+  > .magi-home-category-trigger[data-selected='false']:is(:hover, :focus-visible) {
+  border-color: rgba(255, 225, 151, 0.58) !important;
+  color: #f5d98d !important;
+  background-color: rgba(25, 39, 59, 0.86) !important;
+}
+
+.magi-home-dark-root .magi-home-category-filter-overlay-menu {
+  background-color: rgba(8, 20, 38, 0.28);
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(255, 211, 105, 0.018) 3px 4px
+  );
+  box-shadow:
+    inset 0 0 0 1px rgba(243, 199, 95, 0.09),
+    0 0 9px rgba(232, 172, 52, 0.025);
+}
+
+.magi-home-dark-root .magi-home-category-branch-overlay {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(255, 211, 105, 0.012) 3px 4px
+  );
+  background-position: right top;
+  background-size: 58% 100%;
+  background-repeat: no-repeat;
+}
+
+.magi-home-dark-root
+  .magi-home-category-filter[data-enabled='true'][data-selected='false'] {
+  border-color: rgba(243, 199, 95, 0.35) !important;
+  color: #d6b86c !important;
+  background-color: rgba(13, 29, 50, 0.82) !important;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgba(255, 211, 105, 0.024) 3px 4px
+  ) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 226, 149, 0.02),
+    0 0 6px rgba(232, 172, 52, 0.045) !important;
+}
+
+/* Human Chinese is the warm-gold provenance channel in dark mode. Official
+   TW and both machine-review states continue to use their existing palettes. */
+.magi-home-shell.magi-home-dark-root
+  :is(
+    .magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
+    .magi-story-source-link[data-source-status='magireco-human-cn'],
+    .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+    .magi-story-source-link[data-source-status='exedra-human-cn']
+  ) {
+  --magi-source-hue: 80;
+  --magi-source-wash-chroma: 0.105;
+  --magi-source-wash-alpha: 0.5;
+  --magi-human-frame-color: #f3c75f;
+  border-color: rgba(243, 199, 95, 0.62) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 231, 171, 0.09),
+    0 0 0 1px rgba(243, 199, 95, 0.08),
+    0 0 13px rgba(232, 172, 52, 0.13) !important;
+}
+
+.magi-home-shell.magi-home-dark-root
+  :is(
+    .magi-folder-source-card[data-source-status='magireco-human-cn'],
+    .magi-folder-source-card[data-source-status='exedra-human-cn']
+  ) {
+  border-color: rgba(243, 199, 95, 0.5) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 226, 149, 0.035),
+    0 0 12px rgba(232, 172, 52, 0.09) !important;
+}
+
+.magi-home-shell.magi-home-dark-root .magi-source-status-badge-exedra-human {
+  --magi-badge-hue: 80;
+  border-color: rgba(255, 224, 148, 0.8) !important;
+  color: #fff0bd !important;
+  background: rgba(133, 88, 12, 0.86) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 235, 183, 0.17),
+    0 0 9px rgba(232, 172, 52, 0.24) !important;
+  text-shadow: 0 0 5px rgba(255, 205, 91, 0.24);
+}
+
+/* Eye-care mode uses a procedural botanical field.  The texture lives on
+   structural surfaces only, so provenance cards and status colours remain
+   independent and readable. */
+.magi-background[data-bg-theme='green'] {
+  background-color: #d6e9c4;
+  background-image:
+    radial-gradient(ellipse 22px 8px at 18px 14px, rgba(42, 98, 57, 0.052) 0 44%, transparent 52%),
+    radial-gradient(ellipse 19px 7px at 59px 47px, rgba(50, 111, 67, 0.044) 0 43%, transparent 52%),
+    linear-gradient(32deg, transparent 49.35%, rgba(45, 95, 57, 0.042) 49.78% 50.22%, transparent 50.65%),
+    linear-gradient(148deg, transparent 49.4%, rgba(70, 121, 72, 0.032) 49.8% 50.2%, transparent 50.6%),
+    radial-gradient(circle at 16% 22%, rgba(86, 139, 80, 0.1), transparent 34%),
+    radial-gradient(circle at 84% 76%, rgba(59, 112, 70, 0.08), transparent 36%);
+  background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  background-size: 80px 62px, 80px 62px, 80px 62px, 80px 62px, 100% 100%, 100% 100%;
+}
+
+.magi-home-green-root {
+  --magi-eco-ink: #204f36;
+  --magi-eco-muted: #4f765d;
+  --magi-eco-edge: rgba(50, 108, 70, 0.5);
+  --magi-eco-highlight: rgba(239, 255, 233, 0.62);
+  --magi-eco-shadow: rgba(23, 74, 43, 0.19);
+}
+
+.magi-home-green-root .magi-home-toolbar-shell {
+  border-color: rgba(39, 92, 58, 0.52) !important;
+  color: var(--magi-eco-ink);
+  background:
+    radial-gradient(ellipse 30px 9px at 18px 17px, rgba(46, 111, 65, 0.055) 0 43%, transparent 51%),
+    radial-gradient(ellipse 25px 8px at 75px 49px, rgba(60, 124, 75, 0.045) 0 42%, transparent 51%),
+    linear-gradient(29deg, transparent 49.25%, rgba(43, 97, 58, 0.045) 49.76% 50.24%, transparent 50.75%),
+    linear-gradient(180deg, rgba(190, 222, 194, 0.985), rgba(158, 202, 168, 0.985)) !important;
+  background-size: 106px 70px, 106px 70px, 106px 70px, 100% 100% !important;
+  box-shadow:
+    inset 0 1px 0 rgba(244, 255, 244, 0.72),
+    inset 0 -2px 0 rgba(34, 83, 51, 0.12),
+    0 10px 28px rgba(24, 73, 43, 0.16) !important;
+}
+
+.magi-home-green-root .magi-home-sidebar {
+  border-color: rgba(39, 91, 57, 0.42) !important;
+  color: var(--magi-eco-ink);
+  background:
+    radial-gradient(ellipse 29px 9px at 24px 23px, rgba(47, 107, 63, 0.052) 0 44%, transparent 52%),
+    radial-gradient(ellipse 25px 8px at 78px 63px, rgba(60, 126, 76, 0.04) 0 43%, transparent 52%),
+    linear-gradient(35deg, transparent 49.35%, rgba(44, 96, 58, 0.04) 49.78% 50.22%, transparent 50.65%),
+    linear-gradient(180deg, rgba(207, 229, 203, 0.94), rgba(181, 214, 183, 0.95)) !important;
+  background-size: 102px 78px, 102px 78px, 102px 78px, 100% 100% !important;
+  box-shadow:
+    inset -1px 0 0 rgba(238, 255, 237, 0.42),
+    8px 0 24px rgba(24, 72, 42, 0.12) !important;
+}
+
+.magi-home-green-root .magi-home-category-nav {
+  background-image:
+    linear-gradient(26deg, transparent 49.5%, rgba(42, 91, 55, 0.028) 49.84% 50.16%, transparent 50.5%),
+    radial-gradient(ellipse 20px 6px at 20px 18px, rgba(57, 117, 72, 0.034) 0 43%, transparent 53%);
+  background-size: 82px 64px, 82px 64px;
+}
+
+.magi-home-green-root .magi-home-catalog {
+  background:
+    radial-gradient(ellipse 32px 10px at 26px 22px, rgba(39, 98, 55, 0.044) 0 43%, transparent 52%),
+    radial-gradient(ellipse 27px 9px at 92px 73px, rgba(62, 125, 75, 0.035) 0 43%, transparent 52%),
+    linear-gradient(31deg, transparent 49.4%, rgba(42, 93, 56, 0.034) 49.8% 50.2%, transparent 50.6%),
+    radial-gradient(circle at 14% 10%, rgba(111, 160, 100, 0.095), transparent 32%),
+    radial-gradient(circle at 88% 82%, rgba(75, 130, 82, 0.075), transparent 35%),
+    linear-gradient(145deg, rgba(224, 239, 209, 0.46), rgba(193, 223, 188, 0.34));
+  background-size: 118px 92px, 118px 92px, 118px 92px, 100% 100%, 100% 100%, 100% 100%;
+  box-shadow: inset 0 1px 18px rgba(38, 87, 52, 0.06);
+}
+
+.magi-home-green-root
+  .magi-home-toolbar-controls
+  :where(.magi-home-search-input, button, label),
+.magi-home-green-root .magi-home-theme-switcher {
+  border-color: rgba(48, 104, 68, 0.38) !important;
+  color: #24533a !important;
+  background-color: rgba(225, 241, 219, 0.78) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(248, 255, 244, 0.68),
+    0 3px 10px rgba(33, 82, 49, 0.1) !important;
+}
+
+.magi-home-green-root .magi-home-search-input::placeholder {
+  color: #55755f;
+  opacity: 0.82;
+}
+
+.magi-home-green-root .magi-home-toolbar-controls input[type='checkbox'] {
+  accent-color: #34714f;
+}
+
+.magi-home-green-root
+  .magi-home-toolbar-controls
+  button[aria-pressed='true']:not(.magi-home-review-trigger):not(.magi-home-mobile-review-button),
+.magi-home-green-root .magi-home-toolbar-controls > label:has(input:checked),
+.magi-home-green-root .magi-home-theme-switcher button[aria-pressed='true'] {
+  border-color: rgba(45, 103, 66, 0.72) !important;
+  color: #f4ffed !important;
+  background: linear-gradient(180deg, #4b8a62, #326d4d) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(230, 255, 235, 0.26),
+    0 3px 11px rgba(25, 76, 43, 0.18) !important;
+}
+
+.magi-home-green-root
+  .magi-home-toolbar-controls
+  :where(button, label):is(:hover, :focus-visible, :focus-within) {
+  border-color: rgba(44, 104, 66, 0.64) !important;
+  background-color: rgba(235, 248, 229, 0.9) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(252, 255, 249, 0.78),
+    0 4px 13px rgba(29, 82, 47, 0.14) !important;
+}
+
+/* The story-system switch is always ecological green in eye-care mode.  This
+   selector outranks its blue/violet utility classes in either system state. */
+.magi-home-green-root
+  .magi-home-toolbar-shell
+  .magi-home-toolbar-row
+  .magi-home-toolbar-controls
+  > button[aria-label^='切换到 Magia'] {
+  border-color: rgba(39, 101, 62, 0.76) !important;
+  color: #efffe9 !important;
+  background:
+    radial-gradient(ellipse at 24% 18%, rgba(196, 245, 197, 0.17), transparent 44%),
+    linear-gradient(180deg, #4a8b60, #2e6848) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(230, 255, 232, 0.3),
+    0 4px 12px rgba(25, 76, 42, 0.19) !important;
+}
+
+.magi-home-green-root
+  .magi-home-toolbar-shell
+  .magi-home-toolbar-row
+  .magi-home-toolbar-controls
+  > button[aria-label^='切换到 Magia']:is(:hover, :focus-visible),
+.magi-home-green-root
+  .magi-home-toolbar-shell
+  .magi-home-toolbar-row
+  .magi-home-toolbar-controls
+  > button[aria-label^='切换到 Magia'][aria-pressed='true'] {
+  border-color: rgba(45, 114, 69, 0.9) !important;
+  color: #fbfff4 !important;
+  background:
+    radial-gradient(ellipse at 24% 18%, rgba(222, 255, 216, 0.2), transparent 45%),
+    linear-gradient(180deg, #579b6c, #34714f) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(241, 255, 239, 0.34),
+    0 5px 15px rgba(23, 77, 42, 0.24) !important;
+}
+
+.magi-home-green-root
+  .magi-home-category-node:not([data-active='true'])
+  > .magi-home-category-trigger[data-selected='false'] {
+  border-color: rgba(55, 108, 72, 0.3) !important;
+  color: #315f43 !important;
+  background: rgba(224, 239, 216, 0.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(246, 255, 241, 0.5),
+    0 3px 9px rgba(30, 78, 46, 0.07) !important;
+}
+
+.magi-home-green-root
+  .magi-home-category-node:not([data-active='true'])
+  > .magi-home-category-trigger[data-selected='false']:is(:hover, :focus-visible) {
+  border-color: rgba(47, 105, 67, 0.5) !important;
+  color: #204d34 !important;
+  background: rgba(236, 247, 229, 0.78) !important;
+}
+
+/* Readable ecological statistics: all four badges share a deep forest plane,
+   while their edges retain a restrained distinction between count channels. */
+.magi-home-green-root .magi-home-section-statistics > span {
+  border-color: rgba(123, 174, 119, 0.7);
+  color: #f1f6dd;
+  background: rgba(27, 78, 50, 0.94);
+  box-shadow:
+    inset 0 1px 0 rgba(225, 255, 224, 0.16),
+    0 2px 8px rgba(17, 61, 35, 0.18);
+  text-shadow: 0 1px 1px rgba(6, 37, 20, 0.55);
+}
+
+.magi-home-green-root .magi-home-section-statistics > [data-stat='total'] {
+  border-color: rgba(148, 193, 132, 0.76);
+  color: #fbf8e8;
+  background: rgba(27, 73, 47, 0.96);
+}
+
+.magi-home-green-root .magi-home-section-statistics > [data-stat='human'] {
+  border-color: rgba(154, 195, 111, 0.78);
+  color: #f1f7d4;
+  background: rgba(45, 86, 44, 0.96);
+}
+
+.magi-home-green-root .magi-home-section-statistics > [data-stat='pending'] {
+  border-color: rgba(194, 184, 99, 0.76);
+  color: #fff0bd;
+  background: rgba(65, 79, 38, 0.96);
+}
+
+.magi-home-green-root .magi-home-section-statistics > [data-stat='verified'] {
+  border-color: rgba(108, 190, 151, 0.8);
+  color: #dcffed;
+  background: rgba(22, 78, 59, 0.96);
+}
+
+.magi-reader-theme-light .magi-reader-header {
+  border-color: rgba(48, 53, 54, 0.46) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(214, 218, 216, 0.99),
+    rgba(196, 201, 199, 0.985)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.76),
+    inset 0 -2px 0 rgba(49, 54, 55, 0.16),
+    0 10px 28px rgba(28, 31, 32, 0.2) !important;
+}
+
+.magi-reader-theme-paper .magi-reader-header {
+  border-color: rgba(70, 57, 37, 0.52) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(229, 219, 190, 0.99),
+    rgba(213, 200, 166, 0.985)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 253, 238, 0.72),
+    inset 0 -2px 0 rgba(76, 60, 37, 0.16),
+    0 12px 34px rgba(61, 50, 34, 0.22) !important;
+}
+
+.magi-reader-theme-green .magi-reader-header {
+  border-color: rgba(43, 91, 62, 0.42) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(184, 218, 190, 0.99),
+    rgba(164, 205, 174, 0.985)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(244, 255, 246, 0.68),
+    inset 0 -2px 0 rgba(35, 82, 54, 0.14),
+    0 11px 30px rgba(28, 73, 46, 0.2) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-header {
+  border-color: rgba(164, 181, 204, 0.44) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(42, 56, 80, 0.99),
+    rgba(31, 43, 64, 0.99)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(216, 228, 244, 0.13),
+    0 11px 30px rgba(0, 0, 0, 0.38) !important;
+}
+
+/* The white theme switcher needs a legible casing rather than disappearing
+   into the toolbar. Its depth is entirely soft/inset, never a hard offset. */
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-theme-switcher {
+  border: 1px solid rgba(48, 53, 54, 0.52) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(235, 237, 234, 0.98),
+    rgba(211, 215, 212, 0.98)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    inset 0 -1px 0 rgba(47, 52, 53, 0.24),
+    0 5px 16px rgba(28, 31, 32, 0.12) !important;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-home-theme-switcher .magi-home-light-theme-active {
+  outline: 1px solid rgba(53, 58, 59, 0.28);
+  outline-offset: -1px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    inset 0 -1px 0 rgba(48, 53, 54, 0.2),
+    0 4px 13px rgba(28, 31, 32, 0.12) !important;
+}
+
+/* Paper cards keep visible depth, using broad blur instead of a hard contact
+   line. */
+.magi-home-paper-root .magi-home-light-folder-card {
+  box-shadow:
+    0 12px 30px rgba(61, 50, 34, 0.18),
+    inset 0 1px 0 rgba(255, 252, 232, 0.36) !important;
+}
+
+.magi-home-paper-root .magi-home-light-story-link,
+.magi-home-paper-root .magi-home-light-story-verified {
+  box-shadow:
+    0 10px 24px rgba(61, 50, 34, 0.2),
+    inset 0 1px 0 rgba(255, 252, 232, 0.5) !important;
+}
+
+/* Reading-page floating navigation and font tools need slightly stronger
+   separation from the document while retaining a broad, soft falloff. */
+.magi-reader-floating-widget {
+  box-shadow:
+    0 12px 30px var(--magi-tool-shadow),
+    0 4px 12px color-mix(in srgb, var(--magi-tool-shadow) 72%, transparent),
+    inset 1px 1px var(--magi-tool-inset);
+}
+
+/* MadeInMagius brand system. The mark and its panel share the current theme;
+   no page texture or catalogue colour is changed here. */
+.magi-home-light-root:not(.magi-home-paper-root),
+.magi-reader-theme-light {
+  --magi-brand-ink: #303638;
+  --magi-brand-accent: #5f7076;
+  --magi-brand-highlight: rgba(255, 255, 255, 0.9);
+  --magi-brand-shadow: rgba(25, 29, 30, 0.34);
+  --magi-brand-panel-top: rgba(239, 241, 238, 0.98);
+  --magi-brand-panel-bottom: rgba(211, 215, 212, 0.98);
+  --magi-brand-panel-edge: rgba(55, 61, 63, 0.48);
+  --magi-review-fg: #30383a;
+  --magi-review-bg: #e2e6e3;
+  --magi-review-edge: #657175;
+  --magi-review-accent: #526870;
+  --magi-review-active-fg: #f8faf9;
+  --magi-review-panel: rgba(229, 232, 229, 0.97);
+  --magi-review-shadow: rgba(33, 39, 40, 0.18);
+}
+
+.magi-home-paper-root,
+.magi-reader-theme-paper {
+  --magi-brand-ink: #4a3e2e;
+  --magi-brand-accent: #80633a;
+  --magi-brand-highlight: rgba(255, 251, 228, 0.86);
+  --magi-brand-shadow: rgba(47, 36, 22, 0.36);
+  --magi-brand-panel-top: rgba(240, 231, 207, 0.98);
+  --magi-brand-panel-bottom: rgba(215, 202, 169, 0.98);
+  --magi-brand-panel-edge: rgba(76, 61, 38, 0.52);
+  --magi-review-fg: #493d2c;
+  --magi-review-bg: #e9dfc4;
+  --magi-review-edge: #776442;
+  --magi-review-accent: #745d37;
+  --magi-review-active-fg: #fff9e9;
+  --magi-review-panel: rgba(236, 226, 201, 0.97);
+  --magi-review-shadow: rgba(63, 50, 31, 0.22);
+}
+
+.magi-home-green-root,
+.magi-reader-theme-green {
+  --magi-brand-ink: #1e5638;
+  --magi-brand-accent: #2f7655;
+  --magi-brand-highlight: rgba(241, 255, 245, 0.82);
+  --magi-brand-shadow: rgba(18, 62, 39, 0.34);
+  --magi-brand-panel-top: rgba(202, 228, 208, 0.98);
+  --magi-brand-panel-bottom: rgba(166, 205, 176, 0.98);
+  --magi-brand-panel-edge: rgba(46, 103, 68, 0.5);
+  --magi-review-fg: #1d4931;
+  --magi-review-bg: #c8e1ce;
+  --magi-review-edge: #4b805f;
+  --magi-review-accent: #347252;
+  --magi-review-active-fg: #f2fff6;
+  --magi-review-panel: rgba(198, 224, 204, 0.97);
+  --magi-review-shadow: rgba(27, 77, 47, 0.2);
+}
+
+.magi-home-dark-root,
+.magi-reader-theme-dark {
+  --magi-brand-ink: #dbe7f2;
+  --magi-brand-accent: #83bddc;
+  --magi-brand-highlight: rgba(255, 255, 255, 0.36);
+  --magi-brand-shadow: rgba(0, 5, 13, 0.7);
+  --magi-brand-panel-top: rgba(43, 58, 82, 0.99);
+  --magi-brand-panel-bottom: rgba(28, 40, 60, 0.99);
+  --magi-brand-panel-edge: rgba(126, 147, 174, 0.52);
+  --magi-review-fg: #dce7f2;
+  --magi-review-bg: #293a51;
+  --magi-review-edge: #70869f;
+  --magi-review-accent: #47769b;
+  --magi-review-active-fg: #f6fbff;
+  --magi-review-panel: rgba(35, 49, 70, 0.98);
+  --magi-review-shadow: rgba(0, 0, 0, 0.38);
+}
+
+.magi-brand-panel {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(
+    180deg,
+    var(--magi-brand-panel-top),
+    var(--magi-brand-panel-bottom)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 var(--magi-brand-highlight),
+    inset 0 -2px 0 color-mix(in srgb, var(--magi-brand-panel-edge) 44%, transparent),
+    0 7px 15px var(--magi-brand-shadow) !important;
+}
+
+.magi-brand-panel::before {
+  position: absolute;
+  inset: 0.38rem;
+  z-index: 0;
+  border: 1px solid color-mix(in srgb, var(--magi-brand-panel-edge) 76%, transparent);
+  background:
+    linear-gradient(var(--magi-brand-highlight), var(--magi-brand-highlight)) left top / 1.25rem 1px no-repeat,
+    linear-gradient(var(--magi-brand-panel-edge), var(--magi-brand-panel-edge)) right bottom / 1.25rem 1px no-repeat;
+  box-shadow:
+    inset 1px 1px 0 color-mix(in srgb, var(--magi-brand-highlight) 66%, transparent),
+    inset -1px -1px 0 color-mix(in srgb, var(--magi-brand-panel-edge) 52%, transparent);
+  clip-path: polygon(
+    0 0.28rem,
+    0.28rem 0,
+    calc(100% - 0.28rem) 0,
+    100% 0.28rem,
+    100% calc(100% - 0.28rem),
+    calc(100% - 0.28rem) 100%,
+    0.28rem 100%,
+    0 calc(100% - 0.28rem)
+  );
+  filter: blur(0.22px);
+  opacity: 0.82;
+  pointer-events: none;
+  content: '';
+}
+
+.magi-brand-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.magi-reader-brand {
+  display: block;
+  min-width: 0;
+  overflow: visible;
+  color: var(--magi-brand-ink) !important;
+  text-decoration: none;
+}
+
+.magi-brand-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.38rem;
+}
+
+.magi-brand-row .magi-reader-brand {
+  flex: 1 1 auto;
+}
+
+.magi-brand-row .magi-home-review-trigger {
+  min-height: 1.9rem;
+  flex: none;
+  padding: 0.28rem 0.42rem !important;
+  font-size: 0.68rem !important;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.magi-madeinmagius-logo {
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  min-width: 0;
+  align-items: center;
+  color: var(--magi-brand-ink);
+  filter: drop-shadow(0 2px 2px var(--magi-brand-shadow));
+}
+
+.magi-madeinmagius-wordmark {
+  display: block;
+  min-width: 0;
+}
+
+.magi-madeinmagius-text {
+  display: block;
+  max-width: 100%;
+  overflow: visible;
+  padding-right: 0.42rem;
+  color: var(--magi-brand-ink);
+  font-family: 'Segoe Script', 'Lucida Handwriting', 'Brush Script MT', cursive;
+  font-size: 1.24rem;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1.14;
+  letter-spacing: -0.065em;
+  text-shadow:
+    -0.5px -0.5px 0 var(--magi-brand-highlight),
+    0.8px 1px 0 var(--magi-brand-shadow),
+    0 2px 4px color-mix(in srgb, var(--magi-brand-shadow) 64%, transparent);
+  white-space: nowrap;
+  transform: skewX(-4deg) rotate(-0.35deg);
+  transform-origin: left center;
+}
+
+.magi-madeinmagius-text strong {
+  color: var(--magi-brand-accent);
+  font-weight: 900;
+}
+
+.magi-madeinmagius-logo.is-compact .magi-madeinmagius-text {
+  font-size: 1.08rem;
+}
+
+/* Sidebar branding must stay on one line with its compact checklist control. */
+.magi-home-sidebar .magi-brand-panel {
+  padding: 0.72rem 0.58rem !important;
+}
+
+.magi-home-sidebar .magi-madeinmagius-text {
+  font-size: clamp(0.86rem, 4.7vw, 1.08rem);
+}
+
+/* Night mode is deliberately neon rather than the daytime embossed ink. */
+.magi-home-dark-root .magi-madeinmagius-logo,
+.magi-reader-theme-dark .magi-madeinmagius-logo {
+  filter:
+    drop-shadow(0 0 3px rgba(86, 235, 255, 0.88))
+    drop-shadow(0 0 9px rgba(255, 65, 222, 0.46));
+}
+
+.magi-home-dark-root .magi-madeinmagius-text,
+.magi-reader-theme-dark .magi-madeinmagius-text {
+  color: #79f4ff !important;
+  text-shadow:
+    0 0 2px rgba(224, 253, 255, 0.96),
+    0 0 6px rgba(69, 225, 255, 0.88),
+    0 0 13px rgba(255, 66, 219, 0.58),
+    1px 2px 2px rgba(0, 0, 0, 0.78);
+}
+
+.magi-home-dark-root .magi-madeinmagius-text strong,
+.magi-reader-theme-dark .magi-madeinmagius-text strong {
+  color: #ff65df !important;
+  text-shadow:
+    0 0 3px rgba(255, 222, 249, 0.94),
+    0 0 8px rgba(255, 67, 218, 0.94),
+    0 0 16px rgba(65, 222, 255, 0.5);
+}
+
+.magi-home-dark-root .magi-home-review-trigger {
+  border-color: rgba(77, 231, 255, 0.82) !important;
+  color: #d8fbff !important;
+  background: rgba(30, 42, 68, 0.92) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 91, 221, 0.28),
+    0 0 8px rgba(69, 220, 255, 0.42) !important;
+}
+
+/* The checklist uses the same material as its surrounding theme instead of a
+   universal amber treatment. */
+.magi-home-review-trigger,
+.magi-home-mobile-review-button,
+.magi-home-review-action {
+  border-color: var(--magi-review-edge) !important;
+  color: var(--magi-review-fg) !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--magi-review-bg) 80%, white),
+    var(--magi-review-bg)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 64%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--magi-review-edge) 28%, transparent),
+    0 4px 10px color-mix(in srgb, var(--magi-review-shadow) 78%, transparent) !important;
+}
+
+.magi-home-review-trigger:hover,
+.magi-home-mobile-review-button:hover,
+.magi-home-review-action:hover {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--magi-review-bg) 76%, var(--magi-review-accent)),
+    color-mix(in srgb, var(--magi-review-bg) 88%, var(--magi-review-accent))
+  ) !important;
+}
+
+.magi-home-review-trigger[aria-expanded='true'],
+.magi-home-mobile-review-button[aria-expanded='true'],
+.magi-home-review-action.is-active,
+.magi-home-review-action.is-primary {
+  border-color: color-mix(in srgb, var(--magi-review-accent) 78%, white) !important;
+  color: var(--magi-review-active-fg) !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--magi-review-accent) 82%, white),
+    var(--magi-review-accent)
+  ) !important;
+}
+
+.magi-home-review-action.is-secondary {
+  background: color-mix(in srgb, var(--magi-review-bg) 82%, var(--magi-review-accent)) !important;
+}
+
+.magi-home-review-trigger:focus-visible,
+.magi-home-mobile-review-button:focus-visible,
+.magi-home-review-action:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--magi-review-accent) 72%, white);
+  outline-offset: 2px;
+}
+
+.magi-home-review-panel {
+  border-color: color-mix(in srgb, var(--magi-review-edge) 76%, transparent) !important;
+  color: var(--magi-review-fg) !important;
+  background: linear-gradient(
+    155deg,
+    color-mix(in srgb, var(--magi-review-panel) 90%, white),
+    var(--magi-review-panel)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 58%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--magi-review-edge) 26%, transparent),
+    0 7px 15px var(--magi-review-shadow) !important;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-home-review-panel {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    inset 0 -1px 0 rgba(54, 61, 63, 0.22) !important;
+}
+
+.magi-home-review-live-badge {
+  border: 1px solid color-mix(in srgb, var(--magi-review-accent) 72%, transparent);
+  color: var(--magi-review-active-fg);
+  background: var(--magi-review-accent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 36%, transparent);
+}
+
+.magi-home-review-progress {
+  background: var(--magi-review-accent) !important;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 36%, transparent);
+}
+
+.magi-home-review-drop-target {
+  outline-color: color-mix(in srgb, var(--magi-review-accent) 76%, transparent);
+}
+
+/* Human-edition linework on the white theme is deliberately near-black brown.
+   A fraction of blur keeps every technical frame soft, like a low-resolution
+   reference display rather than a razor-sharp vector overlay. */
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-folder-source-card[data-source-status='magireco-human-cn'] > button,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-story-source-link[data-source-status='magireco-human-cn'],
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-story-source-link[data-source-status='exedra-human-cn'] {
+  --magi-human-frame-color: #281d16;
+}
+
+.magi-folder-source-card[data-source-status='exedra-human-cn'] > button::before,
+.magi-story-source-link[data-source-status='exedra-human-cn']::before,
+.magi-folder-source-card[data-source-status='magireco-human-verified'] > button::before,
+.magi-story-source-link[data-source-status='magireco-human-verified']::before,
+.magi-folder-source-card[data-source-status='magireco-human-cn'] > button::before,
+.magi-story-source-link[data-source-status='magireco-human-cn']::before {
+  filter: blur(0.32px);
+  opacity: 0.92;
+}
+
+/* Paper shadows stay soft but sit closer to each card, so the depth remains
+   visible against the yellow grid instead of dissolving across a large blur. */
+.magi-home-paper-root .magi-home-light-folder-card {
+  box-shadow:
+    0 7px 14px rgba(61, 50, 34, 0.28),
+    0 2px 5px rgba(61, 50, 34, 0.22),
+    inset 0 1px 0 rgba(255, 252, 232, 0.38) !important;
+}
+
+.magi-home-paper-root .magi-home-light-story-link,
+.magi-home-paper-root .magi-home-light-story-verified {
+  box-shadow:
+    0 6px 12px rgba(61, 50, 34, 0.29),
+    0 2px 4px rgba(61, 50, 34, 0.22),
+    inset 0 1px 0 rgba(255, 252, 232, 0.5) !important;
+}
+
+/* Final language-role authority: the Exedra story face owns only Japanese
+   prose, while Tsuku Old Gothic continues to own Japanese speaker/title text.
+   These selectors intentionally sit after every whole-site font rule. */
+html[data-exedra-font-new-cinema='ready']
+  .magi-reader-root.magi-exedra-ui-scope
+  [lang='ja'].reader-font-jp-body,
+html[data-exedra-font-new-cinema='ready']
+  .magi-reader-root.magi-exedra-ui-scope
+  [lang='ja'].reader-font-jp-body .exedra-jp-story-text,
+html[data-exedra-font-new-cinema='ready']
+  .magi-reader-root.magi-exedra-ui-scope
+  [lang='ja'].reader-font-jp-body .exedra-jp-story-text * {
+  font-family:
+    "MagiReaderExedraNewCinemaA",
+    "Yu Mincho",
+    "Noto Serif JP",
+    serif !important;
+  font-synthesis: none !important;
+}
+
+html[data-exedra-font-tsuku='ready']
+  .magi-reader-root.magi-exedra-ui-scope
+  [lang='ja'] .reader-font-jp-title,
+html[data-exedra-font-tsuku='ready']
+  .magi-reader-root.magi-exedra-ui-scope
+  [lang='ja'] .reader-font-jp-title * {
+  font-family:
+    "MagiReaderExedraTsukuOldGothic",
+    "Yu Gothic",
+    "Noto Sans JP",
+    sans-serif !important;
+  font-synthesis: none !important;
+}
+
+/* Exedra provenance must remain readable after the whole-screen low-fi pass.
+   Official TW keeps the theme's base plane; human Chinese moves toward a warm
+   neighbour at identical perceptual depth. Green/dark stay in their own colour
+   families while using a wider hue interval. */
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-story-source-link[data-source-status='exedra-human-cn'] {
+  --magi-source-hue: 78;
+  --magi-source-wash-chroma: 0.074;
+  --magi-source-wash-alpha: 0.48;
+}
+
+.magi-home-paper-root
+  .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-home-paper-root
+  .magi-story-source-link[data-source-status='exedra-human-cn'] {
+  --magi-source-hue: 82;
+  --magi-source-wash-chroma: 0.086;
+  --magi-source-wash-alpha: 0.54;
+  --magi-human-frame-color: oklch(0.46 0.08 76);
+}
+
+.magi-home-green-root
+  .magi-folder-source-card[data-source-status='exedra-official-tw'] > button,
+.magi-home-green-root
+  .magi-story-source-link[data-source-status='exedra-official-tw'] {
+  --magi-source-hue: 178;
+}
+
+.magi-home-green-root
+  .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-home-green-root
+  .magi-story-source-link[data-source-status='exedra-human-cn'] {
+  --magi-source-hue: 108;
+  --magi-human-frame-color: oklch(0.3 0.075 108);
+}
+
+.magi-home-dark-root
+  .magi-folder-source-card[data-source-status='exedra-official-tw'] > button,
+.magi-home-dark-root
+  .magi-story-source-link[data-source-status='exedra-official-tw'] {
+  --magi-source-hue: 205;
+}
+
+.magi-home-dark-root
+  .magi-folder-source-card[data-source-status='exedra-human-cn'] > button,
+.magi-home-dark-root
+  .magi-story-source-link[data-source-status='exedra-human-cn'] {
+  --magi-source-hue: 100;
+  --magi-human-frame-color: oklch(0.72 0.11 100);
+}
+
+/* A single, user-switchable interaction layer. Translate/scale use the
+   independent transform properties so positioned reader controls keep their
+   own transform geometry. */
+.magi-site-font-scope[data-hover-motion='enabled'] {
+  --magi-hover-shadow: rgba(38, 43, 44, 0.3);
+}
+
+.magi-site-font-scope[data-hover-motion='enabled'] .magi-home-paper-root,
+.magi-site-font-scope[data-hover-motion='enabled'] .magi-reader-theme-paper {
+  --magi-hover-shadow: rgba(70, 51, 25, 0.36);
+}
+
+.magi-site-font-scope[data-hover-motion='enabled'] .magi-home-green-root,
+.magi-site-font-scope[data-hover-motion='enabled'] .magi-reader-theme-green {
+  --magi-hover-shadow: rgba(27, 77, 48, 0.34);
+}
+
+.magi-site-font-scope[data-hover-motion='enabled'] .magi-home-dark-root,
+.magi-site-font-scope[data-hover-motion='enabled'] .magi-reader-theme-dark {
+  --magi-hover-shadow: rgba(0, 4, 14, 0.58);
+}
+
+.magi-site-font-scope[data-hover-motion='enabled']
+  :where(button, a[href], [role='button'], [role='tab'])
+  :where(svg, span) {
+  transition: color 180ms ease, opacity 180ms ease;
+}
+
+.magi-site-font-scope[data-hover-motion='enabled']
+  :where(button, a[href], [role='button'], [role='tab']):not([disabled]):not([aria-disabled='true']):not([role='separator']):not(.fixed.inset-0) {
+  transition:
+    translate 210ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    scale 210ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 210ms ease,
+    outline-color 210ms ease !important;
+  transform-origin: center;
+}
+
+@media (hover: hover) {
+  .magi-site-font-scope[data-hover-motion='enabled']
+    :where(button, a[href], [role='button'], [role='tab']):not([disabled]):not([aria-disabled='true']):not([role='separator']):not(.fixed.inset-0):hover {
+    z-index: 2;
+    translate: 0 -3px;
+    scale: 1.025;
+    filter:
+      brightness(1.1)
+      contrast(1.025)
+      drop-shadow(0 7px 6px var(--magi-hover-shadow));
+  }
+}
+
+.magi-site-font-scope[data-hover-motion='enabled']
+  :where(button, a[href], [role='button'], [role='tab']):not([disabled]):not([aria-disabled='true']):not([role='separator']):not(.fixed.inset-0):active {
+  translate: 0 1px;
+  scale: 0.985;
+  filter: brightness(0.96) contrast(1.03);
+  transition-duration: 70ms !important;
+}
+
+.magi-site-font-scope[data-hover-motion='disabled']
+  :where(button, a[href], [role='button'], [role='tab']),
+.magi-site-font-scope[data-hover-motion='disabled']
+  :where(button, a[href], [role='button'], [role='tab']) *,
+.magi-site-font-scope[data-hover-motion='disabled']
+  :where(button, a[href], [role='button'], [role='tab'])::before,
+.magi-site-font-scope[data-hover-motion='disabled']
+  :where(button, a[href], [role='button'], [role='tab'])::after {
+  animation: none !important;
+  transition-duration: 0s !important;
+}
+
+.magi-site-font-scope[data-hover-motion='disabled']
+  :where(button, a[href], [role='button'], [role='tab']):hover,
+.magi-site-font-scope[data-hover-motion='disabled']
+  :where(button, a[href], [role='button'], [role='tab']):active {
+  translate: 0 0 !important;
+  scale: 1 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .magi-site-font-scope
+    :where(button, a[href], [role='button'], [role='tab']),
+  .magi-site-font-scope
+    :where(button, a[href], [role='button'], [role='tab']) * {
+    animation: none !important;
+    transition-duration: 0s !important;
+  }
+
+  .magi-site-font-scope
+    :where(button, a[href], [role='button'], [role='tab']):hover,
+  .magi-site-font-scope
+    :where(button, a[href], [role='button'], [role='tab']):active {
+    translate: 0 0 !important;
+    scale: 1 !important;
+  }
+}
+
+/* The setting itself follows the current theme rather than using a universal
+   green accent. */
+.magi-site-settings-window .magi-hover-motion-switch[aria-checked='true'] {
+  opacity: 1 !important;
+}
+
+.magi-floating-window-light .magi-hover-motion-switch[aria-checked='true'] {
+  border-color: #596468 !important;
+  color: #f5f7f7 !important;
+  background: #596468 !important;
+}
+
+.magi-floating-window-paper .magi-hover-motion-switch[aria-checked='true'] {
+  border-color: #725c3b !important;
+  color: #fff8e8 !important;
+  background: #725c3b !important;
+}
+
+.magi-floating-window-green .magi-hover-motion-switch[aria-checked='true'] {
+  border-color: #326d4b !important;
+  color: #f3fff7 !important;
+  background: #326d4b !important;
+}
+
+.magi-floating-window-dark .magi-hover-motion-switch[aria-checked='true'] {
+  border-color: #7897bc !important;
+  color: #eef6ff !important;
+  background: #334e6d !important;
+}
+
+.magi-site-settings-window .magi-hover-motion-switch[aria-checked='true'] > span {
+  background: currentColor !important;
+}
+
+/* Choice controls use the same four-theme palette as their reading surface. */
+.magi-reader-choice-button {
+  border-width: 1px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    0 4px 10px rgba(31, 35, 36, 0.18) !important;
+}
+
+.magi-reader-theme-light .magi-reader-choice-button {
+  border-color: #626b6d !important;
+  color: #303638 !important;
+  background: linear-gradient(100deg, #eef0ef, #d7dcdb) !important;
+}
+
+.magi-reader-theme-paper .magi-reader-choice-button {
+  border-color: #796342 !important;
+  color: #463923 !important;
+  background: linear-gradient(100deg, #f4e9c9, #d9c493) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 250, 224, 0.62),
+    0 5px 11px rgba(67, 50, 25, 0.25) !important;
+}
+
+.magi-reader-theme-green .magi-reader-choice-button {
+  border-color: #3d7956 !important;
+  color: #173d29 !important;
+  background: linear-gradient(100deg, #dcebdd, #b8d8bf) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-choice-button {
+  border-color: #7393b8 !important;
+  color: #eef6ff !important;
+  background: linear-gradient(100deg, #314c6b, #263b56) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(210, 230, 250, 0.18),
+    0 5px 12px rgba(0, 4, 14, 0.45) !important;
+}
+
+/* Voice controls and the provenance note are part of the reader surface, so
+   they inherit the same material palette instead of keeping a fixed sky-blue
+   utility appearance. */
+.magi-reader-voice-button,
+.magi-reader-voice-notice,
+.magi-reader-choice-navigation-notice {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 3px 9px rgba(31, 35, 36, 0.16);
+}
+
+.magi-reader-theme-light .magi-reader-voice-button,
+.magi-reader-theme-light .magi-reader-voice-notice,
+.magi-reader-theme-light .magi-reader-choice-navigation-notice {
+  border-color: #687174 !important;
+  color: #303638 !important;
+  background: rgba(224, 228, 227, 0.9) !important;
+}
+
+.magi-reader-theme-paper .magi-reader-voice-button,
+.magi-reader-theme-paper .magi-reader-voice-notice,
+.magi-reader-theme-paper .magi-reader-choice-navigation-notice {
+  border-color: #7d6848 !important;
+  color: #493b26 !important;
+  background: rgba(232, 216, 176, 0.9) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 249, 224, 0.58),
+    0 4px 10px rgba(65, 48, 24, 0.22);
+}
+
+.magi-reader-theme-green .magi-reader-voice-button,
+.magi-reader-theme-green .magi-reader-voice-notice,
+.magi-reader-theme-green .magi-reader-choice-navigation-notice {
+  border-color: #477d5d !important;
+  color: #173d29 !important;
+  background: rgba(202, 227, 207, 0.9) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-voice-button,
+.magi-reader-theme-dark .magi-reader-voice-notice,
+.magi-reader-theme-dark .magi-reader-choice-navigation-notice {
+  border-color: rgba(78, 224, 255, 0.72) !important;
+  color: #bff8ff !important;
+  background: rgba(20, 42, 63, 0.9) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(205, 247, 255, 0.18),
+    0 0 0 1px rgba(79, 211, 255, 0.14),
+    0 0 14px rgba(40, 180, 255, 0.22) !important;
+}
+
+.magi-reader-theme-light .magi-reader-voice-error { color: #8a2d34; }
+.magi-reader-theme-paper .magi-reader-voice-error { color: #8d3b28; }
+.magi-reader-theme-green .magi-reader-voice-error { color: #8a3039; }
+.magi-reader-theme-dark .magi-reader-voice-error {
+  color: #ff73d3;
+  text-shadow: 0 0 7px rgba(255, 64, 198, 0.46);
+}
+
+/* Dark unverified entries become a vaporwave warning channel. Their lightness
+   stays aligned with neighbouring cards; hue, linework and glow carry the
+   status distinction. */
+.magi-home-dark-root
+  .magi-folder-source-card[data-source-status='magireco-source-unverified'] > button,
+.magi-home-dark-root
+  .magi-story-source-link[data-source-status='magireco-source-unverified'] {
+  --magi-source-hue: 326;
+  --magi-source-wash-chroma: 0.12;
+  --magi-source-wash-alpha: 0.55;
+  --magi-human-frame-color: #ff4fd8;
+  border-color: rgba(255, 79, 216, 0.66) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 219, 248, 0.12),
+    0 0 0 1px rgba(45, 217, 255, 0.12),
+    0 0 17px rgba(255, 57, 203, 0.24) !important;
+}
+
+.magi-home-dark-root .magi-home-status-badge-unverified {
+  --magi-badge-hue: 326;
+  border: 1px solid rgba(255, 116, 226, 0.88) !important;
+  color: #fff1fc !important;
+  background: rgba(151, 25, 126, 0.88) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 220, 248, 0.25),
+    0 0 10px rgba(255, 64, 210, 0.52) !important;
+  text-shadow: 0 0 6px rgba(255, 209, 247, 0.68);
+}
+
+/* Episode links are real controls now, not a flat sentence. Their quiet base
+   state stays inside the card palette; the shared hover layer makes each one
+   lift independently. */
+.magi-home-episode-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  margin: 0.12rem 0.16rem;
+  padding: 0.3rem 0.58rem;
+  overflow: hidden;
+  border: 1px solid var(--magi-episode-edge, currentColor);
+  border-radius: 0.14rem !important;
+  color: var(--magi-episode-fg, currentColor);
+  background: var(--magi-episode-bg, color-mix(in srgb, currentColor 12%, transparent));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 22%, transparent),
+    0 4px 11px color-mix(in srgb, var(--magi-episode-edge, currentColor) 34%, transparent);
+  clip-path: polygon(
+    6px 0,
+    calc(100% - 6px) 0,
+    100% 6px,
+    100% calc(100% - 6px),
+    calc(100% - 6px) 100%,
+    6px 100%,
+    0 calc(100% - 6px),
+    0 6px
+  );
+  font-weight: 800;
+  opacity: 0.9;
+}
+
+.magi-home-episode-link::before {
+  position: absolute;
+  inset: 3px;
+  border: 1px solid color-mix(in srgb, var(--magi-episode-edge, currentColor) 70%, transparent);
+  clip-path: inherit;
+  pointer-events: none;
+  content: '';
+}
+
+.magi-home-episode-link:hover,
+.magi-home-episode-link:focus-visible {
+  border-color: color-mix(in srgb, currentColor 58%, transparent);
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  opacity: 1;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) {
+  --magi-episode-bg: #5a6060;
+  --magi-episode-fg: #f7f8f7;
+  --magi-episode-edge: #343a3b;
+}
+
+.magi-home-paper-root {
+  --magi-episode-bg: #6b573a;
+  --magi-episode-fg: #fff7e4;
+  --magi-episode-edge: #3f3322;
+}
+
+.magi-home-green-root {
+  --magi-episode-bg: #32684a;
+  --magi-episode-fg: #f1fff5;
+  --magi-episode-edge: #1f4932;
+}
+
+.magi-home-dark-root {
+  --magi-episode-bg: #253f5d;
+  --magi-episode-fg: #e8fbff;
+  --magi-episode-edge: #55d5e8;
+}
+
+/* Reader sections use an old file-browser tree: one trunk, one elbow per
+   Episode, and a theme-coloured selection plate that follows deep links. */
+.magi-reader-theme-light {
+  --magi-tree-line: rgba(64, 72, 75, 0.36);
+  --magi-tree-node: #657379;
+  --magi-tree-active-bg: rgba(78, 91, 96, 0.9);
+  --magi-tree-active-fg: #f7f9f8;
+  --magi-tree-active-edge: #9ba8ac;
+}
+
+.magi-reader-theme-paper {
+  --magi-tree-line: rgba(82, 65, 40, 0.38);
+  --magi-tree-node: #806743;
+  --magi-tree-active-bg: rgba(102, 82, 57, 0.92);
+  --magi-tree-active-fg: #fff8e6;
+  --magi-tree-active-edge: #b69a68;
+}
+
+.magi-reader-theme-green {
+  --magi-tree-line: rgba(36, 91, 57, 0.38);
+  --magi-tree-node: #4e8464;
+  --magi-tree-active-bg: rgba(53, 107, 76, 0.92);
+  --magi-tree-active-fg: #f3fff7;
+  --magi-tree-active-edge: #83b696;
+}
+
+.magi-reader-theme-dark {
+  --magi-tree-line: rgba(93, 225, 238, 0.38);
+  --magi-tree-node: #62d9ed;
+  --magi-tree-active-bg: rgba(43, 65, 96, 0.94);
+  --magi-tree-active-fg: #edfaff;
+  --magi-tree-active-edge: #6ee7f3;
+}
+
+.magi-reader-sidebar-section-tree {
+  position: relative;
+  padding-left: 0.42rem;
+  border-left: 1px solid var(--magi-tree-line) !important;
+}
+
+.magi-reader-sidebar-section-item {
+  position: relative;
+  min-height: 2rem;
+  padding-left: 1.25rem !important;
+  border: 1px solid transparent;
+  border-radius: 0.56rem;
+}
+
+.magi-reader-sidebar-section-item::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 0.78rem;
+  border-top: 1px solid var(--magi-tree-line);
+  content: '';
+}
+
+.magi-reader-sidebar-section-item::after {
+  position: absolute;
+  top: calc(50% - 2.5px);
+  left: 0.7rem;
+  width: 5px;
+  height: 5px;
+  border: 1px solid var(--magi-tree-node);
+  background: color-mix(in srgb, var(--magi-tree-node) 45%, transparent);
+  transform: rotate(45deg);
+  content: '';
+}
+
+.magi-reader-sidebar-section-item[aria-current='location'] {
+  border-color: var(--magi-tree-active-edge) !important;
+  color: var(--magi-tree-active-fg) !important;
+  background: var(--magi-tree-active-bg) !important;
+  box-shadow:
+    inset 3px 0 var(--magi-tree-active-edge),
+    inset 0 1px rgba(255, 255, 255, 0.16),
+    0 4px 10px color-mix(in srgb, var(--magi-tree-active-bg) 34%, transparent) !important;
+}
+
+.magi-reader-sidebar-section-item[aria-current='location']::after {
+  border-color: var(--magi-tree-active-fg);
+  background: var(--magi-tree-active-fg);
+  box-shadow: 0 0 7px color-mix(in srgb, var(--magi-tree-active-edge) 70%, transparent);
+}
+
+.magi-reader-sidebar-section-label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------
+   Edge-only low-fidelity diffusion
+
+   The grain overlay stays unchanged.  A fractional, same-palette halo takes
+   the digital sharpness off control and panel borders without filtering the
+   element subtree, so labels and story text remain crisp.
+   --------------------------------------------------------- */
+.magi-home-light-root:not(.magi-home-paper-root),
+.magi-reader-theme-light {
+  --magi-edge-diffusion: rgba(63, 67, 68, 0.5);
+  --magi-edge-warp-x: 0.48px;
+  --magi-edge-warp-y: -0.34px;
+  --magi-edge-counter-x: -0.4px;
+  --magi-edge-counter-y: 0.52px;
+  --magi-edge-warp-skew: -0.14deg;
+  --magi-edge-warp-rotate: -0.075deg;
+  --magi-edge-warp-blur: 0.64px;
+  --magi-home-tree-line: rgba(58, 66, 69, 0.62);
+  --magi-home-tree-node-fill: rgba(72, 82, 85, 0.15);
+}
+
+.magi-home-paper-root,
+.magi-reader-theme-paper {
+  --magi-edge-diffusion: rgba(79, 69, 55, 0.52);
+  --magi-edge-warp-x: -0.54px;
+  --magi-edge-warp-y: -0.38px;
+  --magi-edge-counter-x: 0.44px;
+  --magi-edge-counter-y: 0.56px;
+  --magi-edge-warp-skew: 0.15deg;
+  --magi-edge-warp-rotate: 0.08deg;
+  --magi-edge-warp-blur: 0.72px;
+  --magi-home-tree-line: rgba(86, 66, 38, 0.66);
+  --magi-home-tree-node-fill: rgba(108, 79, 38, 0.16);
+}
+
+.magi-home-green-root,
+.magi-reader-theme-green {
+  --magi-edge-diffusion: rgba(66, 101, 79, 0.49);
+  --magi-edge-warp-x: 0.44px;
+  --magi-edge-warp-y: 0.46px;
+  --magi-edge-counter-x: -0.47px;
+  --magi-edge-counter-y: -0.33px;
+  --magi-edge-warp-skew: 0.13deg;
+  --magi-edge-warp-rotate: -0.07deg;
+  --magi-edge-warp-blur: 0.68px;
+  --magi-home-tree-line: rgba(36, 103, 63, 0.68);
+  --magi-home-tree-node-fill: rgba(43, 126, 76, 0.17);
+}
+
+.magi-home-dark-root,
+.magi-reader-theme-dark {
+  --magi-edge-diffusion: rgba(111, 161, 169, 0.5);
+  --magi-edge-warp-x: -0.55px;
+  --magi-edge-warp-y: -0.4px;
+  --magi-edge-counter-x: 0.43px;
+  --magi-edge-counter-y: 0.55px;
+  --magi-edge-warp-skew: -0.145deg;
+  --magi-edge-warp-rotate: 0.075deg;
+  --magi-edge-warp-blur: 0.75px;
+  --magi-home-tree-line: rgba(135, 218, 230, 0.72);
+  --magi-home-tree-node-fill: rgba(74, 206, 226, 0.18);
+}
+
+/* The human-Chinese family stays distinct without the ochre-heavy cast that
+   became too vivid on the white and paper themes.  This late override is
+   deliberately after the Exedra provenance rules so both folder and story
+   cards use the same restrained, low-chroma wash. */
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-folder-source-card:is(
+    [data-source-status='exedra-human-cn'],
+    [data-source-status='magireco-human-cn']
+  ) > button,
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-story-source-link:is(
+    [data-source-status='exedra-human-cn'],
+    [data-source-status='magireco-human-cn']
+  ) {
+  --magi-source-hue: 74;
+  --magi-source-wash-chroma: 0.018;
+  --magi-source-wash-alpha: 0.5;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) {
+  --magi-source-human-progress-start: oklch(0.68 0.016 74 / 0.25);
+  --magi-source-human-progress-end: oklch(0.68 0.018 74 / 0.5);
+  --magi-source-human-progress-edge: oklch(0.46 0.018 74 / 0.56);
+}
+
+.magi-home-paper-root
+  .magi-folder-source-card:is(
+    [data-source-status='exedra-human-cn'],
+    [data-source-status='magireco-human-cn']
+  ) > button,
+.magi-home-paper-root
+  .magi-story-source-link:is(
+    [data-source-status='exedra-human-cn'],
+    [data-source-status='magireco-human-cn']
+  ) {
+  --magi-source-hue: 76;
+  --magi-source-wash-chroma: 0.02;
+  --magi-source-wash-alpha: 0.5;
+}
+
+.magi-home-paper-root {
+  --magi-source-human-progress-start: oklch(0.7 0.018 76 / 0.25);
+  --magi-source-human-progress-end: oklch(0.7 0.02 76 / 0.5);
+  --magi-source-human-progress-edge: oklch(0.48 0.02 76 / 0.56);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-source-status-badge-exedra-human {
+  border-color: oklch(0.4 0.018 74);
+  color: #f7f5ef;
+  background: oklch(0.46 0.022 74) !important;
+}
+
+.magi-home-paper-root .magi-source-status-badge-exedra-human {
+  border-color: oklch(0.41 0.022 76);
+  color: #fff9eb;
+  background: oklch(0.49 0.026 76) !important;
+}
+
+.magi-home-shell {
+  --magi-control-edge-filter:
+    drop-shadow(
+      var(--magi-edge-warp-x, 0.16px)
+      var(--magi-edge-warp-y, -0.11px)
+      0.36px
+      color-mix(in srgb, var(--magi-edge-diffusion, rgba(72, 78, 80, 0.3)) 88%, transparent)
+    )
+    drop-shadow(
+      var(--magi-edge-counter-x, -0.12px)
+      var(--magi-edge-counter-y, 0.18px)
+      0.78px
+      color-mix(in srgb, var(--magi-edge-diffusion, rgba(72, 78, 80, 0.3)) 66%, transparent)
+    );
+}
+
+.magi-home-shell :where(
+  button,
+  input,
+  select,
+  textarea,
+  .magi-folder-source-card,
+  .magi-story-source-link,
+  .magi-home-episode-link,
+  .magi-floating-window,
+  .magi-home-light-toolbar,
+  .magi-home-light-sidebar,
+  .magi-home-review-panel,
+  .magi-floating-link
+),
+.magi-reader-root :where(
+  button,
+  input,
+  select,
+  textarea,
+  .magi-floating-window,
+  .magi-reader-sidebar-section-item,
+  .magi-reader-voice-notice,
+  .magi-reader-choice-navigation-notice,
+  .magi-reader-header,
+  .magi-reader-sidebar,
+  .magi-reader-document,
+  .magi-reader-utility-panel,
+  .magi-reader-font-control,
+  .magi-proofreading-panel,
+  .magi-floating-link
+) {
+  outline: 1.25px solid var(--magi-edge-diffusion, rgba(72, 78, 80, 0.24));
+  outline-offset: 0.74px;
+}
+
+/* A second, fractionally misregistered ring introduces controlled analogue
+   edge wobble without filtering labels, icons or card contents. */
+.magi-home-shell :where(
+  .magi-home-toolbar-shell,
+  .magi-home-sidebar,
+  .magi-folder-source-card,
+  .magi-home-review-panel,
+  .magi-home-category-filter,
+  .magi-home-category-select-box
+) {
+  position: relative;
+}
+
+.magi-home-shell .magi-home-toolbar-shell::after,
+.magi-home-shell .magi-home-sidebar::after,
+.magi-home-shell .magi-folder-source-card::after,
+.magi-home-shell .magi-home-review-panel::after,
+.magi-home-shell .magi-home-category-filter::after,
+.magi-home-shell .magi-home-category-select-box::after {
+  position: absolute;
+  z-index: 8;
+  display: block;
+  inset: 0.68px -0.08px -0.12px 0.82px;
+  width: auto;
+  height: auto;
+  border: 1.15px solid color-mix(
+    in srgb,
+    var(--magi-edge-diffusion, rgba(72, 78, 80, 0.3)) 92%,
+    transparent
+  );
+  border-radius: inherit;
+  box-shadow:
+    var(--magi-edge-counter-x, -0.12px)
+      var(--magi-edge-counter-y, 0.18px)
+      1.08px
+      color-mix(in srgb, var(--magi-edge-diffusion, rgba(72, 78, 80, 0.3)) 70%, transparent),
+    0 3.4px 6.5px color-mix(
+      in srgb,
+      var(--magi-child-shadow, rgba(34, 39, 40, 0.3)) 72%,
+      transparent
+    );
+  filter: blur(var(--magi-edge-warp-blur, 0.36px));
+  transform:
+    translate(
+      var(--magi-edge-warp-x, 0.16px),
+      var(--magi-edge-warp-y, -0.11px)
+    )
+    skewX(var(--magi-edge-warp-skew, -0.05deg))
+    rotate(var(--magi-edge-warp-rotate, 0.075deg));
+  transform-origin: 53% 47%;
+  opacity: 0.94;
+  pointer-events: none;
+  content: '';
+}
+
+/* The Sidebar's source anchors sit over the edge echo. The tiny selector keeps
+   a quieter echo so its one-rem glyph does not turn into a triple ring. */
+.magi-home-shell .magi-home-category-filter::after {
+  z-index: 3 !important;
+}
+
+.magi-home-shell .magi-home-category-select-box::after {
+  box-shadow:
+    var(--magi-edge-counter-x, -0.12px)
+      var(--magi-edge-counter-y, 0.18px)
+      0.58px
+      color-mix(in srgb, var(--magi-edge-diffusion, rgba(72, 78, 80, 0.3)) 54%, transparent),
+    0 1.8px 3.2px color-mix(
+      in srgb,
+      var(--magi-child-shadow, rgba(34, 39, 40, 0.3)) 62%,
+      transparent
+    );
+  opacity: 0.56;
+}
+
+/* Actual controls receive their own fractionally displaced edge, rather than
+   relying only on the surrounding toolbar/card frame.  The invisible category
+   hit overlay and the deliberately frameless Episode rows are excluded. */
+.magi-home-shell :where(
+  .magi-home-toolbar-shell button,
+  .magi-home-toolbar-shell label,
+  .magi-home-toolbar-shell .magi-home-light-control,
+  .magi-home-search-input,
+  .magi-home-sidebar button:not(.magi-home-category-filter-hit),
+  .magi-folder-source-card > button,
+  .magi-home-story-toggle
+):not(.magi-home-episode-link) {
+  filter: var(--magi-control-edge-filter);
+}
+
+.magi-home-shell .magi-home-toolbar-shell :where(button, label),
+.magi-home-shell .magi-home-story-toggle {
+  position: relative;
+}
+
+.magi-home-shell .magi-home-toolbar-shell :where(button, label)::after,
+.magi-home-shell .magi-home-story-toggle::after {
+  position: absolute;
+  z-index: 4;
+  inset: 0.34px -0.34px -0.22px 0.5px;
+  border: 0.95px solid color-mix(
+    in srgb,
+    var(--magi-edge-diffusion, rgba(72, 78, 80, 0.3)) 84%,
+    transparent
+  );
+  border-radius: inherit;
+  box-shadow:
+    var(--magi-edge-counter-x, -0.12px)
+      var(--magi-edge-counter-y, 0.18px)
+      0.72px
+      color-mix(in srgb, var(--magi-edge-diffusion, rgba(72, 78, 80, 0.3)) 64%, transparent),
+    0 1.9px 3.4px color-mix(
+      in srgb,
+      var(--magi-child-shadow, rgba(34, 39, 40, 0.3)) 58%,
+      transparent
+    );
+  filter: blur(var(--magi-edge-warp-blur, 0.56px));
+  transform:
+    translate(
+      var(--magi-edge-warp-x, 0.16px),
+      var(--magi-edge-warp-y, -0.11px)
+    )
+    skewX(var(--magi-edge-warp-skew, -0.05deg))
+    rotate(var(--magi-edge-warp-rotate, 0.075deg));
+  transform-origin: 52% 48%;
+  opacity: 0.86;
+  pointer-events: none;
+  content: '';
+}
+
+/* Filled surfaces receive a soft silhouette halo. This diffuses the outside
+   edge only: text and icons inside the surface are not run through blur(). */
+.magi-home-shell :where(
+  .magi-folder-source-card,
+  .magi-floating-window,
+  .magi-floating-link
+),
+.magi-reader-root :where(
+  .magi-floating-window,
+  .magi-reader-voice-notice,
+  .magi-reader-choice-navigation-notice
+) {
+  filter:
+    drop-shadow(
+      var(--magi-edge-warp-x, 0.16px)
+      var(--magi-edge-warp-y, -0.11px)
+      0.48px
+      var(--magi-edge-diffusion, rgba(72, 78, 80, 0.3))
+    )
+    drop-shadow(
+      var(--magi-edge-counter-x, -0.12px)
+      var(--magi-edge-counter-y, 0.18px)
+      1.35px
+      color-mix(in srgb, var(--magi-edge-diffusion, rgba(72, 78, 80, 0.3)) 72%, transparent)
+    );
+}
+
+/* These strokes already live on decorative pseudo-elements, so a sub-pixel
+   blur can be applied to the line itself rather than to its text-bearing box. */
+.magi-home-episode-link::before,
+.magi-reader-sidebar-section-item::before,
+.magi-reader-sidebar-section-item::after,
+.magi-folder-source-card[data-source-status='exedra-human-cn'] > button::before,
+.magi-story-source-link[data-source-status='exedra-human-cn']::before,
+.magi-folder-source-card[data-source-status='magireco-human-verified'] > button::before,
+.magi-story-source-link[data-source-status='magireco-human-verified']::before,
+.magi-folder-source-card[data-source-status='magireco-human-cn'] > button::before,
+.magi-story-source-link[data-source-status='magireco-human-cn']::before {
+  filter: blur(0.64px);
+}
+
+/* The catalogue is a responsive narrow-card masonry. Folders and their nested
+   story nodes remain closed until the reader opens them. */
+.magi-home-folder-columns {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(
+    var(--magi-folder-column-count, 1),
+    minmax(0, 1fr)
+  );
+  align-items: start;
+  gap: 0.58rem;
+}
+
+.magi-home-folder-column {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.58rem;
+}
+
+.magi-home-folder-column > .magi-folder-source-card {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.magi-home-folder-columns .magi-card-title-flow {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.magi-home-folder-columns .magi-folder-heading-flow {
+  display: block !important;
+  padding-inline: 0.55rem !important;
+}
+
+.magi-folder-heading-flow .magi-card-title-flow {
+  display: block !important;
+  width: auto;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.magi-folder-heading-flow .magi-card-title-flow > :first-child {
+  display: inline-flex !important;
+  margin-right: 0.28rem;
+  vertical-align: middle;
+}
+
+.magi-folder-heading-flow .magi-folder-id {
+  display: inline-flex;
+  margin-right: 0.28rem;
+  vertical-align: middle;
+}
+
+.magi-folder-heading-flow .magi-card-meta {
+  display: inline-flex;
+  margin-left: 0.32rem;
+  max-width: none;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 0.28rem;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+
+.magi-folder-heading-flow .magi-folder-display-title {
+  display: inline;
+  width: auto;
+  max-width: none;
+}
+
+/* Expanded folders follow a compact old file-manager hierarchy. The branch
+   strokes are decorative and separately diffused, leaving every glyph sharp. */
+.magi-home-folder-tree {
+  position: relative;
+  display: flex !important;
+  flex-direction: column;
+  flex-wrap: nowrap !important;
+  gap: 0.36rem !important;
+  padding-left: 1.32rem;
+}
+
+.magi-home-folder-tree::before {
+  position: absolute;
+  top: 0.28rem;
+  bottom: 0.72rem;
+  left: 0.38rem;
+  border-left: 1.2px solid var(--magi-home-tree-line, color-mix(in srgb, currentColor 54%, transparent));
+  filter: blur(0.5px);
+  transform: translateX(var(--magi-edge-warp-x, 0.18px)) skewY(0.08deg);
+  pointer-events: none;
+  content: '';
+}
+
+.magi-home-story-tree-node {
+  position: relative;
+  width: 100%;
+  flex: 0 0 auto;
+}
+
+.magi-home-story-tree-junction {
+  position: absolute;
+  z-index: 4;
+  top: 0.78rem;
+  left: -0.95rem;
+  width: 0.98rem;
+  border-top: 1.2px solid var(--magi-home-tree-line, color-mix(in srgb, currentColor 56%, transparent));
+  filter: blur(0.44px);
+  transform: translateY(var(--magi-edge-warp-y, -0.12px)) skewX(var(--magi-edge-warp-skew, -0.05deg));
+  pointer-events: none;
+}
+
+.magi-home-story-tree-junction::before {
+  position: absolute;
+  top: -0.2rem;
+  left: -0.17rem;
+  width: 0.36rem;
+  height: 0.36rem;
+  border: 1px solid var(--magi-home-tree-line, color-mix(in srgb, currentColor 66%, transparent));
+  border-radius: 0.04rem;
+  background: var(--magi-home-tree-node-fill, color-mix(in srgb, currentColor 12%, transparent));
+  box-shadow:
+    inset 0.5px 0.5px 0 color-mix(in srgb, white 28%, transparent),
+    0 1.4px 2.4px var(--magi-child-shadow, rgba(34, 39, 40, 0.24));
+  content: '';
+}
+
+.magi-home-folder-tree > .magi-home-story-tree-node > .magi-story-source-link {
+  width: 100%;
+  border-radius: 0.1rem !important;
+  filter: var(--magi-control-edge-filter) !important;
+  box-shadow: 0 3.8px 5.8px var(--magi-child-shadow, rgba(34, 39, 40, 0.3));
+}
+
+.magi-home-story-tree-node[data-tree-state='open'] > .magi-story-source-link {
+  border-left-color: color-mix(in srgb, currentColor 58%, transparent) !important;
+}
+
+.magi-home-story-tree-node[data-tree-state='open'] > .magi-home-story-tree-junction::before {
+  background: color-mix(in srgb, var(--magi-home-tree-line, currentColor) 26%, transparent);
+  transform: rotate(1deg);
+}
+
+.magi-home-story-toggle {
+  position: relative;
+  align-self: flex-start;
+  width: 1.35rem;
+  height: 1.35rem;
+  min-width: 1.35rem;
+  margin: 0.32rem 0 0 0.18rem;
+  padding: 0 !important;
+  border: 1px solid color-mix(in srgb, currentColor 48%, transparent);
+  border-radius: 0.08rem;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  box-shadow:
+    0 2px 5px var(--magi-child-shadow, rgba(34, 39, 40, 0.25)),
+    inset 0.5px 0.5px 0 color-mix(in srgb, white 54%, transparent),
+    inset -0.5px -0.5px 0 color-mix(in srgb, currentColor 34%, transparent);
+  clip-path: polygon(0 0.18rem, 0.18rem 0, calc(100% - 0.18rem) 0, 100% 0.18rem, 100% calc(100% - 0.18rem), calc(100% - 0.18rem) 100%, 0.18rem 100%, 0 calc(100% - 0.18rem));
+}
+
+.magi-home-story-toggle::before {
+  content: none;
+}
+
+.magi-home-story-toggle svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  filter: drop-shadow(0 0 0.45px currentColor);
+}
+
+.magi-home-folder-tree .magi-home-story-primary-link::before {
+  content: none;
+}
+
+.magi-home-folder-tree .magi-home-story-primary-link > .magi-card-heading-grid {
+  padding-left: 0.38rem;
+}
+
+.magi-home-story-tree-title {
+  display: grid;
+  grid-template-columns: 1.08rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.38rem;
+}
+
+.magi-home-story-tree-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.magi-home-tree-folder-icon {
+  position: relative;
+  display: inline-block;
+  width: 1rem;
+  height: 0.72rem;
+  border: 1px solid color-mix(in srgb, currentColor 68%, transparent);
+  border-radius: 0.04rem;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  box-shadow:
+    inset 0.5px 0.5px 0 color-mix(in srgb, white 32%, transparent),
+    0.7px 1.5px 2.4px var(--magi-child-shadow, rgba(34, 39, 40, 0.24));
+  clip-path: polygon(0 18%, 31% 18%, 40% 0, 72% 0, 82% 18%, 100% 18%, 100% 100%, 0 100%);
+  filter: blur(0.16px);
+  transform: translate(var(--magi-edge-warp-x, 0.16px), var(--magi-edge-warp-y, -0.11px)) rotate(-0.35deg);
+}
+
+.magi-home-tree-folder-icon::after {
+  position: absolute;
+  inset: 0.12rem 0.08rem 0.08rem 0.1rem;
+  border: 0.7px solid color-mix(in srgb, currentColor 38%, transparent);
+  transform: translate(0.22px, -0.12px);
+  opacity: 0.72;
+  content: '';
+}
+
+.magi-home-tree-folder-icon[data-open='true'] {
+  background: color-mix(in srgb, currentColor 20%, transparent);
+  transform: translate(var(--magi-edge-warp-x, 0.16px), var(--magi-edge-warp-y, -0.11px)) skewX(-1.4deg) rotate(0.45deg);
+}
+
+.magi-home-episode-list {
+  position: relative;
+  display: flex !important;
+  flex-direction: column;
+  flex-wrap: nowrap !important;
+  gap: 0.08rem !important;
+  margin: 0 0.34rem 0.28rem;
+  padding: 0.36rem 0.34rem 0.42rem 1.9rem !important;
+  border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent) !important;
+}
+
+.magi-home-episode-list::before {
+  position: absolute;
+  top: -0.18rem;
+  bottom: 0.78rem;
+  left: 0.82rem;
+  border-left: 1.2px solid color-mix(in srgb, currentColor 54%, transparent);
+  filter: blur(0.5px);
+  transform: translateX(var(--magi-edge-warp-x, 0.18px)) skewY(-0.08deg);
+  pointer-events: none;
+  content: '';
+}
+
+.magi-home-episode-list::after {
+  position: absolute;
+  top: -0.22rem;
+  left: 0.64rem;
+  width: 0.38rem;
+  height: 0.38rem;
+  border: 1px solid color-mix(in srgb, currentColor 62%, transparent);
+  border-radius: 0.04rem;
+  background: color-mix(in srgb, currentColor 13%, transparent);
+  box-shadow: 0 1.2px 2px var(--magi-child-shadow, rgba(34, 39, 40, 0.22));
+  filter: blur(0.22px);
+  pointer-events: none;
+  content: '';
+}
+
+.magi-home-episode-list > .magi-home-episode-link {
+  flex: 0 1 auto;
+  justify-content: flex-start;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 1.68rem;
+  margin: 0;
+  padding: 0.12rem 0.62rem 0.12rem 0;
+  overflow: visible;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0;
+  color: inherit;
+  background: transparent !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  filter: none !important;
+  text-align: left;
+  text-decoration: none !important;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  opacity: 0.82;
+}
+
+.magi-home-episode-list > .magi-home-episode-link::before {
+  content: none;
+}
+
+.magi-home-episode-list > .magi-home-episode-link:hover,
+.magi-home-episode-list > .magi-home-episode-link:focus-visible {
+  color: inherit;
+  background: color-mix(in srgb, currentColor 7%, transparent) !important;
+  opacity: 1;
+}
+
+.magi-home-episode-branch {
+  position: relative;
+  align-self: stretch;
+  flex: none;
+  width: 1.3rem;
+  margin-left: -1.1rem;
+  color: color-mix(in srgb, currentColor 68%, transparent);
+}
+
+.magi-home-episode-branch::before {
+  position: absolute;
+  top: 50%;
+  right: -0.02rem;
+  width: 1.34rem;
+  border-top: 1.2px solid color-mix(in srgb, currentColor 58%, transparent);
+  filter: blur(0.5px);
+  transform: translateY(var(--magi-edge-warp-y, -0.11px)) skewX(var(--magi-edge-warp-skew, -0.05deg));
+  pointer-events: none;
+  content: '';
+}
+
+.magi-home-episode-branch::after {
+  content: none;
+}
+
+.magi-home-tree-episode-node {
+  position: relative;
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.34rem;
+  border: 1px solid color-mix(in srgb, currentColor 66%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, currentColor 11%, transparent);
+  box-shadow:
+    inset 0.7px 0.7px 0 color-mix(in srgb, white 30%, transparent),
+    0.7px 1.4px 2.3px var(--magi-child-shadow, rgba(34, 39, 40, 0.24));
+  filter: blur(0.18px);
+  transform: translate(var(--magi-edge-warp-x, 0.16px), var(--magi-edge-warp-y, -0.11px));
+}
+
+.magi-home-tree-episode-node::after {
+  position: absolute;
+  inset: 0.1rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, currentColor 34%, transparent);
+  transform: translate(-0.18px, 0.12px);
+  content: '';
+}
+
+.magi-home-episode-label {
+  min-width: 0;
+  padding: 0.08rem 0.22rem;
+  border: 0;
+  line-height: 1.24;
+}
+
+.magi-home-episode-link:hover .magi-home-episode-label,
+.magi-home-episode-link:focus-visible .magi-home-episode-label {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Source status remains visible through each theme's fill and badge. The inset
+   technical frame is intentionally removed from both folder and story cards. */
+.magi-folder-source-card[data-source-status='exedra-human-cn'] > button::before,
+.magi-story-source-link[data-source-status='exedra-human-cn']::before,
+.magi-folder-source-card[data-source-status='magireco-human-verified'] > button::before,
+.magi-story-source-link[data-source-status='magireco-human-verified']::before,
+.magi-folder-source-card[data-source-status='magireco-human-cn'] > button::before,
+.magi-story-source-link[data-source-status='magireco-human-cn']::before {
+  content: none !important;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) {
+  --magi-child-shadow: rgba(36, 42, 44, 0.34);
+}
+
+.magi-home-paper-root {
+  --magi-child-shadow: rgba(71, 52, 27, 0.37);
+}
+
+.magi-home-green-root {
+  --magi-child-shadow: rgba(22, 72, 44, 0.36);
+}
+
+.magi-home-dark-root {
+  --magi-child-shadow: rgba(0, 5, 16, 0.62);
+}
+
+@media (max-width: 40rem) {
+  .magi-home-folder-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Sidebar source branches occupy the unused right rail instead of becoming an
+   accordion.  The category column never moves; an active node paints four
+   connected status targets over the parallel rail. */
+.magi-home-sidebar {
+  container-type: inline-size;
+}
+
+.magi-home-category-nav {
+  position: relative;
+  overflow-x: clip !important;
+  scroll-padding-block: 6.75rem;
+}
+
+.magi-home-category-node {
+  isolation: isolate;
+  min-height: 2.35rem;
+  z-index: 1;
+}
+
+.magi-home-category-node[data-expanded='true'] {
+  z-index: 70;
+}
+
+.magi-home-category-trigger {
+  flex: 0 0 clamp(6.25rem, 52%, 8.5rem);
+  width: clamp(6.25rem, 52%, 8.5rem);
+  min-width: 0;
+  max-width: none !important;
+  gap: 0.36rem !important;
+  padding-inline: 0.55rem !important;
+  overflow: hidden;
+}
+
+.magi-home-category-trigger > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The category multi-selector is deliberately smaller than the navigation
+   plaque: a circular socket containing a square lamp. Connector geometry is
+   measured from the socket centre in page.tsx. */
+.magi-home-category-select-box {
+  width: 1rem;
+  height: 1rem;
+  min-width: 1rem;
+  min-height: 1rem;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  border-color: var(--magi-category-branch-edge, rgba(62, 70, 72, 0.48));
+  color: var(--magi-category-branch-line, rgba(57, 66, 68, 0.72));
+  background: var(--magi-category-branch-surface, rgba(239, 242, 241, 0.9));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, white 46%, transparent),
+    0 1px 3px var(--magi-child-shadow, rgba(34, 39, 40, 0.22));
+}
+
+.magi-home-category-select-square {
+  display: block;
+  width: 0.38rem;
+  height: 0.38rem;
+  border: 1px solid currentColor;
+  border-radius: 1px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, white 25%, transparent);
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.magi-home-category-select-box[aria-pressed='true'] {
+  border-color: var(--magi-category-branch-selected-line, currentColor);
+  color: var(--magi-category-branch-selected-line, currentColor);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, white 58%, transparent),
+    0 0 0 1px color-mix(in srgb, currentColor 35%, transparent),
+    0 2px 5px var(--magi-child-shadow, rgba(34, 39, 40, 0.3));
+}
+
+.magi-home-category-select-box[aria-pressed='true']
+  .magi-home-category-select-square {
+  background: currentColor;
+  box-shadow: 0 0 4px currentColor;
+  transform: scale(1.08);
+}
+
+.magi-home-category-select-box:disabled {
+  cursor: not-allowed;
+  color: var(--magi-category-disabled-text, rgba(72, 78, 80, 0.58));
+  border-color: var(--magi-category-disabled-edge, rgba(104, 111, 112, 0.44));
+  background: var(--magi-category-disabled-surface, rgba(214, 218, 218, 0.9));
+  filter: saturate(0.15);
+  opacity: 0.56;
+}
+
+.magi-home-category-branch-zone {
+  min-width: 0;
+  overflow: visible;
+}
+
+/* Hide the superseded node-local draft while the viewport overlay owns the
+   actual trigger-to-option geometry.  This prevents detached placeholder
+   strokes from flashing during hot reload. */
+.magi-home-category-node .magi-home-category-filter-menu {
+  visibility: hidden;
+}
+
+.magi-home-category-filter-menu {
+  display: grid !important;
+  width: min(11rem, 100%);
+  min-width: 0;
+  grid-template-rows: repeat(4, minmax(1.55rem, auto));
+  gap: 0.18rem !important;
+  padding-left: 0.82rem !important;
+  pointer-events: none;
+}
+
+.magi-home-category-branch-lines {
+  width: 0.82rem !important;
+  overflow: visible;
+  color: var(--magi-category-branch-line, rgba(57, 66, 68, 0.58));
+  filter: blur(0.34px) drop-shadow(0 1px 1px rgba(35, 41, 42, 0.2));
+}
+
+.magi-home-category-branch-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.15;
+  vector-effect: non-scaling-stroke;
+}
+
+.magi-home-category-filter {
+  position: relative;
+  isolation: isolate;
+  display: grid !important;
+  width: 100%;
+  min-width: 0;
+  min-height: 1.55rem;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 0.28rem !important;
+  padding: 0.2rem 0.34rem !important;
+  border: 1px solid var(--magi-category-branch-edge, rgba(62, 70, 72, 0.42));
+  color: inherit;
+  background: var(--magi-category-branch-surface, rgba(239, 242, 241, 0.88));
+  box-shadow:
+    inset 0 0.5px 0 color-mix(in srgb, white 52%, transparent),
+    0 2px 4px var(--magi-child-shadow, rgba(34, 39, 40, 0.25));
+  font-size: 0.625rem !important;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: auto;
+  filter: drop-shadow(0 0 0.45px var(--magi-edge-diffusion, rgba(72, 78, 80, 0.24)));
+}
+
+/* The status plaques keep their existing theme surface while a real aggregate
+   percentage fills from left to right.  This layer is deliberately separate
+   from the text/connection controls so 50% and 75% remain visually distinct
+   without changing the rail geometry or its hit targets. */
+.magi-home-category-filter::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset-block: 1px;
+  inset-inline-start: 1px;
+  inline-size: var(--magi-category-filter-progress, 0%);
+  max-inline-size: calc(100% - 2px);
+  border-radius: calc(0.25rem - 1px);
+  background: linear-gradient(
+    90deg,
+    var(--magi-category-progress-fill-start, rgba(75, 91, 98, 0.12)),
+    var(--magi-category-progress-fill-end, rgba(75, 91, 98, 0.28))
+  );
+  box-shadow: inset -1px 0 0 var(--magi-category-progress-edge, rgba(45, 58, 64, 0.42));
+  mix-blend-mode: normal;
+  opacity: 1;
+  pointer-events: none;
+  transition:
+    inline-size 260ms ease,
+    background-color 180ms ease,
+    opacity 180ms ease;
+}
+
+/* Dark cards and their Sidebar plaques share comparable luminance, so the
+   accepted hue-only blend remains exact there.  Brighter themes use ordinary
+   alpha compositing above to keep their source colours visible. */
+.magi-home-dark-root .magi-home-category-filter::before {
+  mix-blend-mode: color;
+}
+
+.magi-home-category-filter > span {
+  position: relative;
+  z-index: 1;
+}
+
+.magi-home-category-filter > .magi-home-category-filter-anchor-set {
+  position: absolute;
+  z-index: 5;
+}
+
+.magi-home-category-filter[data-progress-available='false']::before,
+.magi-home-category-filter[data-enabled='false']::before {
+  opacity: 0;
+}
+
+.magi-home-category-filter[data-enabled='true'] {
+  cursor: pointer;
+}
+
+.magi-home-category-filter[data-filter='human-cn'] {
+  --magi-category-progress-fill-start: var(--magi-source-human-progress-start);
+  --magi-category-progress-fill-end: var(--magi-source-human-progress-end);
+  --magi-category-progress-edge: var(--magi-source-human-progress-edge);
+}
+
+.magi-home-category-filter[data-filter='machine-verified'] {
+  --magi-category-progress-fill-start: var(--magi-source-verified-progress-start);
+  --magi-category-progress-fill-end: var(--magi-source-verified-progress-end);
+  --magi-category-progress-edge: var(--magi-source-verified-progress-edge);
+}
+
+.magi-home-category-filter[data-filter='machine-unverified'] {
+  --magi-category-progress-fill-start: var(--magi-source-unverified-progress-start);
+  --magi-category-progress-fill-end: var(--magi-source-unverified-progress-end);
+  --magi-category-progress-edge: var(--magi-source-unverified-progress-edge);
+}
+
+/* The white and paper rails sit on much brighter planes than their catalogue
+   cards.  Give only these Sidebar progress layers an equal-depth presentation
+   palette; the shared source hues, segment widths and catalogue cards stay put. */
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-home-category-filter[data-filter='all'] {
+  --magi-category-progress-fill-start: rgba(93, 100, 101, 0.72);
+  --magi-category-progress-fill-end: rgba(119, 126, 126, 0.78);
+  --magi-category-progress-edge: rgba(40, 45, 46, 0.72);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-home-category-filter[data-filter='human-cn'] {
+  --magi-category-progress-fill-start: rgba(103, 92, 66, 0.72);
+  --magi-category-progress-fill-end: rgba(132, 119, 87, 0.78);
+  --magi-category-progress-edge: rgba(40, 29, 22, 0.7);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-home-category-filter[data-filter='machine-verified'] {
+  --magi-category-progress-fill-start: rgba(93, 100, 101, 0.72);
+  --magi-category-progress-fill-end: rgba(119, 126, 126, 0.78);
+  --magi-category-progress-edge: rgba(34, 37, 38, 0.62);
+}
+
+.magi-home-light-root:not(.magi-home-paper-root)
+  .magi-home-category-filter[data-filter='machine-unverified'] {
+  --magi-category-progress-fill-start: rgba(82, 103, 116, 0.72);
+  --magi-category-progress-fill-end: rgba(105, 127, 140, 0.78);
+  --magi-category-progress-edge: rgba(52, 75, 88, 0.68);
+}
+
+.magi-home-paper-root .magi-home-category-filter[data-filter='all'] {
+  --magi-category-progress-fill-start: rgba(103, 82, 49, 0.72);
+  --magi-category-progress-fill-end: rgba(126, 103, 65, 0.78);
+  --magi-category-progress-edge: rgba(51, 39, 23, 0.72);
+}
+
+.magi-home-paper-root .magi-home-category-filter[data-filter='human-cn'] {
+  --magi-category-progress-fill-start: rgba(112, 82, 39, 0.72);
+  --magi-category-progress-fill-end: rgba(143, 108, 57, 0.78);
+  --magi-category-progress-edge: rgba(70, 47, 18, 0.7);
+}
+
+.magi-home-paper-root .magi-home-category-filter[data-filter='machine-verified'] {
+  --magi-category-progress-fill-start: rgba(103, 82, 49, 0.72);
+  --magi-category-progress-fill-end: rgba(126, 103, 65, 0.78);
+  --magi-category-progress-edge: rgba(67, 62, 52, 0.64);
+}
+
+.magi-home-paper-root .magi-home-category-filter[data-filter='machine-unverified'] {
+  --magi-category-progress-fill-start: rgba(92, 94, 87, 0.68);
+  --magi-category-progress-fill-end: rgba(112, 113, 102, 0.74);
+  --magi-category-progress-edge: rgba(65, 70, 72, 0.64);
+}
+
+.magi-home-category-filter > span:not(.magi-home-category-filter-count) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.magi-home-category-filter-connector,
+.magi-home-category-branch-origin {
+  position: absolute;
+  pointer-events: none;
+}
+
+.magi-home-category-filter-count {
+  display: block;
+  min-width: 2.25ch;
+  text-align: right;
+  font-size: 0.58rem !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The persistent status rail uses narrow vertical plaques.  Chinese glyphs
+   read top-to-bottom; the four plaques themselves remain ordered top-to-bottom
+   from human translation through all machine translation. */
+.magi-home-category-filter-overlay-menu {
+  display: grid;
+  grid-template-rows:
+    minmax(3.25rem, 0.62fr)
+    repeat(3, minmax(4.6rem, 1fr));
+  align-content: center;
+  gap: clamp(0.28rem, 0.85vh, 0.62rem) !important;
+  justify-items: end;
+  overflow: visible;
+}
+
+.magi-home-category-filter-overlay-menu .magi-home-category-filter {
+  width: 3.3rem !important;
+  min-width: 3.3rem !important;
+  min-height: 0;
+  height: 100% !important;
+  grid-template-columns: 1fr !important;
+  justify-items: center;
+  align-self: stretch !important;
+  padding: 0.54rem 0.38rem !important;
+  line-height: 1.08;
+  white-space: normal;
+  touch-action: manipulation;
+}
+
+.magi-home-category-filter-overlay-menu
+  .magi-home-category-filter[data-filter='all'] {
+  align-self: center !important;
+  height: min(100%, 4.7rem) !important;
+}
+
+.magi-home-category-filter-overlay-menu .magi-home-category-filter > span {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) {
+  --magi-category-branch-line: rgba(53, 61, 64, 0.58);
+  --magi-category-branch-selected-line: rgba(35, 76, 91, 0.94);
+  --magi-category-branch-surface: rgba(239, 242, 241, 0.9);
+  --magi-category-branch-edge: rgba(58, 66, 68, 0.45);
+  --magi-category-disabled-surface: rgba(214, 218, 218, 0.9);
+  --magi-category-disabled-edge: rgba(104, 111, 112, 0.44);
+  --magi-category-disabled-text: rgba(72, 78, 80, 0.58);
+  --magi-category-disabled-line: rgba(96, 103, 104, 0.35);
+  --magi-category-progress-fill-start: rgba(92, 105, 109, 0.1);
+  --magi-category-progress-fill-end: rgba(74, 89, 95, 0.28);
+  --magi-category-progress-edge: rgba(45, 56, 61, 0.5);
+}
+
+.magi-home-paper-root {
+  --magi-category-branch-line: rgba(80, 61, 35, 0.61);
+  --magi-category-branch-selected-line: rgba(105, 68, 22, 0.96);
+  --magi-category-branch-surface: rgba(236, 224, 192, 0.9);
+  --magi-category-branch-edge: rgba(75, 56, 31, 0.49);
+  --magi-category-disabled-surface: rgba(205, 199, 181, 0.9);
+  --magi-category-disabled-edge: rgba(105, 98, 82, 0.46);
+  --magi-category-disabled-text: rgba(84, 80, 69, 0.58);
+  --magi-category-disabled-line: rgba(96, 88, 70, 0.36);
+  --magi-category-progress-fill-start: rgba(126, 99, 54, 0.11);
+  --magi-category-progress-fill-end: rgba(111, 82, 39, 0.3);
+  --magi-category-progress-edge: rgba(75, 51, 22, 0.52);
+}
+
+.magi-home-green-root {
+  --magi-category-branch-line: rgba(93, 180, 123, 0.66);
+  --magi-category-branch-selected-line: rgba(142, 241, 169, 0.96);
+  --magi-category-branch-surface: rgba(38, 91, 62, 0.91);
+  --magi-category-branch-edge: rgba(123, 205, 148, 0.53);
+  --magi-category-disabled-surface: rgba(49, 70, 59, 0.92);
+  --magi-category-disabled-edge: rgba(108, 133, 117, 0.44);
+  --magi-category-disabled-text: rgba(185, 201, 191, 0.55);
+  --magi-category-disabled-line: rgba(127, 151, 136, 0.35);
+  --magi-category-progress-fill-start: rgba(79, 175, 107, 0.16);
+  --magi-category-progress-fill-end: rgba(105, 215, 135, 0.39);
+  --magi-category-progress-edge: rgba(144, 235, 167, 0.68);
+}
+
+/* Enabled green-theme filters still need to read as available before selection.
+   Keep this state distinct from both the luminous selection and muted disabled state. */
+.magi-home-green-root
+  .magi-home-category-filter-overlay-menu
+  .magi-home-category-filter[data-enabled='true'][data-selected='false'] {
+  color: rgba(202, 231, 210, 0.9) !important;
+  border-color: rgba(142, 218, 164, 0.68) !important;
+}
+
+.magi-home-dark-root {
+  --magi-category-branch-line: rgba(102, 138, 157, 0.58);
+  --magi-category-branch-selected-line: rgba(56, 244, 211, 0.98);
+  --magi-category-branch-surface: rgba(24, 45, 71, 0.94);
+  --magi-category-branch-edge: rgba(95, 139, 159, 0.5);
+  --magi-category-disabled-surface: rgba(35, 43, 57, 0.94);
+  --magi-category-disabled-edge: rgba(108, 119, 138, 0.46);
+  --magi-category-disabled-text: rgba(163, 173, 188, 0.56);
+  --magi-category-disabled-line: rgba(119, 132, 151, 0.4);
+  --magi-category-progress-fill-start: rgba(28, 126, 135, 0.2);
+  --magi-category-progress-fill-end: rgba(42, 214, 190, 0.48);
+  --magi-category-progress-edge: rgba(85, 255, 224, 0.82);
+}
+
+.magi-home-category-filter-overlay-menu
+  .magi-home-category-filter[data-selected='true'] {
+  border-color: var(--magi-category-branch-selected-line, currentColor) !important;
+  color: var(--magi-category-branch-selected-line, currentColor) !important;
+  background: color-mix(
+    in srgb,
+    var(--magi-category-branch-surface, rgba(239, 242, 241, 0.94)) 78%,
+    var(--magi-category-branch-selected-line, currentColor)
+  ) !important;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, white 52%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--magi-category-branch-selected-line, currentColor) 42%, transparent),
+    0 3px 8px var(--magi-child-shadow, rgba(34, 39, 40, 0.34)) !important;
+}
+
+.magi-home-category-branch-line[data-enabled='true'][data-selected='false'] {
+  opacity: 0.4 !important;
+}
+
+.magi-home-category-branch-line[data-enabled='true'][data-selected='true'] {
+  stroke: var(--magi-category-branch-selected-line, currentColor) !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 1.6px var(--magi-category-branch-selected-line, currentColor));
+}
+
+.magi-home-category-branch-line-hit {
+  pointer-events: stroke;
+  cursor: pointer;
+  fill: none;
+  stroke: transparent;
+  stroke-width: 16;
+  vector-effect: non-scaling-stroke;
+}
+
+.magi-home-category-filter-anchor-dot {
+  z-index: 4;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--magi-category-branch-line, currentColor);
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.magi-home-category-filter-anchor-glyph {
+  display: block;
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid currentColor;
+  background: color-mix(
+    in srgb,
+    var(--magi-category-branch-surface, transparent) 78%,
+    transparent
+  );
+  box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 16%, transparent);
+  transition:
+    background-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+
+.magi-home-category-filter-anchor-dot[data-anchor-kind='connector']
+  .magi-home-category-filter-anchor-glyph {
+  border-radius: 999px;
+}
+
+.magi-home-category-filter-anchor-dot[data-anchor-kind='selector']
+  .magi-home-category-filter-anchor-glyph {
+  border-radius: 1px;
+}
+
+.magi-home-category-filter-anchor-dot[data-selected='true'] {
+  color: var(--magi-category-branch-selected-line, currentColor) !important;
+}
+
+.magi-home-category-filter-anchor-dot[data-selected='true']
+  .magi-home-category-filter-anchor-glyph {
+  background: currentColor;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, currentColor 42%, transparent),
+    0 0 5px currentColor;
+  transform: scale(1.08);
+}
+
+.magi-home-category-filter-anchor-dot:disabled {
+  cursor: not-allowed;
+  color: var(--magi-category-disabled-line, rgba(96, 103, 104, 0.35));
+  opacity: 0.5;
+  filter: saturate(0.1);
+}
+
+.magi-home-category-filter-anchor-dot:focus-visible {
+  outline: 2px solid var(--magi-category-branch-selected-line, currentColor);
+  outline-offset: 1px;
+}
+
+.magi-home-category-filter-overlay-menu
+  .magi-home-category-filter[data-enabled='false'] {
+  color: var(--magi-category-disabled-text, rgba(72, 78, 80, 0.58)) !important;
+  background: var(--magi-category-disabled-surface, rgba(214, 218, 218, 0.9)) !important;
+  border-color: var(--magi-category-disabled-edge, rgba(104, 111, 112, 0.44)) !important;
+  box-shadow:
+    inset 0 0.5px 0 color-mix(in srgb, white 22%, transparent),
+    0 1px 2px color-mix(in srgb, var(--magi-child-shadow, rgba(34, 39, 40, 0.25)) 55%, transparent) !important;
+  filter: saturate(0.2) contrast(0.94) !important;
+  opacity: 0.58 !important;
+}
+
+.magi-home-category-branch-line[data-enabled='false'],
+.magi-home-category-branch-anchor[data-enabled='false'] {
+  color: var(--magi-category-disabled-line, rgba(96, 103, 104, 0.35));
+  stroke: var(--magi-category-disabled-line, rgba(96, 103, 104, 0.35));
+  fill: var(--magi-category-disabled-line, rgba(96, 103, 104, 0.35));
+  opacity: 0.62 !important;
+}
+
+@keyframes magi-category-branch-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes magi-category-filter-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-0.42rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.magi-site-font-scope[data-hover-motion='enabled']
+  .magi-home-category-branch-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: magi-category-branch-draw 310ms ease-out forwards;
+  animation-delay: calc(attr(data-filter-index type(<number>), 0) * 52ms);
+}
+
+.magi-site-font-scope[data-hover-motion='enabled']
+  .magi-home-category-filter {
+  opacity: 0;
+  animation: magi-category-filter-enter 235ms ease-out forwards;
+}
+
+.magi-site-font-scope[data-hover-motion='enabled']
+  .magi-home-category-filter[data-filter-index='0'] { animation-delay: 70ms; }
+.magi-site-font-scope[data-hover-motion='enabled']
+  .magi-home-category-filter[data-filter-index='1'] { animation-delay: 120ms; }
+.magi-site-font-scope[data-hover-motion='enabled']
+  .magi-home-category-filter[data-filter-index='2'] { animation-delay: 170ms; }
+.magi-site-font-scope[data-hover-motion='enabled']
+  .magi-home-category-filter[data-filter-index='3'] { animation-delay: 220ms; }
+
+.magi-site-font-scope[data-hover-motion='enabled']
+  .magi-home-category-branch-line[data-filter-index='0'] { animation-delay: 0ms; }
+.magi-site-font-scope[data-hover-motion='enabled']
+  .magi-home-category-branch-line[data-filter-index='1'] { animation-delay: 52ms; }
+.magi-site-font-scope[data-hover-motion='enabled']
+  .magi-home-category-branch-line[data-filter-index='2'] { animation-delay: 104ms; }
+.magi-site-font-scope[data-hover-motion='enabled']
+  .magi-home-category-branch-line[data-filter-index='3'] { animation-delay: 156ms; }
+
+.magi-site-font-scope[data-hover-motion='disabled']
+  :where(.magi-home-category-branch-line, .magi-home-category-filter) {
+  animation: none !important;
+  transition: none !important;
+  stroke-dashoffset: 0;
+  opacity: 1;
+  transform: none;
+}
+
+@container (max-width: 13.5rem) {
+  .magi-home-category-trigger {
+    flex-basis: 6rem;
+    width: 6rem;
+    gap: 0.22rem !important;
+    padding-inline: 0.32rem !important;
+    font-size: 0.7rem !important;
+  }
+
+  .magi-home-category-trigger svg {
+    width: 0.78rem;
+    height: 0.78rem;
+  }
+
+  .magi-home-category-filter-menu {
+    padding-left: 0.64rem !important;
+  }
+
+  .magi-home-category-branch-lines {
+    width: 0.64rem !important;
+  }
+
+  .magi-home-category-filter {
+    gap: 0.18rem !important;
+    padding-inline: 0.24rem !important;
+    font-size: 0.585rem !important;
+  }
+
+  .magi-home-category-filter-count {
+    font-size: 0.54rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .magi-home-category-branch-line,
+  .magi-home-category-filter {
+    animation: none !important;
+    transition: none !important;
+    stroke-dashoffset: 0;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Keep the desktop checklist sentence intact and pin collapse directly after
+   submission review.  Narrow layouts retain the original wrapping behavior. */
+.magi-home-review-tail-actions {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+@media (min-width: 80rem) {
+  .magi-home-review-panel-layout {
+    display: grid !important;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: center;
+    column-gap: 0.75rem;
+  }
+
+  .magi-home-review-summary {
+    width: max-content;
+    max-width: none;
+    white-space: nowrap;
+  }
+
+  .magi-home-review-toolbar {
+    flex-wrap: nowrap !important;
+    justify-content: flex-end;
+    gap: 0.55rem !important;
+    min-width: 0;
+  }
+
+  .magi-home-review-meter {
+    flex: 0 1 12rem;
+    min-width: 8.5rem !important;
+  }
+
+  .magi-home-review-panel .magi-home-review-action {
+    padding-inline: 0.65rem !important;
+    white-space: nowrap;
+  }
+}
+
+/* =========================================
+   V31 FINAL THEME COHESION
+
+   Final dark CRT and theme-specific source/status treatment.  These rules are
+   deliberately last in the cascade.  They change paint only: no geometry,
+   typeface, content, hit target, positioning or interaction is altered.
+   ========================================= */
+
+/* A fine, non-interactive CRT veil augments (rather than replaces) the existing
+   grain and grid.  Local chrome below also carries its own low-alpha scanline,
+   so elevated sidebars and tool windows remain visually continuous. */
+.magi-home-shell.magi-home-dark-root::after,
+.magi-reader-root.magi-reader-theme-dark::after {
+  position: fixed;
+  z-index: 14;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(ellipse at center, transparent 58%, rgba(0, 6, 13, 0.12) 100%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(83, 232, 193, 0.026) 2px 3px
+    );
+  box-shadow: inset 0 0 13vw rgba(0, 6, 14, 0.1);
+  opacity: 0.72;
+  content: '';
+}
+
+/* ---------- Official Taiwan source badges: four native materials ---------- */
+:is(.magi-official-tw-badge, .magi-reader-source-badge) {
+  overflow: visible;
+  border-width: 1px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  white-space: nowrap;
+}
+
+.magi-home-light-root:not(.magi-home-paper-root) .magi-official-tw-badge,
+.magi-reader-theme-light .magi-reader-source-badge {
+  border-radius: 0.16rem !important;
+  border-color: rgba(57, 64, 66, 0.74) !important;
+  color: #303638 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(41, 47, 49, 0.045) 2px 3px
+    ),
+    linear-gradient(180deg, rgba(231, 234, 232, 0.98), rgba(199, 204, 202, 0.98)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.76),
+    inset 0 -1px 0 rgba(50, 57, 59, 0.16),
+    1px 2px 4px rgba(29, 34, 35, 0.12) !important;
+  text-shadow: none;
+}
+
+.magi-home-paper-root .magi-official-tw-badge,
+.magi-reader-theme-paper .magi-reader-source-badge {
+  border-radius: 0.34rem !important;
+  border-color: rgba(100, 76, 42, 0.76) !important;
+  color: #4a3924 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(93, 67, 35, 0.035) 3px 4px
+    ),
+    linear-gradient(180deg, rgba(232, 217, 178, 0.98), rgba(205, 181, 130, 0.98)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 249, 223, 0.62),
+    1px 2px 5px rgba(68, 49, 25, 0.15) !important;
+  text-shadow: 0 1px rgba(255, 246, 216, 0.34);
+}
+
+.magi-home-green-root .magi-official-tw-badge,
+.magi-reader-theme-green .magi-reader-source-badge {
+  border-radius: 0.42rem !important;
+  border-color: rgba(118, 181, 121, 0.82) !important;
+  color: #efffe2 !important;
+  background:
+    radial-gradient(ellipse at 24% 18%, rgba(206, 248, 194, 0.13), transparent 48%),
+    linear-gradient(32deg, transparent 48.8%, rgba(177, 224, 163, 0.08) 49.6% 50.4%, transparent 51.2%),
+    linear-gradient(180deg, rgba(60, 119, 73, 0.98), rgba(38, 87, 59, 0.98)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(229, 255, 219, 0.2),
+    0 2px 6px rgba(20, 70, 39, 0.18) !important;
+  text-shadow: 0 1px 2px rgba(10, 50, 28, 0.55);
+}
+
+.magi-home-dark-root .magi-official-tw-badge,
+.magi-reader-theme-dark .magi-reader-source-badge {
+  border-radius: 0.18rem !important;
+  border-color: rgba(73, 238, 192, 0.76) !important;
+  color: #aaffdd !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(91, 255, 207, 0.055) 2px 3px
+    ),
+    linear-gradient(180deg, rgba(12, 51, 67, 0.98), rgba(6, 31, 47, 0.98)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(199, 255, 234, 0.14),
+    0 0 0 1px rgba(56, 231, 181, 0.07),
+    0 0 8px rgba(39, 231, 172, 0.15) !important;
+  text-shadow: 0 0 5px rgba(75, 255, 198, 0.32);
+}
+
+/* ---------- Home summary counters ---------- */
+.magi-home-dark-root .magi-home-section-statistics > span {
+  border-color: rgba(75, 196, 170, 0.68) !important;
+  color: #dceff2 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(94, 255, 211, 0.045) 2px 3px
+    ),
+    linear-gradient(180deg, rgba(12, 45, 59, 0.97), rgba(6, 27, 43, 0.98)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(198, 252, 238, 0.1),
+    0 0 7px rgba(40, 229, 173, 0.11) !important;
+  text-shadow: 0 0 4px rgba(80, 235, 199, 0.19);
+}
+
+.magi-home-dark-root .magi-home-section-statistics > [data-stat='total'] {
+  border-color: rgba(126, 211, 224, 0.76) !important;
+  color: #e8f9ff !important;
+}
+
+.magi-home-dark-root .magi-home-section-statistics > [data-stat='human'] {
+  border-color: rgba(113, 232, 159, 0.78) !important;
+  color: #cffff0 !important;
+}
+
+.magi-home-dark-root .magi-home-section-statistics > [data-stat='pending'] {
+  border-color: rgba(150, 210, 147, 0.72) !important;
+  color: #e4f5cf !important;
+}
+
+.magi-home-dark-root .magi-home-section-statistics > [data-stat='verified'] {
+  border-color: rgba(92, 234, 204, 0.82) !important;
+  color: #baffec !important;
+}
+
+.magi-home-shell.magi-home-green-root[data-theme='green']
+  .magi-home-section-statistics > span {
+  border-color: rgba(123, 174, 119, 0.74) !important;
+  color: #f1f6dd !important;
+  background: rgba(27, 78, 50, 0.95) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(225, 255, 224, 0.16),
+    0 2px 8px rgba(17, 61, 35, 0.18) !important;
+}
+
+.magi-home-shell.magi-home-green-root[data-theme='green']
+  .magi-home-section-statistics > [data-stat='total'] {
+  color: #fffbea !important;
+  background: rgba(27, 73, 47, 0.97) !important;
+}
+
+.magi-home-shell.magi-home-green-root[data-theme='green']
+  .magi-home-section-statistics > [data-stat='human'] {
+  color: #f1f7d4 !important;
+  background: rgba(45, 86, 44, 0.97) !important;
+}
+
+.magi-home-shell.magi-home-green-root[data-theme='green']
+  .magi-home-section-statistics > [data-stat='pending'] {
+  border-color: rgba(194, 184, 99, 0.78) !important;
+  color: #fff0bd !important;
+  background: rgba(65, 79, 38, 0.97) !important;
+}
+
+.magi-home-shell.magi-home-green-root[data-theme='green']
+  .magi-home-section-statistics > [data-stat='verified'] {
+  border-color: rgba(108, 190, 151, 0.82) !important;
+  color: #dcffed !important;
+  background: rgba(22, 78, 59, 0.97) !important;
+}
+
+/* Keep the green story-system toggle in the ecological channel regardless of
+   the utility classes emitted for the current story system. */
+.magi-home-shell.magi-home-green-root[data-theme='green']
+  .magi-home-toolbar-controls
+  > button[aria-label^='切换到 Magia'] {
+  border-color: rgba(42, 105, 65, 0.82) !important;
+  color: #f3ffed !important;
+  background:
+    radial-gradient(ellipse at 22% 17%, rgba(215, 255, 211, 0.18), transparent 46%),
+    linear-gradient(180deg, #4d9063, #306c4b) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(235, 255, 233, 0.32),
+    0 4px 13px rgba(23, 77, 42, 0.21) !important;
+}
+
+.magi-home-shell.magi-home-green-root[data-theme='green']
+  .magi-home-toolbar-controls
+  > button[aria-label^='切换到 Magia']:is(:hover, :focus-visible),
+.magi-home-shell.magi-home-green-root[data-theme='green']
+  .magi-home-toolbar-controls
+  > button[aria-label^='切换到 Magia'][aria-pressed='true'] {
+  border-color: rgba(57, 128, 78, 0.94) !important;
+  color: #fcfff6 !important;
+  background:
+    radial-gradient(ellipse at 22% 17%, rgba(228, 255, 222, 0.22), transparent 46%),
+    linear-gradient(180deg, #60a173, #397654) !important;
+}
+
+/* ---------- Dark Reader header: one Hacker terminal system ---------- */
+.magi-reader-root.magi-reader-theme-dark
+  .magi-reader-header.magi-reader-header-compact {
+  --magi-reader-hacker: #61f5bf;
+  --magi-reader-hacker-bright: #bfffe4;
+  --magi-reader-hacker-muted: #78ab9c;
+  border-color: rgba(73, 225, 178, 0.56) !important;
+  color: #d9edf1 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(83, 255, 202, 0.038) 2px 3px
+    ),
+    linear-gradient(180deg, rgba(13, 38, 55, 0.995), rgba(6, 25, 41, 0.995)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(187, 255, 230, 0.09),
+    inset 0 -1px 0 rgba(64, 225, 177, 0.16),
+    0 8px 24px rgba(0, 8, 17, 0.42) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-header-identity > div > span:first-child {
+  color: #d7edf0 !important;
+  opacity: 0.9 !important;
+  text-shadow: 0 0 5px rgba(89, 232, 196, 0.15);
+}
+
+.magi-reader-theme-dark .magi-reader-header-meta,
+.magi-reader-theme-dark .magi-reader-header-meta > .magi-reader-story-id {
+  color: #a9ffdc !important;
+  opacity: 1 !important;
+  text-shadow: 0 0 6px rgba(70, 247, 186, 0.28);
+}
+
+.magi-reader-theme-dark
+  .magi-reader-header-meta > button.magi-reader-source-download {
+  border: 1px solid rgba(63, 211, 165, 0.4) !important;
+  color: #aee9d7 !important;
+  background: rgba(5, 38, 46, 0.82) !important;
+  box-shadow: inset 0 1px 0 rgba(186, 255, 229, 0.07) !important;
+  opacity: 0.86 !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-header-meta > button.magi-reader-source-download:is(:hover, :focus-visible) {
+  border-color: rgba(103, 255, 205, 0.78) !important;
+  color: #d8fff0 !important;
+  background: rgba(8, 67, 57, 0.9) !important;
+  box-shadow: 0 0 9px rgba(38, 236, 169, 0.17) !important;
+  opacity: 1 !important;
+}
+
+.magi-reader-theme-dark .magi-reader-search-shell > svg {
+  color: #73c7ad !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-header
+  .magi-reader-search-input[aria-label='在当前剧情中搜索'] {
+  border-color: rgba(67, 207, 163, 0.48) !important;
+  border-radius: 0.38rem !important;
+  color: #d6f8ed !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(78, 245, 190, 0.035) 2px 3px
+    ),
+    rgba(3, 25, 35, 0.92) !important;
+  caret-color: #6dffc5;
+  box-shadow:
+    inset 0 1px 7px rgba(0, 5, 11, 0.55),
+    0 0 0 1px rgba(49, 220, 164, 0.04) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-header
+  .magi-reader-search-input[aria-label='在当前剧情中搜索']::placeholder {
+  color: #76a596 !important;
+  opacity: 0.82;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-header
+  .magi-reader-search-input[aria-label='在当前剧情中搜索']:focus {
+  border-color: rgba(103, 255, 204, 0.88) !important;
+  box-shadow:
+    0 0 0 2px rgba(72, 235, 179, 0.15),
+    0 0 11px rgba(39, 226, 165, 0.15),
+    inset 0 1px 7px rgba(0, 5, 11, 0.5) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-search-shell > span {
+  color: #9ad8c5 !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-header-actions
+  > div:has(> button[aria-label='显示中日双语']) {
+  border: 1px solid rgba(65, 207, 163, 0.4);
+  color: #9bcbbd;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(80, 244, 190, 0.032) 2px 3px
+    ),
+    rgba(3, 29, 39, 0.86) !important;
+  box-shadow: inset 0 1px 0 rgba(177, 255, 225, 0.06);
+}
+
+.magi-reader-theme-dark
+  .magi-reader-header-actions
+  > div:has(> button[aria-label='显示中日双语'])
+  > button {
+  border: 1px solid transparent;
+  color: #9bc6ba !important;
+  background: transparent !important;
+  opacity: 0.72 !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-header-actions
+  > div:has(> button[aria-label='显示中日双语'])
+  > button[aria-pressed='true'] {
+  border-color: rgba(102, 255, 204, 0.74);
+  color: #d9fff0 !important;
+  background: rgba(9, 79, 61, 0.9) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(207, 255, 236, 0.12),
+    0 0 8px rgba(45, 235, 170, 0.16) !important;
+  opacity: 1 !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-header-actions
+  > div:has(> button[aria-label='显示中日双语'])
+  > button:disabled {
+  color: #5d7a72 !important;
+  opacity: 0.34 !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-header-actions > button[aria-label='打开阅读设置'],
+.magi-reader-theme-dark
+  .magi-reader-header-identity > button[aria-label='打开剧情目录'] {
+  border: 1px solid rgba(68, 210, 165, 0.46) !important;
+  color: #a8e5d2 !important;
+  background: rgba(4, 36, 45, 0.84) !important;
+  box-shadow: inset 0 1px 0 rgba(186, 255, 228, 0.08) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-header-actions > button[aria-label='打开阅读设置']:is(:hover, :focus-visible),
+.magi-reader-theme-dark
+  .magi-reader-header-identity > button[aria-label='打开剧情目录']:is(:hover, :focus-visible) {
+  border-color: rgba(107, 255, 207, 0.8) !important;
+  color: #dcfff1 !important;
+  background: rgba(8, 70, 58, 0.92) !important;
+  box-shadow: 0 0 10px rgba(41, 232, 169, 0.19) !important;
+}
+
+/* The proofreading trigger is the brightest header action, in both its reader
+   and edit states. */
+.magi-reader-theme-dark .magi-reader-header-actions > button[aria-pressed] {
+  border-color: rgba(87, 247, 191, 0.8) !important;
+  color: #caffea !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(115, 255, 211, 0.052) 2px 3px
+    ),
+    linear-gradient(180deg, rgba(9, 78, 61, 0.97), rgba(4, 48, 43, 0.98)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(215, 255, 238, 0.16),
+    0 0 12px rgba(39, 239, 171, 0.22) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-header-actions > button[aria-pressed='true'],
+.magi-reader-theme-dark .magi-reader-header-actions > button[aria-pressed]:is(:hover, :focus-visible) {
+  border-color: #80ffd3 !important;
+  color: #effff8 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(151, 255, 219, 0.064) 2px 3px
+    ),
+    linear-gradient(180deg, rgba(12, 105, 76, 0.99), rgba(5, 65, 51, 0.99)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(226, 255, 243, 0.2),
+    0 0 17px rgba(42, 245, 174, 0.3) !important;
+}
+
+/* ---------- Dark Reader sidebar: CRT tree with explicit state hierarchy ---------- */
+.magi-reader-theme-dark .magi-reader-sidebar[aria-label='剧情目录'] {
+  --magi-tree-line: rgba(73, 190, 158, 0.42);
+  --magi-tree-node: #62d8b4;
+  --magi-tree-active-bg: rgba(7, 75, 60, 0.96);
+  --magi-tree-active-fg: #e2fff3;
+  --magi-tree-active-edge: #69f5c1;
+  border-color: rgba(65, 204, 161, 0.45) !important;
+  color: #aebfc6 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(69, 230, 176, 0.026) 2px 3px
+    ),
+    linear-gradient(180deg, rgba(7, 28, 44, 0.99), rgba(4, 20, 34, 0.995)) !important;
+  box-shadow:
+    inset -1px 0 0 rgba(74, 225, 179, 0.1),
+    8px 0 26px rgba(0, 8, 16, 0.34) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar[aria-label='剧情目录'] > .magi-brand-panel {
+  border-color: rgba(64, 205, 161, 0.42) !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(74, 240, 185, 0.032) 2px 3px
+    ),
+    linear-gradient(180deg, rgba(14, 43, 59, 0.99), rgba(7, 29, 46, 0.99)) !important;
+  box-shadow:
+    inset 0 -1px 0 rgba(64, 221, 170, 0.12),
+    0 5px 15px rgba(0, 7, 14, 0.28) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar [data-sidebar-scroll-container='true'] {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(71, 224, 174, 0.022) 2px 3px
+    ),
+    radial-gradient(circle at 18% 12%, rgba(35, 134, 102, 0.07), transparent 34%);
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar [data-sidebar-scroll-container='true']
+  > section > button[aria-expanded] {
+  border: 1px solid rgba(69, 170, 143, 0.32) !important;
+  color: #a9bec5 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(81, 229, 181, 0.029) 2px 3px
+    ),
+    rgba(8, 37, 51, 0.76) !important;
+  box-shadow: inset 0 1px 0 rgba(179, 255, 227, 0.045) !important;
+  opacity: 1 !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar [data-sidebar-scroll-container='true']
+  > section > button[aria-expanded]:is(:hover, :focus-visible) {
+  border-color: rgba(86, 235, 184, 0.66) !important;
+  color: #d3ffef !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(118, 255, 210, 0.044) 2px 3px
+    ),
+    rgba(9, 61, 54, 0.9) !important;
+  box-shadow: 0 0 9px rgba(39, 226, 164, 0.13) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar [data-sidebar-scroll-container='true']
+  > section > button[aria-expanded='true'] {
+  border-color: rgba(103, 247, 194, 0.78) !important;
+  color: #e1fff3 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(128, 255, 214, 0.052) 2px 3px
+    ),
+    linear-gradient(90deg, rgba(8, 84, 63, 0.94), rgba(7, 49, 51, 0.92)) !important;
+  box-shadow:
+    inset 3px 0 #65eebd,
+    0 0 11px rgba(41, 232, 169, 0.16) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar .magi-reader-sidebar-folder-button[aria-expanded] {
+  border: 1px solid rgba(66, 161, 137, 0.27) !important;
+  color: #9fb7be !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(74, 218, 171, 0.024) 2px 3px
+    ),
+    rgba(6, 32, 45, 0.68) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar .magi-reader-sidebar-folder-button[aria-expanded]
+  > span:first-child {
+  color: #aad3c4 !important;
+  text-shadow: 0 0 4px rgba(62, 224, 170, 0.12);
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar .magi-reader-sidebar-folder-button[aria-expanded]
+  > span:last-child {
+  color: #9fd7c2;
+  background: rgba(4, 58, 48, 0.76) !important;
+  opacity: 0.86 !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar .magi-reader-sidebar-folder-button[aria-expanded]:is(:hover, :focus-visible),
+.magi-reader-theme-dark
+  .magi-reader-sidebar .magi-reader-sidebar-folder-button[aria-expanded='true'] {
+  border-color: rgba(83, 226, 178, 0.55) !important;
+  color: #d4ffef !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(111, 255, 205, 0.038) 2px 3px
+    ),
+    rgba(7, 55, 51, 0.84) !important;
+  box-shadow: inset 2px 0 rgba(91, 235, 183, 0.72) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-sidebar [id^='nav-item-'] {
+  border-color: rgba(62, 153, 137, 0.34) !important;
+  color: #9eafb8 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(73, 215, 169, 0.025) 2px 3px
+    ),
+    rgba(5, 29, 43, 0.76) !important;
+  box-shadow: inset 2px 0 rgba(66, 179, 148, 0.36) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar [id^='nav-item-']:not([aria-current='page']):is(:hover, :focus-visible) {
+  border-color: rgba(85, 231, 181, 0.65) !important;
+  color: #d0ffed !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(112, 255, 205, 0.04) 2px 3px
+    ),
+    rgba(7, 58, 52, 0.9) !important;
+  box-shadow:
+    inset 2px 0 rgba(91, 240, 188, 0.76),
+    0 0 8px rgba(38, 224, 164, 0.12) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar [id^='nav-item-'][aria-current='page'] {
+  border-color: rgba(104, 250, 196, 0.86) !important;
+  color: #eafff6 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(137, 255, 215, 0.056) 2px 3px
+    ),
+    linear-gradient(90deg, rgba(8, 91, 67, 0.98), rgba(6, 53, 55, 0.96)) !important;
+  box-shadow:
+    inset 3px 0 #6df6c3,
+    0 0 12px rgba(43, 238, 173, 0.2) !important;
+  text-shadow: 0 0 5px rgba(78, 255, 197, 0.22);
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar-section-item[data-section-anchor] {
+  border-color: rgba(60, 147, 132, 0.25) !important;
+  color: #9baeb7 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(72, 209, 164, 0.022) 2px 3px
+    ),
+    rgba(5, 27, 41, 0.62) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar-section-item[data-section-anchor]:not([aria-current='location']):is(:hover, :focus-visible) {
+  border-color: rgba(83, 221, 176, 0.58) !important;
+  color: #cbffeb !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(107, 255, 203, 0.038) 2px 3px
+    ),
+    rgba(7, 55, 50, 0.86) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-sidebar-section-item[data-section-anchor][aria-current='location'] {
+  border-color: #69f5c1 !important;
+  color: #e2fff3 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(139, 255, 217, 0.056) 2px 3px
+    ),
+    linear-gradient(90deg, rgba(8, 86, 65, 0.98), rgba(6, 50, 52, 0.96)) !important;
+  box-shadow:
+    inset 3px 0 #69f5c1,
+    0 0 10px rgba(42, 235, 171, 0.18) !important;
+}
+
+/* ---------- Dark Reader floating navigation, font ruler and page turns ---------- */
+.magi-reader-theme-dark
+  .magi-reader-floating-widget[data-reader-floating-widget='true'] {
+  --magi-tool-text: #c7f6e6;
+  --magi-tool-muted: #7eb5a5;
+  --magi-tool-border: rgba(71, 220, 173, 0.58);
+  --magi-tool-inset: rgba(185, 255, 228, 0.09);
+  --magi-tool-surface: rgba(5, 28, 41, 0.98);
+  --magi-tool-control: rgba(5, 42, 45, 0.9);
+  --magi-tool-accent: #4ce3a8;
+  --magi-tool-accent-text: #02170f;
+  --magi-tool-shadow: rgba(0, 6, 13, 0.66);
+  --magi-edge-diffusion: rgba(65, 227, 173, 0.3);
+  border-color: rgba(71, 220, 173, 0.62) !important;
+  color: var(--magi-tool-text) !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(84, 250, 195, 0.038) 2px 3px
+    ),
+    linear-gradient(145deg, rgba(8, 41, 50, 0.985), rgba(3, 21, 35, 0.99)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(191, 255, 231, 0.09),
+    inset 0 0 18px rgba(25, 135, 99, 0.07),
+    0 0 0 1px rgba(44, 217, 161, 0.06),
+    0 0 16px rgba(31, 223, 157, 0.12),
+    8px 11px 25px rgba(0, 6, 13, 0.52) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-floating-grip {
+  border-color: rgba(68, 202, 160, 0.5) !important;
+  color: #75c4aa !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(87, 244, 192, 0.036) 2px 3px
+    ),
+    rgba(4, 38, 44, 0.9) !important;
+  box-shadow: inset 1px 0 0 rgba(178, 255, 225, 0.07) !important;
+}
+
+.magi-reader-theme-dark :is(
+  .magi-reader-utility-button,
+  .magi-reader-utility-fab,
+  .magi-reader-utility-close
+) {
+  border: 1px solid rgba(68, 206, 162, 0.5) !important;
+  color: #bcebdc !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(83, 244, 190, 0.032) 2px 3px
+    ),
+    rgba(5, 42, 45, 0.86) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(182, 255, 226, 0.08),
+    0 0 7px rgba(36, 216, 157, 0.08) !important;
+}
+
+.magi-reader-theme-dark :is(
+  .magi-reader-utility-button,
+  .magi-reader-utility-fab,
+  .magi-reader-utility-close
+):is(:hover, :focus-visible) {
+  border-color: rgba(109, 255, 207, 0.85) !important;
+  color: #e5fff5 !important;
+  background: rgba(8, 76, 60, 0.96) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(217, 255, 239, 0.13),
+    0 0 11px rgba(39, 232, 167, 0.2) !important;
+  outline-color: rgba(99, 255, 203, 0.7) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-utility-search .magi-reader-search-input {
+  border-color: rgba(66, 195, 156, 0.5) !important;
+  color: #d0f5e8 !important;
+  background: rgba(2, 25, 35, 0.94) !important;
+  caret-color: #62ffc3;
+  box-shadow: inset 0 1px 6px rgba(0, 5, 10, 0.55) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-utility-search .magi-reader-search-input::placeholder {
+  color: #719c90 !important;
+}
+
+.magi-reader-theme-dark .magi-reader-page-summary {
+  color: #8fc6b5 !important;
+  text-shadow: 0 0 4px rgba(63, 222, 171, 0.12);
+}
+
+.magi-reader-theme-dark .magi-reader-utility-theme-switcher {
+  border-color: rgba(67, 202, 160, 0.5) !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(79, 235, 183, 0.03) 2px 3px
+    ),
+    rgba(2, 28, 38, 0.9) !important;
+  box-shadow: inset 0 1px 0 rgba(177, 255, 224, 0.07) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-theme-option[data-theme-option] {
+  border-color: rgba(64, 188, 151, 0.36) !important;
+  color: #83c8b2 !important;
+  background: rgba(5, 47, 48, 0.82) !important;
+  box-shadow: none !important;
+  opacity: 0.78;
+}
+
+.magi-reader-theme-dark .magi-reader-theme-option[data-theme-option]:is(:hover, :focus-visible),
+.magi-reader-theme-dark .magi-reader-theme-option[data-theme-option][aria-pressed='true'] {
+  border-color: rgba(104, 255, 204, 0.8) !important;
+  color: #e1fff3 !important;
+  background: rgba(9, 80, 61, 0.96) !important;
+  box-shadow: 0 0 9px rgba(40, 232, 168, 0.18) !important;
+  opacity: 1;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-font-widget .magi-reader-font-control-dark {
+  color: #c7f6e6 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.magi-reader-theme-dark
+  .magi-reader-font-control-dark input[type='range'] {
+  accent-color: #58eeb3;
+}
+
+.magi-reader-theme-dark .magi-reader-font-control-dark output,
+.magi-reader-theme-dark :is(
+  .magi-reader-font-control-small,
+  .magi-reader-font-control-large
+) {
+  color: #aee3d3 !important;
+  opacity: 1;
+  text-shadow: 0 0 4px rgba(67, 228, 174, 0.14);
+}
+
+.magi-reader-theme-dark .magi-reader-font-control-dark button {
+  border-color: rgba(70, 207, 163, 0.54) !important;
+  color: #c7f5e7 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(81, 240, 187, 0.032) 2px 3px
+    ),
+    rgba(5, 44, 46, 0.9) !important;
+  box-shadow: inset 0 1px 0 rgba(183, 255, 226, 0.08) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-font-control-dark button:is(:hover, :focus-visible) {
+  border-color: rgba(108, 255, 206, 0.85) !important;
+  color: #edfff8 !important;
+  background: rgba(9, 81, 62, 0.98) !important;
+  box-shadow: 0 0 9px rgba(41, 232, 168, 0.19) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-page-turn {
+  border-color: rgba(71, 220, 173, 0.66) !important;
+  color: #9ff5d1 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(90, 250, 198, 0.042) 2px 3px
+    ),
+    linear-gradient(180deg, rgba(7, 49, 53, 0.96), rgba(3, 28, 42, 0.98)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(191, 255, 231, 0.1),
+    0 0 0 1px rgba(50, 221, 166, 0.06),
+    0 0 13px rgba(35, 224, 160, 0.14),
+    5px 7px 18px rgba(0, 6, 13, 0.46) !important;
+}
+
+.magi-reader-theme-dark .magi-reader-page-turn:is(:hover, :focus-visible) {
+  border-color: #74ffca !important;
+  color: #e5fff5 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(139, 255, 216, 0.058) 2px 3px
+    ),
+    linear-gradient(180deg, rgba(10, 88, 67, 0.99), rgba(4, 52, 49, 0.99)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(221, 255, 242, 0.16),
+    0 0 17px rgba(40, 238, 170, 0.26) !important;
+  outline-color: rgba(116, 255, 202, 0.8) !important;
+}
+
+/* V31 DARK BRAND FRAME — red neon perimeter only; keep the cyan/magenta
+   MadeInMagius wordmark, checklist control and CRT surface unchanged. */
+.magi-home-shell.magi-home-dark-root[data-theme='dark'] .magi-brand-panel,
+.magi-reader-theme-dark
+  .magi-reader-sidebar[aria-label='剧情目录']
+  > .magi-brand-panel {
+  border-color: rgba(255, 55, 83, 0.8) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 188, 196, 0.12),
+    inset 0 -1px 0 rgba(255, 43, 76, 0.38),
+    0 0 4px rgba(255, 45, 75, 0.42),
+    0 0 14px rgba(255, 24, 61, 0.24),
+    0 7px 15px var(--magi-brand-shadow) !important;
+}
+
+.magi-home-shell.magi-home-dark-root[data-theme='dark'] .magi-brand-panel::before,
+.magi-reader-theme-dark
+  .magi-reader-sidebar[aria-label='剧情目录']
+  > .magi-brand-panel::before {
+  border-color: rgba(255, 64, 91, 0.7) !important;
+  background:
+    linear-gradient(rgba(255, 172, 182, 0.72), rgba(255, 172, 182, 0.72)) left top / 1.25rem 1px no-repeat,
+    linear-gradient(rgba(255, 49, 80, 0.88), rgba(255, 49, 80, 0.88)) right bottom / 1.25rem 1px no-repeat !important;
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 208, 213, 0.12),
+    inset -1px -1px 0 rgba(255, 46, 78, 0.3),
+    0 0 5px rgba(255, 42, 73, 0.34),
+    0 0 12px rgba(255, 24, 61, 0.16) !important;
 }

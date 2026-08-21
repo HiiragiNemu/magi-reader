@@ -126,6 +126,31 @@ export const makeSectionAnchorId = (
   return `sec-${source}-${sectionToken}${branch ? `-branch-${safeAnchorToken(branch)}` : ''}`;
 };
 
+export type StorySectionDetails = {
+  anchorId: string;
+  label: string;
+};
+
+/**
+ * Resolve a story-index section descriptor to the exact anchor produced for
+ * its aggregate TXT header. Keeping this beside makeSectionAnchorId prevents
+ * the home catalog and reader sidebar from drifting to different deep links.
+ */
+export const storySectionDetails = (raw: string): StorySectionDetails => {
+  const source = raw.match(/^(.*?)\s+Section\s*\d+\b/i)?.[1]?.trim() || '';
+  const section = raw.match(/Section\s*(\d+)/i)?.[1] || '';
+  const branch = raw.match(/(?:Branch|分支|group)\s*_?\s*(\d+)/i)?.[1];
+  return {
+    anchorId: source && section
+      ? makeSectionAnchorId(source, section, branch)
+      : raw.replace(/\s+/g, '-').toLowerCase(),
+    label: raw
+      .replace(/Section\s*\d+\s*/i, '')
+      .replace(/\s*-\s*Branch\s*/i, ' ⇄ 分支 ')
+      .trim(),
+  };
+};
+
 const normalizePosition = (value: unknown): StoryLinePosition | undefined => {
   const normalized = asString(value).trim().toLowerCase();
   if (normalized.includes('left')) return 'left';

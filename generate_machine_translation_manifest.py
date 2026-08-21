@@ -229,6 +229,16 @@ def validate_manual_overwrite_boundary(
     return overwritten & allowed_manual_overwrite_paths
 
 
+def manual_overwrite_paths_for_story(
+    repository_path: str,
+    referenced_sources: set[str],
+) -> set[str]:
+    """Return the source JSON and derived aggregate TXT authorized by closure."""
+    return {repository_path} | {
+        f"{SOURCE_PREFIX}{source_path}" for source_path in referenced_sources
+    }
+
+
 def canonicalize_identity(identity: str) -> str:
     result = identity.replace("\\", "/").lstrip("/")
     for old, new in CANONICAL_RENAMES.items():
@@ -423,7 +433,7 @@ def build_outputs(
         references = referenced_json_sources(identity, absolute_txt)
         if story_id in manual_verified_story_ids:
             allowed_manual_overwrite_paths.update(
-                f"{SOURCE_PREFIX}{source_path}" for source_path in references
+                manual_overwrite_paths_for_story(repository_path, references)
             )
         if (
             repository_path not in added_txt_paths

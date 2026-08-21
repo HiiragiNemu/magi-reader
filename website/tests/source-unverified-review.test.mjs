@@ -41,7 +41,7 @@ test('public summary keeps a canonical source-unverified field and legacy alias'
 
 test('collapsed review checklist lives beside the brand and takes no catalog space', () => {
   const page = readFileSync('app/page.tsx', 'utf8');
-  assert.match(page, /MagiReader[\s\S]*?校验清单/u);
+  assert.match(page, /<MadeInMagiusLogo \/>[\s\S]*?校验清单/u);
   assert.match(
     page,
     /hidden=\{machineReviewPanelCollapsed\}/u,

@@ -35,9 +35,9 @@ const manifest = JSON.parse(
   readFileSync('public/fonts/reader-font-manifest.json', 'utf8'),
 ) as ReaderFontManifest;
 
-test('reader font preferences are opt-in and reject non-boolean values', () => {
+test('reader font preferences default to Chinese and reject non-boolean values', () => {
   assert.deepEqual(parseReaderFontPreferences(null), {
-    chineseEnabled: false,
+    chineseEnabled: true,
     japaneseEnabled: false,
   });
   assert.deepEqual(
@@ -47,7 +47,7 @@ test('reader font preferences are opt-in and reject non-boolean values', () => {
     { chineseEnabled: false, japaneseEnabled: true },
   );
   assert.deepEqual(parseReaderFontPreferences('{broken'), {
-    chineseEnabled: false,
+    chineseEnabled: true,
     japaneseEnabled: false,
   });
 });
@@ -84,7 +84,7 @@ test('full WOFF2 assets match the pinned manifest and runtime definitions', () =
   }
 });
 
-test('default initialization fetches nothing; manual enable caches and disable restores system fonts', async () => {
+test('default initialization loads Chinese; manual Japanese enable and disable remain isolated', async () => {
   const savedWindow = globalThis.window;
   const savedDocument = globalThis.document;
   const savedFontFace = globalThis.FontFace;
@@ -188,12 +188,13 @@ test('default initialization fetches nothing; manual enable caches and disable r
 
   try {
     await initializeReaderFonts();
-    assert.equal(networkRequests, 0, 'default initialization must not fetch fonts');
-    assert.equal(activeFaces.size, 0);
+    assert.equal(networkRequests, 2, 'default initialization loads Chinese faces');
+    assert.equal(activeFaces.size, 2);
+    assert.equal(dataset.readerFontChinese, 'ready');
 
     assert.equal(await enableReaderFontBundle('japanese'), true);
-    assert.equal(networkRequests, 2);
-    assert.equal(activeFaces.size, 2);
+    assert.equal(networkRequests, 4);
+    assert.equal(activeFaces.size, 4);
     assert.equal(dataset.readerFontJapanese, 'ready');
     let state = parseReaderFontRuntimeSnapshot(
       getReaderFontRuntimeSnapshot(),
@@ -204,7 +205,7 @@ test('default initialization fetches nothing; manual enable caches and disable r
     assert.equal(state.preferences.japaneseEnabled, true);
 
     disableReaderFontBundle('japanese');
-    assert.equal(activeFaces.size, 0);
+    assert.equal(activeFaces.size, 2);
     assert.equal(dataset.readerFontJapanese, undefined);
     state = parseReaderFontRuntimeSnapshot(getReaderFontRuntimeSnapshot());
     assert.equal(state.bundles.japanese.status, 'idle');
@@ -212,13 +213,13 @@ test('default initialization fetches nothing; manual enable caches and disable r
     assert.equal(state.preferences.japaneseEnabled, false);
 
     assert.equal(await enableReaderFontBundle('japanese'), true);
-    assert.equal(networkRequests, 2, 're-enable must use the dedicated cache');
+    assert.equal(networkRequests, 4, 're-enable must use the dedicated cache');
     state = parseReaderFontRuntimeSnapshot(getReaderFontRuntimeSnapshot());
     assert.equal(state.bundles.japanese.source, 'cache');
 
     await removeReaderFontBundleCache('japanese');
-    assert.equal(activeFaces.size, 0);
-    assert.equal(cachedBytes.size, 0);
+    assert.equal(activeFaces.size, 2);
+    assert.equal(cachedBytes.size, 2);
     state = parseReaderFontRuntimeSnapshot(getReaderFontRuntimeSnapshot());
     assert.equal(state.bundles.japanese.cached, false);
     assert.equal(
@@ -228,6 +229,9 @@ test('default initialization fetches nothing; manual enable caches and disable r
       false,
     );
 
+    await removeReaderFontBundleCache('chinese');
+    assert.equal(activeFaces.size, 0);
+    assert.equal(cachedBytes.size, 0);
     corruptChineseDownload = true;
     assert.equal(await enableReaderFontBundle('chinese'), false);
     assert.equal(dataset.readerFontChinese, undefined);

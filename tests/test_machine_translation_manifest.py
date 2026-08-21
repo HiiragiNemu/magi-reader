@@ -114,18 +114,23 @@ class MachineTranslationManifestTests(unittest.TestCase):
             with self.assertRaisesRegex(MODULE.ManifestError, "count mismatch"):
                 MODULE.load_manual_retranslation_verified_ids(path)
 
-    def test_only_closed_story_source_paths_may_overwrite_baseline(self) -> None:
-        allowed = {"source/closed.json"}
-        self.assertEqual(
-            MODULE.validate_manual_overwrite_boundary(
-                {"source/closed.json"},
-                allowed,
-            ),
+    def test_closed_story_may_overwrite_source_json_and_aggregate_txt(self) -> None:
+        allowed = MODULE.manual_overwrite_paths_for_story(
+            "data/closed.txt",
             {"source/closed.json"},
+        )
+        expected = {
+            "data/closed.txt",
+            f"{MODULE.SOURCE_PREFIX}source/closed.json",
+        }
+        self.assertEqual(allowed, expected)
+        self.assertEqual(
+            MODULE.validate_manual_overwrite_boundary(expected, allowed),
+            expected,
         )
         with self.assertRaisesRegex(MODULE.ManifestError, "without a closed"):
             MODULE.validate_manual_overwrite_boundary(
-                {"source/closed.json", "source/claim-only.json"},
+                expected | {"data/claim-only.txt"},
                 allowed,
             )
 

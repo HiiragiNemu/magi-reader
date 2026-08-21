@@ -35,8 +35,8 @@ test('home assigns four explicit low-intensity source provenance states', () => 
   }
   assert.match(home, /data-source-status=\{groupSourceStatus\}/u);
   assert.match(home, /data-source-status=\{sourceVisualStatus\}/u);
-  assert.match(home, /story\.official_tw_section_titles \?\? \[\]/u);
-  assert.match(home, /\{sectionTitles\.join\(' · '\)\}/u);
+  assert.match(home, /story\.official_tw_section_titles\?\.\[sectionIndex\]\?\.trim\(\)/u);
+  assert.match(home, /officialTitle[\s\S]{0,240}\|\| `Episode/u);
 });
 
 test('Japanese story bodies and speaker labels carry a language boundary', () => {

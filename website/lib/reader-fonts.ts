@@ -44,7 +44,7 @@ export type ReaderFontBundleDefinition = {
 };
 
 export const READER_FONT_PREFERENCES_STORAGE_KEY =
-  'magi-reader-font-preferences-v1';
+  'magi-reader-font-preferences-v2-cn-default';
 export const READER_FONT_CACHE_NAME =
   'magi-reader-fonts-v1-55b5dffd-9d7f95bc-3f691caf-b9c8b6b8';
 
@@ -105,7 +105,7 @@ export const READER_FONT_BUNDLES: Record<
 };
 
 const DEFAULT_PREFERENCES: ReaderFontPreferences = {
-  chineseEnabled: false,
+  chineseEnabled: true,
   japaneseEnabled: false,
 };
 
@@ -624,7 +624,7 @@ export const removeReaderFontBundleCache = async (
 export const restoreSystemReaderFonts = (): void => {
   disableReaderFontBundleInternal('chinese', false);
   disableReaderFontBundleInternal('japanese', false);
-  persistPreferences({ ...DEFAULT_PREFERENCES });
+  persistPreferences({ chineseEnabled: false, japaneseEnabled: false });
 };
 
 export const initializeReaderFonts = (): Promise<void> => {
@@ -637,8 +637,9 @@ export const initializeReaderFonts = (): Promise<void> => {
         updateBundleRuntime(bundleId, { cached });
       }),
     );
-    // Persisted opt-in may load from the dedicated cache. New users keep both
-    // flags false, so initialization performs no font network request.
+    // The accepted production presentation uses the Chinese game font by
+    // default. Japanese remains opt-in; both bundles continue to use the
+    // dedicated cache and can be disabled from settings.
     for (const bundleId of ['chinese', 'japanese'] as const) {
       if (runtime.preferences[preferenceKeyFor(bundleId)]) {
         await loadAndEnableReaderFontBundle(bundleId, false);

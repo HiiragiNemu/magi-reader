@@ -41,6 +41,6 @@ test('tool windows use compact scrollable geometry and readable paper surfaces',
   assert.match(refinements, /magi-retro-window-controls[\s\S]*flex-flow: row nowrap/u);
   assert.match(refinements, /data-window-state='compact'[\s\S]*height:/u);
   assert.match(refinements, /magi-floating-window-paper[\s\S]*border-radius/u);
-  assert.match(refinements, /background-color: rgba\(239, 226, 187, 0\.985\)/u);
+  assert.match(refinements, /background-color: rgba\(242, 233, 209, 0\.985\)/u);
   assert.match(refinements, /magi-home-light-status-unverified::after[\s\S]*display: none/u);
 });

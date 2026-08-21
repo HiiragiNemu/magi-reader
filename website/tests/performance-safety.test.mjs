@@ -16,23 +16,21 @@ test('decorative layers stay viewport-bounded and avoid continuous GPU animation
   assert.match(globalCss, /\.magi-balloon-rain\s*\{[\s\S]*?\binset:\s*0;/u);
 });
 
-test('balloon decoration is a bounded six-image edge layer that cannot cover controls', () => {
+test('balloon decoration is opt-in, viewport-bounded, and cannot cover controls', () => {
   const balloonRule = globalCss.match(
     /\.magi-balloon-rain\s*\{([\s\S]*?)\n\}/u,
   )?.[1] ?? '';
-  assert.equal(balloonRule.match(/\burl\(/gu)?.length, 6);
+  assert.match(balloonRule, /\bdisplay:\s*none;/u);
   assert.match(balloonRule, /\bpointer-events:\s*none;/u);
-  assert.match(balloonRule, /\bz-index:\s*-\d+;/u);
+  assert.match(balloonRule, /\bz-index:\s*0;/u);
   assert.match(balloonRule, /\bcontain:\s*strict;/u);
   assert.match(
-    balloonRule,
-    /\banimation:\s*magi-balloon-arrival\s+9s[\s\S]*?\s1\s+both;/u,
-  );
-  assert.doesNotMatch(balloonRule, /\binfinite\b/u);
-  assert.match(
     globalCss,
-    /@keyframes\s+magi-balloon-arrival\s*\{[\s\S]*?translate3d\(0,\s*-28vh,\s*0\)[\s\S]*?translate3d\(0,\s*0,\s*0\)/u,
+    /\.magi-balloon-rain\[data-balloon-enabled='true'\]\s*\{[\s\S]*?display:\s*block;/u,
   );
+  for (const slot of [2, 3, 4, 5, 6]) {
+    assert.match(globalCss, new RegExp(`\\.magi-balloon-rain-item:nth-child\\(${slot}\\)`, 'u'));
+  }
 });
 
 test('reduced-motion users do not receive decorative movement', () => {
@@ -56,7 +54,7 @@ test('reader bounds mounted story rows instead of rendering a whole long script'
 test('bulk story links do not trigger route prefetch waves', () => {
   assert.match(
     homeSource,
-    /href=\{`\/reader\/\$\{encodeURIComponent\(story\.id\)\}[\s\S]*?prefetch=\{false\}/u,
+    /const storyHref = `\/reader\/\$\{encodeURIComponent\(story\.id\)\}[\s\S]*?<Link[\s\S]*?href=\{storyHref\}[\s\S]*?prefetch=\{false\}/u,
   );
   assert.match(
     sidebarSource,

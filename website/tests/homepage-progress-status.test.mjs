@@ -4,6 +4,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 const page = readFileSync(path.resolve('app', 'page.tsx'), 'utf8');
+const logo = readFileSync(path.resolve('components', 'MadeInMagiusLogo.tsx'), 'utf8');
 
 test('home catalogue exposes none, partial, and complete translation status', () => {
   assert.match(
@@ -29,12 +30,12 @@ test('expanded story cards expose their own translation status', () => {
   assert.match(page, /data-translation-status=\{itemProgressStatus\}/u);
 });
 
-test('day archive branding is CSS-addressable without changing dark or green branding', () => {
-  assert.match(page, /className=\{`magi-reader-brand/u);
+test('accepted MadeInMagius branding remains CSS-addressable in every theme', () => {
   assert.match(
     page,
-    /isDayArchiveTheme\(theme\)\s*\? 'magi-reader-brand-day-archive'\s*: 'bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500'/u,
+    /<h1 className="magi-reader-brand min-w-0">[\s\S]*?<MadeInMagiusLogo \/>/u,
   );
-  assert.match(page, />Archive v3\.1</u);
-  assert.doesNotMatch(page, />Archive v3\.0</u);
+  assert.match(logo, /magi-madeinmagius-logo/u);
+  assert.match(logo, /<span>MadeIn<\/span><strong>Magius<\/strong>/u);
+  assert.doesNotMatch(page, />Archive v3\.[01]</u);
 });

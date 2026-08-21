@@ -46,21 +46,39 @@
   z-index: 9999;
   pointer-events: none;
   contain: strict;
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      transparent 0 3px,
-      rgba(80, 60, 30, 0.025) 3px 4px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent 0 5px,
-      rgba(80, 60, 30, 0.018) 5px 6px
-    );
+  --magi-texture-opacity: 0.78;
+  background: transparent;
+  opacity: 1;
+  /* Restore the previously accepted whole-page low-fidelity diffusion. */
+  backdrop-filter: blur(0.32px) saturate(0.96) contrast(0.99);
+  -webkit-backdrop-filter: blur(0.32px) saturate(0.96) contrast(0.99);
 }
 
-.magi-texture-light { opacity: 0.45; }
-.magi-texture-dark { opacity: 0.3; }
+.magi-texture::before {
+  position: absolute;
+  inset: 0;
+  background: url('/textures/magi-lofi-grain.png') 0 0 / 384px 384px repeat;
+  opacity: var(--magi-texture-opacity);
+  content: '';
+}
+
+.magi-texture-light,
+.magi-texture[data-texture-theme='light'] {
+  --magi-texture-opacity: 0.78;
+}
+
+.magi-texture[data-texture-theme='paper'] {
+  --magi-texture-opacity: 0.9;
+}
+
+.magi-texture[data-texture-theme='green'] {
+  --magi-texture-opacity: 0.74;
+}
+
+.magi-texture-dark,
+.magi-texture[data-texture-theme='dark'] {
+  --magi-texture-opacity: 0.66;
+}
 
 /* =========================================
    3. 主题状态机 (仅控制底色，不干扰气球)
@@ -76,10 +94,23 @@
 [data-bg-theme='green'] { background-color: #dcedc8; }
 [data-bg-theme='dark'] { 
   background-color: #0f172a; 
-  background-image: 
-    radial-gradient(circle at 15% 25%, rgba(255, 100, 100, 0.15) 0%, transparent 25%),
-    radial-gradient(circle at 85% 15%, rgba(100, 150, 255, 0.15) 0%, transparent 25%),
-    radial-gradient(circle at 50% 50%, rgba(150, 255, 150, 0.1) 0%, transparent 40%);
+  background-image:
+    linear-gradient(rgba(38, 245, 207, 0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(69, 147, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(rgba(255, 76, 211, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 76, 211, 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 12% 78%, rgba(255, 56, 196, 0.2) 0%, transparent 31%),
+    radial-gradient(circle at 86% 16%, rgba(45, 190, 255, 0.22) 0%, transparent 30%),
+    radial-gradient(circle at 52% 52%, rgba(35, 255, 159, 0.1) 0%, transparent 43%);
+  background-size:
+    32px 32px,
+    32px 32px,
+    128px 128px,
+    128px 128px,
+    100% 100%,
+    100% 100%,
+    100% 100%;
+  background-position: center center;
 }
 
 /* 关键：覆盖掉原来的实心背景类，确保它们透明 */
@@ -121,52 +152,187 @@ div[id^="line-"] { padding-top: 0.15rem !important; padding-bottom: 0.15rem !imp
 .magi-balloon-rain {
   position: fixed;
   inset: 0;
-  z-index: -30;
+  z-index: 0;
+  display: none;
+  overflow: hidden;
   pointer-events: none;
+  user-select: none;
   contain: strict;
-  opacity: 0.28;
-  animation: magi-balloon-arrival 9s cubic-bezier(0.2, 0.65, 0.3, 1) 1 both;
-
-  background-image: 
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23ff99ad'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23ff99ad'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%2399ccff'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%2399ccff'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23ffff99'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23ffff99'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23b3ffb3'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23b3ffb3'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23d5b3ff'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23d5b3ff'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 30'%3E%3Cpath d='M12 0C5.4 0 0 5.4 0 12c0 6 4 13 12 18 8-5 12-11 12-18 0-6.6-5.4-12-12-12z' fill='%23ffc58f'/%3E%3Cellipse cx='8' cy='7' rx='3' ry='5' fill='white' fill-opacity='0.3' transform='rotate(20 8 7)'/%3E%3Cpath d='M10 28l4 0l-2 3z' fill='%23ffc58f'/%3E%3C/svg%3E");
-
-  background-repeat: no-repeat;
-  background-size:
-    30px 38px,
-    38px 48px,
-    28px 35px,
-    34px 43px,
-    26px 33px,
-    32px 40px;
-  background-position: 
-    4% 10%,
-    96% 16%,
-    7% 58%,
-    93% 66%,
-    24% 93%,
-    76% 90%;
+  opacity: var(--magi-balloon-layer-opacity, 0.18);
 }
 
-@keyframes magi-balloon-arrival {
+.magi-balloon-rain[data-balloon-enabled='true'] {
+  display: block;
+}
+
+.magi-balloon-rain[data-balloon-theme='green'] { --magi-balloon-layer-opacity: 0.56; }
+.magi-balloon-rain[data-balloon-theme='paper'] { --magi-balloon-layer-opacity: 0.42; }
+.magi-balloon-rain[data-balloon-theme='light'] { --magi-balloon-layer-opacity: 0.36; }
+.magi-balloon-rain[data-balloon-theme='dark'] { --magi-balloon-layer-opacity: 0.44; }
+
+/* The balloon layer lives inside the reading sheet: its stacking level is
+   above the sheet surface but below every piece of text and every control.
+   This keeps it visible on opaque light/dark sheets without drawing over the
+   story itself. */
+.magi-reader-document {
+  isolation: isolate;
+}
+
+.magi-reader-document > :not(.magi-balloon-rain) {
+  position: relative;
+  z-index: 1;
+}
+
+.magi-reader-document .magi-balloon-rain {
+  z-index: 0;
+}
+
+.magi-reader-document
+  .magi-balloon-rain[data-balloon-theme='dark']
+  .magi-balloon-rain-item {
+  filter: saturate(1.15) brightness(1.08);
+}
+
+.magi-balloon-rain-item {
+  --magi-balloon-color: #ff7898;
+  --magi-balloon-drift: 4vw;
+  --magi-balloon-duration: 34s;
+  --magi-balloon-delay: -5s;
+  --magi-balloon-left: 8%;
+  --magi-balloon-size: 3.35rem;
+  position: absolute;
+  top: -18vh;
+  left: var(--magi-balloon-left);
+  width: var(--magi-balloon-size);
+  height: calc(var(--magi-balloon-size) * 1.22);
+  border: 1px solid rgba(54, 67, 64, 0.18);
+  border-radius: 49% 49% 46% 46% / 54% 54% 43% 43%;
+  background:
+    radial-gradient(circle at 34% 25%, rgba(255, 255, 255, 0.78), transparent 17%),
+    var(--magi-balloon-color);
+  box-shadow:
+    inset -0.3rem -0.35rem 0.55rem rgba(49, 56, 61, 0.16),
+    0 0.22rem 0.5rem rgba(38, 52, 48, 0.12);
+  transform-origin: 50% 100%;
+  will-change: transform;
+  animation: magi-balloon-fall var(--magi-balloon-duration) linear var(--magi-balloon-delay) infinite;
+}
+
+.magi-balloon-rain-item::before {
+  position: absolute;
+  top: 99%;
+  left: 50%;
+  width: 1px;
+  height: calc(var(--magi-balloon-size) * 1.15);
+  background: rgba(66, 74, 72, 0.3);
+  content: '';
+}
+
+.magi-balloon-rain-item::after {
+  position: absolute;
+  top: calc(100% - 1px);
+  left: calc(50% - 0.2rem);
+  width: 0;
+  height: 0;
+  border-right: 0.2rem solid transparent;
+  border-bottom: 0.32rem solid var(--magi-balloon-color);
+  border-left: 0.2rem solid transparent;
+  content: '';
+}
+
+.magi-balloon-rain-item:nth-child(2) {
+  --magi-balloon-color: #73b8ff; --magi-balloon-drift: -5vw;
+  --magi-balloon-duration: 39s; --magi-balloon-delay: -24s;
+  --magi-balloon-left: 24%; --magi-balloon-size: 2.7rem;
+}
+.magi-balloon-rain-item:nth-child(3) {
+  --magi-balloon-color: #ffd875; --magi-balloon-drift: 6vw;
+  --magi-balloon-duration: 31s; --magi-balloon-delay: -13s;
+  --magi-balloon-left: 42%; --magi-balloon-size: 3.05rem;
+}
+.magi-balloon-rain-item:nth-child(4) {
+  --magi-balloon-color: #79d995; --magi-balloon-drift: -3vw;
+  --magi-balloon-duration: 43s; --magi-balloon-delay: -34s;
+  --magi-balloon-left: 61%; --magi-balloon-size: 3.8rem;
+}
+.magi-balloon-rain-item:nth-child(5) {
+  --magi-balloon-color: #c292f3; --magi-balloon-drift: 5vw;
+  --magi-balloon-duration: 36s; --magi-balloon-delay: -19s;
+  --magi-balloon-left: 78%; --magi-balloon-size: 2.85rem;
+}
+.magi-balloon-rain-item:nth-child(6) {
+  --magi-balloon-color: #ffad72; --magi-balloon-drift: -6vw;
+  --magi-balloon-duration: 41s; --magi-balloon-delay: -8s;
+  --magi-balloon-left: 93%; --magi-balloon-size: 3.3rem;
+}
+
+@keyframes magi-balloon-fall {
   from {
-    opacity: 0;
-    transform: translate3d(0, -28vh, 0);
+    transform: translate3d(0, -18vh, 0) rotate(-4deg);
   }
 
   to {
-    opacity: 0.28;
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(var(--magi-balloon-drift), 136vh, 0) rotate(8deg);
   }
 }
 
-/* 暗色模式滤镜 */
-.dark .magi-balloon-rain {
-  opacity: 0.18;
+.magi-balloon-motion-setting {
+  border-color: rgba(88, 98, 96, 0.38);
+  background: rgba(242, 244, 242, 0.62);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.55),
+    0 3px 10px rgba(52, 62, 59, 0.08);
+}
+
+.magi-balloon-motion-setting[data-theme='paper'] {
+  border-color: rgba(113, 86, 45, 0.42);
+  background: rgba(255, 248, 219, 0.56);
+}
+
+.magi-balloon-motion-setting[data-theme='green'] {
+  border-color: rgba(46, 125, 72, 0.42);
+  background: rgba(226, 246, 220, 0.58);
+}
+
+.magi-balloon-motion-setting[data-theme='dark'] {
+  border-color: rgba(72, 214, 181, 0.34);
+  background:
+    repeating-linear-gradient(0deg, rgba(89, 229, 196, 0.025) 0 1px, transparent 1px 3px),
+    rgba(8, 24, 34, 0.78);
+}
+
+.magi-balloon-motion-switch[data-enabled='false'] {
+  border-color: currentColor;
+  opacity: 0.58;
+}
+
+.magi-balloon-motion-setting[data-theme='light']
+  .magi-balloon-motion-switch[data-enabled='true'] {
+  border-color: #4d86aa;
+  background: rgba(100, 174, 220, 0.14);
+  color: #285f82;
+}
+
+.magi-balloon-motion-setting[data-theme='paper']
+  .magi-balloon-motion-switch[data-enabled='true'] {
+  border-color: #9b6e27;
+  background: rgba(191, 139, 49, 0.14);
+  color: #775019;
+}
+
+.magi-balloon-motion-setting[data-theme='green']
+  .magi-balloon-motion-switch[data-enabled='true'] {
+  border-color: #2d8e57;
+  background: rgba(50, 153, 90, 0.14);
+  color: #17663a;
+}
+
+.magi-balloon-motion-setting[data-theme='dark']
+  .magi-balloon-motion-switch[data-enabled='true'] {
+  border-color: #43e0b5;
+  background: rgba(21, 143, 116, 0.18);
+  color: #78f6d2;
+  box-shadow: 0 0 10px rgba(42, 222, 177, 0.16);
 }
 
 @media (prefers-reduced-motion: reduce) {
