@@ -2705,7 +2705,7 @@ html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-
   --magi-source-human-progress-end: oklch(0.68 0.052 78 / 0.34);
   --magi-source-human-progress-edge: oklch(0.48 0.045 76 / 0.62);
   --magi-source-verified-progress-start: transparent;
-  --magi-source-verified-progress-end: transparent;
+  --magi-source-verified-progress-end: oklch(0.68 0.018 195 / 0.26);
   --magi-source-verified-progress-edge: rgba(45, 56, 61, 0.5);
   --magi-source-unverified-progress-start: oklch(0.68 0.038 225 / 0.19);
   --magi-source-unverified-progress-end: oklch(0.68 0.038 225 / 0.38);
@@ -2720,7 +2720,7 @@ html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-
   --magi-source-human-progress-end: oklch(0.7 0.052 76 / 0.3);
   --magi-source-human-progress-edge: oklch(0.5 0.055 74 / 0.65);
   --magi-source-verified-progress-start: transparent;
-  --magi-source-verified-progress-end: transparent;
+  --magi-source-verified-progress-end: oklch(0.7 0.014 195 / 0.22);
   --magi-source-verified-progress-edge: rgba(75, 51, 22, 0.52);
   --magi-source-unverified-progress-start: oklch(0.7 0.026 225 / 0.15);
   --magi-source-unverified-progress-end: oklch(0.7 0.026 225 / 0.3);
@@ -2735,7 +2735,7 @@ html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-
   --magi-source-human-progress-end: oklch(0.62 0.13 140 / 0.72);
   --magi-source-human-progress-edge: oklch(0.24 0.035 150 / 0.72);
   --magi-source-verified-progress-start: oklch(0.62 0.13 175 / 0.36);
-  --magi-source-verified-progress-end: oklch(0.62 0.13 175 / 0.72);
+  --magi-source-verified-progress-end: oklch(0.62 0.13 175 / 0.58);
   --magi-source-verified-progress-edge: oklch(0.92 0.025 165 / 0.72);
   --magi-source-unverified-progress-start: oklch(0.62 0.13 95 / 0.36);
   --magi-source-unverified-progress-end: oklch(0.62 0.13 95 / 0.72);
@@ -3015,6 +3015,9 @@ html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-
 .magi-folder-source-card[data-source-progress='true'] > button {
   --magi-folder-human-fill: var(--magi-source-human-progress-end);
   --magi-folder-verified-fill: var(--magi-source-verified-progress-end);
+  --magi-folder-progress-feather: 1rem;
+  --magi-folder-progress-feather-mid: 0.52rem;
+  --magi-folder-progress-feather-near: 0.2rem;
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -3043,15 +3046,140 @@ html[data-exedra-font-new-cinema='ready'] .magi-exedra-ui-scope .reader-font-jp-
   background: linear-gradient(
     90deg,
     var(--magi-folder-human-fill) 0,
-    var(--magi-folder-human-fill) var(--magi-folder-human-progress-end, 0%),
+    var(--magi-folder-human-fill)
+      max(
+        0%,
+        calc(
+          var(--magi-folder-human-progress-end, 0%)
+          - var(--magi-folder-progress-feather)
+        )
+      ),
+    color-mix(
+      in srgb,
+      var(--magi-folder-human-fill) 78%,
+      var(--magi-folder-verified-fill)
+    )
+      max(
+        0%,
+        calc(
+          var(--magi-folder-human-progress-end, 0%)
+          - var(--magi-folder-progress-feather-mid)
+        )
+      ),
+    color-mix(
+      in srgb,
+      var(--magi-folder-human-fill) 32%,
+      var(--magi-folder-verified-fill)
+    )
+      max(
+        0%,
+        calc(
+          var(--magi-folder-human-progress-end, 0%)
+          - var(--magi-folder-progress-feather-near)
+        )
+      ),
     var(--magi-folder-verified-fill) var(--magi-folder-human-progress-end, 0%),
-    var(--magi-folder-verified-fill) var(--magi-folder-translated-progress-end, 0%),
+    var(--magi-folder-verified-fill)
+      max(
+        var(--magi-folder-human-progress-end, 0%),
+        calc(
+          var(--magi-folder-translated-progress-end, 0%)
+          - var(--magi-folder-progress-feather)
+        )
+      ),
+    color-mix(in srgb, var(--magi-folder-verified-fill) 78%, transparent)
+      max(
+        var(--magi-folder-human-progress-end, 0%),
+        calc(
+          var(--magi-folder-translated-progress-end, 0%)
+          - var(--magi-folder-progress-feather-mid)
+        )
+      ),
+    color-mix(in srgb, var(--magi-folder-verified-fill) 32%, transparent)
+      max(
+        var(--magi-folder-human-progress-end, 0%),
+        calc(
+          var(--magi-folder-translated-progress-end, 0%)
+          - var(--magi-folder-progress-feather-near)
+        )
+      ),
     transparent var(--magi-folder-translated-progress-end, 0%),
     transparent 100%
   );
   mix-blend-mode: color;
   pointer-events: none;
   content: '';
+}
+
+/* A missing middle source must not manufacture a cyan band.  These two
+   branches keep the same fixed, short feather while transitioning directly
+   into the card's real underlying source colour. */
+.magi-folder-source-card[data-source-progress='true'][data-verified-progress-percent='0']
+  > button::after {
+  background: linear-gradient(
+    90deg,
+    var(--magi-folder-human-fill) 0,
+    var(--magi-folder-human-fill)
+      max(
+        0%,
+        calc(
+          var(--magi-folder-human-progress-end, 0%)
+          - var(--magi-folder-progress-feather)
+        )
+      ),
+    color-mix(in srgb, var(--magi-folder-human-fill) 78%, transparent)
+      max(
+        0%,
+        calc(
+          var(--magi-folder-human-progress-end, 0%)
+          - var(--magi-folder-progress-feather-mid)
+        )
+      ),
+    color-mix(in srgb, var(--magi-folder-human-fill) 32%, transparent)
+      max(
+        0%,
+        calc(
+          var(--magi-folder-human-progress-end, 0%)
+          - var(--magi-folder-progress-feather-near)
+        )
+      ),
+    transparent var(--magi-folder-human-progress-end, 0%),
+    transparent 100%
+  );
+}
+
+.magi-folder-source-card[data-source-progress='true'][data-human-progress-percent='0']:not([data-verified-progress-percent='0'])
+  > button::after {
+  background: linear-gradient(
+    90deg,
+    var(--magi-folder-verified-fill) 0,
+    var(--magi-folder-verified-fill)
+      max(
+        0%,
+        calc(
+          var(--magi-folder-translated-progress-end, 0%)
+          - var(--magi-folder-progress-feather)
+        )
+      ),
+    color-mix(in srgb, var(--magi-folder-verified-fill) 78%, transparent)
+      max(
+        0%,
+        calc(
+          var(--magi-folder-translated-progress-end, 0%)
+          - var(--magi-folder-progress-feather-mid)
+        )
+      ),
+    color-mix(in srgb, var(--magi-folder-verified-fill) 32%, transparent)
+      max(
+        0%,
+        calc(
+          var(--magi-folder-translated-progress-end, 0%)
+          - var(--magi-folder-progress-feather-near)
+        )
+      ),
+    transparent var(--magi-folder-translated-progress-end, 0%),
+    transparent 100%
+  );
 }
 
 /* Verification changes frame treatment, never apparent depth. */
@@ -4860,6 +4988,10 @@ html[data-exedra-font-tsuku='ready']
 .magi-home-light-root:not(.magi-home-paper-root),
 .magi-reader-theme-light {
   --magi-edge-diffusion: rgba(63, 67, 68, 0.5);
+  --magi-edge-echo-color: rgba(56, 62, 63, 0.3);
+  --magi-edge-echo-x: 0.34px;
+  --magi-edge-echo-y: -0.22px;
+  --magi-edge-echo-blur: 0.38px;
   --magi-edge-warp-x: 0.48px;
   --magi-edge-warp-y: -0.34px;
   --magi-edge-counter-x: -0.4px;
@@ -4874,6 +5006,10 @@ html[data-exedra-font-tsuku='ready']
 .magi-home-paper-root,
 .magi-reader-theme-paper {
   --magi-edge-diffusion: rgba(79, 69, 55, 0.52);
+  --magi-edge-echo-color: rgba(84, 67, 43, 0.31);
+  --magi-edge-echo-x: -0.38px;
+  --magi-edge-echo-y: -0.24px;
+  --magi-edge-echo-blur: 0.42px;
   --magi-edge-warp-x: -0.54px;
   --magi-edge-warp-y: -0.38px;
   --magi-edge-counter-x: 0.44px;
@@ -4888,6 +5024,10 @@ html[data-exedra-font-tsuku='ready']
 .magi-home-green-root,
 .magi-reader-theme-green {
   --magi-edge-diffusion: rgba(66, 101, 79, 0.49);
+  --magi-edge-echo-color: rgba(40, 105, 67, 0.3);
+  --magi-edge-echo-x: 0.31px;
+  --magi-edge-echo-y: 0.32px;
+  --magi-edge-echo-blur: 0.4px;
   --magi-edge-warp-x: 0.44px;
   --magi-edge-warp-y: 0.46px;
   --magi-edge-counter-x: -0.47px;
@@ -4902,6 +5042,10 @@ html[data-exedra-font-tsuku='ready']
 .magi-home-dark-root,
 .magi-reader-theme-dark {
   --magi-edge-diffusion: rgba(111, 161, 169, 0.5);
+  --magi-edge-echo-color: rgba(83, 219, 190, 0.3);
+  --magi-edge-echo-x: -0.4px;
+  --magi-edge-echo-y: -0.27px;
+  --magi-edge-echo-blur: 0.44px;
   --magi-edge-warp-x: -0.55px;
   --magi-edge-warp-y: -0.4px;
   --magi-edge-counter-x: 0.43px;
@@ -5055,6 +5199,10 @@ html[data-exedra-font-tsuku='ready']
   );
   border-radius: inherit;
   box-shadow:
+    var(--magi-edge-echo-x, 0.3px)
+      var(--magi-edge-echo-y, -0.2px)
+      var(--magi-edge-echo-blur, 0.4px)
+      var(--magi-edge-echo-color, rgba(72, 78, 80, 0.26)),
     var(--magi-edge-counter-x, -0.12px)
       var(--magi-edge-counter-y, 0.18px)
       1.08px
@@ -5086,6 +5234,10 @@ html[data-exedra-font-tsuku='ready']
 
 .magi-home-shell .magi-home-category-select-box::after {
   box-shadow:
+    var(--magi-edge-echo-x, 0.3px)
+      var(--magi-edge-echo-y, -0.2px)
+      var(--magi-edge-echo-blur, 0.4px)
+      color-mix(in srgb, var(--magi-edge-echo-color, rgba(72, 78, 80, 0.26)) 66%, transparent),
     var(--magi-edge-counter-x, -0.12px)
       var(--magi-edge-counter-y, 0.18px)
       0.58px
@@ -5130,6 +5282,10 @@ html[data-exedra-font-tsuku='ready']
   );
   border-radius: inherit;
   box-shadow:
+    var(--magi-edge-echo-x, 0.3px)
+      var(--magi-edge-echo-y, -0.2px)
+      var(--magi-edge-echo-blur, 0.4px)
+      var(--magi-edge-echo-color, rgba(72, 78, 80, 0.26)),
     var(--magi-edge-counter-x, -0.12px)
       var(--magi-edge-counter-y, 0.18px)
       0.72px
@@ -5149,6 +5305,47 @@ html[data-exedra-font-tsuku='ready']
     rotate(var(--magi-edge-warp-rotate, 0.075deg));
   transform-origin: 52% 48%;
   opacity: 0.86;
+  pointer-events: none;
+  content: '';
+}
+
+/* A third border registration pass is painted only on empty pseudo-elements.
+   It reaches the persistent navigation and Reader chrome in every theme while
+   leaving every label, icon and story glyph outside the blur filter. */
+.magi-reader-root .magi-reader-header,
+.magi-reader-root .magi-floating-window-titlebar {
+  position: relative;
+}
+
+.magi-home-shell .magi-home-category-trigger::after,
+.magi-reader-root .magi-reader-header::after,
+.magi-reader-root .magi-reader-sidebar::after,
+.magi-reader-root .magi-reader-font-control::after,
+.magi-reader-root .magi-floating-window-titlebar::after {
+  position: absolute;
+  z-index: 2;
+  inset: 0.46px -0.18px -0.16px 0.52px;
+  border: 0.88px solid color-mix(
+    in srgb,
+    var(--magi-edge-diffusion, rgba(72, 78, 80, 0.3)) 76%,
+    transparent
+  );
+  border-radius: inherit;
+  box-shadow:
+    var(--magi-edge-echo-x, 0.3px)
+      var(--magi-edge-echo-y, -0.2px)
+      var(--magi-edge-echo-blur, 0.4px)
+      var(--magi-edge-echo-color, rgba(72, 78, 80, 0.26)),
+    var(--magi-edge-counter-x, -0.12px)
+      var(--magi-edge-counter-y, 0.18px)
+      0.64px
+      color-mix(in srgb, var(--magi-edge-diffusion, rgba(72, 78, 80, 0.3)) 48%, transparent);
+  filter: blur(var(--magi-edge-echo-blur, 0.4px));
+  transform: translate(
+    var(--magi-edge-echo-x, 0.3px),
+    var(--magi-edge-echo-y, -0.2px)
+  );
+  opacity: 0.72;
   pointer-events: none;
   content: '';
 }
@@ -5747,34 +5944,64 @@ html[data-exedra-font-tsuku='ready']
    from the text/connection controls so 50% and 75% remain visually distinct
    without changing the rail geometry or its hit targets. */
 .magi-home-category-filter::before {
+  --magi-category-progress-feather: 0.62rem;
+  --magi-category-progress-feather-half: 0.31rem;
+  --magi-category-progress-feather-mid: 0.34rem;
+  --magi-category-progress-feather-near: 0.14rem;
+  --magi-category-progress-mask: linear-gradient(
+    90deg,
+    #000 0,
+    #000 max(0%, calc(100% - var(--magi-category-progress-feather))),
+    rgba(0, 0, 0, 0.86)
+      max(0%, calc(100% - var(--magi-category-progress-feather-mid))),
+    rgba(0, 0, 0, 0.38)
+      max(0%, calc(100% - var(--magi-category-progress-feather-near))),
+    transparent 100%
+  );
   content: '';
   position: absolute;
   z-index: 0;
   inset-block: 1px;
   inset-inline-start: 1px;
-  inline-size: var(--magi-category-filter-progress, 0%);
+  inline-size: min(
+    calc(
+      var(--magi-category-filter-progress, 0%)
+      + var(--magi-category-progress-feather-half)
+    ),
+    calc(100% - 2px)
+  );
   max-inline-size: calc(100% - 2px);
   border-radius: calc(0.25rem - 1px);
-  background: linear-gradient(
-    90deg,
-    var(--magi-category-progress-fill-start, rgba(75, 91, 98, 0.12)),
-    var(--magi-category-progress-fill-end, rgba(75, 91, 98, 0.28))
-  );
-  box-shadow: inset -1px 0 0 var(--magi-category-progress-edge, rgba(45, 58, 64, 0.42));
+  background:
+    linear-gradient(
+      90deg,
+      var(--magi-category-progress-fill, transparent) 0,
+      var(--magi-category-progress-fill, transparent) 100%
+    ),
+    var(
+      --magi-category-card-background,
+      var(--magi-category-branch-surface, rgba(239, 242, 241, 0.88))
+    );
+  background-blend-mode: color, normal;
+  -webkit-mask-image: var(--magi-category-progress-mask);
+  mask-image: var(--magi-category-progress-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  box-shadow: none;
   mix-blend-mode: normal;
   opacity: 1;
   pointer-events: none;
   transition:
     inline-size 260ms ease,
-    background-color 180ms ease,
+    background 180ms ease,
     opacity 180ms ease;
 }
 
-/* Dark cards and their Sidebar plaques share comparable luminance, so the
-   accepted hue-only blend remains exact there.  Brighter themes use ordinary
-   alpha compositing above to keep their source colours visible. */
-.magi-home-dark-root .magi-home-category-filter::before {
-  mix-blend-mode: color;
+.magi-home-category-filter[data-progress-percent='0']::before {
+  inline-size: 0;
+  opacity: 0;
 }
 
 .magi-home-category-filter > span {
@@ -5797,76 +6024,19 @@ html[data-exedra-font-tsuku='ready']
 }
 
 .magi-home-category-filter[data-filter='human-cn'] {
-  --magi-category-progress-fill-start: var(--magi-source-human-progress-start);
-  --magi-category-progress-fill-end: var(--magi-source-human-progress-end);
-  --magi-category-progress-edge: var(--magi-source-human-progress-edge);
+  --magi-category-progress-fill: var(--magi-source-human-progress-end);
 }
 
 .magi-home-category-filter[data-filter='machine-verified'] {
-  --magi-category-progress-fill-start: var(--magi-source-verified-progress-start);
-  --magi-category-progress-fill-end: var(--magi-source-verified-progress-end);
-  --magi-category-progress-edge: var(--magi-source-verified-progress-edge);
+  --magi-category-progress-fill: var(--magi-source-verified-progress-end);
 }
 
 .magi-home-category-filter[data-filter='machine-unverified'] {
-  --magi-category-progress-fill-start: var(--magi-source-unverified-progress-start);
-  --magi-category-progress-fill-end: var(--magi-source-unverified-progress-end);
-  --magi-category-progress-edge: var(--magi-source-unverified-progress-edge);
+  --magi-category-progress-fill: var(--magi-source-unverified-progress-end);
 }
 
-/* The white and paper rails sit on much brighter planes than their catalogue
-   cards.  Give only these Sidebar progress layers an equal-depth presentation
-   palette; the shared source hues, segment widths and catalogue cards stay put. */
-.magi-home-light-root:not(.magi-home-paper-root)
-  .magi-home-category-filter[data-filter='all'] {
-  --magi-category-progress-fill-start: rgba(93, 100, 101, 0.72);
-  --magi-category-progress-fill-end: rgba(119, 126, 126, 0.78);
-  --magi-category-progress-edge: rgba(40, 45, 46, 0.72);
-}
-
-.magi-home-light-root:not(.magi-home-paper-root)
-  .magi-home-category-filter[data-filter='human-cn'] {
-  --magi-category-progress-fill-start: rgba(103, 92, 66, 0.72);
-  --magi-category-progress-fill-end: rgba(132, 119, 87, 0.78);
-  --magi-category-progress-edge: rgba(40, 29, 22, 0.7);
-}
-
-.magi-home-light-root:not(.magi-home-paper-root)
-  .magi-home-category-filter[data-filter='machine-verified'] {
-  --magi-category-progress-fill-start: rgba(93, 100, 101, 0.72);
-  --magi-category-progress-fill-end: rgba(119, 126, 126, 0.78);
-  --magi-category-progress-edge: rgba(34, 37, 38, 0.62);
-}
-
-.magi-home-light-root:not(.magi-home-paper-root)
-  .magi-home-category-filter[data-filter='machine-unverified'] {
-  --magi-category-progress-fill-start: rgba(82, 103, 116, 0.72);
-  --magi-category-progress-fill-end: rgba(105, 127, 140, 0.78);
-  --magi-category-progress-edge: rgba(52, 75, 88, 0.68);
-}
-
-.magi-home-paper-root .magi-home-category-filter[data-filter='all'] {
-  --magi-category-progress-fill-start: rgba(103, 82, 49, 0.72);
-  --magi-category-progress-fill-end: rgba(126, 103, 65, 0.78);
-  --magi-category-progress-edge: rgba(51, 39, 23, 0.72);
-}
-
-.magi-home-paper-root .magi-home-category-filter[data-filter='human-cn'] {
-  --magi-category-progress-fill-start: rgba(112, 82, 39, 0.72);
-  --magi-category-progress-fill-end: rgba(143, 108, 57, 0.78);
-  --magi-category-progress-edge: rgba(70, 47, 18, 0.7);
-}
-
-.magi-home-paper-root .magi-home-category-filter[data-filter='machine-verified'] {
-  --magi-category-progress-fill-start: rgba(103, 82, 49, 0.72);
-  --magi-category-progress-fill-end: rgba(126, 103, 65, 0.78);
-  --magi-category-progress-edge: rgba(67, 62, 52, 0.64);
-}
-
-.magi-home-paper-root .magi-home-category-filter[data-filter='machine-unverified'] {
-  --magi-category-progress-fill-start: rgba(92, 94, 87, 0.68);
-  --magi-category-progress-fill-end: rgba(112, 113, 102, 0.74);
-  --magi-category-progress-edge: rgba(65, 70, 72, 0.64);
+.magi-home-category-filter[data-filter='all'] {
+  --magi-category-progress-fill: transparent;
 }
 
 .magi-home-category-filter > span:not(.magi-home-category-filter-count) {
@@ -5943,6 +6113,11 @@ html[data-exedra-font-tsuku='ready']
   --magi-category-progress-fill-start: rgba(92, 105, 109, 0.1);
   --magi-category-progress-fill-end: rgba(74, 89, 95, 0.28);
   --magi-category-progress-edge: rgba(45, 56, 61, 0.5);
+  --magi-category-card-background: linear-gradient(
+    105deg,
+    rgba(93, 100, 101, 0.98),
+    rgba(119, 126, 126, 0.96)
+  );
 }
 
 .magi-home-paper-root {
@@ -5957,6 +6132,11 @@ html[data-exedra-font-tsuku='ready']
   --magi-category-progress-fill-start: rgba(126, 99, 54, 0.11);
   --magi-category-progress-fill-end: rgba(111, 82, 39, 0.3);
   --magi-category-progress-edge: rgba(75, 51, 22, 0.52);
+  --magi-category-card-background: linear-gradient(
+    105deg,
+    rgba(103, 82, 49, 0.98),
+    rgba(126, 103, 65, 0.96)
+  );
 }
 
 .magi-home-green-root {
@@ -5971,6 +6151,7 @@ html[data-exedra-font-tsuku='ready']
   --magi-category-progress-fill-start: rgba(79, 175, 107, 0.16);
   --magi-category-progress-fill-end: rgba(105, 215, 135, 0.39);
   --magi-category-progress-edge: rgba(144, 235, 167, 0.68);
+  --magi-category-card-background: oklch(0.596 0.145 163.225);
 }
 
 /* Enabled green-theme filters still need to read as available before selection.
@@ -5994,6 +6175,7 @@ html[data-exedra-font-tsuku='ready']
   --magi-category-progress-fill-start: rgba(28, 126, 135, 0.2);
   --magi-category-progress-fill-end: rgba(42, 214, 190, 0.48);
   --magi-category-progress-edge: rgba(85, 255, 224, 0.82);
+  --magi-category-card-background: oklab(0.378 -0.0755699 0.0147714 / 0.4);
 }
 
 .magi-home-category-filter-overlay-menu
@@ -7126,6 +7308,38 @@ html[data-exedra-font-tsuku='ready']
 
 /* Source plaques use the same lift/edge language as the category controls,
    while each source state keeps its own provenance colour. */
+.magi-home-light-root:not(.magi-home-paper-root) {
+  --magi-category-interaction-text: #20282a;
+  --magi-category-interaction-shadow: 0 0 0.42px rgba(32, 40, 42, 0.72);
+}
+
+.magi-home-paper-root {
+  --magi-category-interaction-text: #4a2f15;
+  --magi-category-interaction-shadow: 0 0 0.42px rgba(74, 47, 21, 0.7);
+}
+
+.magi-home-green-root {
+  --magi-category-interaction-text: #082f22;
+  --magi-category-interaction-shadow: 0 0 0.48px rgba(4, 35, 24, 0.76);
+}
+
+.magi-home-dark-root {
+  --magi-category-interaction-text: #58e8b9;
+  --magi-category-interaction-shadow: 0 0 1.4px rgba(67, 238, 184, 0.34);
+}
+
+/* Paper texture softens the narrow category labels more than the other day
+   themes. Use the real heavy face plus a hairline ink edge while preserving
+   the established paper-theme ink colour. */
+.magi-home-paper-root .magi-home-category-trigger {
+  font-weight: 900 !important;
+}
+
+.magi-home-paper-root .magi-home-category-trigger > span {
+  -webkit-text-stroke: 0.18px currentColor;
+  text-shadow: 0 0 0.42px rgba(69, 61, 49, 0.48);
+}
+
 .magi-home-category-filter[data-filter='all'] {
   --magi-category-hover-accent: var(--magi-category-branch-selected-line, #5c8798);
 }
@@ -7157,11 +7371,9 @@ html[data-exedra-font-tsuku='ready']
 .magi-home-category-filter[data-enabled='true']:is(:hover, :focus-within) {
   border-color: var(--magi-category-hover-accent) !important;
   border-radius: 0.48rem !important;
-  color: color-mix(
-    in srgb,
-    var(--magi-category-hover-accent) 72%,
-    white
-  ) !important;
+  color: var(--magi-category-interaction-text, currentColor) !important;
+  font-weight: 900 !important;
+  text-shadow: var(--magi-category-interaction-shadow, none);
   background: color-mix(
     in srgb,
     var(--magi-category-branch-surface, transparent) 72%,
@@ -7177,6 +7389,13 @@ html[data-exedra-font-tsuku='ready']
     saturate(1.16)
     drop-shadow(0 0 1.8px color-mix(in srgb, var(--magi-category-hover-accent) 55%, transparent)) !important;
   transform: translateY(-1px) scale(1.018);
+}
+
+.magi-home-category-filter-overlay-menu
+  .magi-home-category-filter[data-enabled='true'][data-selected='true'] {
+  color: var(--magi-category-interaction-text, currentColor) !important;
+  font-weight: 900 !important;
+  text-shadow: var(--magi-category-interaction-shadow, none);
 }
 
 .magi-home-category-filter[data-enabled='true']:is(:hover, :focus-within)::after {
@@ -7404,8 +7623,9 @@ html[data-exedra-font-tsuku='ready']
   accent-color: #58eeb3;
 }
 
-/* Theme-native Reader scrollbars replace the browser-white track. The same
-   palette also paints the Sidebar resize strip for pointer and keyboard use. */
+/* Theme-native app scrollbars replace browser-white tracks on both the home
+   catalogue and Reader. The same palette paints each Sidebar resize strip. */
+.magi-home-light-root:not(.magi-home-paper-root),
 .magi-reader-theme-light {
   --magi-reader-scroll-track: #d7dad7;
   --magi-reader-scroll-thumb: #777e7d;
@@ -7415,6 +7635,7 @@ html[data-exedra-font-tsuku='ready']
   --magi-reader-resize-strip: rgba(65, 72, 72, 0.16);
 }
 
+.magi-home-paper-root,
 .magi-reader-theme-paper {
   --magi-reader-scroll-track: #ded0aa;
   --magi-reader-scroll-thumb: #826b45;
@@ -7424,6 +7645,7 @@ html[data-exedra-font-tsuku='ready']
   --magi-reader-resize-strip: rgba(86, 65, 36, 0.2);
 }
 
+.magi-home-green-root,
 .magi-reader-theme-green {
   --magi-reader-scroll-track: #c2d5bd;
   --magi-reader-scroll-thumb: #4f7c5a;
@@ -7433,6 +7655,7 @@ html[data-exedra-font-tsuku='ready']
   --magi-reader-resize-strip: rgba(45, 100, 60, 0.19);
 }
 
+.magi-home-dark-root,
 .magi-reader-theme-dark {
   --magi-reader-scroll-track: #071c2b;
   --magi-reader-scroll-thumb: #28745f;
@@ -7442,9 +7665,15 @@ html[data-exedra-font-tsuku='ready']
   --magi-reader-resize-strip: rgba(70, 221, 171, 0.19);
 }
 
+.magi-home-shell :where(
+  .magi-home-category-nav,
+  .magi-home-catalog,
+  .magi-floating-window-body
+),
 .magi-reader-root
   :where(
     .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-reader-main,
     .magi-settings-window .magi-floating-window-body
   ) {
   scrollbar-width: thin;
@@ -7453,9 +7682,15 @@ html[data-exedra-font-tsuku='ready']
     var(--magi-reader-scroll-track);
 }
 
+.magi-home-shell :where(
+  .magi-home-category-nav,
+  .magi-home-catalog,
+  .magi-floating-window-body
+)::-webkit-scrollbar,
 .magi-reader-root
   :where(
     .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-reader-main,
     .magi-settings-window .magi-floating-window-body
   )::-webkit-scrollbar {
   width: 12px;
@@ -7463,9 +7698,15 @@ html[data-exedra-font-tsuku='ready']
   background: var(--magi-reader-scroll-track);
 }
 
+.magi-home-shell :where(
+  .magi-home-category-nav,
+  .magi-home-catalog,
+  .magi-floating-window-body
+)::-webkit-scrollbar-track,
 .magi-reader-root
   :where(
     .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-reader-main,
     .magi-settings-window .magi-floating-window-body
   )::-webkit-scrollbar-track {
   border-left: 1px solid var(--magi-reader-scroll-edge);
@@ -7478,9 +7719,15 @@ html[data-exedra-font-tsuku='ready']
     var(--magi-reader-scroll-track);
 }
 
+.magi-home-shell :where(
+  .magi-home-category-nav,
+  .magi-home-catalog,
+  .magi-floating-window-body
+)::-webkit-scrollbar-thumb,
 .magi-reader-root
   :where(
     .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-reader-main,
     .magi-settings-window .magi-floating-window-body
   )::-webkit-scrollbar-thumb {
   min-height: 42px;
@@ -7499,9 +7746,15 @@ html[data-exedra-font-tsuku='ready']
     0 0 5px color-mix(in srgb, var(--magi-reader-scroll-thumb) 36%, transparent);
 }
 
+.magi-home-shell :where(
+  .magi-home-category-nav,
+  .magi-home-catalog,
+  .magi-floating-window-body
+)::-webkit-scrollbar-thumb:hover,
 .magi-reader-root
   :where(
     .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-reader-main,
     .magi-settings-window .magi-floating-window-body
   )::-webkit-scrollbar-thumb:hover {
   background-color: var(--magi-reader-scroll-thumb-hover);
@@ -7510,22 +7763,35 @@ html[data-exedra-font-tsuku='ready']
     0 0 8px color-mix(in srgb, var(--magi-reader-scroll-thumb-hover) 48%, transparent);
 }
 
+.magi-home-shell :where(
+  .magi-home-category-nav,
+  .magi-home-catalog,
+  .magi-floating-window-body
+)::-webkit-scrollbar-button,
 .magi-reader-root
   :where(
     .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-reader-main,
     .magi-settings-window .magi-floating-window-body
   )::-webkit-scrollbar-button {
   display: none;
 }
 
+.magi-home-shell :where(
+  .magi-home-category-nav,
+  .magi-home-catalog,
+  .magi-floating-window-body
+)::-webkit-scrollbar-corner,
 .magi-reader-root
   :where(
     .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-reader-main,
     .magi-settings-window .magi-floating-window-body
   )::-webkit-scrollbar-corner {
   background: var(--magi-reader-scroll-track);
 }
 
+.magi-home-shell .magi-sidebar-resize-handle,
 .magi-reader-root .magi-sidebar-resize-handle {
   color: var(--magi-reader-scroll-thumb);
   background: linear-gradient(
@@ -7536,11 +7802,14 @@ html[data-exedra-font-tsuku='ready']
   );
 }
 
+.magi-home-shell .magi-sidebar-resize-handle::after,
 .magi-reader-root .magi-sidebar-resize-handle::after {
   opacity: 0.32;
 }
 
+.magi-home-shell .magi-sidebar-resize-handle:is(:hover, :focus-visible)::after,
 .magi-reader-root .magi-sidebar-resize-handle:is(:hover, :focus-visible)::after,
+body.magi-sidebar-resizing .magi-home-shell .magi-sidebar-resize-handle::after,
 body.magi-sidebar-resizing .magi-reader-root .magi-sidebar-resize-handle::after {
   width: 2px;
   color: var(--magi-reader-scroll-thumb-hover);
