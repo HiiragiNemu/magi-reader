@@ -81,13 +81,20 @@ const normalizeManifest = (value: unknown): MachineTranslationManifest => {
   }
   if (typeof record.version === 'number' && record.version >= 4) {
     const entryIds = new Set(record.entries.map(entry => entry.story_id));
+    const manualClosedIds = record.manual_retranslation_closed_ids ?? [];
+    const manualClosedIdSet = new Set(manualClosedIds);
     const manualIds = record.manual_human_verified_ids ?? [];
     const manualIdSet = new Set(manualIds);
     if (
       record.classification !== 'SOURCE_UNVERIFIED' ||
       !record.definition?.includes('source_unverified') ||
+      manualClosedIdSet.size !== manualClosedIds.length ||
+      manualClosedIds.some(storyId => typeof storyId !== 'string') ||
+      record.manual_retranslation_closed_total !== manualClosedIds.length ||
+      manualClosedIds.length > record.total ||
       manualIdSet.size !== manualIds.length ||
       manualIds.some(storyId => typeof storyId !== 'string' || !entryIds.has(storyId)) ||
+      manualIds.some(storyId => !manualClosedIdSet.has(storyId)) ||
       record.manual_human_verified_total !== manualIds.length ||
       record.review_remaining !== record.total - manualIds.length ||
       record.entries.some(
@@ -110,6 +117,9 @@ export const MACHINE_TRANSLATION_ID_SET = new Set(
 );
 export const MANUAL_HUMAN_VERIFIED_ID_SET = new Set(
   MACHINE_TRANSLATION_MANIFEST.manual_human_verified_ids ?? [],
+);
+export const MANUAL_RETRANSLATION_CLOSED_ID_SET = new Set(
+  MACHINE_TRANSLATION_MANIFEST.manual_retranslation_closed_ids ?? [],
 );
 
 // Canonical fail-closed names. Legacy exports remain below because KV keys,
@@ -254,15 +264,37 @@ export const machineTranslationSystemSummary = async (
         states[entry.story_id]?.verified === true,
     )
     .map(entry => entry.story_id);
+  const manualClosedIds = [
+    ...(MACHINE_TRANSLATION_MANIFEST.manual_retranslation_closed_ids ?? verifiedIds),
+  ];
+  const manualClosedIdSet = new Set(manualClosedIds);
+  for (const storyId of verifiedIds) {
+    if (manualClosedIdSet.has(storyId)) continue;
+    manualClosedIdSet.add(storyId);
+    manualClosedIds.push(storyId);
+  }
   const sourceUnverifiedIds = MACHINE_TRANSLATION_MANIFEST.entries.map(
     entry => entry.story_id,
+  );
+  const manualClosed = Math.min(
+    MACHINE_TRANSLATION_MANIFEST.total,
+    manualClosedIds.length,
+  );
+  const sourceUnverifiedRemaining = Math.max(
+    0,
+    MACHINE_TRANSLATION_MANIFEST.total - verifiedIds.length,
   );
   return {
     system: 'magireco' as const,
     definition: MACHINE_TRANSLATION_MANIFEST.definition,
     total: MACHINE_TRANSLATION_MANIFEST.total,
+    manual_closed: manualClosed,
+    manual_remaining: Math.max(0, MACHINE_TRANSLATION_MANIFEST.total - manualClosed),
+    manual_closed_ids: manualClosedIds,
+    source_unverified_verified: verifiedIds.length,
+    source_unverified_remaining: sourceUnverifiedRemaining,
     verified: verifiedIds.length,
-    remaining: Math.max(0, MACHINE_TRANSLATION_MANIFEST.total - verifiedIds.length),
+    remaining: sourceUnverifiedRemaining,
     source_unverified_ids: sourceUnverifiedIds,
     // Deprecated response alias retained for deployed clients.
     machine_translation_ids: sourceUnverifiedIds,

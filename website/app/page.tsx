@@ -87,6 +87,11 @@ type SearchWorkerMessage =
 
 type ProofreadingStatus = {
   total: number;
+  manual_closed?: number;
+  manual_remaining?: number;
+  manual_closed_ids?: string[];
+  source_unverified_verified?: number;
+  source_unverified_remaining?: number;
   verified: number;
   remaining: number;
   source_unverified_ids?: string[];
@@ -622,11 +627,11 @@ function FolderCard({ group, theme }: { group: StoryGroup; theme: string }) {
                     <article
                       data-translation-status={itemProgressStatus}
                       data-source-status={sourceVisualStatus}
-                      className={`magi-story-source-link max-w-full min-w-0 overflow-hidden rounded border transition-all hover:scale-[1.01] ${buttonClass} ${
+                      className={`magi-story-source-link max-w-full min-w-0 overflow-hidden rounded border transition-all ${buttonClass} ${
                         snippet ? 'w-full' : ''
                       }`}
                     >
-                    <div className="relative z-10 flex min-w-0 items-stretch">
+                    <div className="magi-home-story-heading-row relative z-10 flex min-w-0 items-stretch">
                       {episodeLinks.length > 0 && (
                         <button
                           type="button"
@@ -2165,6 +2170,24 @@ export default function Home() {
     switchToStorySystem(storySystem === 'magireco' ? 'exedra' : 'magireco');
   };
 
+  const manualClosedCount =
+    proofreadingStatus?.manual_closed ?? proofreadingStatus?.verified ?? 0;
+  const manualRemainingCount =
+    proofreadingStatus?.manual_remaining
+    ?? Math.max(0, (proofreadingStatus?.total ?? 0) - manualClosedCount);
+  const sourceUnverifiedVerifiedCount =
+    proofreadingStatus?.source_unverified_verified
+    ?? proofreadingStatus?.verified
+    ?? 0;
+  const sourceUnverifiedRemainingCount =
+    proofreadingStatus?.source_unverified_remaining
+    ?? proofreadingStatus?.remaining
+    ?? 0;
+  const trustedBaselineClosedCount = Math.max(
+    0,
+    manualClosedCount - sourceUnverifiedVerifiedCount,
+  );
+
   const renderMobileReviewButton = (
     placement: MobileReviewPlacement,
   ) => (
@@ -2173,7 +2196,7 @@ export default function Home() {
       data-placement={placement}
       aria-controls={machineReviewPanelContentId}
       aria-expanded={!machineReviewPanelCollapsed}
-      aria-label={`${machineReviewPanelCollapsed ? '打开' : '收起'}校验清单，仍需 ${proofreadingStatus?.remaining ?? 0} 部`}
+      aria-label={`${machineReviewPanelCollapsed ? '打开' : '收起'}校验清单，仍需 ${manualRemainingCount} 部`}
       title={
         placement === 'floating'
           ? '点击打开或收起；长按拖到顶部工具栏可吸附'
@@ -2246,8 +2269,8 @@ export default function Home() {
                 type="button"
                 aria-controls={machineReviewPanelContentId}
                 aria-expanded={!machineReviewPanelCollapsed}
-                aria-label={`${machineReviewPanelCollapsed ? '打开' : '收起'}校验清单，仍需 ${proofreadingStatus.remaining} 部`}
-                title={`仍需人工校验 ${proofreadingStatus.remaining} 部`}
+                aria-label={`${machineReviewPanelCollapsed ? '打开' : '收起'}校验清单，仍需 ${manualRemainingCount} 部`}
+                title={`仍需人工校验 ${manualRemainingCount} 部`}
                 onClick={() => setMachineReviewPanelCollapsedPreference(!machineReviewPanelCollapsed)}
                 className="magi-home-review-trigger inline-flex min-h-8 shrink-0 items-center rounded-md border px-1.5 py-1 text-[10px] font-black transition focus-visible:outline-none"
               >
@@ -2535,14 +2558,20 @@ export default function Home() {
                   <div className="magi-home-review-panel-layout flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div className="magi-home-review-intro">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="text-base font-black">魔法纪录来源待核验人工校验清单</h2>
+                        <h2 className="text-base font-black">魔法纪录人工校验总览</h2>
                         <span className="magi-home-review-live-badge rounded-full px-2 py-0.5 text-[10px] font-black">
                           动态
                         </span>
                       </div>
                       <p className="magi-home-review-summary mt-1 text-sm opacity-80">
-                        总计 {proofreadingStatus.total} 部，已人工校验 {proofreadingStatus.verified} 部，
-                        仍需校验 <strong>{proofreadingStatus.remaining}</strong> 部。
+                        总计 {proofreadingStatus.total} 部，已完成人工校验闭环{' '}
+                        <strong>{manualClosedCount}</strong> 部，仍需校验{' '}
+                        <strong>{manualRemainingCount}</strong> 部。
+                      </p>
+                      <p className="magi-home-review-scope mt-1 text-[11px] leading-relaxed opacity-65">
+                        来源待核验清单已标记 {sourceUnverifiedVerifiedCount} 部、待标记{' '}
+                        {sourceUnverifiedRemainingCount} 部；另有 {trustedBaselineClosedCount} 部在可信基线已有中文 TXT，
+                        计入人工闭环但不重复计入该来源清单。
                       </p>
                     </div>
                     <div className="magi-home-review-toolbar flex flex-wrap items-center gap-3">
@@ -2551,7 +2580,7 @@ export default function Home() {
                           <span>校验进度</span>
                           <span>
                             {proofreadingStatus.total > 0
-                              ? Math.round((proofreadingStatus.verified / proofreadingStatus.total) * 100)
+                              ? Math.round((manualClosedCount / proofreadingStatus.total) * 100)
                               : 0}%
                           </span>
                         </div>
@@ -2560,7 +2589,7 @@ export default function Home() {
                             className="magi-home-review-progress h-full rounded-full transition-all"
                             style={{
                               width: `${proofreadingStatus.total > 0
-                                ? (proofreadingStatus.verified / proofreadingStatus.total) * 100
+                                ? (manualClosedCount / proofreadingStatus.total) * 100
                                 : 0}%`,
                             }}
                           />

@@ -7116,3 +7116,434 @@ html[data-exedra-font-tsuku='ready']
     0 0 5px rgba(255, 42, 73, 0.34),
     0 0 12px rgba(255, 24, 61, 0.16) !important;
 }
+
+/* =========================================
+   V31 TARGETED INTERACTION AND READER CHROME
+
+   This block intentionally leaves the fixed whole-page grain and diffusion
+   layer untouched. It only adds state paint to the requested controls.
+   ========================================= */
+
+/* Source plaques use the same lift/edge language as the category controls,
+   while each source state keeps its own provenance colour. */
+.magi-home-category-filter[data-filter='all'] {
+  --magi-category-hover-accent: var(--magi-category-branch-selected-line, #5c8798);
+}
+
+.magi-home-category-filter[data-filter='human-cn'] {
+  --magi-category-hover-accent: var(--magi-source-human-progress-edge, #8b7651);
+}
+
+.magi-home-category-filter[data-filter='machine-verified'] {
+  --magi-category-hover-accent: var(--magi-source-verified-progress-edge, #647477);
+}
+
+.magi-home-category-filter[data-filter='machine-unverified'] {
+  --magi-category-hover-accent: var(--magi-source-unverified-progress-edge, #60798a);
+}
+
+.magi-home-category-filter[data-enabled='true'] {
+  transform-origin: center;
+  transition:
+    border-radius 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    filter 150ms ease,
+    transform 150ms ease;
+}
+
+.magi-home-category-filter[data-enabled='true']:is(:hover, :focus-within) {
+  border-color: var(--magi-category-hover-accent) !important;
+  border-radius: 0.48rem !important;
+  color: color-mix(
+    in srgb,
+    var(--magi-category-hover-accent) 72%,
+    white
+  ) !important;
+  background: color-mix(
+    in srgb,
+    var(--magi-category-branch-surface, transparent) 72%,
+    var(--magi-category-hover-accent)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 52%, transparent),
+    inset 0 -2px 0 color-mix(in srgb, var(--magi-category-hover-accent) 38%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--magi-category-hover-accent) 35%, transparent),
+    0 4px 10px var(--magi-child-shadow, rgba(34, 39, 40, 0.34)) !important;
+  filter:
+    brightness(1.1)
+    saturate(1.16)
+    drop-shadow(0 0 1.8px color-mix(in srgb, var(--magi-category-hover-accent) 55%, transparent)) !important;
+  transform: translateY(-1px) scale(1.018);
+}
+
+.magi-home-category-filter[data-enabled='true']:is(:hover, :focus-within)::after {
+  inset: 2px;
+  border-color: color-mix(
+    in srgb,
+    var(--magi-category-hover-accent) 72%,
+    transparent
+  );
+  border-radius: 0.34rem;
+}
+
+/* Hierarchy hover ladder: chapter cards retain their source saturation, story
+   cards brighten at the heading band, and Episode leaves become the whitest,
+   least saturated level. Hovering an Episode no longer scales its parent. */
+.magi-folder-source-card > .magi-folder-heading-flow,
+.magi-home-story-heading-row,
+.magi-home-episode-list > .magi-home-episode-link {
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    filter 150ms ease,
+    outline-color 150ms ease,
+    transform 150ms ease;
+}
+
+.magi-folder-source-card > .magi-folder-heading-flow:is(:hover, :focus-visible) {
+  border-radius: 0.42rem;
+  filter:
+    brightness(1.08)
+    saturate(1.16)
+    var(--magi-control-edge-filter) !important;
+  outline: 1px solid color-mix(in srgb, currentColor 42%, transparent);
+  outline-offset: -3px;
+  transform: translateY(-1px) scale(1.006);
+}
+
+.magi-home-story-heading-row:is(:hover, :focus-within) {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  filter: brightness(1.16) saturate(0.88);
+  outline: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  outline-offset: -2px;
+  transform: translateX(1px);
+}
+
+.magi-home-episode-list > .magi-home-episode-link:is(:hover, :focus-visible) {
+  color: inherit;
+  background: color-mix(in srgb, white 22%, transparent) !important;
+  filter: brightness(1.28) saturate(0.32) !important;
+  outline: 1px solid color-mix(in srgb, white 54%, currentColor) !important;
+  outline-offset: -1px;
+  transform: none;
+  opacity: 1;
+}
+
+.magi-home-episode-list > .magi-home-episode-link:is(:hover, :focus-visible)
+  .magi-home-tree-episode-node {
+  border-color: color-mix(in srgb, white 74%, currentColor);
+  background: color-mix(in srgb, white 44%, currentColor);
+  box-shadow: 0 0 5px color-mix(in srgb, white 36%, currentColor);
+}
+
+/* Reader settings now reuse the dark Sidebar's local scanline surface. The
+   fixed .magi-texture layer still supplies the identical global grain above it. */
+.magi-reader-theme-dark .magi-settings-window[data-theme='dark'] {
+  --magi-settings-hacker: #61f5bf;
+  --magi-settings-hacker-bright: #dffff2;
+  --magi-settings-hacker-muted: #78ab9c;
+  --magi-settings-hacker-line: rgba(73, 225, 178, 0.5);
+  color: #b9d9cf !important;
+  border-color: rgba(65, 204, 161, 0.58) !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(69, 230, 176, 0.026) 2px 3px
+    ),
+    linear-gradient(180deg, rgba(7, 28, 44, 0.99), rgba(4, 20, 34, 0.995)) !important;
+  box-shadow:
+    inset -1px 0 0 rgba(74, 225, 179, 0.1),
+    inset 0 1px 0 rgba(176, 255, 226, 0.07),
+    0 0 17px rgba(36, 226, 164, 0.13),
+    12px 16px 38px rgba(0, 6, 14, 0.56) !important;
+  caret-color: var(--magi-settings-hacker);
+}
+
+.magi-reader-theme-dark
+  .magi-settings-window[data-theme='dark']
+  .magi-floating-window-titlebar {
+  color: var(--magi-settings-hacker-bright) !important;
+  border-bottom-color: rgba(82, 231, 184, 0.56) !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(74, 240, 185, 0.032) 2px 3px
+    ),
+    linear-gradient(180deg, rgba(14, 43, 59, 0.99), rgba(7, 29, 46, 0.99)) !important;
+  box-shadow:
+    inset 0 -1px 0 rgba(64, 221, 170, 0.12),
+    0 5px 15px rgba(0, 7, 14, 0.28) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-settings-window[data-theme='dark']
+  :where(.magi-floating-window-system-label, .magi-floating-window-title) {
+  color: var(--magi-settings-hacker-bright) !important;
+  text-shadow: 0 0 5px rgba(89, 232, 196, 0.2);
+}
+
+.magi-reader-theme-dark
+  .magi-settings-window[data-theme='dark']
+  .magi-floating-window-body {
+  color: #b5d7cc !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(71, 224, 174, 0.022) 2px 3px
+    ),
+    radial-gradient(circle at 18% 12%, rgba(35, 134, 102, 0.07), transparent 34%),
+    linear-gradient(180deg, rgba(6, 28, 42, 0.98), rgba(4, 20, 34, 0.99)) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-settings-window[data-theme='dark']
+  .magi-floating-window-body
+  :where(h3, h4, summary, p, span, label, output, [role='status']) {
+  color: inherit !important;
+}
+
+.magi-reader-theme-dark
+  .magi-settings-window[data-theme='dark']
+  :where(
+    [data-reader-font-settings='true'],
+    [data-exedra-font-settings='true'],
+    [data-reader-font-bundle],
+    [data-exedra-font]
+  ) {
+  border-color: rgba(69, 170, 143, 0.38) !important;
+  color: #b9d9cf !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(81, 229, 181, 0.026) 2px 3px
+    ),
+    rgba(6, 32, 45, 0.74) !important;
+  box-shadow: inset 0 1px 0 rgba(179, 255, 227, 0.045) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-settings-window[data-theme='dark']
+  :where([data-reader-font-settings='true'], [data-exedra-font-settings='true'])[open] {
+  border-color: rgba(103, 247, 194, 0.7) !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(128, 255, 214, 0.045) 2px 3px
+    ),
+    rgba(7, 49, 51, 0.84) !important;
+  box-shadow:
+    inset 3px 0 rgba(101, 238, 189, 0.62),
+    0 0 10px rgba(41, 232, 169, 0.12) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-settings-window[data-theme='dark']
+  .magi-floating-window-body
+  button {
+  border-color: rgba(70, 207, 163, 0.54) !important;
+  color: #c7f5e7 !important;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      rgba(81, 240, 187, 0.032) 2px 3px
+    ),
+    rgba(5, 44, 46, 0.9) !important;
+  box-shadow: inset 0 1px 0 rgba(183, 255, 226, 0.08) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-settings-window[data-theme='dark']
+  .magi-floating-window-body
+  button:is(:hover, :focus-visible):not(:disabled) {
+  border-color: rgba(108, 255, 206, 0.85) !important;
+  color: #edfff8 !important;
+  background: rgba(9, 81, 62, 0.98) !important;
+  box-shadow: 0 0 9px rgba(41, 232, 168, 0.19) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-settings-window[data-theme='dark']
+  .magi-floating-window-body
+  button[aria-pressed='true'] {
+  border-color: #7dffd1 !important;
+  color: #effff8 !important;
+  background: rgba(9, 91, 67, 0.98) !important;
+  box-shadow:
+    inset 3px 0 #69f5c1,
+    0 0 12px rgba(43, 238, 173, 0.2) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-settings-window[data-theme='dark']
+  :where(.magi-retro-window-minimize, .magi-retro-window-close) {
+  border-color: rgba(83, 226, 178, 0.62) !important;
+  color: #d4ffef !important;
+  background: rgba(7, 55, 51, 0.9) !important;
+  box-shadow: inset 1px 1px rgba(199, 255, 234, 0.1) !important;
+}
+
+.magi-reader-theme-dark
+  .magi-settings-window[data-theme='dark']
+  input[type='range'] {
+  accent-color: #58eeb3;
+  filter: saturate(0.82) brightness(0.96);
+}
+
+.magi-reader-theme-dark
+  .magi-settings-window[data-theme='dark']
+  input[type='checkbox'] {
+  accent-color: #58eeb3;
+}
+
+/* Theme-native Reader scrollbars replace the browser-white track. The same
+   palette also paints the Sidebar resize strip for pointer and keyboard use. */
+.magi-reader-theme-light {
+  --magi-reader-scroll-track: #d7dad7;
+  --magi-reader-scroll-thumb: #777e7d;
+  --magi-reader-scroll-thumb-hover: #4e5655;
+  --magi-reader-scroll-edge: rgba(45, 52, 52, 0.62);
+  --magi-reader-scroll-scanline: rgba(255, 255, 255, 0.16);
+  --magi-reader-resize-strip: rgba(65, 72, 72, 0.16);
+}
+
+.magi-reader-theme-paper {
+  --magi-reader-scroll-track: #ded0aa;
+  --magi-reader-scroll-thumb: #826b45;
+  --magi-reader-scroll-thumb-hover: #5f492c;
+  --magi-reader-scroll-edge: rgba(72, 53, 29, 0.7);
+  --magi-reader-scroll-scanline: rgba(255, 245, 210, 0.14);
+  --magi-reader-resize-strip: rgba(86, 65, 36, 0.2);
+}
+
+.magi-reader-theme-green {
+  --magi-reader-scroll-track: #c2d5bd;
+  --magi-reader-scroll-thumb: #4f7c5a;
+  --magi-reader-scroll-thumb-hover: #315f40;
+  --magi-reader-scroll-edge: rgba(35, 80, 48, 0.68);
+  --magi-reader-scroll-scanline: rgba(225, 255, 224, 0.15);
+  --magi-reader-resize-strip: rgba(45, 100, 60, 0.19);
+}
+
+.magi-reader-theme-dark {
+  --magi-reader-scroll-track: #071c2b;
+  --magi-reader-scroll-thumb: #28745f;
+  --magi-reader-scroll-thumb-hover: #45c796;
+  --magi-reader-scroll-edge: rgba(82, 231, 184, 0.68);
+  --magi-reader-scroll-scanline: rgba(116, 255, 205, 0.1);
+  --magi-reader-resize-strip: rgba(70, 221, 171, 0.19);
+}
+
+.magi-reader-root
+  :where(
+    .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-settings-window .magi-floating-window-body
+  ) {
+  scrollbar-width: thin;
+  scrollbar-color:
+    var(--magi-reader-scroll-thumb)
+    var(--magi-reader-scroll-track);
+}
+
+.magi-reader-root
+  :where(
+    .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-settings-window .magi-floating-window-body
+  )::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background: var(--magi-reader-scroll-track);
+}
+
+.magi-reader-root
+  :where(
+    .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-settings-window .magi-floating-window-body
+  )::-webkit-scrollbar-track {
+  border-left: 1px solid var(--magi-reader-scroll-edge);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      var(--magi-reader-scroll-scanline) 2px 3px
+    ),
+    var(--magi-reader-scroll-track);
+}
+
+.magi-reader-root
+  :where(
+    .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-settings-window .magi-floating-window-body
+  )::-webkit-scrollbar-thumb {
+  min-height: 42px;
+  border: 2px solid var(--magi-reader-scroll-track);
+  border-radius: 999px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 2px,
+      var(--magi-reader-scroll-scanline) 2px 3px
+    ),
+    var(--magi-reader-scroll-thumb);
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 0 0 1px var(--magi-reader-scroll-edge),
+    0 0 5px color-mix(in srgb, var(--magi-reader-scroll-thumb) 36%, transparent);
+}
+
+.magi-reader-root
+  :where(
+    .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-settings-window .magi-floating-window-body
+  )::-webkit-scrollbar-thumb:hover {
+  background-color: var(--magi-reader-scroll-thumb-hover);
+  box-shadow:
+    inset 0 0 0 1px var(--magi-reader-scroll-edge),
+    0 0 8px color-mix(in srgb, var(--magi-reader-scroll-thumb-hover) 48%, transparent);
+}
+
+.magi-reader-root
+  :where(
+    .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-settings-window .magi-floating-window-body
+  )::-webkit-scrollbar-button {
+  display: none;
+}
+
+.magi-reader-root
+  :where(
+    .magi-reader-sidebar [data-sidebar-scroll-container='true'],
+    .magi-settings-window .magi-floating-window-body
+  )::-webkit-scrollbar-corner {
+  background: var(--magi-reader-scroll-track);
+}
+
+.magi-reader-root .magi-sidebar-resize-handle {
+  color: var(--magi-reader-scroll-thumb);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--magi-reader-resize-strip),
+    transparent
+  );
+}
+
+.magi-reader-root .magi-sidebar-resize-handle::after {
+  opacity: 0.32;
+}
+
+.magi-reader-root .magi-sidebar-resize-handle:is(:hover, :focus-visible)::after,
+body.magi-sidebar-resizing .magi-reader-root .magi-sidebar-resize-handle::after {
+  width: 2px;
+  color: var(--magi-reader-scroll-thumb-hover);
+  box-shadow: 0 0 7px var(--magi-reader-scroll-thumb-hover);
+  opacity: 0.92;
+}

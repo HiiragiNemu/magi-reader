@@ -49,3 +49,22 @@ test('Japanese story bodies and speaker labels carry a language boundary', () =>
     /reader-font-cn-title \*,\s*\nhtml\[data-reader-font-chinese='ready'\] \.magi-site-font-scope \.magi-reader-speaker-label/u,
   );
 });
+
+test('requested hierarchy and source plaques expose distinct hover levels', () => {
+  assert.match(home, /magi-home-story-heading-row/u);
+  assert.doesNotMatch(home, /hover:scale-\[1\.01\]/u);
+  assert.match(css, /magi-home-category-filter\[data-enabled='true'\]:is\(:hover, :focus-within\)/u);
+  assert.match(css, /magi-folder-source-card > \.magi-folder-heading-flow:is\(:hover, :focus-visible\)/u);
+  assert.match(css, /magi-home-story-heading-row:is\(:hover, :focus-within\)/u);
+  assert.match(css, /magi-home-episode-list > \.magi-home-episode-link:is\(:hover, :focus-visible\)/u);
+  assert.match(css, /brightness\(1\.28\) saturate\(0\.32\)/u);
+});
+
+test('dark reader settings and sidebar scrollbars share hacker-green scanlines', () => {
+  assert.match(css, /magi-reader-theme-dark \.magi-settings-window\[data-theme='dark'\]/u);
+  assert.match(css, /--magi-settings-hacker:\s*#61f5bf/u);
+  assert.match(css, /rgba\(69, 230, 176, 0\.026\) 2px 3px/u);
+  assert.match(css, /--magi-reader-scroll-track:\s*#071c2b/u);
+  assert.match(css, /--magi-reader-scroll-thumb:\s*#28745f/u);
+  assert.match(css, /data-sidebar-scroll-container='true'[\s\S]*?::-webkit-scrollbar-thumb/u);
+});

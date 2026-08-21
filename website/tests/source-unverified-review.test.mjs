@@ -12,6 +12,10 @@ test('source-review manifest uses fail-closed classification', () => {
   assert.match(manifest.definition, /source_unverified/u);
   assert.equal(manifest.total, manifest.entries.length);
   assert.equal(
+    manifest.manual_retranslation_closed_total,
+    manifest.manual_retranslation_closed_ids.length,
+  );
+  assert.equal(
     manifest.manual_human_verified_total,
     manifest.manual_human_verified_ids.length,
   );
@@ -20,6 +24,14 @@ test('source-review manifest uses fail-closed classification', () => {
     manifest.total - manifest.manual_human_verified_total,
   );
   assert.ok(manifest.entries.length > 0);
+  assert.equal(manifest.manual_retranslation_closed_total, 137);
+  assert.equal(manifest.manual_human_verified_total, 108);
+  assert.equal(
+    manifest.manual_retranslation_closed_ids.filter(
+      storyId => !manifest.manual_human_verified_ids.includes(storyId),
+    ).length,
+    29,
+  );
   for (const entry of manifest.entries) {
     assert.equal(entry.classification, 'SOURCE_UNVERIFIED');
     assert.equal(entry.provenance, 'source_unverified_added_after_trusted_main');
@@ -37,6 +49,19 @@ test('public summary keeps a canonical source-unverified field and legacy alias'
   assert.match(source, /source_unverified_ids:\s*sourceUnverifiedIds/u);
   assert.match(source, /machine_translation_ids:\s*sourceUnverifiedIds/u);
   assert.match(source, /MANUAL_HUMAN_VERIFIED_ID_SET\.has\(entry\.story_id\)/u);
+  assert.match(source, /manual_closed:\s*manualClosed/u);
+  assert.match(source, /manual_remaining:\s*Math\.max/u);
+  assert.match(source, /source_unverified_verified:\s*verifiedIds\.length/u);
+  assert.match(source, /source_unverified_remaining:\s*sourceUnverifiedRemaining/u);
+});
+
+test('home separates the 137-story manual ledger from the 108-story source-review subset', () => {
+  const page = readFileSync('app/page.tsx', 'utf8');
+  assert.match(page, /已完成人工校验闭环/u);
+  assert.match(page, /manualClosedCount/u);
+  assert.match(page, /sourceUnverifiedVerifiedCount/u);
+  assert.match(page, /在可信基线已有中文 TXT/u);
+  assert.doesNotMatch(page, /已人工校验 \{proofreadingStatus\.verified\}/u);
 });
 
 test('collapsed review checklist lives beside the brand and takes no catalog space', () => {
